@@ -10,9 +10,9 @@ space		[ \t\n\r]
 
 %%
 
-{space}				; //ignore spaces
+{space}					; //ignore spaces
 
-\/\/.*				; //ignore comments
-\/\*(.|\n)*?\*\/	;
+\/\/.*					; //ignore comments
+"/*"([^\*]|\*[^\/])*"*/"	;
 
 %%

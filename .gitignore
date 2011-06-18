@@ -1,6 +1,9 @@
 /build/*
 
-/source/tokens.cpp
+/source/scanner.cpp
+/source/parser.h
+/source/parser.cpp
+/source/*.hh
 
 # Backups
 *~*

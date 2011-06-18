@@ -3,10 +3,11 @@
 //
 
 
-class Hello : Object <Comparable>
+class Hello : Object <Comparable, KVO>
 {
 	/* Declare some property here. */
 	property int x;
+	property double z;
 	
 	/*
 	 * Declare some property here.

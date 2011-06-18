@@ -1,0 +1,14 @@
+//
+//  Example Maxwell class definition.
+//
+
+
+class Hello : Object <Comparable>
+{
+	/* Declare some property here. */
+	property int x;
+	
+	/*
+	 * Declare some property here.
+	 */
+}

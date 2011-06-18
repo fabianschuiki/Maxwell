@@ -1,5 +1,7 @@
 /build/*
 
+/source/tokens.cpp
+
 # Backups
 *~*
 

@@ -2,7 +2,7 @@
 #include <sstream>
 
 #include "driver.h"
-#include "scanner.h"
+#include "scanner/scanner.h"
 
 using namespace Maxwell;
 

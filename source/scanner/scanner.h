@@ -17,7 +17,7 @@ Maxwell::Parser::token_type Maxwell::Scanner::lex(	\
 #endif
 
 /* Include the parser whose constants we require. */
-#include "parser.h"
+#include "../parser/autogen/parser.h"
 
 
 namespace Maxwell {

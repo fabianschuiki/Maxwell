@@ -15,7 +15,7 @@ int main(int argc, char * argv[])
 	
 	//Create a new driver to read stuff.
 	Driver driver;
-	driver.parse("../examples/class.mw");
+	driver.parse("debug.mw");
 	
 	return 0;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "node.h"
 
 
 namespace Maxwell {
@@ -15,5 +16,7 @@ namespace Maxwell {
 		
 		void error(const class location & l, const std::string & message);
 		void error(const std::string & message);
+		
+		Block * programBlock;
 	};
 }

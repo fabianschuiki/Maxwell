@@ -1,9 +1,7 @@
 /build/*
 
-/source/scanner.cpp
-/source/parser.h
-/source/parser.cpp
-/source/*.hh
+autogen/*
+/projects/xcode
 
 # Backups
 *~*

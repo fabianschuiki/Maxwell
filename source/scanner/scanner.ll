@@ -1,6 +1,6 @@
 %{
 #include <string>
-#include "scanner.h"
+#include "../scanner.h"
 
 //Convenience typedef of the parser's token type.
 typedef Maxwell::Parser::token      token;
@@ -83,7 +83,8 @@ typedef Maxwell::Parser::token_type token_type;
 "property"	return token::PROPERTY;
 
  /* Identifiers */
-[a-zA-Z_][a-zA-Z0-9_]* {
+ /*[a-zA-Z_][a-zA-Z0-9_]* {*/
+[^ \t\n(){}\[\]=≠!<>.,:;]+ {
 	yylval->string = new std::string(yytext, yyleng);
 	return token::IDENTIFIER;
 }

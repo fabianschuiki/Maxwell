@@ -16,6 +16,8 @@ int main(int argc, char * argv[])
 	//Create a new driver to read stuff.
 	Driver driver;
 	driver.parse("debug.mw");
+	if (driver.programBlock)
+		std::cout << driver.programBlock->describe();
 	
 	return 0;
 }

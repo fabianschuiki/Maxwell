@@ -3,6 +3,8 @@
 //
 
 
-class Hello
+class Hello : Object
 {
 }
+
+class World : Hello {}

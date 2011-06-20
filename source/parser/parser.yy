@@ -76,7 +76,7 @@
 %type <block> root_stmts class_stmts
 %type <stmt> root_stmt class_stmt class_decl
 
-%destructor { delete $$; } IDENTIFIER
+/*%destructor { delete $$; } IDENTIFIER*/
 
 
 
@@ -95,11 +95,11 @@
 
  /* The root section of the file. May contain any number of root statements. */
 root
- : root_stmts /*{ driver.programBlock = $1; }*/
+ : root_stmts { driver.programBlock = $1; }
  ;
 root_stmts
- : root_stmt /*{ $$ = new Block(); $$->statements.push_back($<root_stmt>1); }*/
- | root_stmts root_stmt /*{ $1->statements.push_back($<root_stmt>2); }*/
+ : root_stmt { $$ = new Block(); $$->statements.push_back($1); }
+ | root_stmts root_stmt { $1->statements.push_back($2); }
  ;
 
 /* A root statement may be a class or function declaration, as well as import statements. */
@@ -119,9 +119,9 @@ ident
  * Optionally a : and the superclass's name may be appended to inherit from that. Implemented inter-
  * faces may also be added in triangular brackets <>. */
 class_decl
- : CLASS ident class_body { $$ = new ClassDeclaration(*$<ident>1); }
+ : CLASS ident class_body { $$ = new ClassDeclaration(*$2); }
  | CLASS ident CLT class_intfs CGT class_body
- | CLASS ident COLON ident class_body
+ | CLASS ident COLON ident class_body { $$ = new ClassDeclaration(*$2, *$4); }
  | CLASS ident COLON ident CLT class_intfs CGT class_body
  ;
 

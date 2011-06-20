@@ -202,12 +202,7 @@ namespace Maxwell
 
     switch (yytype)
       {
-        case 4: /* "IDENTIFIER" */
-#line 79 "../parser.yy"
-	{ delete (yyvaluep->string); };
-#line 209 "parser.cpp"
-	break;
-
+  
 	default:
 	  break;
       }
@@ -287,7 +282,7 @@ namespace Maxwell
 	yylloc.begin.filename = yylloc.end.filename = &driver.streamName;
 }
   /* Line 555 of yacc.c.  */
-#line 291 "parser.cpp"
+#line 286 "parser.cpp"
     /* Initialize the stacks.  The initial state will be pushed in
        yynewstate, since the latter expects the semantical and the
        location values to have been already stored, initialize these
@@ -402,19 +397,39 @@ namespace Maxwell
     YY_REDUCE_PRINT (yyn);
     switch (yyn)
       {
-	  case 6:
+	  case 2:
+#line 98 "../parser.yy"
+    { driver.programBlock = (yysemantic_stack_[(1) - (1)].block); ;}
+    break;
+
+  case 3:
+#line 101 "../parser.yy"
+    { (yyval.block) = new Block(); (yyval.block)->statements.push_back((yysemantic_stack_[(1) - (1)].stmt)); ;}
+    break;
+
+  case 4:
+#line 102 "../parser.yy"
+    { (yysemantic_stack_[(2) - (1)].block)->statements.push_back((yysemantic_stack_[(2) - (2)].stmt)); ;}
+    break;
+
+  case 6:
 #line 113 "../parser.yy"
     { (yyval.ident) = new Identifier(*(yysemantic_stack_[(1) - (1)].string)); delete (yysemantic_stack_[(1) - (1)].string); ;}
     break;
 
   case 7:
 #line 122 "../parser.yy"
-    { (yyval.stmt) = new ClassDeclaration(*(yysemantic_stack_[(3) - (1)].ident)); ;}
+    { (yyval.stmt) = new ClassDeclaration(*(yysemantic_stack_[(3) - (2)].ident)); ;}
+    break;
+
+  case 9:
+#line 124 "../parser.yy"
+    { (yyval.stmt) = new ClassDeclaration(*(yysemantic_stack_[(5) - (2)].ident), *(yysemantic_stack_[(5) - (4)].ident)); ;}
     break;
 
 
     /* Line 675 of lalr1.cc.  */
-#line 418 "parser.cpp"
+#line 433 "parser.cpp"
 	default: break;
       }
     YY_SYMBOL_PRINT ("-> $$ =", yyr1_[yyn], &yyval, &yyloc);

@@ -25,6 +25,7 @@ add_executable(
 	scanner/autogen/scanner.cpp
 	parser/autogen/parser.cpp
 	driver.cpp
+	node.cpp
 )
 
 target_link_libraries(

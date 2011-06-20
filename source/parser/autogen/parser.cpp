@@ -36,7 +36,7 @@
 #include "parser.h"
 
 /* User implementation prologue.  */
-#line 89 "../parser.yy"
+#line 100 "../parser.yy"
 
 #include "../../driver.h"
 #include "../../scanner/scanner.h"
@@ -398,74 +398,204 @@ namespace Maxwell
     switch (yyn)
       {
 	  case 2:
-#line 103 "../parser.yy"
+#line 114 "../parser.yy"
     { driver.programBlock = (yysemantic_stack_[(1) - (1)].block); ;}
     break;
 
   case 3:
-#line 106 "../parser.yy"
+#line 117 "../parser.yy"
     { (yyval.block) = new Block(); (yyval.block)->statements.push_back((yysemantic_stack_[(1) - (1)].stmt)); ;}
     break;
 
   case 4:
-#line 107 "../parser.yy"
+#line 118 "../parser.yy"
     { (yysemantic_stack_[(2) - (1)].block)->statements.push_back((yysemantic_stack_[(2) - (2)].stmt)); ;}
     break;
 
+  case 5:
+#line 123 "../parser.yy"
+    { (yyval.stmt) = (yysemantic_stack_[(2) - (1)].class_def); ;}
+    break;
+
+  case 6:
+#line 124 "../parser.yy"
+    { (yyval.stmt) = (yysemantic_stack_[(1) - (1)].class_def); ;}
+    break;
+
   case 7:
-#line 119 "../parser.yy"
+#line 130 "../parser.yy"
     { (yyval.ident) = new Identifier(*(yysemantic_stack_[(1) - (1)].string)); delete (yysemantic_stack_[(1) - (1)].string); ;}
     break;
 
   case 8:
-#line 122 "../parser.yy"
+#line 133 "../parser.yy"
     { (yyval.idents) = new Identifiers(); (yyval.idents)->push_back((yysemantic_stack_[(1) - (1)].ident)); ;}
     break;
 
   case 9:
-#line 123 "../parser.yy"
+#line 134 "../parser.yy"
     { (yysemantic_stack_[(3) - (1)].idents)->push_back((yysemantic_stack_[(3) - (3)].ident)); ;}
     break;
 
   case 10:
-#line 132 "../parser.yy"
+#line 145 "../parser.yy"
     {
-	(yyval.class_decl) = new ClassDefinition();
-	(yyval.class_decl)->name = *(yysemantic_stack_[(2) - (2)].ident);
+	(yyval.class_def) = new ClassDefinition();
+	(yyval.class_def)->name = (yysemantic_stack_[(2) - (2)].ident);
  ;}
     break;
 
   case 11:
-#line 136 "../parser.yy"
+#line 149 "../parser.yy"
     {
-	(yyval.class_decl) = new ClassDefinition();
-	(yyval.class_decl)->name = *(yysemantic_stack_[(5) - (2)].ident);
-	(yyval.class_decl)->interfaces = *(yysemantic_stack_[(5) - (4)].idents);
+	(yyval.class_def) = new ClassDefinition();
+	(yyval.class_def)->name = (yysemantic_stack_[(5) - (2)].ident);
+	(yyval.class_def)->interfaces = (yysemantic_stack_[(5) - (4)].idents);
  ;}
     break;
 
   case 12:
-#line 141 "../parser.yy"
+#line 154 "../parser.yy"
     {
-	(yyval.class_decl) = new ClassDefinition();
-	(yyval.class_decl)->name = *(yysemantic_stack_[(4) - (2)].ident);
-	(yyval.class_decl)->super = *(yysemantic_stack_[(4) - (4)].ident);
+	(yyval.class_def) = new ClassDefinition();
+	(yyval.class_def)->name = (yysemantic_stack_[(4) - (2)].ident);
+	(yyval.class_def)->super = (yysemantic_stack_[(4) - (4)].ident);
  ;}
     break;
 
   case 13:
-#line 146 "../parser.yy"
+#line 159 "../parser.yy"
     {
-	(yyval.class_decl) = new ClassDefinition();
-	(yyval.class_decl)->name = *(yysemantic_stack_[(7) - (2)].ident);
-	(yyval.class_decl)->super = *(yysemantic_stack_[(7) - (4)].ident);
-	(yyval.class_decl)->interfaces = *(yysemantic_stack_[(7) - (6)].idents);
+	(yyval.class_def) = new ClassDefinition();
+	(yyval.class_def)->name = (yysemantic_stack_[(7) - (2)].ident);
+	(yyval.class_def)->super = (yysemantic_stack_[(7) - (4)].ident);
+	(yyval.class_def)->interfaces = (yysemantic_stack_[(7) - (6)].idents);
  ;}
+    break;
+
+  case 14:
+#line 170 "../parser.yy"
+    { (yyval.class_def) = (yysemantic_stack_[(3) - (1)].class_def); ;}
+    break;
+
+  case 15:
+#line 171 "../parser.yy"
+    { (yyval.class_def) = (yysemantic_stack_[(4) - (1)].class_def); (yyval.class_def)->statements = (yysemantic_stack_[(4) - (3)].block); ;}
+    break;
+
+  case 16:
+#line 176 "../parser.yy"
+    { (yyval.block) = new Block(); (yyval.block)->statements.push_back((yysemantic_stack_[(1) - (1)].stmt)); ;}
+    break;
+
+  case 17:
+#line 177 "../parser.yy"
+    { (yysemantic_stack_[(2) - (1)].block)->statements.push_back((yysemantic_stack_[(2) - (2)].stmt)); ;}
+    break;
+
+  case 18:
+#line 180 "../parser.yy"
+    { (yyval.stmt) = (yysemantic_stack_[(2) - (1)].func_def); ;}
+    break;
+
+  case 19:
+#line 181 "../parser.yy"
+    { (yyval.stmt) = (yysemantic_stack_[(1) - (1)].func_def); ;}
+    break;
+
+  case 21:
+#line 190 "../parser.yy"
+    {
+	(yyval.func_def) = new FunctionDefinition();
+	(yyval.func_def)->shared = ((yysemantic_stack_[(3) - (1)].token) == token::PLUS);
+	(yyval.func_def)->returnType = (yysemantic_stack_[(3) - (2)].type);
+	(yyval.func_def)->arguments = (yysemantic_stack_[(3) - (3)].func_args);
+ ;}
+    break;
+
+  case 22:
+#line 201 "../parser.yy"
+    {
+	FunctionArgument * arg = new FunctionArgument();
+	arg->name = (yysemantic_stack_[(1) - (1)].ident);
+	(yyval.func_args) = new FunctionArguments();
+	(yyval.func_args)->push_back(arg);
+ ;}
+    break;
+
+  case 23:
+#line 207 "../parser.yy"
+    { (yyval.func_args) = (yysemantic_stack_[(1) - (1)].func_args); ;}
+    break;
+
+  case 24:
+#line 210 "../parser.yy"
+    { (yyval.func_args) = new FunctionArguments(); (yyval.func_args)->push_back((yysemantic_stack_[(1) - (1)].func_arg)); ;}
+    break;
+
+  case 25:
+#line 211 "../parser.yy"
+    { (yysemantic_stack_[(2) - (1)].func_args)->push_back((yysemantic_stack_[(2) - (2)].func_arg)); ;}
+    break;
+
+  case 26:
+#line 214 "../parser.yy"
+    {
+	(yyval.func_arg) = new FunctionArgument();
+	(yyval.func_arg)->name = (yysemantic_stack_[(5) - (1)].ident);
+	(yyval.func_arg)->argument = (yysemantic_stack_[(5) - (4)].type);
+ ;}
+    break;
+
+  case 27:
+#line 224 "../parser.yy"
+    { (yyval.func_def) = (yysemantic_stack_[(3) - (1)].func_def); ;}
+    break;
+
+  case 28:
+#line 225 "../parser.yy"
+    { (yyval.func_def) = (yysemantic_stack_[(4) - (1)].func_def); (yyval.func_def)->statements = (yysemantic_stack_[(4) - (3)].block); ;}
+    break;
+
+  case 29:
+#line 228 "../parser.yy"
+    { (yyval.block) = new Block(); (yyval.block)->statements.push_back((yysemantic_stack_[(1) - (1)].stmt)); ;}
+    break;
+
+  case 30:
+#line 229 "../parser.yy"
+    { (yysemantic_stack_[(2) - (1)].block)->statements.push_back((yysemantic_stack_[(2) - (2)].stmt)); ;}
+    break;
+
+  case 32:
+#line 241 "../parser.yy"
+    {
+	(yyval.type) = new ConcreteType();
+	((ConcreteType *)(yyval.type))->name = (yysemantic_stack_[(1) - (1)].ident);
+ ;}
+    break;
+
+  case 33:
+#line 245 "../parser.yy"
+    {
+	(yyval.type) = new TupleType();
+	((TupleType *)(yyval.type))->types = (yysemantic_stack_[(3) - (2)].types);
+ ;}
+    break;
+
+  case 34:
+#line 251 "../parser.yy"
+    { (yyval.types) = new Types(); (yyval.types)->push_back((yysemantic_stack_[(1) - (1)].type)); ;}
+    break;
+
+  case 35:
+#line 252 "../parser.yy"
+    { (yysemantic_stack_[(3) - (1)].types)->push_back((yysemantic_stack_[(3) - (3)].type)); ;}
     break;
 
 
     /* Line 675 of lalr1.cc.  */
-#line 469 "parser.cpp"
+#line 599 "parser.cpp"
 	default: break;
       }
     YY_SYMBOL_PRINT ("-> $$ =", yyr1_[yyn], &yyval, &yyloc);
@@ -672,13 +802,16 @@ namespace Maxwell
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
-  const signed char Parser::yypact_ninf_ = -18;
+  const signed char Parser::yypact_ninf_ = -25;
   const signed char
   Parser::yypact_[] =
   {
-       -17,     0,     8,   -17,   -18,    -6,   -18,   -18,   -11,   -18,
-     -18,     2,   -18,     0,     0,   -18,     6,   -18,   -18,    -9,
-       3,   -18,   -18,   -18,     0,     0,   -18,    -5,   -18
+       -21,     2,    21,   -21,   -25,     0,   -25,   -25,    -8,   -25,
+     -25,    -6,   -25,     2,     2,   -25,   -25,    24,    -4,   -25,
+       1,   -25,   -25,     8,    -2,    24,   -25,     2,   -25,   -25,
+      22,   -25,   -25,     2,     2,   -25,     4,    17,   -25,     2,
+     -25,   -25,    27,   -25,   -25,    11,   -25,    24,    31,    17,
+     -25,   -25,   -25,   -25,   -25,    24,    33,   -25
   };
 
   /* YYDEFACT[S] -- default rule to reduce with in state S when YYTABLE
@@ -688,22 +821,27 @@ namespace Maxwell
   Parser::yydefact_[] =
   {
          0,     0,     0,     2,     3,     0,     6,     7,    10,     1,
-       4,     0,     5,     0,     0,    14,     0,    16,     8,     0,
-      12,    15,    17,    11,     0,     0,     9,     0,    13
+       4,     0,     5,     0,     0,    14,    20,     0,     0,    16,
+       0,    19,     8,     0,    12,     0,    32,     0,    15,    17,
+       0,    18,    11,     0,     0,    34,     0,    22,    21,    23,
+      24,    27,     0,    29,     9,     0,    33,     0,     0,     0,
+      25,    28,    30,    13,    35,     0,     0,    26
   };
 
   /* YYPGOTO[NTERM-NUM].  */
   const signed char
   Parser::yypgoto_[] =
   {
-       -18,   -18,   -18,    12,    -1,    -8,   -18,   -18,   -18,     4
+       -25,   -25,   -25,    34,    -1,     6,   -25,   -25,   -25,    23,
+     -25,   -25,   -25,     3,   -25,   -25,     5,   -24,   -25
   };
 
   /* YYDEFGOTO[NTERM-NUM].  */
   const signed char
   Parser::yydefgoto_[] =
   {
-        -1,     2,     3,     4,    18,    19,     5,     6,    16,    17
+        -1,     2,     3,     4,    26,    23,     5,     6,    18,    19,
+      20,    38,    39,    40,    21,    42,    43,    27,    36
   };
 
   /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -713,18 +851,22 @@ namespace Maxwell
   const unsigned char
   Parser::yytable_[] =
   {
-         8,    11,    13,     1,     7,    23,    14,    24,     9,    28,
-      15,    24,    12,    20,    21,    10,    25,    27,     0,     0,
-      22,     0,     0,    26
+         8,    35,    15,     1,    28,    13,     7,    11,    30,    14,
+      46,    34,    22,    24,    16,    17,    16,    17,    12,    31,
+      47,     9,    32,    54,    33,    53,    37,    33,     7,    25,
+      41,    56,    44,    22,    48,    51,    55,    10,    49,    57,
+      45,    29,    50,     0,     0,     0,     0,    52
   };
 
   /* YYCHECK.  */
   const signed char
   Parser::yycheck_[] =
   {
-         1,     7,    13,    20,     4,    14,    17,    16,     0,    14,
-       8,    16,    18,    14,     8,     3,    13,    25,    -1,    -1,
-      16,    -1,    -1,    24
+         1,    25,     8,    24,     8,    13,     4,     7,     7,    17,
+       6,    13,    13,    14,    20,    21,    20,    21,    18,    18,
+      16,     0,    14,    47,    16,    14,    27,    16,     4,     5,
+       8,    55,    33,    34,    17,     8,     5,     3,    39,     6,
+      34,    18,    39,    -1,    -1,    -1,    -1,    42
   };
 
   /* STOS_[STATE-NUM] -- The (internal number of the) accessing
@@ -732,9 +874,12 @@ namespace Maxwell
   const unsigned char
   Parser::yystos_[] =
   {
-         0,    20,    23,    24,    25,    28,    29,     4,    26,     0,
-      25,     7,    18,    13,    17,     8,    30,    31,    26,    27,
-      26,     8,    31,    14,    16,    13,    26,    27,    14
+         0,    24,    27,    28,    29,    32,    33,     4,    30,     0,
+      29,     7,    18,    13,    17,     8,    20,    21,    34,    35,
+      36,    40,    30,    31,    30,     5,    30,    43,     8,    35,
+       7,    18,    14,    16,    13,    43,    44,    30,    37,    38,
+      39,     8,    41,    42,    30,    31,     6,    16,    17,    30,
+      39,     8,    42,    14,    43,     5,    43,     6
   };
 
 #if YYDEBUG
@@ -745,7 +890,7 @@ namespace Maxwell
   {
          0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276
+     275,   276,   277,   278,   279,   280
   };
 #endif
 
@@ -753,8 +898,10 @@ namespace Maxwell
   const unsigned char
   Parser::yyr1_[] =
   {
-         0,    22,    23,    24,    24,    25,    25,    26,    27,    27,
-      28,    28,    28,    28,    29,    29,    30,    30,    31
+         0,    26,    27,    28,    28,    29,    29,    30,    31,    31,
+      32,    32,    32,    32,    33,    33,    34,    34,    35,    35,
+      36,    36,    37,    37,    38,    38,    39,    40,    40,    41,
+      41,    42,    43,    43,    44,    44
   };
 
   /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -762,7 +909,9 @@ namespace Maxwell
   Parser::yyr2_[] =
   {
          0,     2,     1,     1,     2,     2,     1,     1,     1,     3,
-       2,     5,     4,     7,     3,     4,     1,     2,     0
+       2,     5,     4,     7,     3,     4,     1,     2,     2,     1,
+       1,     3,     1,     1,     1,     2,     5,     3,     4,     1,
+       2,     0,     1,     3,     1,     3
   };
 
 #if YYDEBUG || YYERROR_VERBOSE || YYTOKEN_TABLE
@@ -774,9 +923,11 @@ namespace Maxwell
     "\"end of file\"", "error", "$undefined", "\"end of line\"",
   "IDENTIFIER", "LPAREN", "RPAREN", "LBRACE", "RBRACE", "LBRACK", "RBRACK",
   "CEQ", "CNE", "CLT", "CGT", "DOT", "COMMA", "COLON", "SEMICOLON",
-  "EQUAL", "CLASS", "PROPERTY", "$accept", "root", "root_stmts",
-  "root_stmt", "ident", "idents", "class_decl", "class_def", "class_stmts",
-  "class_stmt", 0
+  "EQUAL", "PLUS", "MINUS", "ASTERISK", "SLASH", "CLASS", "PROPERTY",
+  "$accept", "root", "root_stmts", "root_stmt", "ident", "idents",
+  "class_decl", "class_def", "class_stmts", "class_stmt", "func_decl",
+  "func_sel", "func_args", "func_arg", "func_def", "func_stmts",
+  "func_stmt", "type", "types", 0
   };
 #endif
 
@@ -785,12 +936,18 @@ namespace Maxwell
   const Parser::rhs_number_type
   Parser::yyrhs_[] =
   {
-        23,     0,    -1,    24,    -1,    25,    -1,    24,    25,    -1,
-      28,    18,    -1,    29,    -1,     4,    -1,    26,    -1,    27,
-      16,    26,    -1,    20,    26,    -1,    20,    26,    13,    27,
-      14,    -1,    20,    26,    17,    26,    -1,    20,    26,    17,
-      26,    13,    27,    14,    -1,    28,     7,     8,    -1,    28,
-       7,    30,     8,    -1,    31,    -1,    30,    31,    -1,    -1
+        27,     0,    -1,    28,    -1,    29,    -1,    28,    29,    -1,
+      32,    18,    -1,    33,    -1,     4,    -1,    30,    -1,    31,
+      16,    30,    -1,    24,    30,    -1,    24,    30,    13,    31,
+      14,    -1,    24,    30,    17,    30,    -1,    24,    30,    17,
+      30,    13,    31,    14,    -1,    32,     7,     8,    -1,    32,
+       7,    34,     8,    -1,    35,    -1,    34,    35,    -1,    36,
+      18,    -1,    40,    -1,    20,    -1,    21,    43,    37,    -1,
+      30,    -1,    38,    -1,    39,    -1,    38,    39,    -1,    30,
+      17,     5,    43,     6,    -1,    36,     7,     8,    -1,    36,
+       7,    41,     8,    -1,    42,    -1,    41,    42,    -1,    -1,
+      30,    -1,     5,    44,     6,    -1,    43,    -1,    44,    16,
+      43,    -1
   };
 
   /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
@@ -799,15 +956,19 @@ namespace Maxwell
   Parser::yyprhs_[] =
   {
          0,     0,     3,     5,     7,    10,    13,    15,    17,    19,
-      23,    26,    32,    37,    45,    49,    54,    56,    59
+      23,    26,    32,    37,    45,    49,    54,    56,    59,    62,
+      64,    66,    70,    72,    74,    76,    79,    85,    89,    94,
+      96,    99,   100,   102,   106,   108
   };
 
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
   const unsigned char
   Parser::yyrline_[] =
   {
-         0,   103,   103,   106,   107,   112,   113,   119,   122,   123,
-     132,   136,   141,   146,   157,   158,   163,   164,   166
+         0,   114,   114,   117,   118,   123,   124,   130,   133,   134,
+     145,   149,   154,   159,   170,   171,   176,   177,   180,   181,
+     190,   190,   201,   207,   210,   211,   214,   224,   225,   228,
+     229,   231,   241,   245,   251,   252
   };
 
   // Print the state stack on the debug stream.
@@ -874,7 +1035,8 @@ namespace Maxwell
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    20,    21
+      15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
+      25
     };
     if ((unsigned int) t <= yyuser_token_number_max_)
       return translate_table[t];
@@ -883,20 +1045,20 @@ namespace Maxwell
   }
 
   const int Parser::yyeof_ = 0;
-  const int Parser::yylast_ = 23;
-  const int Parser::yynnts_ = 10;
+  const int Parser::yylast_ = 47;
+  const int Parser::yynnts_ = 19;
   const int Parser::yyempty_ = -2;
   const int Parser::yyfinal_ = 9;
   const int Parser::yyterror_ = 1;
   const int Parser::yyerrcode_ = 256;
-  const int Parser::yyntokens_ = 22;
+  const int Parser::yyntokens_ = 26;
 
-  const unsigned int Parser::yyuser_token_number_max_ = 276;
+  const unsigned int Parser::yyuser_token_number_max_ = 280;
   const Parser::token_number_type Parser::yyundef_token_ = 2;
 
 } // namespace Maxwell
 
-#line 170 "../parser.yy"
+#line 255 "../parser.yy"
 
 
 

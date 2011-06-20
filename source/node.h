@@ -10,7 +10,7 @@ namespace Maxwell {
 	public:
 		virtual ~Node() {}
 		virtual std::string describe(int indent = 0) const = 0;
-		std::string pad(int indent) const { return std::string(indent*2, ' '); }
+		std::string pad(int indent) const { return std::string(indent * 4, ' '); }
 	};
 	
 	class Statement : public Node {
@@ -40,40 +40,83 @@ namespace Maxwell {
 	class Block : public Expression {
 	public:
 		Statements statements;
-		
-		virtual std::string describe(int indent = 0) const {
-			std::stringstream s;
-			std::string pad0 = pad(indent);
-			s << pad0 << "{" << std::endl;
-			for (int i = 0; i < statements.size(); i++)
-				s << statements[i]->describe(indent + 1);
-			s << pad0 << "}" << std::endl;
-			return s.str();
-		}
+		virtual std::string describe(int indent = 0) const;
 	};
 	
 	class ClassDefinition : public Statement {
 	public:
-		Identifier name;
-		Identifier super;
-		Identifiers interfaces;
+		Identifier * name;
+		Identifier * super;
+		Identifiers * interfaces;
+		Block * statements;
 		
-		virtual std::string describe(int indent = 0) const {
-			std::stringstream s;
-			s << pad(indent) << "class " << name.describe();
-			if (!super.name.empty())
-				s << " : " << super.describe();
-			if (!interfaces.empty()) {
-				s << " <";
-				int i;
-				for (i = 0; i < interfaces.size(); i++) {
-					if (i > 0) s << ", ";
-					s << interfaces[i]->name;
-				}
-				s << ">";
-			}
-			s << std::endl;
-			return s.str();
+		ClassDefinition() {
+			name = NULL;
+			super = NULL;
+			interfaces = NULL;
+			statements = NULL;
 		}
+		
+		virtual std::string describe(int indent = 0) const;
+	};
+	
+	class Type : public Expression {
+	public:
+	};
+	
+	typedef std::vector<Type *> Types;
+	
+	
+	
+	class FunctionArgument : public Expression {
+	public:
+		Identifier * name;
+		Type * argument;
+		
+		FunctionArgument() {
+			name = NULL;
+			argument = NULL;
+		}
+		
+		virtual std::string describe(int indent = 0) const;
+	};
+	
+	typedef std::vector<FunctionArgument *> FunctionArguments;
+	
+	class FunctionDefinition : public Statement {
+	public:
+		bool shared;
+		Type * returnType;
+		FunctionArguments * arguments;
+		Block * statements;
+		
+		FunctionDefinition() {
+			shared = false;
+			returnType = NULL;
+			arguments = NULL;
+			statements = NULL;
+		}
+		
+		virtual std::string describe(int indent = 0) const;
+	};
+	
+	
+	
+	class ConcreteType : public Type {
+	public:
+		Identifier * name;
+		ConcreteType() {
+			name = NULL;
+		}
+		virtual std::string describe(int indent = 0) const;
+	};
+	
+	class TupleType : public Type {
+	public:
+		Types * types;
+		TupleType() {
+			types = NULL;
+		}
+		virtual std::string describe(int indent = 0) const;
 	};
 }

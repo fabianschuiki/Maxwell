@@ -121,13 +121,19 @@ namespace Maxwell
 	
 	Block * block;
 	
-	ClassDefinition * class_decl;
+	ClassDefinition * class_def;
+	FunctionDefinition * func_def;
+	FunctionArgument * func_arg;
+	FunctionArguments * func_args;
+	
+	Type * type;
+	Types * types;
 	
 	std::string * string;
 	int token;
 }
 /* Line 303 of lalr1.cc.  */
-#line 131 "parser.h"
+#line 137 "parser.h"
 	;
 #else
     typedef YYSTYPE semantic_type;
@@ -157,8 +163,12 @@ namespace Maxwell
      COLON = 272,
      SEMICOLON = 273,
      EQUAL = 274,
-     CLASS = 275,
-     PROPERTY = 276
+     PLUS = 275,
+     MINUS = 276,
+     ASTERISK = 277,
+     SLASH = 278,
+     CLASS = 279,
+     PROPERTY = 280
    };
 
     };

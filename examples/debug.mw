@@ -4,8 +4,10 @@
 
 class Hello : World
 {
-	/*- void setExpressionLocation:(int) andLength:(int)
-	{
+	- (void, bool) helloWorld;
+	
+	- void setExpressionLocation:(int) andLength:(int);
+	/*{
 		this.location = @1;
 		this.length   = @2;
 	}
@@ -22,8 +24,9 @@ class Hello : World
 		
 		window:(setFrameOrigin:point size:someSize):(makeKeyAndOrderFront:nil);
 	}
-	
-	+ Hello make:(string message) forDuration:(int seconds)
+	*/
+	+ Hello make:(string message) forDuration:(int seconds);
+	/*
 	{
 		Hello newInstance = new class (
 			msg:	message,

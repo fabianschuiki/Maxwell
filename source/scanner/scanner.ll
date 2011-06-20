@@ -50,7 +50,7 @@ typedef Maxwell::Parser::token_type token_type;
 }
 
  /* ignore single-line and multi-line comments */
-\/\/.* {
+\/\/[^\n]* {
 	yylloc->step();
 }
 "/*"([^\*]|\*[^\/])*"*/" {
@@ -77,6 +77,11 @@ typedef Maxwell::Parser::token_type token_type;
 ";"		return token::SEMICOLON;
 
 "="		return token::EQUAL;
+
+"+"		return token::PLUS;
+"-"		return token::MINUS;
+"*"		return token::ASTERISK;
+"/"		return token::SLASH;
 
  /* Keywords */
 "class"		return token::CLASS;

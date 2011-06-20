@@ -49,8 +49,11 @@
 	Expression * expr;
 	
 	Identifier * ident;
+	Identifiers * idents;
 	
 	Block * block;
+	
+	ClassDefinition * class_decl;
 	
 	std::string * string;
 	int token;
@@ -72,9 +75,11 @@
 
 
 /* Define the types of the nodes of our nonterminal symbols. */
-%type <ident> ident
-%type <block> root_stmts class_stmts
-%type <stmt> root_stmt class_stmt class_decl
+%type <stmt>		root_stmt class_stmt
+%type <ident>		ident
+%type <idents>		idents
+%type <block>		root_stmts class_stmts
+%type <class_decl>	class_decl
 
 /*%destructor { delete $$; } IDENTIFIER*/
 
@@ -104,13 +109,18 @@ root_stmts
 
 /* A root statement may be a class or function declaration, as well as import statements. */
 root_stmt
- : class_decl
+ : class_decl SEMICOLON
+ | class_def
 // | func_decl
  ;
 
-/* Convenience identifier. */
+/* Identifier and comma-separated list of identifiers. */
 ident
  : IDENTIFIER { $$ = new Identifier(*$1); delete $1; }
+ ;
+idents
+ : ident { $$ = new Identifiers(); $$->push_back($1); }
+ | idents COMMA ident { $1->push_back($3); }
  ;
 
 
@@ -119,26 +129,36 @@ ident
  * Optionally a : and the superclass's name may be appended to inherit from that. Implemented inter-
  * faces may also be added in triangular brackets <>. */
 class_decl
- : CLASS ident class_body { $$ = new ClassDeclaration(*$2); }
- | CLASS ident CLT class_intfs CGT class_body
- | CLASS ident COLON ident class_body { $$ = new ClassDeclaration(*$2, *$4); }
- | CLASS ident COLON ident CLT class_intfs CGT class_body
+ : CLASS ident {
+	$$ = new ClassDefinition();
+	$$->name = *$2;
+ }
+ | CLASS ident CLT idents CGT {
+	$$ = new ClassDefinition();
+	$$->name = *$2;
+	$$->interfaces = *$4;
+ }
+ | CLASS ident COLON ident {
+	$$ = new ClassDefinition();
+	$$->name = *$2;
+	$$->super = *$4;
+ }
+ | CLASS ident COLON ident CLT idents CGT{
+	$$ = new ClassDefinition();
+	$$->name = *$2;
+	$$->super = *$4;
+	$$->interfaces = *$6;
+ }
  ;
 
-/* The class interfaces are a comma-separated list of identifiers. */
-class_intfs
- : class_intf
- | class_intfs COMMA class_intf
- ;
-class_intf
- : ident
+ /* A class definition consists of a class declaration followed by a bunch of class statements en-
+  * closed in braces. */
+class_def
+ : class_decl LBRACE RBRACE
+ | class_decl LBRACE class_stmts RBRACE
  ;
 
-/* The class body is a bunch of class statements encapsuled in braces. */
-class_body
- : LBRACE class_stmts RBRACE
- | LBRACE RBRACE
- ;
+/* Class statements. */
 class_stmts
  : class_stmt
  | class_stmts class_stmt

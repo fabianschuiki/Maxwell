@@ -32,6 +32,8 @@ namespace Maxwell {
 		virtual std::string describe(int indent = 0) const { return pad(indent) + name; }
 	};
 	
+	typedef std::vector<Identifier *> Identifiers;
+	
 	
 	
 	/* A block groups a bunch of statements together in curly braces. */
@@ -50,20 +52,26 @@ namespace Maxwell {
 		}
 	};
 	
-	class ClassDeclaration : public Statement {
+	class ClassDefinition : public Statement {
 	public:
-		const Identifier name;
-		const Identifier super;
-		
-		ClassDeclaration(const Identifier & name) : name(name) {}
-		ClassDeclaration(const Identifier & name, const Identifier & super)
-		: name(name), super(super) {}
+		Identifier name;
+		Identifier super;
+		Identifiers interfaces;
 		
 		virtual std::string describe(int indent = 0) const {
 			std::stringstream s;
 			s << pad(indent) << "class " << name.describe();
 			if (!super.name.empty())
 				s << " : " << super.describe();
+			if (!interfaces.empty()) {
+				s << " <";
+				int i;
+				for (i = 0; i < interfaces.size(); i++) {
+					if (i > 0) s << ", ";
+					s << interfaces[i]->name;
+				}
+				s << ">";
+			}
 			s << std::endl;
 			return s.str();
 		}

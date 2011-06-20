@@ -2,9 +2,39 @@
 //  Example Maxwell class definition.
 //
 
-
-class Hello : Object
+class Hello : World
 {
+	/*- void setExpressionLocation:(int) andLength:(int)
+	{
+		this.location = @1;
+		this.length   = @2;
+	}
+	
+	- void debug
+	{
+		this:(setExpressionLocation:10 andLength:5);
+		this:debug;
+		
+		Hello h = class.[make:"Hello World" forDuration:45];
+		h.(setExpressionLocation:5 andLength:10);
+		
+		this:father:drinkBeer;
+		
+		window:(setFrameOrigin:point size:someSize):(makeKeyAndOrderFront:nil);
+	}
+	
+	+ Hello make:(string message) forDuration:(int seconds)
+	{
+		Hello newInstance = new class (
+			msg:	message,
+			dur:	seconds
+		);
+		newInstance:(setExpressionLocation:50 andLength:14);
+		return newInstance;
+	}
+	
+	- Person father
+	{
+		return this.father;
+	}*/
 }
-
-class World : Hello {}

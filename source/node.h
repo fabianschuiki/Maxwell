@@ -24,15 +24,30 @@ namespace Maxwell {
 	
 	
 	
-	class Identifier : public Expression {
+	class TextualExpression : public Expression {
 	public:
-		std::string name;
-		Identifier() {}
-		Identifier(const std::string & name) : name(name) {}
-		virtual std::string describe(int indent = 0) const { return pad(indent) + name; }
+		const std::string name;
+		TextualExpression() {}
+		TextualExpression(const std::string & name) : name(name) {}
+		virtual std::string describe(int indent = 0) const;
 	};
 	
+	class Identifier : public TextualExpression {
+	public:
+		Identifier(const std::string & name) : TextualExpression(name) {}
+	};
 	typedef std::vector<Identifier *> Identifiers;
+	
+	class Numeric : public TextualExpression {
+	public:
+		Numeric(const std::string & name) : TextualExpression(name) {}
+	};
+	
+	class String : public TextualExpression {
+	public:
+		String(const std::string & name) : TextualExpression(name) {}
+		virtual std::string describe(int indent = 0) const;
+	};
 	
 	
 	
@@ -133,9 +148,53 @@ namespace Maxwell {
 	class Tuple : public Expression {
 	public:
 		Expressions * expressions;
+		
 		Tuple() {
 			expressions = NULL;
 		}
+		
+		virtual std::string describe(int indent = 0) const;
+	};
+	
+	class MemberAccess : public Expression {
+	public:
+		Expression * subject;
+		Identifier * member;
+		
+		MemberAccess() {
+			subject = NULL;
+			member = NULL;
+		}
+		
+		virtual std::string describe(int indent = 0) const;
+	};
+	
+	class FunctionCallArgument;
+	typedef std::vector<FunctionCallArgument *> FunctionCallArguments;
+	
+	class FunctionCall : public Expression {
+	public:
+		Expression * receiver;
+		FunctionCallArguments * arguments;
+		
+		FunctionCall() {
+			receiver = NULL;
+			arguments = NULL;
+		}
+		
+		virtual std::string describe(int indent = 0) const;
+	};
+	
+	class FunctionCallArgument : public Expression {
+	public:
+		Identifier * name;
+		Expression * argument;
+		
+		FunctionCallArgument() {
+			name = NULL;
+			argument = NULL;
+		}
+		
 		virtual std::string describe(int indent = 0) const;
 	};
 }

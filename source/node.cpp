@@ -3,6 +3,27 @@
 using namespace Maxwell;
 
 
+
+std::string TextualExpression::describe(int indent) const
+{
+	std::stringstream s;
+	s << pad(indent);
+	s << name;
+	if (indent > 0) s << ";" << std::endl;
+	return s.str();
+}
+
+std::string String::describe(int indent) const
+{
+	std::stringstream s;
+	s << pad(indent);
+	s << "\"" << TextualExpression::describe() << "\"";
+	if (indent > 0) s << ";" << std::endl;
+	return s.str();
+}
+
+
+
 std::string Block::describe(int indent) const
 {
 	std::stringstream s;
@@ -13,7 +34,6 @@ std::string Block::describe(int indent) const
 	s << pad0 << "}" << std::endl;
 	return s.str();
 }
-
 
 
 
@@ -94,5 +114,41 @@ std::string Tuple::describe(int indent) const
 		}
 	}
 	s << ")";
+	return s.str();
+}
+
+std::string MemberAccess::describe(int indent) const
+{
+	std::stringstream s;
+	s << pad(indent);
+	s << subject->describe() << "." << member->describe();
+	if (indent > 0) s << ";" << std::endl;
+	return s.str();
+}
+
+std::string FunctionCall::describe(int indent) const
+{
+	std::stringstream s;
+	s << pad(indent);
+	if (receiver) s << receiver->describe();
+	s << ":";
+	if (arguments) {
+		if (!arguments->empty()) s << "(";
+		for (int i = 0; i < arguments->size(); i++) {
+			if (i > 0) s << " ";
+			s << (*arguments)[i]->describe();
+		}
+		if (!arguments->empty()) s << ")";
+	}
+	if (indent > 0) s << ";" << std::endl;
+	return s.str();
+}
+
+std::string FunctionCallArgument::describe(int indent) const
+{
+	std::stringstream s;
+	s << pad(indent);
+	s << name->describe();
+	if (argument) s << ":" << argument->describe();
 	return s.str();
 }

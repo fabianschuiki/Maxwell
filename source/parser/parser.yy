@@ -61,6 +61,10 @@
 	FunctionArguments * func_args;
 	VariableDefinition * var_def;
 	
+	FunctionCall * func_call;
+	FunctionCallArgument * func_call_arg;
+	FunctionCallArguments * func_call_args;
+	
 	std::string * string;
 	int token;
 }
@@ -68,7 +72,7 @@
 /* Define the tokens. */
 %token				END			0	"end of file"
 %token				EOL				"end of line"
-%token <string>		IDENTIFIER
+%token <string>		IDENTIFIER FLOAT INTEGER STRING
 
 /* Symbols. */
 %token <token>		LPAREN RPAREN LBRACE RBRACE LBRACK RBRACK
@@ -82,7 +86,7 @@
 
 /* Define the types of the nodes of our nonterminal symbols. */
 %type <stmt>		root_stmt class_stmt func_stmt
-%type <expr>		expr type
+%type <expr>		expr type numeric string
 %type <exprs>		exprs
 %type <ident>		ident
 %type <idents>		idents
@@ -92,6 +96,10 @@
 %type <func_arg>	func_arg
 %type <func_args>	func_args func_sel
 %type <var_def>		func_arg_var var_decl var_def
+
+%type <func_call>		func_call
+%type <func_call_arg>	func_call_arg
+%type <func_call_args>	func_call_args
 
 /*%destructor { delete $$; } IDENTIFIER*/
 
@@ -273,10 +281,24 @@ type
 /* An expression can be many things. See the list for details. */
 expr
  : ident { $$ = $1; }
-/* | numeric { $$ = $1; }*/
+ | numeric { $$ = $1; }
+ | string { $$ = $1; }
+ 
+   //Groups and tuples
  | LPAREN expr RPAREN { $$ = $2; }
  | LPAREN exprs RPAREN { $$ = new Tuple(); ((Tuple *)$$)->expressions = $2; }
+   
+   //Operators
  | expr bin_operator expr
+ | expr assignment expr
+   
+   //Members and calls
+ | expr DOT ident {
+	$$ = new MemberAccess();
+	((MemberAccess *)$$)->subject = $1;
+	((MemberAccess *)$$)->member = $3;
+ }
+ | func_call
  ;
 exprs
  : expr COMMA expr { $$ = new Expressions(); $$->push_back($1); $$->push_back($3); }
@@ -288,6 +310,53 @@ exprs
 bin_operator
  : CEQ | CNE | CLT | CGE | CLE | CGT
  | PLUS | MINUS | ASTERISK | SLASH
+ ;
+
+/* An assignment operator is any operator containing an =. */
+assignment
+ : EQUAL
+ ;
+
+/* Numeric expressiosn are either an INTEGER or FLOAT. */
+numeric
+ : INTEGER	{ $$ = new Numeric(*$1); delete $1; }
+ | FLOAT	{ $$ = new Numeric(*$1); delete $1; }
+ ;
+
+/* Strings are delimited by ". */
+string
+ : STRING { $$ = new String(*$1); delete $1; }
+ ;
+
+/* A function call consists of an expression a colon and the call arguments. */
+func_call
+ : expr COLON ident {
+	FunctionCallArgument * arg = new FunctionCallArgument();
+	arg->name = $3;
+	
+	FunctionCallArguments * args = new FunctionCallArguments();
+	args->push_back(arg);
+	
+	$$ = new FunctionCall();
+	$$->receiver = $1;
+	$$->arguments = args;
+ }
+ | expr COLON LPAREN func_call_args RPAREN {
+	$$ = new FunctionCall();
+	$$->receiver = $1;
+	$$->arguments = $4;
+ }
+ ;
+func_call_args
+ : func_call_arg { $$ = new FunctionCallArguments(); $$->push_back($1); }
+ | func_call_args func_call_arg { $$ = $1; $$->push_back($2); }
+ ;
+func_call_arg
+ : ident COLON expr {
+	$$ = new FunctionCallArgument();
+	$$->name = $1;
+	$$->argument = $3;
+ }
  ;
 
 %%

@@ -46,7 +46,9 @@
 	Node * node;
 	
 	Statement * stmt;
+	
 	Expression * expr;
+	Expressions * exprs;
 	
 	Identifier * ident;
 	Identifiers * idents;
@@ -59,9 +61,6 @@
 	FunctionArguments * func_args;
 	VariableDefinition * var_def;
 	
-	Type * type;
-	Types * types;
-	
 	std::string * string;
 	int token;
 }
@@ -73,7 +72,7 @@
 
 /* Symbols. */
 %token <token>		LPAREN RPAREN LBRACE RBRACE LBRACK RBRACK
-%token <token>		CEQ CNE CLT CGT
+%token <token>		CEQ CNE CLT CGT CLE CGE
 %token <token>		DOT COMMA COLON SEMICOLON
 %token <token>		EQUAL PLUS MINUS ASTERISK SLASH
 
@@ -83,6 +82,8 @@
 
 /* Define the types of the nodes of our nonterminal symbols. */
 %type <stmt>		root_stmt class_stmt func_stmt
+%type <expr>		expr type
+%type <exprs>		exprs
 %type <ident>		ident
 %type <idents>		idents
 %type <block>		root_stmts class_stmts func_stmts
@@ -91,8 +92,6 @@
 %type <func_arg>	func_arg
 %type <func_args>	func_args func_sel
 %type <var_def>		func_arg_var var_decl var_def
-%type <type>		type
-%type <types>		types
 
 /*%destructor { delete $$; } IDENTIFIER*/
 
@@ -181,6 +180,7 @@ class_stmts
 class_stmt
  : func_decl SEMICOLON { $$ = $1; }
  | func_def { $$ = $1; }
+ | var_def SEMICOLON { $$ = $1; }
  ;
 
 
@@ -223,29 +223,23 @@ func_arg
  }
  ;
 func_arg_var
- : type {
-	$$ = new VariableDefinition();
-	$$->type = $1;
- }
- | type ident {
-	$$ = new VariableDefinition();
-	$$->type = $1;
-	$$->name = $2;
- }
+ : type	{ $$ = new VariableDefinition(); $$->type = $1; }
+ | type ident { $$ = new VariableDefinition(); $$->type = $1; $$->name = $2; }
  ;
 
 /* A function definition consists of a function declaration followed by a bunch of function
  * statements enclosed in braces. */
 func_def
- : func_decl LBRACE RBRACE { $$ = $1; }
- | func_decl LBRACE func_stmts RBRACE { $$ = $1; $$->statements = $3; }
+ : func_decl LBRACE func_stmts RBRACE { $$ = $1; $$->statements = $3; }
  ;
 func_stmts
- : func_stmt { $$ = new Block(); $$->statements.push_back($1); }
+ : { $$ = new Block(); }
+ | func_stmt { $$ = new Block(); $$->statements.push_back($1); }
  | func_stmts func_stmt { $1->statements.push_back($2); }
  ;
 func_stmt
- :
+ : expr SEMICOLON
+ | var_def SEMICOLON
  ;
 
 
@@ -255,31 +249,45 @@ func_stmt
 /* A variable declaration consists of the variable's type and name, as well as an optional initial
  * value. */
 var_decl
- : type ident
+ : type ident { $$ = new VariableDefinition(); $$->type = $1; $$->name = $2; }
  ;
 var_def
- : var_decl
- | var_decl EQUAL //expr
+ : var_decl { $$ = $1; }
+ | var_decl EQUAL expr { $$ = $1; $$->initial = $3; }
  ;
 
 
 
 /*** Types ***/
-/* A type is a group of code that describes a section of memory. This may be through a simple type,
- * memory structure or a tuple of multiple types. */
+
+/* A type semantically is just an expression. The expression needs to be checked whether it
+ * resolves to a type when processing the AST. */
 type
- : ident {
-	$$ = new ConcreteType();
-	((ConcreteType *)$$)->name = $1;
- }
- | LPAREN types RPAREN {
-	$$ = new TupleType();
-	((TupleType *)$$)->types = $2;
- }
+ : expr
  ;
-types
- : type { $$ = new Types(); $$->push_back($1); }
- | types COMMA type { $1->push_back($3); }
+
+
+
+/*** Expressions ***/
+
+/* An expression can be many things. See the list for details. */
+expr
+ : ident { $$ = $1; }
+/* | numeric { $$ = $1; }*/
+ | LPAREN expr RPAREN { $$ = $2; }
+ | LPAREN exprs RPAREN { $$ = new Tuple(); ((Tuple *)$$)->expressions = $2; }
+ | expr bin_operator expr
+ ;
+exprs
+ : expr COMMA expr { $$ = new Expressions(); $$->push_back($1); $$->push_back($3); }
+ | exprs COMMA expr { $$ = $1; $1->push_back($3); }
+ ;
+
+/* A binary operator is any operator that takes a left and right-hand side expression and returns
+ * the result. */
+bin_operator
+ : CEQ | CNE | CLT | CGE | CLE | CGT
+ | PLUS | MINUS | ASTERISK | SLASH
  ;
 
 %%

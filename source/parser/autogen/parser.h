@@ -114,7 +114,9 @@ namespace Maxwell
 	Node * node;
 	
 	Statement * stmt;
+	
 	Expression * expr;
+	Expressions * exprs;
 	
 	Identifier * ident;
 	Identifiers * idents;
@@ -127,14 +129,11 @@ namespace Maxwell
 	FunctionArguments * func_args;
 	VariableDefinition * var_def;
 	
-	Type * type;
-	Types * types;
-	
 	std::string * string;
 	int token;
 }
 /* Line 303 of lalr1.cc.  */
-#line 138 "parser.h"
+#line 137 "parser.h"
 	;
 #else
     typedef YYSTYPE semantic_type;
@@ -159,17 +158,19 @@ namespace Maxwell
      CNE = 267,
      CLT = 268,
      CGT = 269,
-     DOT = 270,
-     COMMA = 271,
-     COLON = 272,
-     SEMICOLON = 273,
-     EQUAL = 274,
-     PLUS = 275,
-     MINUS = 276,
-     ASTERISK = 277,
-     SLASH = 278,
-     CLASS = 279,
-     PROPERTY = 280
+     CLE = 270,
+     CGE = 271,
+     DOT = 272,
+     COMMA = 273,
+     COLON = 274,
+     SEMICOLON = 275,
+     EQUAL = 276,
+     PLUS = 277,
+     MINUS = 278,
+     ASTERISK = 279,
+     SLASH = 280,
+     CLASS = 281,
+     PROPERTY = 282
    };
 
     };

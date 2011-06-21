@@ -20,7 +20,7 @@ std::string Block::describe(int indent) const
 std::string ClassDefinition::describe(int indent) const
 {
 	std::stringstream s;
-	s << pad(indent) << "class " << name->describe();
+	s << pad(indent) << "CLASS " << name->describe();
 	if (super)
 		s << " : " << super->describe();
 	if (interfaces) {
@@ -43,7 +43,7 @@ std::string ClassDefinition::describe(int indent) const
 std::string FunctionDefinition::describe(int indent) const
 {
 	std::stringstream s;
-	s << pad(indent) << (shared ? "shared" : "instance");
+	s << pad(indent) << (shared ? "+" : "-");
 	if (returnType)
 		s << " " << returnType->describe();
 	if (arguments) {
@@ -51,9 +51,10 @@ std::string FunctionDefinition::describe(int indent) const
 		for (i = 0; i < arguments->size(); i++)
 			s << " " << (*arguments)[i]->describe();
 	}
-	s << std::endl;
 	if (statements)
-		s << statements->describe(indent);
+		s << std::endl << statements->describe(indent);
+	else
+		s << ";" << std::endl;
 	return s.str();
 }
 
@@ -71,30 +72,25 @@ std::string FunctionArgument::describe(int indent) const
 std::string VariableDefinition::describe(int indent) const
 {
 	std::stringstream s;
-	s << pad(indent);
-	if (type) s << type->describe();
+	s << pad(indent) << "VAR";
+	if (type) s << " " << type->describe();
 	if (name) s << " " << name->describe();
+	if (initial) s << " = " << initial->describe();
+	if (indent > 0) s << ";" << std::endl;
 	return s.str();
 }
 
 
 
-std::string ConcreteType::describe(int indent) const
+std::string Tuple::describe(int indent) const
 {
 	std::stringstream s;
-	if (name) s << pad(indent) << name->describe();
-	return s.str();
-}
-
-std::string TupleType::describe(int indent) const
-{
-	std::stringstream s;
-	s << pad(indent) << "(";
-	if (types) {
+	s << pad(indent) << "TUPLE(";
+	if (expressions) {
 		int i;
-		for (i = 0; i < types->size(); i++) {
+		for (i = 0; i < expressions->size(); i++) {
 			if (i > 0) s << ", ";
-			s << (*types)[i]->describe();
+			s << (*expressions)[i]->describe();
 		}
 	}
 	s << ")";

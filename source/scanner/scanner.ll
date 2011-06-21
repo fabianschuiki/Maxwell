@@ -80,6 +80,8 @@ typedef Maxwell::Parser::token_type token_type;
 "≠"		return token::CNE;
 "<"		return token::CLT;
 ">"		return token::CGT;
+"<="	return token::CLE;
+">="	return token::CGE;
 
 "."		return token::DOT;
 ","		return token::COMMA;

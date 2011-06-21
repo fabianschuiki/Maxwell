@@ -50,6 +50,10 @@ namespace Maxwell {
 		virtual std::string describe(int indent = 0) const;
 	};
 	
+	
+	
+	/*** Classes ***/
+	
 	class ClassDefinition : public Statement {
 	public:
 		Identifier * name;
@@ -67,13 +71,9 @@ namespace Maxwell {
 		virtual std::string describe(int indent = 0) const;
 	};
 	
-	class Type : public Expression {
-	public:
-	};
-	
-	typedef std::vector<Type *> Types;
 	
 	
+	/*** Functions ***/
 	
 	class FunctionArgument : public Expression {
 	public:
@@ -93,7 +93,7 @@ namespace Maxwell {
 	class FunctionDefinition : public Statement {
 	public:
 		bool shared;
-		Type * returnType;
+		Expression * returnType;
 		FunctionArguments * arguments;
 		Block * statements;
 		
@@ -109,14 +109,18 @@ namespace Maxwell {
 	
 	
 	
+	/*** Variables ***/
+	
 	class VariableDefinition : public Statement {
 	public:
-		Type * type;
+		Expression * type;
 		Identifier * name;
+		Expression * initial;
 		
 		VariableDefinition() {
 			type = NULL;
 			name = NULL;
+			initial = NULL;
 		}
 		
 		virtual std::string describe(int indent = 0) const;
@@ -124,20 +128,13 @@ namespace Maxwell {
 	
 	
 	
-	class ConcreteType : public Type {
-	public:
-		Identifier * name;
-		ConcreteType() {
-			name = NULL;
-		}
-		virtual std::string describe(int indent = 0) const;
-	};
+	/*** Expressions ***/
 	
-	class TupleType : public Type {
+	class Tuple : public Expression {
 	public:
-		Types * types;
-		TupleType() {
-			types = NULL;
+		Expressions * expressions;
+		Tuple() {
+			expressions = NULL;
 		}
 		virtual std::string describe(int indent = 0) const;
 	};

@@ -4,10 +4,17 @@
 
 class Hello : World
 {
-	- (void, bool) helloWorld;
+	int location;
+	int length;
+	
+	//- (void, bool) helloWorld;
 	
 	- void setExpressionLocation:(int start) andLength:(int len)
 	{
+		int someTestVariable;
+		double anotherOne;
+		
+		(int, int) vector = (x, y);
 	}
 	/*{
 		this.location = @1;

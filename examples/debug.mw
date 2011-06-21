@@ -6,7 +6,9 @@ class Hello : World
 {
 	- (void, bool) helloWorld;
 	
-	- void setExpressionLocation:(int) andLength:(int);
+	- void setExpressionLocation:(int start) andLength:(int len)
+	{
+	}
 	/*{
 		this.location = @1;
 		this.length   = @2;

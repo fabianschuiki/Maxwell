@@ -57,6 +57,7 @@
 	FunctionDefinition * func_def;
 	FunctionArgument * func_arg;
 	FunctionArguments * func_args;
+	VariableDefinition * var_def;
 	
 	Type * type;
 	Types * types;
@@ -89,6 +90,7 @@
 %type <func_def>	func_decl func_def func_rest
 %type <func_arg>	func_arg
 %type <func_args>	func_args func_sel
+%type <var_def>		func_arg_var var_decl var_def
 %type <type>		type
 %type <types>		types
 
@@ -214,10 +216,21 @@ func_args
  | func_args func_arg { $1->push_back($2); }
  ;
 func_arg
- : ident COLON LPAREN type /* actually var_decl */ RPAREN {
+ : ident COLON LPAREN func_arg_var RPAREN {
 	$$ = new FunctionArgument();
 	$$->name = $1;
 	$$->argument = $4;
+ }
+ ;
+func_arg_var
+ : type {
+	$$ = new VariableDefinition();
+	$$->type = $1;
+ }
+ | type ident {
+	$$ = new VariableDefinition();
+	$$->type = $1;
+	$$->name = $2;
  }
  ;
 
@@ -233,6 +246,20 @@ func_stmts
  ;
 func_stmt
  :
+ ;
+
+
+
+/*** Variables ***/
+
+/* A variable declaration consists of the variable's type and name, as well as an optional initial
+ * value. */
+var_decl
+ : type ident
+ ;
+var_def
+ : var_decl
+ | var_decl EQUAL //expr
  ;
 
 

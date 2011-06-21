@@ -68,6 +68,17 @@ std::string FunctionArgument::describe(int indent) const
 
 
 
+std::string VariableDefinition::describe(int indent) const
+{
+	std::stringstream s;
+	s << pad(indent);
+	if (type) s << type->describe();
+	if (name) s << " " << name->describe();
+	return s.str();
+}
+
+
+
 std::string ConcreteType::describe(int indent) const
 {
 	std::stringstream s;

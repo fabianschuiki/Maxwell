@@ -125,6 +125,7 @@ namespace Maxwell
 	FunctionDefinition * func_def;
 	FunctionArgument * func_arg;
 	FunctionArguments * func_args;
+	VariableDefinition * var_def;
 	
 	Type * type;
 	Types * types;
@@ -133,7 +134,7 @@ namespace Maxwell
 	int token;
 }
 /* Line 303 of lalr1.cc.  */
-#line 137 "parser.h"
+#line 138 "parser.h"
 	;
 #else
     typedef YYSTYPE semantic_type;
@@ -291,7 +292,7 @@ namespace Maxwell
     /// For each rule, the index of the first RHS symbol in \a yyrhs_.
     static const unsigned char yyprhs_[];
     /// For each rule, its source line number.
-    static const unsigned char yyrline_[];
+    static const unsigned short int yyrline_[];
     /// For each scanner token number, its symbol number.
     static const unsigned short int yytoken_number_[];
     /// Report on the debug stream that the rule \a r is going to be reduced.

@@ -36,6 +36,13 @@ namespace Maxwell {
 	
 	
 	
+	//Forward declarations.
+	class ClassDefinition;
+	class FunctionDefinition;
+	class VariableDefinition;
+	
+	
+	
 	/* A block groups a bunch of statements together in curly braces. */
 	class Block : public Expression {
 	public:
@@ -71,7 +78,7 @@ namespace Maxwell {
 	class FunctionArgument : public Expression {
 	public:
 		Identifier * name;
-		Type * argument;
+		VariableDefinition * argument;
 		
 		FunctionArgument() {
 			name = NULL;
@@ -95,6 +102,21 @@ namespace Maxwell {
 			returnType = NULL;
 			arguments = NULL;
 			statements = NULL;
+		}
+		
+		virtual std::string describe(int indent = 0) const;
+	};
+	
+	
+	
+	class VariableDefinition : public Statement {
+	public:
+		Type * type;
+		Identifier * name;
+		
+		VariableDefinition() {
+			type = NULL;
+			name = NULL;
 		}
 		
 		virtual std::string describe(int indent = 0) const;

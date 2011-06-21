@@ -86,7 +86,7 @@
 %type <idents>		idents
 %type <block>		root_stmts class_stmts func_stmts
 %type <class_def>	class_decl class_def
-%type <func_def>	func_decl func_def
+%type <func_def>	func_decl func_def func_rest
 %type <func_arg>	func_arg
 %type <func_args>	func_args func_sel
 %type <type>		type
@@ -187,11 +187,14 @@ class_stmt
 
 /* A function declaration consists of a return type followed by a list of named arguments. */
 func_decl
- : PLUS|MINUS type func_sel {
+ : PLUS func_rest { $$ = $2; $2->shared = true; }
+ | MINUS func_rest { $$ = $2; $2->shared = false; }
+ ;
+func_rest
+ : type func_sel {
 	$$ = new FunctionDefinition();
-	$$->shared = ($1 == token::PLUS);
-	$$->returnType = $2;
-	$$->arguments = $3;
+	$$->returnType = $1;
+	$$->arguments = $2;
  }
  ;
 

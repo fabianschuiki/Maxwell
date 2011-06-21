@@ -25,7 +25,7 @@ class Hello : World
 		window:(setFrameOrigin:point size:someSize):(makeKeyAndOrderFront:nil);
 	}
 	*/
-	+ Hello make:(string message) forDuration:(int seconds);
+	+ Hello make:(string/* ashdf */) forDuration:(int);
 	/*
 	{
 		Hello newInstance = new class (

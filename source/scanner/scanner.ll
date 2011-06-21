@@ -29,6 +29,8 @@ typedef Maxwell::Parser::token_type token_type;
 
 
 /*** Regular Expressions ***/
+%x COMMENT
+%x STRING
 %%
 
  /* code to place at the beginning of yylex() */
@@ -39,21 +41,29 @@ typedef Maxwell::Parser::token_type token_type;
 
 
  /* skip over whitespaces */
-[ \t\r]+ {
+<*>[ \t\r]+ {
 	yylloc->step();
 }
 
  /* skip over end-of-lines */
-\n {
+<*>\n {
 	yylloc->lines(yyleng);
 	yylloc->step();
 }
 
  /* ignore single-line and multi-line comments */
-\/\/[^\n]* {
+<INITIAL>\/\/[^\n]* {
 	yylloc->step();
 }
-"/*"([^\*]|\*[^\/])*"*/" {
+<INITIAL>"/*" {
+	yylloc->step();
+	BEGIN(COMMENT);
+}
+<COMMENT>"*/" {
+	yylloc->step();
+	BEGIN(INITIAL);
+}
+<COMMENT>([^\*\n]|\*[^\/\n])* {
 	yylloc->step();
 }
 
@@ -89,7 +99,7 @@ typedef Maxwell::Parser::token_type token_type;
 
  /* Identifiers */
  /*[a-zA-Z_][a-zA-Z0-9_]* {*/
-[^ \t\n(){}\[\]=≠!<>.,:;]+ {
+[^ \t\n(){}\[\]=≠!<>.,:;+\-*/]+ {
 	yylval->string = new std::string(yytext, yyleng);
 	return token::IDENTIFIER;
 }

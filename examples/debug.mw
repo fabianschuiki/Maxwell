@@ -7,7 +7,7 @@ class Hello : World
 	int location;
 	int length;
 	
-	//- (void, bool) helloWorld;
+	- (void, bool) helloWorld;
 	
 	- void setExpressionLocation:(int start) andLength:(int len)
 	{
@@ -28,19 +28,18 @@ class Hello : World
 		window:(setFrameOrigin:point size:someSize):(makeKeyAndOrderFront:nil);
 	}
 	
-	+ Hello make:(string/* ashdf */) forDuration:(int);
-	/*
+	+ Hello make:(string ashdf) forDuration:(int)
 	{
-		Hello newInstance = new class (
+		Hello newInstance = new/* class (
 			msg:	message,
 			dur:	seconds
-		);
+		)*/;
 		newInstance:(setExpressionLocation:50 andLength:14);
-		return newInstance;
+		/*return */newInstance;
 	}
 	
 	- Person father
 	{
-		return this.father;
-	}*/
+		/*return */this:father;
+	}
 }

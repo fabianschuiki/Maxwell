@@ -20,6 +20,11 @@
 
 - (void)awakeFromNib
 {
+	basicAttrs = [[NSDictionary dictionaryWithObjectsAndKeys:
+				   [NSColor whiteColor], NSForegroundColorAttributeName,
+				   [NSFont fontWithName:@"Menlo" size:11], NSFontAttributeName,
+				   nil] retain];
+	
 	processLock = [[NSLock alloc] init];
 	resultsLock = [[NSLock alloc] init];
 	[codeView setDelegate:self];
@@ -29,11 +34,7 @@
 {
 	//Reset the code to white.
 	NSMutableAttributedString * s = [codeView textStorage];
-	NSDictionary * attrs = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSColor whiteColor], NSForegroundColorAttributeName,
-							[NSFont fontWithName:@"Menlo" size:11], NSFontAttributeName,
-							nil];
-	[s setAttributes:attrs range:NSMakeRange(0, [[s string] length])];
+	[s setAttributes:basicAttrs range:NSMakeRange(0, [[s string] length])];
 	
 	//Format the tokens in the code.
 	[self formatCodeTokens];
@@ -126,6 +127,8 @@
 	if (token) {
 		Match * m = new Match();
 		m->compare(token);
+		NSString * temp = [NSString stringWithUTF8String:m->temp.c_str()];
+		self.tokens = [[[NSAttributedString alloc] initWithString:temp attributes:basicAttrs] autorelease];
 		delete m;
 	}
 	

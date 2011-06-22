@@ -11,6 +11,8 @@
 
 @interface Controller : NSObject <NSTextViewDelegate>
 {
+	NSDictionary * basicAttrs;
+	
 	IBOutlet NSTextView * codeView;
 	NSAttributedString * tokens;
 	NSAttributedString * ast;

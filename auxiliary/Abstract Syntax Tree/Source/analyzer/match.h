@@ -8,6 +8,7 @@ private:
 	
 public:
 	float getMatch();
+	std::string temp;
 	
 	void compare(Token * token);
 };

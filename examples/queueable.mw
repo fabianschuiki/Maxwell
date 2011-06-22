@@ -1,0 +1,43 @@
+/* This file demonstrates queueable functions. */
+
+class Room
+{
+	int population;
+	
+	/* The following function is declared to be queueable. This means that a call to this function
+	 * will not execute it immediately but rather mark this function as queued internally, together
+	 * with the call arguments. When a queueable function is executed it is automatically unmarked.
+	 * Note that queueable functions obviously cannot have a return type. Actually there shouldn't
+	 * be any arguments to a queueable function, since that doesn't make any sense in any context.
+	 */
+	queueable updatePopuation
+	{
+		this.population = this:someRandomInteger;
+	}
+	
+	- void test
+	{
+		/* Simply calling the queueable function will not executed it, but rather mark it as
+		 * queued. */
+		this:updatePopopulation;
+		
+		/* Prefixing the function call with the force keyword will cause the queueable function to
+		 * run immediately. */
+		force this:updatePopulation;
+	}
+	
+	- void workQueue
+	{
+		/* The following function will run all functions that are queued up. */
+		this:runQueued;
+		
+		/* And the following function only runs the updatePopulation function IF it is queued. */
+		this:(runQueued:updatePopulation);
+		
+		/* If you ever need to clear the queue marker from a function, you may use one of the
+		 * following statements. Which one will actually make it into the language is not yet
+		 * clear. */
+		dequeue this:updatePopulation;
+		this:(dequeue:updatePopulation);
+	}
+}

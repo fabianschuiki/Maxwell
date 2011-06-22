@@ -3,6 +3,10 @@
 autogen/*
 /projects/xcode
 
+# Xcode stuff
+*.pbxuser
+*.mode1v3
+
 # Backups
 *~*
 

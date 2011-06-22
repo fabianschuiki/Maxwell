@@ -10,7 +10,7 @@ public:
 		kStringToken,
 		kIdentifierToken,
 		kSymbolToken,
-		kNumberToken
+		kNumericToken
 	} kind;
 	const std::string text;
 	const Range range;

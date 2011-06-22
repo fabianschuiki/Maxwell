@@ -7,8 +7,9 @@
 //
 
 #import "Controller.h"
-#import "../Source/tokenizer/tokenizer.h"
 
+#include "../Source/tokenizer/tokenizer.h"
+#include "../Source/analyzer/match.h"
 #include <sstream>
 
 
@@ -57,6 +58,7 @@
 				case Token::kStringToken:		color = [NSColor magentaColor]; break;
 				case Token::kIdentifierToken:	color = [NSColor lightGrayColor]; break;
 				case Token::kSymbolToken:		color = [NSColor greenColor]; break;
+				case Token::kNumericToken:		color = [NSColor cyanColor]; break;
 			}
 			
 			//Apply the color.
@@ -118,6 +120,14 @@
 	//Create a new tokenizer and parse the input.
 	Tokenizer * t = new Tokenizer();
 	t->process(codeStream);
+	
+	//Do some debug matching.
+	Token * token = t->getFirstToken();
+	if (token) {
+		Match * m = new Match();
+		m->compare(token);
+		delete m;
+	}
 	
 	//Store the results.
 	[resultsLock lock];

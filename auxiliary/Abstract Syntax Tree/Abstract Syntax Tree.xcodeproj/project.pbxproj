@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1DDD582C0DA1D0D100B32029 /* MyDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58280DA1D0D100B32029 /* MyDocument.xib */; };
 		1DDD582D0DA1D0D100B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD582A0DA1D0D100B32029 /* MainMenu.xib */; };
+		1F031BD213B2508B000D79EB /* match.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F031BD113B2508B000D79EB /* match.cpp */; };
 		1F2540A213B20ABC000CCE46 /* Application.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F2540A113B20ABC000CCE46 /* Application.m */; };
 		1F6CA03D13B2267A002D758E /* tokenizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F6CA03C13B2267A002D758E /* tokenizer.cpp */; };
 		1F6CA04613B22A21002D758E /* token.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F6CA04513B22A21002D758E /* token.cpp */; };
@@ -27,6 +28,8 @@
 		1DDD58290DA1D0D100B32029 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MyDocument.xib; sourceTree = "<group>"; };
 		1DDD582B0DA1D0D100B32029 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		1F031B0813B24232000D79EB /* location.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = location.h; sourceTree = "<group>"; };
+		1F031BD013B2508B000D79EB /* match.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = match.h; sourceTree = "<group>"; };
+		1F031BD113B2508B000D79EB /* match.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = match.cpp; sourceTree = "<group>"; };
 		1F2540A013B20ABC000CCE46 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
 		1F2540A113B20ABC000CCE46 /* Application.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Application.m; sourceTree = "<group>"; };
 		1F6CA03B13B2267A002D758E /* tokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tokenizer.h; sourceTree = "<group>"; };
@@ -84,10 +87,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		1F031BCF13B25044000D79EB /* analyzer */ = {
+			isa = PBXGroup;
+			children = (
+				1F031BD013B2508B000D79EB /* match.h */,
+				1F031BD113B2508B000D79EB /* match.cpp */,
+			);
+			path = analyzer;
+			sourceTree = "<group>";
+		};
 		1F6CA03713B225E9002D758E /* Source */ = {
 			isa = PBXGroup;
 			children = (
 				1F6CA03A13B22675002D758E /* tokenizer */,
+				1F031BCF13B25044000D79EB /* analyzer */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -223,6 +236,7 @@
 				1F6CA03D13B2267A002D758E /* tokenizer.cpp in Sources */,
 				1F6CA04613B22A21002D758E /* token.cpp in Sources */,
 				1F6CA05213B22AA0002D758E /* Controller.mm in Sources */,
+				1F031BD213B2508B000D79EB /* match.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

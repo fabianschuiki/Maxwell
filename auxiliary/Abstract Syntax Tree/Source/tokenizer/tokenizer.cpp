@@ -115,6 +115,12 @@ void Tokenizer::process(std::istream & input)
 					break;
 				}
 				
+				//Check for numbers.
+				if (c >= 0x30 && c <= 0x39) {
+					kind = Token::kNumericToken;
+					break;
+				}
+				
 				//Check for an identifier, which basically is anything except the above and white-
 				//spaces.
 				if (c > 0 && c != '\n' && c != '\t' && c != ' ' && c != '\r') {
@@ -150,7 +156,14 @@ void Tokenizer::process(std::istream & input)
 		ppc = pc;
 		pc = c;
 		
-		//Tweak the token kind based on what's in the buffer...
+		//Numeric tokens are allowed in an identifier buffer.
+		if (bufferKind == Token::kIdentifierToken && kind == Token::kNumericToken)
+			kind = bufferKind;
+		
+		//Numeric buffers suck up all tokens, since the value's validity is checked at a later
+		//stage.
+		if (bufferKind == Token::kNumericToken && kind != Token::kInvalidToken)
+			kind = bufferKind;
 		
 		//If the buffer kind and this token kind disagree, wrap up the current buffer.
 		if (bufferKind != kind && !buffer.empty()) {

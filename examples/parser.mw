@@ -1,7 +1,1 @@
-/* Here goes some comment. */
-This is some test text that should be converted to tokens.
-
-//Even singleline comments,
-$ Now here goes some test-text: //blablabla
-Awesome is "What we are supposed to do.";
-"Hello World!"
+automatically

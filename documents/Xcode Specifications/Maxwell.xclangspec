@@ -10,6 +10,7 @@
 		
 		//Syntax
 		Syntax = {
+			Tokenizer = "xcode.lang.maxwell.lexer";
 			IncludeRules = (
 				"xcode.lang.maxwell.lexer",
 			);
@@ -55,7 +56,11 @@
 				//Classes
 				this,
 				self,
-				super
+				super,
+				
+				//Construction
+				construct,
+				automatically,
 			);
 			Type = "xcode.syntax.keyword";
 			AltType = "xcode.syntax.identifier";

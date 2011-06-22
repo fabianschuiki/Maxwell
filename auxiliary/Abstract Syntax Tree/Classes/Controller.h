@@ -14,11 +14,23 @@
 	IBOutlet NSTextView * codeView;
 	NSAttributedString * tokens;
 	NSAttributedString * ast;
+	
+	NSLock * processLock;
+	BOOL isProcessing;
+	BOOL shouldProcess;
+	
+	NSLock * resultsLock;
+	struct Tokenizer * tokenizer;
 }
 
 @property (copy) NSAttributedString * tokens;
 @property (copy) NSAttributedString * ast;
 
 - (void)formatCode;
+- (void)formatCodeTokens;
+
+- (void)shouldProcessCode;
+- (void)processCodeInBackground;
+- (void)processCode;
 
 @end

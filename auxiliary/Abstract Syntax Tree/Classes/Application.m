@@ -14,7 +14,9 @@
 - (void)finishLaunching
 {
 	[super finishLaunching];
-	[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:[[NSUserDefaults standardUserDefaults] URLForKey:@"LastDocument"] display:YES error:NULL];
+	NSURL * url = [[NSUserDefaults standardUserDefaults] URLForKey:@"LastDocument"];
+	if (url)
+		[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:url display:YES error:NULL];
 }
 
 @end

@@ -38,8 +38,9 @@
 		[[codeView textStorage] setAttributedString:loadedCode];
 		[loadedCode autorelease]; loadedCode = nil;
 	}
-	[controller formatCode];
-	[[aController window] zoom:nil];
+	[controller shouldProcessCode];
+	[[aController window] center];
+	//[[aController window] zoom:nil];
 }
 
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError

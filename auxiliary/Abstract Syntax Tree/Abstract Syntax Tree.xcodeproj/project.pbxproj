@@ -26,6 +26,7 @@
 		13E42FBA07B3F13500E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		1DDD58290DA1D0D100B32029 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MyDocument.xib; sourceTree = "<group>"; };
 		1DDD582B0DA1D0D100B32029 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		1F031B0813B24232000D79EB /* location.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = location.h; sourceTree = "<group>"; };
 		1F2540A013B20ABC000CCE46 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
 		1F2540A113B20ABC000CCE46 /* Application.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Application.m; sourceTree = "<group>"; };
 		1F6CA03B13B2267A002D758E /* tokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tokenizer.h; sourceTree = "<group>"; };
@@ -94,8 +95,9 @@
 		1F6CA03A13B22675002D758E /* tokenizer */ = {
 			isa = PBXGroup;
 			children = (
-				1F6CA03E13B227CA002D758E /* token.h */,
+				1F031B0813B24232000D79EB /* location.h */,
 				1F6CA04513B22A21002D758E /* token.cpp */,
+				1F6CA03E13B227CA002D758E /* token.h */,
 				1F6CA03C13B2267A002D758E /* tokenizer.cpp */,
 				1F6CA03B13B2267A002D758E /* tokenizer.h */,
 			);

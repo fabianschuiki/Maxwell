@@ -4,12 +4,13 @@
 
 class Hello : World
 {
+	int location;
+	int length;
+	
 	- (void, bool) helloWorld;
 	
 	- void setExpressionLocation:(int start) andLength:(int len)
 	{
-	}
-	/*{
 		this.location = @1;
 		this.length   = @2;
 	}
@@ -19,27 +20,26 @@ class Hello : World
 		this:(setExpressionLocation:10 andLength:5);
 		this:debug;
 		
-		Hello h = class.[make:"Hello World" forDuration:45];
-		h.(setExpressionLocation:5 andLength:10);
+		Hello h = superclass:(make:"Hello World" forDuration:45);
+		h:(setExpressionLocation:5 andLength:10);
 		
 		this:father:drinkBeer;
 		
 		window:(setFrameOrigin:point size:someSize):(makeKeyAndOrderFront:nil);
 	}
-	*/
-	+ Hello make:(string/* ashdf */) forDuration:(int);
-	/*
+	
+	+ Hello make:(string ashdf) forDuration:(int)
 	{
-		Hello newInstance = new class (
+		Hello newInstance = new/* class (
 			msg:	message,
 			dur:	seconds
-		);
+		)*/;
 		newInstance:(setExpressionLocation:50 andLength:14);
-		return newInstance;
+		/*return */newInstance;
 	}
 	
 	- Person father
 	{
-		return this.father;
-	}*/
+		/*return */this:father;
+	}
 }

@@ -24,15 +24,30 @@ namespace Maxwell {
 	
 	
 	
-	class Identifier : public Expression {
+	class TextualExpression : public Expression {
 	public:
-		std::string name;
-		Identifier() {}
-		Identifier(const std::string & name) : name(name) {}
-		virtual std::string describe(int indent = 0) const { return pad(indent) + name; }
+		const std::string name;
+		TextualExpression() {}
+		TextualExpression(const std::string & name) : name(name) {}
+		virtual std::string describe(int indent = 0) const;
 	};
 	
+	class Identifier : public TextualExpression {
+	public:
+		Identifier(const std::string & name) : TextualExpression(name) {}
+	};
 	typedef std::vector<Identifier *> Identifiers;
+	
+	class Numeric : public TextualExpression {
+	public:
+		Numeric(const std::string & name) : TextualExpression(name) {}
+	};
+	
+	class String : public TextualExpression {
+	public:
+		String(const std::string & name) : TextualExpression(name) {}
+		virtual std::string describe(int indent = 0) const;
+	};
 	
 	
 	
@@ -49,6 +64,10 @@ namespace Maxwell {
 		Statements statements;
 		virtual std::string describe(int indent = 0) const;
 	};
+	
+	
+	
+	/*** Classes ***/
 	
 	class ClassDefinition : public Statement {
 	public:
@@ -67,13 +86,9 @@ namespace Maxwell {
 		virtual std::string describe(int indent = 0) const;
 	};
 	
-	class Type : public Expression {
-	public:
-	};
-	
-	typedef std::vector<Type *> Types;
 	
 	
+	/*** Functions ***/
 	
 	class FunctionArgument : public Expression {
 	public:
@@ -93,7 +108,7 @@ namespace Maxwell {
 	class FunctionDefinition : public Statement {
 	public:
 		bool shared;
-		Type * returnType;
+		Expression * returnType;
 		FunctionArguments * arguments;
 		Block * statements;
 		
@@ -109,14 +124,18 @@ namespace Maxwell {
 	
 	
 	
+	/*** Variables ***/
+	
 	class VariableDefinition : public Statement {
 	public:
-		Type * type;
+		Expression * type;
 		Identifier * name;
+		Expression * initial;
 		
 		VariableDefinition() {
 			type = NULL;
 			name = NULL;
+			initial = NULL;
 		}
 		
 		virtual std::string describe(int indent = 0) const;
@@ -124,21 +143,58 @@ namespace Maxwell {
 	
 	
 	
-	class ConcreteType : public Type {
+	/*** Expressions ***/
+	
+	class Tuple : public Expression {
 	public:
-		Identifier * name;
-		ConcreteType() {
-			name = NULL;
+		Expressions * expressions;
+		
+		Tuple() {
+			expressions = NULL;
 		}
+		
 		virtual std::string describe(int indent = 0) const;
 	};
 	
-	class TupleType : public Type {
+	class MemberAccess : public Expression {
 	public:
-		Types * types;
-		TupleType() {
-			types = NULL;
+		Expression * subject;
+		Identifier * member;
+		
+		MemberAccess() {
+			subject = NULL;
+			member = NULL;
 		}
+		
+		virtual std::string describe(int indent = 0) const;
+	};
+	
+	class FunctionCallArgument;
+	typedef std::vector<FunctionCallArgument *> FunctionCallArguments;
+	
+	class FunctionCall : public Expression {
+	public:
+		Expression * receiver;
+		FunctionCallArguments * arguments;
+		
+		FunctionCall() {
+			receiver = NULL;
+			arguments = NULL;
+		}
+		
+		virtual std::string describe(int indent = 0) const;
+	};
+	
+	class FunctionCallArgument : public Expression {
+	public:
+		Identifier * name;
+		Expression * argument;
+		
+		FunctionCallArgument() {
+			name = NULL;
+			argument = NULL;
+		}
+		
 		virtual std::string describe(int indent = 0) const;
 	};
 }

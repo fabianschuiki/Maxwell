@@ -114,7 +114,9 @@ namespace Maxwell
 	Node * node;
 	
 	Statement * stmt;
+	
 	Expression * expr;
+	Expressions * exprs;
 	
 	Identifier * ident;
 	Identifiers * idents;
@@ -127,14 +129,15 @@ namespace Maxwell
 	FunctionArguments * func_args;
 	VariableDefinition * var_def;
 	
-	Type * type;
-	Types * types;
+	FunctionCall * func_call;
+	FunctionCallArgument * func_call_arg;
+	FunctionCallArguments * func_call_args;
 	
 	std::string * string;
 	int token;
 }
 /* Line 303 of lalr1.cc.  */
-#line 138 "parser.h"
+#line 141 "parser.h"
 	;
 #else
     typedef YYSTYPE semantic_type;
@@ -149,27 +152,32 @@ namespace Maxwell
      END = 0,
      EOL = 258,
      IDENTIFIER = 259,
-     LPAREN = 260,
-     RPAREN = 261,
-     LBRACE = 262,
-     RBRACE = 263,
-     LBRACK = 264,
-     RBRACK = 265,
-     CEQ = 266,
-     CNE = 267,
-     CLT = 268,
-     CGT = 269,
-     DOT = 270,
-     COMMA = 271,
-     COLON = 272,
-     SEMICOLON = 273,
-     EQUAL = 274,
-     PLUS = 275,
-     MINUS = 276,
-     ASTERISK = 277,
-     SLASH = 278,
-     CLASS = 279,
-     PROPERTY = 280
+     FLOAT = 260,
+     INTEGER = 261,
+     STRING = 262,
+     LPAREN = 263,
+     RPAREN = 264,
+     LBRACE = 265,
+     RBRACE = 266,
+     LBRACK = 267,
+     RBRACK = 268,
+     CEQ = 269,
+     CNE = 270,
+     CLT = 271,
+     CGT = 272,
+     CLE = 273,
+     CGE = 274,
+     DOT = 275,
+     COMMA = 276,
+     COLON = 277,
+     SEMICOLON = 278,
+     EQUAL = 279,
+     PLUS = 280,
+     MINUS = 281,
+     ASTERISK = 282,
+     SLASH = 283,
+     CLASS = 284,
+     PROPERTY = 285
    };
 
     };

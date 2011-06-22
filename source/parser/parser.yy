@@ -46,7 +46,9 @@
 	Node * node;
 	
 	Statement * stmt;
+	
 	Expression * expr;
+	Expressions * exprs;
 	
 	Identifier * ident;
 	Identifiers * idents;
@@ -59,8 +61,9 @@
 	FunctionArguments * func_args;
 	VariableDefinition * var_def;
 	
-	Type * type;
-	Types * types;
+	FunctionCall * func_call;
+	FunctionCallArgument * func_call_arg;
+	FunctionCallArguments * func_call_args;
 	
 	std::string * string;
 	int token;
@@ -69,11 +72,11 @@
 /* Define the tokens. */
 %token				END			0	"end of file"
 %token				EOL				"end of line"
-%token <string>		IDENTIFIER
+%token <string>		IDENTIFIER FLOAT INTEGER STRING
 
 /* Symbols. */
 %token <token>		LPAREN RPAREN LBRACE RBRACE LBRACK RBRACK
-%token <token>		CEQ CNE CLT CGT
+%token <token>		CEQ CNE CLT CGT CLE CGE
 %token <token>		DOT COMMA COLON SEMICOLON
 %token <token>		EQUAL PLUS MINUS ASTERISK SLASH
 
@@ -83,6 +86,8 @@
 
 /* Define the types of the nodes of our nonterminal symbols. */
 %type <stmt>		root_stmt class_stmt func_stmt
+%type <expr>		expr type numeric string
+%type <exprs>		exprs
 %type <ident>		ident
 %type <idents>		idents
 %type <block>		root_stmts class_stmts func_stmts
@@ -91,8 +96,10 @@
 %type <func_arg>	func_arg
 %type <func_args>	func_args func_sel
 %type <var_def>		func_arg_var var_decl var_def
-%type <type>		type
-%type <types>		types
+
+%type <func_call>		func_call
+%type <func_call_arg>	func_call_arg
+%type <func_call_args>	func_call_args
 
 /*%destructor { delete $$; } IDENTIFIER*/
 
@@ -181,6 +188,7 @@ class_stmts
 class_stmt
  : func_decl SEMICOLON { $$ = $1; }
  | func_def { $$ = $1; }
+ | var_def SEMICOLON { $$ = $1; }
  ;
 
 
@@ -223,29 +231,23 @@ func_arg
  }
  ;
 func_arg_var
- : type {
-	$$ = new VariableDefinition();
-	$$->type = $1;
- }
- | type ident {
-	$$ = new VariableDefinition();
-	$$->type = $1;
-	$$->name = $2;
- }
+ : type	{ $$ = new VariableDefinition(); $$->type = $1; }
+ | type ident { $$ = new VariableDefinition(); $$->type = $1; $$->name = $2; }
  ;
 
 /* A function definition consists of a function declaration followed by a bunch of function
  * statements enclosed in braces. */
 func_def
- : func_decl LBRACE RBRACE { $$ = $1; }
- | func_decl LBRACE func_stmts RBRACE { $$ = $1; $$->statements = $3; }
+ : func_decl LBRACE func_stmts RBRACE { $$ = $1; $$->statements = $3; }
  ;
 func_stmts
- : func_stmt { $$ = new Block(); $$->statements.push_back($1); }
+ : { $$ = new Block(); }
+ | func_stmt { $$ = new Block(); $$->statements.push_back($1); }
  | func_stmts func_stmt { $1->statements.push_back($2); }
  ;
 func_stmt
- :
+ : expr SEMICOLON
+ | var_def SEMICOLON
  ;
 
 
@@ -255,31 +257,106 @@ func_stmt
 /* A variable declaration consists of the variable's type and name, as well as an optional initial
  * value. */
 var_decl
- : type ident
+ : type ident { $$ = new VariableDefinition(); $$->type = $1; $$->name = $2; }
  ;
 var_def
- : var_decl
- | var_decl EQUAL //expr
+ : var_decl { $$ = $1; }
+ | var_decl EQUAL expr { $$ = $1; $$->initial = $3; }
  ;
 
 
 
 /*** Types ***/
-/* A type is a group of code that describes a section of memory. This may be through a simple type,
- * memory structure or a tuple of multiple types. */
+
+/* A type semantically is just an expression. The expression needs to be checked whether it
+ * resolves to a type when processing the AST. */
 type
- : ident {
-	$$ = new ConcreteType();
-	((ConcreteType *)$$)->name = $1;
+ : expr
+ ;
+
+
+
+/*** Expressions ***/
+
+/* An expression can be many things. See the list for details. */
+expr
+ : ident { $$ = $1; }
+ | numeric { $$ = $1; }
+ | string { $$ = $1; }
+ 
+   //Groups and tuples
+ | LPAREN expr RPAREN { $$ = $2; }
+ | LPAREN exprs RPAREN { $$ = new Tuple(); ((Tuple *)$$)->expressions = $2; }
+   
+   //Operators
+ | expr bin_operator expr
+ | expr assignment expr
+   
+   //Members and calls
+ | expr DOT ident {
+	$$ = new MemberAccess();
+	((MemberAccess *)$$)->subject = $1;
+	((MemberAccess *)$$)->member = $3;
  }
- | LPAREN types RPAREN {
-	$$ = new TupleType();
-	((TupleType *)$$)->types = $2;
+ | func_call
+ ;
+exprs
+ : expr COMMA expr { $$ = new Expressions(); $$->push_back($1); $$->push_back($3); }
+ | exprs COMMA expr { $$ = $1; $1->push_back($3); }
+ ;
+
+/* A binary operator is any operator that takes a left and right-hand side expression and returns
+ * the result. */
+bin_operator
+ : CEQ | CNE | CLT | CGE | CLE | CGT
+ | PLUS | MINUS | ASTERISK | SLASH
+ ;
+
+/* An assignment operator is any operator containing an =. */
+assignment
+ : EQUAL
+ ;
+
+/* Numeric expressiosn are either an INTEGER or FLOAT. */
+numeric
+ : INTEGER	{ $$ = new Numeric(*$1); delete $1; }
+ | FLOAT	{ $$ = new Numeric(*$1); delete $1; }
+ ;
+
+/* Strings are delimited by ". */
+string
+ : STRING { $$ = new String(*$1); delete $1; }
+ ;
+
+/* A function call consists of an expression a colon and the call arguments. */
+func_call
+ : expr COLON ident {
+	FunctionCallArgument * arg = new FunctionCallArgument();
+	arg->name = $3;
+	
+	FunctionCallArguments * args = new FunctionCallArguments();
+	args->push_back(arg);
+	
+	$$ = new FunctionCall();
+	$$->receiver = $1;
+	$$->arguments = args;
+ }
+ | expr COLON LPAREN func_call_args RPAREN {
+	$$ = new FunctionCall();
+	$$->receiver = $1;
+	$$->arguments = $4;
  }
  ;
-types
- : type { $$ = new Types(); $$->push_back($1); }
- | types COMMA type { $1->push_back($3); }
+func_call_args
+ : func_call_arg { $$ = new FunctionCallArguments(); $$->push_back($1); }
+ | func_call_args func_call_arg { $$ = $1; $$->push_back($2); }
+ ;
+func_call_arg
+ : ident COLON expr {
+	$$ = new FunctionCallArgument();
+	$$->name = $1;
+	$$->argument = $3;
+ }
  ;
 
 %%

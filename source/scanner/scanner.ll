@@ -11,6 +11,9 @@ typedef Maxwell::Parser::token_type token_type;
 
 //Fix stuff for the crappier OSes out there.
 #define YY_NO_UNISTD_H
+
+//Convenience macros.
+#define SAVE_TOKEN yylval->string = new std::string(yytext, yyleng)
 %}
 
 
@@ -29,8 +32,11 @@ typedef Maxwell::Parser::token_type token_type;
 
 
 /*** Regular Expressions ***/
-%x COMMENT
-%x STRING
+%x CTX_COMMENT
+%x CTX_STRING
+
+pat_exp ([eE][+\-]?[0-9]+)?
+
 %%
 
  /* code to place at the beginning of yylex() */
@@ -57,14 +63,31 @@ typedef Maxwell::Parser::token_type token_type;
 }
 <INITIAL>"/*" {
 	yylloc->step();
-	BEGIN(COMMENT);
+	BEGIN(CTX_COMMENT);
 }
-<COMMENT>"*/" {
+<CTX_COMMENT>"*/" {
 	yylloc->step();
 	BEGIN(INITIAL);
 }
-<COMMENT>([^\*\n]|\*[^\/\n])* {
+<CTX_COMMENT>([^\*\n]|\*[^\/\n])* {
 	yylloc->step();
+}
+
+ /* Numerics */
+[0-9]+\.[0-9]*{pat_exp}	SAVE_TOKEN; return token::FLOAT;
+[0-9]+{pat_exp}			SAVE_TOKEN; return token::INTEGER;
+
+ /* Strings */
+<INITIAL>"\"" {
+	yylloc->step();
+	BEGIN(CTX_STRING);
+}
+<CTX_STRING>"\"" {
+	BEGIN(INITIAL);
+}
+<CTX_STRING>[^""]* {
+	SAVE_TOKEN;
+	return token::STRING;
 }
 
  /* Symbols */
@@ -80,6 +103,8 @@ typedef Maxwell::Parser::token_type token_type;
 "≠"		return token::CNE;
 "<"		return token::CLT;
 ">"		return token::CGT;
+"<="	return token::CLE;
+">="	return token::CGE;
 
 "."		return token::DOT;
 ","		return token::COMMA;
@@ -99,7 +124,7 @@ typedef Maxwell::Parser::token_type token_type;
 
  /* Identifiers */
  /*[a-zA-Z_][a-zA-Z0-9_]* {*/
-[^ \t\n(){}\[\]=≠!<>.,:;+\-*/]+ {
+[^ \t\n(){}\[\]=≠!<>.,:;+\-*/""]+ {
 	yylval->string = new std::string(yytext, yyleng);
 	return token::IDENTIFIER;
 }

@@ -1,0 +1,12 @@
+/**
+	Maxwell source file type specifications
+ */
+(
+	{	Identifier = sourcecode.maxwell;
+		BasedOn = sourcecode;
+		Name = "Maxwell source files";
+		Language = xcode.lang.maxwell;
+		Extensions = (mw);
+		AppliesToBuildRules = YES;
+	}
+)

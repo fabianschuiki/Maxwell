@@ -10,8 +10,6 @@
 
 @implementation MyDocument
 
-@synthesize tokens, ast;
-
 
 - (id)init
 {
@@ -36,12 +34,11 @@
 {
     [super windowControllerDidLoadNib:aController];
     // Add any code here that needs to be executed once the windowController has loaded the document's window.
-	[codeView setDelegate:self];
 	if (loadedCode) {
 		[[codeView textStorage] setAttributedString:loadedCode];
 		[loadedCode autorelease]; loadedCode = nil;
 	}
-	[self formatCode];
+	[controller formatCode];
 	[[aController window] zoom:nil];
 }
 
@@ -61,23 +58,6 @@
 {
 	[super setFileURL:absoluteURL];
 	[[NSUserDefaults standardUserDefaults] setURL:absoluteURL forKey:@"LastDocument"];
-}
-
-- (void)formatCode
-{
-	NSMutableAttributedString * s = [codeView textStorage];
-	
-	//Basically reset to white.
-	NSDictionary * attrs = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSColor whiteColor], NSForegroundColorAttributeName,
-							[NSFont fontWithName:@"Menlo" size:11], NSFontAttributeName,
-							nil];
-	[s setAttributes:attrs range:NSMakeRange(0, [[s string] length])];
-}
-
-- (void)textViewDidChangeSelection:(NSNotification *)notification
-{
-	NSLog(@"text changed!");
 }
 
 @end

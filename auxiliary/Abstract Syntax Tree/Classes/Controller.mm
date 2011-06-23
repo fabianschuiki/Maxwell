@@ -9,7 +9,7 @@
 #import "Controller.h"
 
 #include "../Source/tokenizer/tokenizer.h"
-#include "../Source/analyzer/match.h"
+#include "../Source/analyzer/analyzer.h"
 #include <sstream>
 
 
@@ -122,20 +122,19 @@
 	Tokenizer * t = new Tokenizer();
 	t->process(codeStream);
 	
-	//Do some debug matching.
-	Token * token = t->getFirstToken();
-	if (token) {
-		Match * m = new Match();
-		m->compare(token);
-		NSString * temp = [NSString stringWithUTF8String:m->temp.c_str()];
-		self.tokens = [[[NSAttributedString alloc] initWithString:temp attributes:basicAttrs] autorelease];
-		delete m;
-	}
+	//Create a new analyzer and analyze the tokens.
+	Analyzer * a = new Analyzer();
+	a->process(t->getFirstToken());
+	
+	/*NSString * temp = [NSString stringWithUTF8String:m->temp.c_str()];
+	 self.tokens = [[[NSAttributedString alloc] initWithString:temp attributes:basicAttrs] autorelease];*/
 	
 	//Store the results.
 	[resultsLock lock];
 	if (tokenizer) delete tokenizer;
 	tokenizer = t;
+	if (analyzer) delete analyzer;
+	analyzer = a;
 	[resultsLock unlock];
 	
 	//We're done, clear the isProcessing flag and restart the processing if requested.

@@ -14,6 +14,9 @@
 		1F6CA03D13B2267A002D758E /* tokenizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F6CA03C13B2267A002D758E /* tokenizer.cpp */; };
 		1F6CA04613B22A21002D758E /* token.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F6CA04513B22A21002D758E /* token.cpp */; };
 		1F6CA05213B22AA0002D758E /* Controller.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1F6CA05113B22AA0002D758E /* Controller.mm */; };
+		1FEB0EE913B3710200B5ED69 /* string.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FEB0EE813B3710200B5ED69 /* string.cpp */; };
+		1FEB0F7B13B377ED00B5ED69 /* analyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FEB0F7A13B377ED00B5ED69 /* analyzer.cpp */; };
+		1FEB0F9A13B3796A00B5ED69 /* parallel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FEB0F9913B3796A00B5ED69 /* parallel.cpp */; };
 		8D15AC2C0486D014006FF6A4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2A37F4B9FDCFA73011CA2CEA /* Credits.rtf */; };
 		8D15AC2F0486D014006FF6A4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165FFE840EACC02AAC07 /* InfoPlist.strings */; };
 		8D15AC310486D014006FF6A4 /* MyDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A37F4ACFDCFA73011CA2CEA /* MyDocument.m */; settings = {ATTRIBUTES = (); }; };
@@ -38,6 +41,12 @@
 		1F6CA04513B22A21002D758E /* token.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = token.cpp; sourceTree = "<group>"; };
 		1F6CA05013B22AA0002D758E /* Controller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Controller.h; sourceTree = "<group>"; };
 		1F6CA05113B22AA0002D758E /* Controller.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Controller.mm; sourceTree = "<group>"; };
+		1FEB0EE713B3710200B5ED69 /* string.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = string.h; sourceTree = "<group>"; };
+		1FEB0EE813B3710200B5ED69 /* string.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = string.cpp; sourceTree = "<group>"; };
+		1FEB0F7913B377ED00B5ED69 /* analyzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = analyzer.h; sourceTree = "<group>"; };
+		1FEB0F7A13B377ED00B5ED69 /* analyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = analyzer.cpp; sourceTree = "<group>"; };
+		1FEB0F9813B3796A00B5ED69 /* parallel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = parallel.h; sourceTree = "<group>"; };
+		1FEB0F9913B3796A00B5ED69 /* parallel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = parallel.cpp; sourceTree = "<group>"; };
 		2564AD2C0F5327BB00F57823 /* Abstract_Syntax_Tree_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Abstract_Syntax_Tree_Prefix.pch; sourceTree = "<group>"; };
 		2A37F4ACFDCFA73011CA2CEA /* MyDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyDocument.m; sourceTree = "<group>"; };
 		2A37F4AEFDCFA73011CA2CEA /* MyDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyDocument.h; sourceTree = "<group>"; };
@@ -90,8 +99,11 @@
 		1F031BCF13B25044000D79EB /* analyzer */ = {
 			isa = PBXGroup;
 			children = (
+				1FEB0F7913B377ED00B5ED69 /* analyzer.h */,
+				1FEB0F7A13B377ED00B5ED69 /* analyzer.cpp */,
 				1F031BD013B2508B000D79EB /* match.h */,
 				1F031BD113B2508B000D79EB /* match.cpp */,
+				1FEB0EE613B370F900B5ED69 /* matches */,
 			);
 			path = analyzer;
 			sourceTree = "<group>";
@@ -109,12 +121,23 @@
 			isa = PBXGroup;
 			children = (
 				1F031B0813B24232000D79EB /* location.h */,
-				1F6CA04513B22A21002D758E /* token.cpp */,
 				1F6CA03E13B227CA002D758E /* token.h */,
-				1F6CA03C13B2267A002D758E /* tokenizer.cpp */,
+				1F6CA04513B22A21002D758E /* token.cpp */,
 				1F6CA03B13B2267A002D758E /* tokenizer.h */,
+				1F6CA03C13B2267A002D758E /* tokenizer.cpp */,
 			);
 			path = tokenizer;
+			sourceTree = "<group>";
+		};
+		1FEB0EE613B370F900B5ED69 /* matches */ = {
+			isa = PBXGroup;
+			children = (
+				1FEB0EE713B3710200B5ED69 /* string.h */,
+				1FEB0EE813B3710200B5ED69 /* string.cpp */,
+				1FEB0F9813B3796A00B5ED69 /* parallel.h */,
+				1FEB0F9913B3796A00B5ED69 /* parallel.cpp */,
+			);
+			path = matches;
 			sourceTree = "<group>";
 		};
 		2A37F4AAFDCFA73011CA2CEA /* Abstract Syntax Tree */ = {
@@ -237,6 +260,9 @@
 				1F6CA04613B22A21002D758E /* token.cpp in Sources */,
 				1F6CA05213B22AA0002D758E /* Controller.mm in Sources */,
 				1F031BD213B2508B000D79EB /* match.cpp in Sources */,
+				1FEB0EE913B3710200B5ED69 /* string.cpp in Sources */,
+				1FEB0F7B13B377ED00B5ED69 /* analyzer.cpp in Sources */,
+				1FEB0F9A13B3796A00B5ED69 /* parallel.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -3,12 +3,14 @@
 
 
 class Match {
-private:
+protected:
 	float match;
 	
 public:
 	float getMatch();
-	std::string temp;
 	
-	void compare(Token * token);
+	Match();
+	virtual ~Match() {}
+	
+	virtual void compare(Token * token) = 0;
 };

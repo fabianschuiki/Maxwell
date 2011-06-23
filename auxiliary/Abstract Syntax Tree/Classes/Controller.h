@@ -23,6 +23,7 @@
 	
 	NSLock * resultsLock;
 	struct Tokenizer * tokenizer;
+	struct Analyzer * analyzer;
 }
 
 @property (copy) NSAttributedString * tokens;

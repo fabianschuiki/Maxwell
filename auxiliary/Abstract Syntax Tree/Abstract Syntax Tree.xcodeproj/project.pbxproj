@@ -17,6 +17,7 @@
 		1FEB0EE913B3710200B5ED69 /* string.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FEB0EE813B3710200B5ED69 /* string.cpp */; };
 		1FEB0F7B13B377ED00B5ED69 /* analyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FEB0F7A13B377ED00B5ED69 /* analyzer.cpp */; };
 		1FEB0F9A13B3796A00B5ED69 /* parallel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FEB0F9913B3796A00B5ED69 /* parallel.cpp */; };
+		1FEB0FE013B38B1000B5ED69 /* series.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FEB0FDF13B38B1000B5ED69 /* series.cpp */; };
 		8D15AC2C0486D014006FF6A4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2A37F4B9FDCFA73011CA2CEA /* Credits.rtf */; };
 		8D15AC2F0486D014006FF6A4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165FFE840EACC02AAC07 /* InfoPlist.strings */; };
 		8D15AC310486D014006FF6A4 /* MyDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A37F4ACFDCFA73011CA2CEA /* MyDocument.m */; settings = {ATTRIBUTES = (); }; };
@@ -47,6 +48,8 @@
 		1FEB0F7A13B377ED00B5ED69 /* analyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = analyzer.cpp; sourceTree = "<group>"; };
 		1FEB0F9813B3796A00B5ED69 /* parallel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = parallel.h; sourceTree = "<group>"; };
 		1FEB0F9913B3796A00B5ED69 /* parallel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = parallel.cpp; sourceTree = "<group>"; };
+		1FEB0FDE13B38B1000B5ED69 /* series.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = series.h; sourceTree = "<group>"; };
+		1FEB0FDF13B38B1000B5ED69 /* series.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = series.cpp; sourceTree = "<group>"; };
 		2564AD2C0F5327BB00F57823 /* Abstract_Syntax_Tree_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Abstract_Syntax_Tree_Prefix.pch; sourceTree = "<group>"; };
 		2A37F4ACFDCFA73011CA2CEA /* MyDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyDocument.m; sourceTree = "<group>"; };
 		2A37F4AEFDCFA73011CA2CEA /* MyDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyDocument.h; sourceTree = "<group>"; };
@@ -136,6 +139,8 @@
 				1FEB0EE813B3710200B5ED69 /* string.cpp */,
 				1FEB0F9813B3796A00B5ED69 /* parallel.h */,
 				1FEB0F9913B3796A00B5ED69 /* parallel.cpp */,
+				1FEB0FDE13B38B1000B5ED69 /* series.h */,
+				1FEB0FDF13B38B1000B5ED69 /* series.cpp */,
 			);
 			path = matches;
 			sourceTree = "<group>";
@@ -263,6 +268,7 @@
 				1FEB0EE913B3710200B5ED69 /* string.cpp in Sources */,
 				1FEB0F7B13B377ED00B5ED69 /* analyzer.cpp in Sources */,
 				1FEB0F9A13B3796A00B5ED69 /* parallel.cpp in Sources */,
+				1FEB0FE013B38B1000B5ED69 /* series.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

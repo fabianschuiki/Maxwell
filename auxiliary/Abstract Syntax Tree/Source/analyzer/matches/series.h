@@ -3,9 +3,10 @@
 #include "../match.h"
 
 
-class ParallelMatch : public Match {
+class SeriesMatch : public Match {
 private:
-	Match * bestMatch;
+	bool submatchAdvanced;
+	int position;
 	
 public:
 	std::vector<Match *> submatches;
@@ -14,7 +15,5 @@ public:
 	virtual bool compareNext();
 	
 public:
-	Match * getBestMatch();
-	
 	virtual std::vector<std::string> toStrings();
 };

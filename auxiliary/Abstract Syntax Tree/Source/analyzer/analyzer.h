@@ -13,4 +13,6 @@ public:
 	~Analyzer();
 	
 	void process(Token * token);
+	
+	std::string temp;
 };

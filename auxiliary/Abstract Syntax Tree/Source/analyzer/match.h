@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+#include <string>
 #include "../tokenizer/token.h"
 
 
@@ -12,6 +14,9 @@ protected:
 	bool isDone;
 	bool isPrepared;
 	
+	virtual void prepareCompare() {}
+	virtual bool compareNext() = 0;
+	
 public:
 	float getMatch();
 	
@@ -22,9 +27,9 @@ public:
 	Match();
 	virtual ~Match() {}
 	
-	virtual void prepareCompare() {}
-	virtual bool compareNext() = 0;
-	void compare();
+	bool compare();
 	void compareAll();
 	bool done();
+	
+	virtual std::vector<std::string> toStrings() = 0;
 };

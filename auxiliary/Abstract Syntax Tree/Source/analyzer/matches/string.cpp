@@ -2,15 +2,13 @@
 #include <iostream>
 
 
-StringMatch::StringMatch(const std::string & n) : Match(), needle(n)
-{
-}
-
 bool StringMatch::compareNext()
 {
 	//Ignore if we don't have a valid token.
-	if (!token)
+	if (!token) {
+		match = 0;
 		return true;
+	}
 	
 	//Allocate a map for all possible characters in the string and set all counts to zero.
 	int characters[256];
@@ -69,10 +67,24 @@ bool StringMatch::compareNext()
 	//Calculate the match which is basically the ratio of the total text length to the number of
 	//inserts and removes.
 	match = 1 - (double)(inserts + removes) / position;
-	std::cout << match * 100 << "%: " << needle << std::endl;
 	
 	//Advance to the next token and return true to indicate that we don't need anymore tokens.
 	token = token->next;
 	isDone = true;
 	return true;
+}
+
+
+
+StringMatch::StringMatch(const std::string & n) : Match(), needle(n)
+{
+}
+
+
+
+std::vector<std::string> StringMatch::toStrings()
+{
+	std::vector<std::string> s;
+	s.push_back(needle);
+	return s;
 }

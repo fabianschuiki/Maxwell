@@ -21,6 +21,9 @@ private:
 	const std::string needle;
 	std::vector<Diff> diffs;
 	
+protected:
+	virtual bool compareNext();
+	
 public:
 	const std::string & getNeedle();
 	const std::vector<Diff> & getDiffs();
@@ -28,5 +31,5 @@ public:
 	StringMatch(const std::string & needle);
 	virtual ~StringMatch() {}
 	
-	virtual bool compareNext();
+	virtual std::vector<std::string> toStrings();
 };

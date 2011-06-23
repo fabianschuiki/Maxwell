@@ -126,8 +126,8 @@
 	Analyzer * a = new Analyzer();
 	a->process(t->getFirstToken());
 	
-	/*NSString * temp = [NSString stringWithUTF8String:m->temp.c_str()];
-	 self.tokens = [[[NSAttributedString alloc] initWithString:temp attributes:basicAttrs] autorelease];*/
+	NSString * temp = [NSString stringWithUTF8String:a->temp.c_str()];
+	self.tokens = [[[NSAttributedString alloc] initWithString:temp attributes:basicAttrs] autorelease];
 	
 	//Store the results.
 	[resultsLock lock];

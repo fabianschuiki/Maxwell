@@ -38,13 +38,13 @@ Match::Match()
 
 
 
-void Match::compare()
+bool Match::compare()
 {
 	if (!isPrepared) {
 		prepareCompare();
 		isPrepared = true;
 	}
-	compareNext();
+	return compareNext();
 }
 
 void Match::compareAll()

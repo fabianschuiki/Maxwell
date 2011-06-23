@@ -1,6 +1,7 @@
 #include "analyzer.h"
 #include "matches/parallel.h"
 #include "matches/string.h"
+#include "matches/series.h"
 
 
 Match * Analyzer::getRootMatch()
@@ -35,12 +36,26 @@ void Analyzer::process(Token * token)
 	
 	//Do some debug matching.
 	ParallelMatch pm;
-	StringMatch kw1("class");
-	StringMatch kw2("construct");
-	StringMatch kw3("automatically");
-	pm.submatches.push_back(&kw1);
-	pm.submatches.push_back(&kw2);
-	pm.submatches.push_back(&kw3);
+	StringMatch kw11("property");
+	StringMatch kw12("readonly");
+	StringMatch kw21("construct");
+	StringMatch kw22("automatically");
+	SeriesMatch sm1, sm2;
+	sm1.submatches.push_back(&kw11);
+	sm1.submatches.push_back(&kw12);
+	sm2.submatches.push_back(&kw21);
+	sm2.submatches.push_back(&kw22);
+	pm.submatches.push_back(&sm1);
+	pm.submatches.push_back(&sm2);
+	
 	pm.setStartToken(token);
 	pm.compareAll();
+	
+	Match * best = pm.getBestMatch();
+	std::stringstream s;
+	s << best->getMatch() * 100 << "%" << std::endl << std::endl;
+	std::vector<std::string> strings = best->toStrings();
+	for (int i = 0; i < strings.size(); i++)
+		s << strings[i] << std::endl;
+	temp = s.str();
 }

@@ -64,10 +64,9 @@ std::vector<std::string> SeriesMatch::toStrings()
 		//Append every string we received from the submatches to each entry of strings we already
 		//have.
 		for (std::vector<std::string>::iterator ns = strings.begin(); ns != strings.end(); ns++) {
-			bool first;
 			for (std::vector<std::string>::iterator os = offset.begin(); os != offset.end(); os++) {
 				std::string cat = (*os);
-				if (!first) cat += " ";
+				if (cat.size()) cat += " ";
 				cat += (*ns);
 				s.push_back(cat);
 			}

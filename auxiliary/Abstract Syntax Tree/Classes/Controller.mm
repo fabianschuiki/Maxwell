@@ -11,6 +11,7 @@
 #include "../Source/tokenizer/tokenizer.h"
 #include "../Source/analyzer/analyzer.h"
 #include <sstream>
+#include <iostream>
 
 
 @implementation Controller
@@ -117,6 +118,7 @@
 	
 	//Create an std::istream of the code.
 	std::istringstream codeStream([[[codeView textStorage] string] UTF8String]);
+	NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
 	
 	//Create a new tokenizer and parse the input.
 	Tokenizer * t = new Tokenizer();
@@ -126,6 +128,11 @@
 	Analyzer * a = new Analyzer();
 	a->process(t->getFirstToken());
 	
+	//Calculate how long it took.
+	NSTimeInterval duration = ([NSDate timeIntervalSinceReferenceDate] - start);
+	std::cout << " - [" << duration * 1000 << "ms]" << std::endl;
+	
+	//Dump some temporary information.
 	NSString * temp = [NSString stringWithUTF8String:a->temp.c_str()];
 	self.tokens = [[[NSAttributedString alloc] initWithString:temp attributes:basicAttrs] autorelease];
 	

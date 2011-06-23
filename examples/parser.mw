@@ -1,1 +1,1 @@
-class Hello : Object <KVO>
+Hello

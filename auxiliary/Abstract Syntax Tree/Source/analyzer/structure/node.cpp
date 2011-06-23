@@ -43,6 +43,13 @@ StructureNode & StructureNode::add(StructureToken * token)
 	return *this;
 }
 
+StructureNode & StructureNode::safe()
+{
+	assert(!branches.empty() && !branches.back().empty() && "no token to be marked safe");
+	branches.back().back()->safe = true;
+	return *this;
+}
+
 
 
 StructureNode::operator std::string ()

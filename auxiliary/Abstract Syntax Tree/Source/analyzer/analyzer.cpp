@@ -38,7 +38,10 @@ void Analyzer::process(Token * token)
 	root.fork()
 	.add(new StructureToken(StructureToken::Keyword, "class"))
 	.add(new StructureToken(StructureToken::Identifier))
-	.add(new StructureToken(StructureToken::Symbol, ":"));
+	.add(new StructureToken(StructureToken::Symbol, ":"))
+	.add(new StructureToken(StructureToken::Identifier))
+	.add(new StructureToken(StructureToken::Symbol, ";"))
+	.safe();
 	
 	std::cout << (std::string)root;
 }

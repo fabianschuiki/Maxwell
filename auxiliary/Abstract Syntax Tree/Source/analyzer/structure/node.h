@@ -22,6 +22,7 @@ public:
 	
 	StructureNode & fork();
 	StructureNode & add(StructureToken * node);
+	StructureNode & safe();
 	
 	operator std::string ();
 };

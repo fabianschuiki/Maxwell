@@ -20,6 +20,7 @@ public:
 	} type;
 	const std::string text;
 	const StructureNode * reference;
+	bool safe;
 	
 	StructureToken(Type type);
 	StructureToken(Type type, const std::string & text);

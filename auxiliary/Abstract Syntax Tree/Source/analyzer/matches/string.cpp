@@ -88,3 +88,8 @@ std::vector<std::string> StringMatch::toStrings()
 	s.push_back(needle);
 	return s;
 }
+
+StringMatch::operator std::string()
+{
+	return needle;
+}

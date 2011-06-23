@@ -1,8 +1,8 @@
 #pragma once
-#include "parallel.h"
+#include "series.h"
 
 
-class RootMatch : public ParallelMatch {
+class RootMatch : public SeriesMatch {
 protected:
 	virtual void prepareMatches();
 };

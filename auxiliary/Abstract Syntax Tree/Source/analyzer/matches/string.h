@@ -32,4 +32,5 @@ public:
 	virtual ~StringMatch() {}
 	
 	virtual std::vector<std::string> toStrings();
+	virtual operator std::string();
 };

@@ -1,7 +1,8 @@
 #include "root.h"
+#include "class.h"
 
 
 void RootMatch::prepareMatches()
 {
-	submatches
+	matches.push_back(new ClassMatch);
 }

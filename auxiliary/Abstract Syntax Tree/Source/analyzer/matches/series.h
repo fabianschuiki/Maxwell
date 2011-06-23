@@ -9,7 +9,7 @@ private:
 	int position;
 	
 protected:
-	std::vector<Match *> submatches;
+	std::vector<Match *> matches;
 	
 	virtual void prepareCompare();
 	virtual void prepareMatches() {}
@@ -17,4 +17,5 @@ protected:
 	
 public:
 	virtual std::vector<std::string> toStrings();
+	virtual operator std::string();
 };

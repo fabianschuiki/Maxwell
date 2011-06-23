@@ -8,7 +8,7 @@ private:
 	Match * bestMatch;
 	
 protected:
-	std::vector<Match *> submatches;
+	std::vector<Match *> matches;
 	
 	virtual void prepareCompare();
 	virtual void prepareMatches() {}
@@ -18,4 +18,5 @@ public:
 	Match * getBestMatch();
 	
 	virtual std::vector<std::string> toStrings();
+	virtual operator std::string();
 };

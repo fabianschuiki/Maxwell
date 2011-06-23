@@ -40,13 +40,14 @@ void Analyzer::process(Token * token)
 	rootMatch->compareAll();
 	
 	//Dump the best match for debugging purposes.
-	Match * best = rootMatch->getBestMatch();
-	std::stringstream s;
+	temp = *rootMatch;
+	//Match * best = rootMatch->getBestMatch();
+	/*std::stringstream s;
 	if (best) {
 		s << best->getMatch() * 100 << "%" << std::endl << std::endl;
 		std::vector<std::string> strings = best->toStrings();
 		for (int i = 0; i < strings.size(); i++)
 			s << strings[i] << std::endl;
 	}
-	temp = s.str();
+	temp = s.str();*/
 }

@@ -8,21 +8,21 @@ void SeriesMatch::prepareCompare()
 	position = 0;
 	submatchAdvanced = true;
 	
-	//Prepare the submatches if required.
-	if (submatches.empty())
+	//Prepare the matches if required.
+	if (matches.empty())
 		prepareMatches();
 }
 
 bool SeriesMatch::compareNext()
 {
 	//If there's no token to be compared or we're done, return true.
-	if (!token || position >= submatches.size()) {
+	if (!token || position >= matches.size()) {
 		isDone = true;
 		return true;
 	}
 	
 	//Fetch the current submatch.
-	Match * m = submatches[position];
+	Match * m = matches[position];
 	
 	//If we have just arrived at this submatch, set its start token.
 	if (submatchAdvanced) {
@@ -39,12 +39,12 @@ bool SeriesMatch::compareNext()
 	
 	//Calculate the overall match.
 	match = 0;
-	for (std::vector<Match *>::iterator sm = submatches.begin(); sm != submatches.end(); sm++)
+	for (std::vector<Match *>::iterator sm = matches.begin(); sm != matches.end(); sm++)
 		match += (*sm)->getMatch();
-	match /= submatches.size();
+	match /= matches.size();
 	
-	//Return whether we've reached the end of the submatches.
-	isDone = (position >= submatches.size());
+	//Return whether we've reached the end of the matches.
+	isDone = (position >= matches.size());
 	return isDone;
 }
 
@@ -55,8 +55,8 @@ std::vector<std::string> SeriesMatch::toStrings()
 	std::vector<std::string> s;
 	s.push_back("");
 	
-	//Iterate through all the submatches.
-	for (std::vector<Match *>::iterator m = submatches.begin(); m != submatches.end(); m++) {
+	//Iterate through all the matches.
+	for (std::vector<Match *>::iterator m = matches.begin(); m != matches.end(); m++) {
 		
 		//Ask each for its strings representation.
 		std::vector<std::string> strings = (*m)->toStrings();
@@ -65,7 +65,7 @@ std::vector<std::string> SeriesMatch::toStrings()
 		std::vector<std::string> offset = s;
 		s.clear();
 		
-		//Append every string we received from the submatches to each entry of strings we already
+		//Append every string we received from the matches to each entry of strings we already
 		//have.
 		for (std::vector<std::string>::iterator ns = strings.begin(); ns != strings.end(); ns++) {
 			for (std::vector<std::string>::iterator os = offset.begin(); os != offset.end(); os++) {
@@ -75,6 +75,16 @@ std::vector<std::string> SeriesMatch::toStrings()
 				s.push_back(cat);
 			}
 		}
+	}
+	return s;
+}
+
+SeriesMatch::operator std::string()
+{
+	std::string s;
+	for (std::vector<Match *>::iterator m = matches.begin(); m != matches.end(); m++) {
+		if (!s.empty()) s += " ";
+		s += (std::string)*(*m);
 	}
 	return s;
 }

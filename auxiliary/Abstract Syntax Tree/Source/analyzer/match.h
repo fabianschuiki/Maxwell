@@ -47,4 +47,5 @@ public:
 	bool done();
 	
 	virtual std::vector<std::string> toStrings() = 0;
+	virtual operator std::string() = 0;
 };

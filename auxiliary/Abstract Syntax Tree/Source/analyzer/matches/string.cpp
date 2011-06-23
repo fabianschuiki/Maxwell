@@ -1,11 +1,12 @@
 #include "string.h"
+#include <iostream>
 
 
 StringMatch::StringMatch(const std::string & n) : Match(), needle(n)
 {
 }
 
-bool StringMatch::compare()
+bool StringMatch::compareNext()
 {
 	//Ignore if we don't have a valid token.
 	if (!token)
@@ -68,8 +69,10 @@ bool StringMatch::compare()
 	//Calculate the match which is basically the ratio of the total text length to the number of
 	//inserts and removes.
 	match = 1 - (double)(inserts + removes) / position;
+	std::cout << match * 100 << "%: " << needle << std::endl;
 	
 	//Advance to the next token and return true to indicate that we don't need anymore tokens.
 	token = token->next;
+	isDone = true;
 	return true;
 }

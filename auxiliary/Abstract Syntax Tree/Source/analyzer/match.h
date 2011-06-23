@@ -9,6 +9,9 @@ protected:
 	Token * startToken;
 	Token * token;
 	
+	bool isDone;
+	bool isPrepared;
+	
 public:
 	float getMatch();
 	
@@ -19,5 +22,9 @@ public:
 	Match();
 	virtual ~Match() {}
 	
-	virtual bool compare() = 0;
+	virtual void prepareCompare() {}
+	virtual bool compareNext() = 0;
+	void compare();
+	void compareAll();
+	bool done();
 };

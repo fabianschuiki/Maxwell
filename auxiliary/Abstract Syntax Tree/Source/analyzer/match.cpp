@@ -22,6 +22,9 @@ void Match::setStartToken(Token * t)
 {
 	startToken = t;
 	token = t;
+	
+	isDone = false;
+	isPrepared = false;
 }
 
 
@@ -29,4 +32,27 @@ void Match::setStartToken(Token * t)
 Match::Match()
 {
 	match = 0;
+	isDone = false;
+	isPrepared = false;
+}
+
+
+
+void Match::compare()
+{
+	if (!isPrepared) {
+		prepareCompare();
+		isPrepared = true;
+	}
+	compareNext();
+}
+
+void Match::compareAll()
+{
+	while (!compare());
+}
+
+bool Match::done()
+{
+	return isDone;
 }

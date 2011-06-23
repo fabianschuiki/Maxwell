@@ -28,5 +28,5 @@ public:
 	StringMatch(const std::string & needle);
 	virtual ~StringMatch() {}
 	
-	virtual void compare(Token * token);
+	virtual bool compare();
 };

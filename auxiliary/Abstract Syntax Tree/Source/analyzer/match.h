@@ -6,11 +6,18 @@ class Match {
 protected:
 	float match;
 	
+	Token * startToken;
+	Token * token;
+	
 public:
 	float getMatch();
+	
+	Token * getStartToken();
+	Token * getNextToken();
+	void setStartToken(Token * token);
 	
 	Match();
 	virtual ~Match() {}
 	
-	virtual void compare(Token * token) = 0;
+	virtual bool compare() = 0;
 };

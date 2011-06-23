@@ -5,8 +5,12 @@ StringMatch::StringMatch(const std::string & n) : Match(), needle(n)
 {
 }
 
-void StringMatch::compare(Token * token)
+bool StringMatch::compare()
 {
+	//Ignore if we don't have a valid token.
+	if (!token)
+		return true;
+	
 	//Allocate a map for all possible characters in the string and set all counts to zero.
 	int characters[256];
 	memset(characters, 0, sizeof(*characters) * 256);
@@ -64,4 +68,8 @@ void StringMatch::compare(Token * token)
 	//Calculate the match which is basically the ratio of the total text length to the number of
 	//inserts and removes.
 	match = 1 - (double)(inserts + removes) / position;
+	
+	//Advance to the next token and return true to indicate that we don't need anymore tokens.
+	token = token->next;
+	return true;
 }

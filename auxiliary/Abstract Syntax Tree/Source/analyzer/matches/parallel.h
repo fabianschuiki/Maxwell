@@ -7,10 +7,11 @@ class ParallelMatch : public Match {
 private:
 	Match * bestMatch;
 	
-public:
+protected:
 	std::vector<Match *> submatches;
 	
 	virtual void prepareCompare();
+	virtual void prepareMatches() {}
 	virtual bool compareNext();
 	
 public:

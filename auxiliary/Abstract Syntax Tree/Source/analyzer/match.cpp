@@ -29,6 +29,34 @@ void Match::setStartToken(Token * t)
 
 
 
+int Match::getTag()
+{
+	return tag;
+}
+
+void Match::setTag(int t)
+{
+	tag = t;
+}
+
+Match * Match::getParent()
+{
+	return parent;
+}
+
+void Match::setParent(Match * p)
+{
+	parent = p;
+}
+
+void Match::notifyParent()
+{
+	if (parent)
+		parent->childNotification(tag, this);
+}
+
+
+
 Match::Match()
 {
 	match = 0;

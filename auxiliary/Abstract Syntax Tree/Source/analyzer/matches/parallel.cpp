@@ -10,6 +10,12 @@ Match * ParallelMatch::getBestMatch()
 
 void ParallelMatch::prepareCompare()
 {
+	Match::prepareCompare();
+	
+	//Prepare the submatches if required.
+	if (submatches.empty())
+		prepareMatches();
+	
 	//Set the start token for all submatches.
 	for (std::vector<Match *>::iterator m = submatches.begin(); m != submatches.end(); m++)
 		(*m)->setStartToken(startToken);

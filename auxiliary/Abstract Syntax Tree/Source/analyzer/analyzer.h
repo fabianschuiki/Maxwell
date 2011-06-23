@@ -1,13 +1,13 @@
 #pragma once
-#include "match.h"
+#include "matches/root.h"
 
 
 class Analyzer {
 private:
-	Match * rootMatch;
+	RootMatch * rootMatch;
 	
 public:
-	Match * getRootMatch();
+	RootMatch * getRootMatch();
 	
 	Analyzer();
 	~Analyzer();

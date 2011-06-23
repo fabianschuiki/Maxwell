@@ -7,6 +7,10 @@ void SeriesMatch::prepareCompare()
 	Match::prepareCompare();
 	position = 0;
 	submatchAdvanced = true;
+	
+	//Prepare the submatches if required.
+	if (submatches.empty())
+		prepareMatches();
 }
 
 bool SeriesMatch::compareNext()

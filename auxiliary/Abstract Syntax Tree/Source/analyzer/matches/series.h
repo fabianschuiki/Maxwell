@@ -8,10 +8,11 @@ private:
 	bool submatchAdvanced;
 	int position;
 	
-public:
+protected:
 	std::vector<Match *> submatches;
 	
 	virtual void prepareCompare();
+	virtual void prepareMatches() {}
 	virtual bool compareNext();
 	
 public:

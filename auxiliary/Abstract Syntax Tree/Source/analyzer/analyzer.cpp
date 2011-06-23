@@ -1,7 +1,6 @@
+#include <iostream>
 #include "analyzer.h"
-#include "matches/parallel.h"
-#include "matches/string.h"
-#include "matches/series.h"
+#include "structure/node.h"
 
 
 RootMatch * Analyzer::getRootMatch()
@@ -34,20 +33,12 @@ void Analyzer::process(Token * token)
 	//Abort if we don't have a valid token.
 	if (!token) return;
 	
-	//Initialize a new root match and do the matching magic.
-	rootMatch = new RootMatch;
-	rootMatch->setStartToken(token);
-	rootMatch->compareAll();
+	//Debug stuff.
+	StructureNode root("root");
+	root.fork()
+	.add(new StructureToken(StructureToken::Keyword, "class"))
+	.add(new StructureToken(StructureToken::Identifier))
+	.add(new StructureToken(StructureToken::Symbol, ":"));
 	
-	//Dump the best match for debugging purposes.
-	temp = *rootMatch;
-	//Match * best = rootMatch->getBestMatch();
-	/*std::stringstream s;
-	if (best) {
-		s << best->getMatch() * 100 << "%" << std::endl << std::endl;
-		std::vector<std::string> strings = best->toStrings();
-		for (int i = 0; i < strings.size(); i++)
-			s << strings[i] << std::endl;
-	}
-	temp = s.str();*/
+	std::cout << (std::string)root;
 }

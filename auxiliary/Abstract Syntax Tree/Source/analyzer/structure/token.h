@@ -7,6 +7,7 @@ class StructureNode;
 class StructureToken {
 public:
 	const enum Type {
+		Empty,
 		Identifier,
 		Numeric,
 		String,
@@ -25,6 +26,8 @@ public:
 	StructureToken(Type type);
 	StructureToken(Type type, const std::string & text);
 	StructureToken(Type type, StructureNode * reference);
+	
+	bool dontMatch() const;
 	
 	operator std::string ();
 };

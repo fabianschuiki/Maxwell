@@ -16,6 +16,7 @@ structureToken(n ? n->getBranches()[b][t] : NULL)
 	prevSibling = NULL;
 	
 	safe = (structureToken && structureToken->safe);
+	unsafeMatch = -1;
 }
 
 Match::~Match()
@@ -27,26 +28,32 @@ Match::~Match()
 
 
 
-StructureToken * Match::getStructureToken()
+StructureToken * Match::getStructureToken() const
 {
 	return structureToken;
 }
 
+StructureNode * Match::getStructureNode() const
+{
+	return node;
+}
 
 
-void Match::findNextToken(StructureNode ** nn, int * nb, int * nt) const
+
+void Match::findNextToken(StructureNode ** nn, int * nb, int * nt, Match ** nm) const
 {
 	//If theres another token left in the node, that's our next token.
 	if (node && (tokenIndex + 1) < node->getBranches()[branchIndex].size()) {
 		*nn = node;
 		*nb = branchIndex;
 		*nt = tokenIndex + 1;
+		*nm = this->parent;
 	}
 	
 	//Otherwise we have to ask our parent what the next token is since we've reached the end of our
 	//branch.
 	else if (parent) {
-		parent->findNextToken(nn, nb, nt);
+		parent->findNextToken(nn, nb, nt, nm);
 	}
 	
 	//Otherwise there's simply nothing left in the structure.
@@ -78,6 +85,7 @@ void Match::makeNextMatch(StructureNode * nextNode)
 	for (int b = 0; b < branchCount; b++) {
 		Match * m = new Match(nextNode, b, 0);
 		m->prev = this;
+		m->parent = this;
 		m->setToken(token);
 		
 		//If this is the first successor, make it our next.
@@ -98,7 +106,8 @@ void Match::makeNextMatch(StructureToken * nt)
 	//Find our next token.
 	StructureNode * nextNode;
 	int nextBranch, nextToken;
-	findNextToken(&nextNode, &nextBranch, &nextToken);
+	Match * nextParent;
+	findNextToken(&nextNode, &nextBranch, &nextToken, &nextParent);
 	
 	//If we haven't found a new token there's nothing left to do.
 	if (!nextNode)
@@ -107,12 +116,16 @@ void Match::makeNextMatch(StructureToken * nt)
 	//Create a new match for the given node, branch and token index.
 	next = new Match(nextNode, nextBranch, nextToken);
 	next->prev = this;
-	next->setToken(token ? token->next : NULL);
+	next->parent = nextParent;
+	if (nt->dontMatch())
+		next->setToken(token);
+	else
+		next->setToken(token ? token->next : NULL);
 }
 
 
 
-float Match::getMatch()
+float Match::getMatch() const
 {
 	return match;
 }
@@ -124,6 +137,11 @@ void Match::setToken(Token * t)
 		if (token)
 			compare();
 	}
+}
+
+Token * Match::getToken() const
+{
+	return token;
 }
 
 
@@ -155,7 +173,7 @@ Match * Match::getPrevSibling() const
 
 
 
-bool Match::getSafe() const
+bool Match::isSafe() const
 {
 	return safe;
 }
@@ -165,21 +183,33 @@ void Match::setSafe(bool s)
 	safe = s;
 }
 
-
-
-float Match::getUnsafeMatch()
+bool Match::isSafeMatch() const
 {
-	Match * m = this;
+	return (safe && getUnsafeMatch() > (1 - 1e-5));
+}
+
+
+
+float Match::getUnsafeMatch() const
+{
+	return unsafeMatch;
+}
+
+void Match::calculateUnsafeMatch()
+{
+	const Match * m = this;
 	float usm = 0;
 	int usmc = 0;
-	while (m && (!m->safe || m == this)) {
-		if (m->structureToken->type != StructureToken::Reference) {
+	while (m) {
+		if (m->structureToken && !m->structureToken->dontMatch()) {
 			usm += m->getMatch();
 			usmc++;
 		}
 		m = m->prev;
+		if (m && m->safe)
+			break;
 	}
-	return usm / usmc;
+	unsafeMatch = usm / usmc;
 }
 
 
@@ -189,10 +219,8 @@ void Match::compare()
 	match = 0;
 	
 	//There are no compares for reference tokens.
-	if (!structureToken || structureToken->type == StructureToken::Reference) {
-		//match = 1;
+	if (!structureToken || structureToken->dontMatch())
 		return;
-	}
 	
 	//Based on the structure token we have to choose a different compare function.
 	switch (structureToken->type) {
@@ -218,7 +246,25 @@ void Match::compare()
 		} break;
 	}
 	
-	//Dump some information.
-	/*if (structureToken && structureToken->type != StructureToken::Reference)
-		std::cout << "matching " << (std::string)*token << " against " << (std::string)*structureToken << " = " << match * 100 << "%" << std::endl;*/
+	//Recalculate the unsafe match since it might have changed.
+	calculateUnsafeMatch();
+}
+
+
+
+Match::operator std::string () const
+{
+	if (!structureToken || (!prev && !parent))
+		return "";
+	std::stringstream out;
+	if (!safe && prev)
+		out << (std::string)*prev;
+	if (!structureToken->dontMatch()) {
+		if (!out.str().empty())
+			out << " ";
+		out << (std::string)*structureToken;
+		if (safe)
+			out << "[" << getUnsafeMatch() * 100 << "%] ";
+	}
+	return out.str();
 }

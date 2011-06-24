@@ -22,20 +22,24 @@ protected:
 	Match * prevSibling;
 	
 	bool safe;
+	float unsafeMatch;
 	
 public:
 	Match(StructureNode * node, int branchIndex, int tokenIndex);
 	~Match();
 	
-	StructureToken * getStructureToken();
+	StructureNode * getStructureNode() const;
+	StructureToken * getStructureToken() const;
 	
-	void findNextToken(StructureNode ** nextNode, int * nextBranch, int * nextToken) const;
+	void findNextToken(StructureNode ** nextNode, int * nextBranch, int * nextToken,
+					   Match ** nextParent) const;
 	void makeNextMatch();
 	void makeNextMatch(StructureNode * nextNode);
 	void makeNextMatch(StructureToken * nextToken);
 	
-	float getMatch();
+	float getMatch() const;
 	void setToken(Token * token);
+	Token * getToken() const;
 	
 	Match * getParent() const;
 	Match * getNext() const;
@@ -43,10 +47,14 @@ public:
 	Match * getNextSibling() const;
 	Match * getPrevSibling() const;
 	
-	bool getSafe() const;
+	bool isSafe() const;
 	void setSafe(bool safe);
+	bool isSafeMatch() const;
 	
-	float getUnsafeMatch();
+	float getUnsafeMatch() const;
+	void calculateUnsafeMatch();
 	
 	void compare();
+	
+	operator std::string () const;
 };

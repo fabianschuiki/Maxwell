@@ -25,3 +25,8 @@ StructureToken::operator std::string ()
 	if (safe) out << "•";
 	return out.str();
 }
+
+bool StructureToken::dontMatch() const
+{
+	return (type == Empty || type == Reference);
+}

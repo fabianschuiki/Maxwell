@@ -1,1 +1,1 @@
-class Hello : Test { }
+class Hello : World <How, are, you, doing> ;

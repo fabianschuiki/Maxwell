@@ -19,7 +19,7 @@ public:
 		Reference
 	} type;
 	const std::string text;
-	const StructureNode * reference;
+	StructureNode * const reference;
 	bool safe;
 	
 	StructureToken(Type type);

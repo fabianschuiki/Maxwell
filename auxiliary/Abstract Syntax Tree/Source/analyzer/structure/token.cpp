@@ -3,8 +3,9 @@
 #include "node.h"
 
 
-StructureToken::StructureToken(Type t) : type(t), safe(false) {}
-StructureToken::StructureToken(Type t, const std::string & txt) : type(t), text(txt), safe(false) {}
+StructureToken::StructureToken(Type t) : type(t), reference(NULL), safe(false) {}
+StructureToken::StructureToken(Type t, const std::string & txt) : type(t), reference(NULL),
+	text(txt), safe(false) {}
 StructureToken::StructureToken(Type t, StructureNode * r) : type(t), reference(r), safe(false) {}
 
 StructureToken::operator std::string ()

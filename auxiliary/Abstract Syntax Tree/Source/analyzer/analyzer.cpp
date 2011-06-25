@@ -71,8 +71,8 @@ void Analyzer::process(Token * token)
 	class_decl.fork()
 	.add(new StructureToken(StructureToken::Keyword, "class"))
 	.add(new StructureToken(StructureToken::Identifier))
-	.add(new StructureToken(StructureToken::Symbol, ":"))
 	.opt()
+	.add(new StructureToken(StructureToken::Symbol, ":"))
 	.add(new StructureToken(StructureToken::Identifier))
 	.done()
 	//.add(new StructureToken(StructureToken::Reference, &class_super))
@@ -92,7 +92,7 @@ void Analyzer::process(Token * token)
 	StructureNode root("root");
 	root.fork().add(new StructureToken(StructureToken::Reference, &class_decl/*s*/));
 	
-	std::cout << (std::string)root;
+	std::cout << (std::string)class_decl;
 	//std::cout << (std::string)class_super;
 	
 	//Create a new matcher, just for testing.

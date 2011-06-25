@@ -13,8 +13,6 @@ private:
 	const std::string name;
 	Branches branches;
 	
-	StructureToken::Group nextGroup;
-	
 public:
 	StructureNode(const std::string & name);
 	~StructureNode();

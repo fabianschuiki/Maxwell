@@ -17,17 +17,16 @@ public:
 		Symbol,
 		
 		//Node
-		Reference
+		Reference,
+		
+		//Flow
+		Optional,
+		Many,
+		Done
 	} type;
 	const std::string text;
 	StructureNode * const reference;
 	bool safe;
-	enum Group {
-		None,
-		Done,
-		Optional,
-		Many
-	} group;
 	
 	StructureToken(Type type);
 	StructureToken(Type type, const std::string & text);

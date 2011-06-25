@@ -13,7 +13,6 @@ StructureToken::StructureToken(Type t, StructureNode * r)
 void StructureToken::init()
 {
 	safe = false;
-	group = None;
 }
 
 
@@ -21,8 +20,6 @@ void StructureToken::init()
 StructureToken::operator std::string ()
 {
 	std::stringstream out;
-	if (group == Many) out << "*{";
-	if (group == Optional) out << "?{";
 	switch (type) {
 		case Identifier:	out << "<ident>"; break;
 		case Numeric:		out << "<num>"; break;
@@ -33,13 +30,16 @@ StructureToken::operator std::string ()
 			
 		case Reference:		out << (reference ? reference->getName() : "???"); break;
 			
+		case Optional:		out << "?{"; break;
+		case Many:			out << "*{"; break;
+		case Done:			out << "}"; break;
+			
 	}
 	//if (safe) out << "•";
-	if (group == Done) out << "}";
 	return out.str();
 }
 
 bool StructureToken::dontMatch() const
 {
-	return (type == Empty || type == Reference);
+	return (type == Empty || type == Reference || type >= Optional);
 }

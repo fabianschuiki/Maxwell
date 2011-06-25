@@ -52,22 +52,22 @@ StructureNode & StructureNode::safe()
 
 StructureNode & StructureNode::many()
 {
-	assert(!branches.empty() && !branches.back().empty() && "no token to start many group");
-	branches.back().back()->group = StructureToken::Many;
+	assert(!branches.empty() && "no branch forked to start many-group");
+	branches.back().push_back(new StructureToken(StructureToken::Many));
 	return *this;
 }
 
 StructureNode & StructureNode::opt()
 {
-	assert(!branches.empty() && !branches.back().empty() && "no token to start optional group");
-	branches.back().back()->group = StructureToken::Optional;
+	assert(!branches.empty() && "no branch forked to start optional-group");
+	branches.back().push_back(new StructureToken(StructureToken::Optional));
 	return *this;
 }
 
 StructureNode & StructureNode::done()
 {
-	assert(!branches.empty() && !branches.back().empty() && "no token to end group");
-	branches.back().back()->group = StructureToken::Done;
+	assert(!branches.empty() && "no branch forked to end group");
+	branches.back().push_back(new StructureToken(StructureToken::Done));
 	return *this;
 }
 

@@ -58,4 +58,8 @@ public:
 	void compare();
 	
 	operator std::string () const;
+	
+public:
+	int triesLeft;
+	float matchToBeat;
 };

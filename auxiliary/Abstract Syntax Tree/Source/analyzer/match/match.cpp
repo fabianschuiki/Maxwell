@@ -20,6 +20,11 @@ structureToken(n ? n->getBranches()[b][t] : NULL)
 	prevSibling = NULL;
 	
 	safe = (structureToken && structureToken->safe);
+	
+	matchToBeat = 0;
+	triesLeft = -1;
+	
+	unsafeMatchCache.erase(this);
 }
 
 Match::~Match()
@@ -27,6 +32,7 @@ Match::~Match()
 	if (next)
 		delete next;
 	parent = next = prev = nextSibling = prevSibling = NULL;
+	unsafeMatchCache.erase(this);
 }
 
 
@@ -233,7 +239,7 @@ float Match::getUnsafeMatch() const
 {
 	float v;
 	if (!unsafeMatchCache.count(this)) {
-		const Match * m = this;
+		/*const Match * m = this;
 		float usm = 1;
 		//int usmc = 0;
 		while (m) {
@@ -245,9 +251,22 @@ float Match::getUnsafeMatch() const
 			if (m && m != this && m->isSafeMatch())
 				break;
 			m = m->prev;
-		}
+		}*/
 		//v = (usmc > 0 ? usm / usmc : 1);
-		v = usm;
+		
+		//Get the previous match, if there is any.
+		float prevMatch = (prev ? prev->getUnsafeMatch() : 1);
+		
+		//If our token is not used for matching, simply pass through the result of our previous
+		//match.
+		if (dontMatch())
+			v = prevMatch;
+		
+		//Otherwise we calculate the average between our match and the previous one, if possible.
+		else
+			v = (match + prevMatch) / 2;
+		
+		//v = usm;
 		unsafeMatchCache[this] = v;
 	} else {
 		v = unsafeMatchCache[this];

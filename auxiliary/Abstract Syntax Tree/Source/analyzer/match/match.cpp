@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <iostream>
+#include <set>
 #include "match.h"
 #include "../../stringdiff.h"
 
@@ -19,7 +20,6 @@ structureToken(n ? n->getBranches()[b][t] : NULL)
 	prevSibling = NULL;
 	
 	safe = (structureToken && structureToken->safe);
-	unsafeMatch = -1;
 }
 
 Match::~Match()
@@ -218,7 +218,13 @@ void Match::setSafe(bool s)
 
 bool Match::isSafeMatch() const
 {
-	return (safe && getUnsafeMatch() > (1 - 1e-5));
+	return (/*safe &&*/ getUnsafeMatch() > /*(1 - 1e-5)*/0.95);
+}
+
+bool Match::dontMatch() const
+{
+	if (!structureToken) return true;
+	return structureToken->dontMatch();
 }
 
 
@@ -228,41 +234,26 @@ float Match::getUnsafeMatch() const
 	float v;
 	if (!unsafeMatchCache.count(this)) {
 		const Match * m = this;
-		float usm = 0;
-		int usmc = 0;
+		float usm = 1;
+		//int usmc = 0;
 		while (m) {
 			if (m->structureToken && !m->structureToken->dontMatch()) {
 				usm += m->getMatch();
-				usmc++;
+				usm /= 2;
+				//usmc++;
 			}
-			m = m->prev;
-			if (m && m->isSafeMatch())
+			if (m && m != this && m->isSafeMatch())
 				break;
+			m = m->prev;
 		}
-		v = (usmc > 0 ? usm / usmc : 1);
+		//v = (usmc > 0 ? usm / usmc : 1);
+		v = usm;
 		unsafeMatchCache[this] = v;
 	} else {
 		v = unsafeMatchCache[this];
 	}
 	return v;
 }
-
-/*void Match::calculateUnsafeMatch()
-{
-	const Match * m = this;
-	float usm = 0;
-	int usmc = 0;
-	while (m) {
-		if (m->structureToken && !m->structureToken->dontMatch()) {
-			usm += m->getMatch();
-			usmc++;
-		}
-		m = m->prev;
-		if (m && m->isSafeMatch())
-			break;
-	}
-	unsafeMatch = usm / usmc;
-}*/
 
 
 
@@ -271,10 +262,8 @@ void Match::compare()
 	match = 0;
 	
 	//There are no compares for reference tokens.
-	if (!structureToken || structureToken->dontMatch()) {
-		//calculateUnsafeMatch();
+	if (!structureToken || structureToken->dontMatch())
 		return;
-	}
 	
 	//Based on the structure token we have to choose a different compare function.
 	switch (structureToken->type) {
@@ -293,15 +282,51 @@ void Match::compare()
 		} break;
 			
 		case StructureToken::Symbol: {
-			//TODO: Distinguish between closely related symbol mismatches "((" instead of "()" and
-			//other mistakes like "*&".
-			match = (token->kind == Token::kSymbolToken &&
-					 token->text == structureToken->text ? 1.0 : 0.0);
+			if (token->kind == Token::kSymbolToken) {
+				if (token->text == structureToken->text)
+					match = 1;
+				else {
+					static std::vector<std::set<std::string> > closelyRelated;
+					static std::vector<std::set<std::string> > looselyRelated;
+					if (closelyRelated.empty()) {
+						closelyRelated.resize(closelyRelated.size() + 1);
+						closelyRelated.back().insert(":");
+						closelyRelated.back().insert(".");
+						closelyRelated.resize(closelyRelated.size() + 1);
+						closelyRelated.back().insert(";");
+						closelyRelated.back().insert(",");
+					}
+					if (looselyRelated.empty()) {
+						looselyRelated.resize(looselyRelated.size() + 1);
+						looselyRelated.back().insert(",");
+						looselyRelated.back().insert(".");
+						looselyRelated.resize(looselyRelated.size() + 1);
+						looselyRelated.back().insert(";");
+						looselyRelated.back().insert(":");
+					}
+					
+					if (match < 0.66) {
+						for (int i = 0; i < closelyRelated.size(); i++) {
+							if (closelyRelated[i].count(token->text) &&
+								closelyRelated[i].count(structureToken->text)) {
+								match = 0.66;
+								break;
+							}
+						}
+					}
+					if (match < 0.33) {
+						for (int i = 0; i < looselyRelated.size(); i++) {
+							if (looselyRelated[i].count(token->text) &&
+								looselyRelated[i].count(structureToken->text)) {
+								match = 0.33;
+								break;
+							}
+						}
+					}
+				}
+			}
 		} break;
 	}
-	
-	//Recalculate the unsafe match since it might have changed.
-	//calculateUnsafeMatch();
 }
 
 
@@ -317,8 +342,10 @@ Match::operator std::string () const
 		if (!out.str().empty())
 			out << " ";
 		out << (std::string)*structureToken;
-		/*if (safe)
-			out << "[" << getUnsafeMatch() * 100 << "%]";*/
+		if (safe)
+			out << "[" << getUnsafeMatch() * 100 << "%]";
+		if (structureToken->type == StructureToken::Symbol)
+			out << "[" << match * 100 << "%]";
 	}
 	return out.str();
 }

@@ -24,7 +24,6 @@ protected:
 	Match * prevSibling;
 	
 	bool safe;
-	float unsafeMatch;
 	
 public:
 	Match(StructureNode * node, int branchIndex, int tokenIndex);
@@ -52,9 +51,9 @@ public:
 	bool isSafe() const;
 	void setSafe(bool safe);
 	bool isSafeMatch() const;
+	bool dontMatch() const;
 	
 	float getUnsafeMatch() const;
-	//void calculateUnsafeMatch();
 	
 	void compare();
 	

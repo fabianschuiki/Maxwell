@@ -74,21 +74,21 @@ void Analyzer::process(Token * token)
 	.add(new StructureToken(StructureToken::Keyword, "class"))
 	.add(new StructureToken(StructureToken::Identifier))
 	.opt()
-	.add(new StructureToken(StructureToken::Symbol, ":")).safe()
+	.add(new StructureToken(StructureToken::Symbol, ":"))/*.safe()*/
 	.add(new StructureToken(StructureToken::Identifier))
 	.done()
 	.opt()
-	.add(new StructureToken(StructureToken::Symbol, "<")).safe()
+	.add(new StructureToken(StructureToken::Symbol, "<"))/*.safe()*/
 	.add(new StructureToken(StructureToken::Identifier))
 	.many()
 	.add(new StructureToken(StructureToken::Symbol, ","))
 	.add(new StructureToken(StructureToken::Identifier))
 	.done()
-	.add(new StructureToken(StructureToken::Symbol, ">")).safe()
+	.add(new StructureToken(StructureToken::Symbol, ">"))/*.safe()*/
 	.done()
 	//.add(new StructureToken(StructureToken::Reference, &class_super))
 	//.add(new StructureToken(StructureToken::Reference, &class_intf_decl))
-	.add(new StructureToken(StructureToken::Symbol, ";")).safe()
+	.add(new StructureToken(StructureToken::Symbol, ";"))/*.safe()*/
 	;
 	
 	/*StructureNode class_decls("class_decls");
@@ -127,34 +127,52 @@ void Analyzer::process(Token * token)
 		//Duplicate the set of matches since we need to iterate over them while modifying the
 		//content.
 		currentEnds = leadingEnds;
-		leadingEnds.clear();
+		//leadingEnds.clear();
 		
-		//Iterate over the current ends and find the one yielding the best match so far.
+		//Iterate over the current ends and find either the first one that doesn't match, which has
+		//the highest priority, or the one yielding the best match so far.
 		float bestMatch = 0;
 		Match * best = NULL;
+		bool wasBestMatch = true;
 		for (std::set<Match *>::iterator m = currentEnds.begin(); m != currentEnds.end(); m++) {
-			if (!best || (*m)->getUnsafeMatch() > bestMatch) {
+			float match = (*m)->getUnsafeMatch();
+			std::cout << (std::string)**m << " (" << match*100 << "%)" << std::endl;
+			if ((*m)->dontMatch()) {
 				best = (*m);
-				bestMatch = (*m)->getUnsafeMatch(); //TODO: cache this value somehow.
+				bestMatch = match;
+				wasBestMatch = false;
+				break;
+			}
+			if (!best || match > bestMatch) {
+				best = (*m);
+				bestMatch = match;
 			}
 		}
 		
+		//Erase matches that are too weak.
+		for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++)
+			if ((*m)->getUnsafeMatch() < bestMatch * 0.5)
+				leadingEnds.erase(m);
+		
 		//If there was a best match found, calculate its next matches
 		bool anySafeMatch = false;
+		float bestSafeMatch = 0;
 		if (best) {
-			assert(!isnan(bestMatch));
-			std::cout << "advancing " << (std::string)*best << " (" << bestMatch*100 << "%)"
-			<< std::endl;
+			std::cout << "--> " << (std::string)*best << " (" << bestMatch*100 << "%)" << std::endl;
+			std::cout << std::endl;
+			leadingEnds.erase(best);
 			best->makeNextMatch();
 			Match * nm = best->getNext();
 			while (nm) {
 				if (nm->getToken()) {
-					if (nm->isSafeMatch())
+					if (nm->isSafeMatch() && wasBestMatch) {
 						anySafeMatch = true;
+						bestSafeMatch = nm->getUnsafeMatch();
+					}
 					
-					//Add this to the leading ends.
-					leadingEnds.erase(nm->getPrev());
-					leadingEnds.insert(nm);
+					//Add this to the leading ends if it matches at least a bit.
+					//if (nm->getUnsafeMatch() > 0.5)
+						leadingEnds.insert(nm);
 					
 					//Keep track of this branch.
 					branches.erase(nm->getPrev());
@@ -174,7 +192,7 @@ void Analyzer::process(Token * token)
 		//no such match.
 		if (anySafeMatch)
 			for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++)
-				if (!(*m)->isSafeMatch())
+				if ((*m)->getUnsafeMatch() < bestSafeMatch * 0.95)
 					leadingEnds.erase(m);
 		
 		//Dump the branches.
@@ -187,6 +205,10 @@ void Analyzer::process(Token * token)
 	std::cout << std::endl;
 	for (std::set<Match *>::iterator m = branches.begin(); m != branches.end(); m++)
 		std::cout << (std::string)**m << (currentEnds.count(*m) ? "" : " ◼")
+		<< "   | " << (*m)->getUnsafeMatch() * 100 << "%" << std::endl;
+	std::cout << std::endl;
+	for (std::set<Match *>::iterator m = currentEnds.begin(); m != currentEnds.end(); m++)
+		std::cout << (std::string)**m
 		<< "   | " << (*m)->getUnsafeMatch() * 100 << "%" << std::endl;
 	
 	//Dump some stuff to the user window.

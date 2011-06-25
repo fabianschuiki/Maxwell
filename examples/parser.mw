@@ -1,4 +1,4 @@
-class Hello : Object <KVO, Comparable> ;
+class Hello ; Object <KVO, Comparable>;
 
 //Another class
-class World : Object <KVO, Comparable > ;
+class World : Object <KVO, Comparable >;

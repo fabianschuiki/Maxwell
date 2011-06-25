@@ -10,6 +10,12 @@ const static struct { int s; int e; } symbolRanges[] = {
 	{0, 0}
 };
 
+const static char * symbolCombinations[] = {
+	"+=", "-=", "*=", "/=",
+	"==", "!=", ">=", "<=",
+	NULL
+};
+
 
 
 void Tokenizer::addToken(Token * token)
@@ -83,6 +89,7 @@ void Tokenizer::process(std::istream & input)
 		
 		//Process the character based on the current context.
 		Token::Kind kind = Token::kInvalidToken;
+		bool wrapUpAnyway = false;
 		
 		switch (context) {
 			case kCodeContext: {
@@ -111,7 +118,17 @@ void Tokenizer::process(std::istream & input)
 					}
 				}
 				if (isSymbol) {
+					//Check whether the character can be combined with what's already in the buffer.
 					kind = Token::kSymbolToken;
+					std::string lookaheadBuffer = buffer;
+					lookaheadBuffer += c;
+					wrapUpAnyway = true;
+					for (int i = 0; symbolCombinations[i] != 0; i++) {
+						if (lookaheadBuffer == symbolCombinations[i]) {
+							wrapUpAnyway = false;
+							break;
+						}
+					}
 					break;
 				}
 				
@@ -166,7 +183,7 @@ void Tokenizer::process(std::istream & input)
 			kind = bufferKind;
 		
 		//If the buffer kind and this token kind disagree, wrap up the current buffer.
-		if (bufferKind != kind && !buffer.empty()) {
+		if ((bufferKind != kind || wrapUpAnyway) && !buffer.empty()) {
 			
 			//Create a new token with the buffer content.
 			Token * t = new Token(bufferKind, buffer, bufferRange);

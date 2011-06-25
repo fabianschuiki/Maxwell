@@ -3,6 +3,9 @@
 #include "match.h"
 #include "../../stringdiff.h"
 
+std::map<const Match * const, float> Match::unsafeMatchCache;
+
+
 
 Match::Match(StructureNode * n, int b, int t) : node(n), branchIndex(b), tokenIndex(t),
 structureToken(n ? n->getBranches()[b][t] : NULL)
@@ -222,8 +225,30 @@ bool Match::isSafeMatch() const
 
 float Match::getUnsafeMatch() const
 {
-	/*assert(unsafeMatch >= 0);
-	return unsafeMatch;*/
+	float v;
+	if (!unsafeMatchCache.count(this)) {
+		const Match * m = this;
+		float usm = 0;
+		int usmc = 0;
+		while (m) {
+			if (m->structureToken && !m->structureToken->dontMatch()) {
+				usm += m->getMatch();
+				usmc++;
+			}
+			m = m->prev;
+			if (m && m->isSafeMatch())
+				break;
+		}
+		v = (usmc > 0 ? usm / usmc : 1);
+		unsafeMatchCache[this] = v;
+	} else {
+		v = unsafeMatchCache[this];
+	}
+	return v;
+}
+
+/*void Match::calculateUnsafeMatch()
+{
 	const Match * m = this;
 	float usm = 0;
 	int usmc = 0;
@@ -236,25 +261,8 @@ float Match::getUnsafeMatch() const
 		if (m && m->isSafeMatch())
 			break;
 	}
-	return usm / usmc;
-}
-
-void Match::calculateUnsafeMatch()
-{
-	const Match * m = this;
-	float usm = 0;
-	int usmc = 0;
-	while (m) {
-		if (m->structureToken && !m->structureToken->dontMatch()) {
-			usm += m->getMatch();
-			usmc++;
-		}
-		m = m->prev;
-		if (m && (m->node != node || m->isSafeMatch()))
-			break;
-	}
 	unsafeMatch = usm / usmc;
-}
+}*/
 
 
 
@@ -264,7 +272,7 @@ void Match::compare()
 	
 	//There are no compares for reference tokens.
 	if (!structureToken || structureToken->dontMatch()) {
-		calculateUnsafeMatch();
+		//calculateUnsafeMatch();
 		return;
 	}
 	
@@ -293,7 +301,7 @@ void Match::compare()
 	}
 	
 	//Recalculate the unsafe match since it might have changed.
-	calculateUnsafeMatch();
+	//calculateUnsafeMatch();
 }
 
 

@@ -56,10 +56,14 @@
 			
 			//Decide what background color to use for this token.
 			NSColor * color = nil;
+			static BOOL symbolToggle = NO;
 			switch (token->kind) {
 				case Token::kStringToken:		color = [NSColor magentaColor]; break;
 				case Token::kIdentifierToken:	color = [NSColor lightGrayColor]; break;
-				case Token::kSymbolToken:		color = [NSColor greenColor]; break;
+				case Token::kSymbolToken: {
+					color = (symbolToggle ? [NSColor greenColor] : [NSColor orangeColor]);
+					symbolToggle = !symbolToggle;
+				} break;
 				case Token::kNumericToken:		color = [NSColor cyanColor]; break;
 			}
 			

@@ -1,3 +1,5 @@
+#include <assert.h>
+#include <math.h>
 #include <iostream>
 #include <set>
 #include "analyzer.h"
@@ -127,25 +129,37 @@ void Analyzer::process(Token * token)
 		currentEnds = leadingEnds;
 		leadingEnds.clear();
 		
-		//Iterate over the current ends, make the next matches for each and move all of them into
-		//the leading ends set.
-		bool anySafeMatch = false;
+		//Iterate over the current ends and find the one yielding the best match so far.
+		float bestMatch = 0;
+		Match * best = NULL;
 		for (std::set<Match *>::iterator m = currentEnds.begin(); m != currentEnds.end(); m++) {
-			(*m)->makeNextMatch();
-			Match * nm = (*m)->getNext();
+			if (!best || (*m)->getUnsafeMatch() > bestMatch) {
+				best = (*m);
+				bestMatch = (*m)->getUnsafeMatch(); //TODO: cache this value somehow.
+			}
+		}
+		
+		//If there was a best match found, calculate its next matches
+		bool anySafeMatch = false;
+		if (best) {
+			assert(!isnan(bestMatch));
+			std::cout << "advancing " << (std::string)*best << " (" << bestMatch*100 << "%)"
+			<< std::endl;
+			best->makeNextMatch();
+			Match * nm = best->getNext();
 			while (nm) {
 				if (nm->getToken()) {
 					if (nm->isSafeMatch())
 						anySafeMatch = true;
 					
 					//Add this to the leading ends.
+					leadingEnds.erase(nm->getPrev());
 					leadingEnds.insert(nm);
 					
 					//Keep track of this branch.
 					branches.erase(nm->getPrev());
 					branches.insert(nm);
 				}
-				//std::cout << (std::string)*nm << std::endl;
 				
 				//Jump to the next sibling.
 				nm = nm->getNextSibling();
@@ -170,6 +184,7 @@ void Analyzer::process(Token * token)
 	}
 	
 	//Dump the branches.
+	std::cout << std::endl;
 	for (std::set<Match *>::iterator m = branches.begin(); m != branches.end(); m++)
 		std::cout << (std::string)**m << (currentEnds.count(*m) ? "" : " ◼")
 		<< "   | " << (*m)->getUnsafeMatch() * 100 << "%" << std::endl;

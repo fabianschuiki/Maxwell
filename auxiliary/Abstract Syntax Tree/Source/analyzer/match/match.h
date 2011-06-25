@@ -12,6 +12,8 @@ private:
 	
 	float match;
 	
+	static std::map<const Match * const, float> unsafeMatchCache;
+	
 protected:
 	Token * token;
 	
@@ -52,7 +54,7 @@ public:
 	bool isSafeMatch() const;
 	
 	float getUnsafeMatch() const;
-	void calculateUnsafeMatch();
+	//void calculateUnsafeMatch();
 	
 	void compare();
 	

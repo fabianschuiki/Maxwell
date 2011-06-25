@@ -22,10 +22,17 @@ public:
 	const std::string text;
 	StructureNode * const reference;
 	bool safe;
+	enum Group {
+		None,
+		Done,
+		Optional,
+		Many
+	} group;
 	
 	StructureToken(Type type);
 	StructureToken(Type type, const std::string & text);
 	StructureToken(Type type, StructureNode * reference);
+	void init();
 	
 	bool dontMatch() const;
 	

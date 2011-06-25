@@ -1,1 +1,1 @@
-class Hello : World <How, are, you, doing> ;
+class Hello : Object ;

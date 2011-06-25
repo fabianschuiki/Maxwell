@@ -50,6 +50,27 @@ StructureNode & StructureNode::safe()
 	return *this;
 }
 
+StructureNode & StructureNode::many()
+{
+	assert(!branches.empty() && !branches.back().empty() && "no token to start many group");
+	branches.back().back()->group = StructureToken::Many;
+	return *this;
+}
+
+StructureNode & StructureNode::opt()
+{
+	assert(!branches.empty() && !branches.back().empty() && "no token to start optional group");
+	branches.back().back()->group = StructureToken::Optional;
+	return *this;
+}
+
+StructureNode & StructureNode::done()
+{
+	assert(!branches.empty() && !branches.back().empty() && "no token to end group");
+	branches.back().back()->group = StructureToken::Done;
+	return *this;
+}
+
 
 
 StructureNode::operator std::string ()

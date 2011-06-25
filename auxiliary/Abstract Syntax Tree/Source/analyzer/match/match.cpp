@@ -257,14 +257,14 @@ Match::operator std::string () const
 	if (!structureToken || (!prev && !parent))
 		return "";
 	std::stringstream out;
-	if (!safe && prev)
+	if (/*!safe &&*/ prev)
 		out << (std::string)*prev;
 	if (!structureToken->dontMatch()) {
 		if (!out.str().empty())
 			out << " ";
 		out << (std::string)*structureToken;
-		if (safe)
-			out << "[" << getUnsafeMatch() * 100 << "%] ";
+		/*if (safe)
+			out << "[" << getUnsafeMatch() * 100 << "%] ";*/
 	}
 	return out.str();
 }

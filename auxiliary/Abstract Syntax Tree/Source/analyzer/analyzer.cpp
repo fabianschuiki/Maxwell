@@ -34,16 +34,17 @@ void Analyzer::process(Token * token)
 	
 	//Abort if we don't have a valid token.
 	if (!token) return;
+	std::cout << "------------------------------------------------------------" << std::endl;
 	
 	//Debug stuff.
-	StructureNode class_super("class_super");
+	/*StructureNode class_super("class_super");
 	class_super.fork().add(new StructureToken(StructureToken::Empty));
 	class_super.fork()
 	.add(new StructureToken(StructureToken::Symbol, ":")).safe()
 	.add(new StructureToken(StructureToken::Identifier))
-	;
+	;*/
 	
-	StructureNode class_intf("class_intf");
+	/*StructureNode class_intf("class_intf");
 	class_intf.fork()
 	.add(new StructureToken(StructureToken::Identifier))
 	;
@@ -64,31 +65,35 @@ void Analyzer::process(Token * token)
 	.add(new StructureToken(StructureToken::Symbol, "<")).safe()
 	.add(new StructureToken(StructureToken::Reference, &class_intfs))
 	.add(new StructureToken(StructureToken::Symbol, ">")).safe()
-	;
+	;*/
 	
 	StructureNode class_decl("class_decl");
 	class_decl.fork()
 	.add(new StructureToken(StructureToken::Keyword, "class"))
 	.add(new StructureToken(StructureToken::Identifier))
-	.add(new StructureToken(StructureToken::Reference, &class_super))
-	.add(new StructureToken(StructureToken::Reference, &class_intf_decl))
+	.add(new StructureToken(StructureToken::Symbol, ":"))
+	.opt()
+	.add(new StructureToken(StructureToken::Identifier))
+	.done()
+	//.add(new StructureToken(StructureToken::Reference, &class_super))
+	//.add(new StructureToken(StructureToken::Reference, &class_intf_decl))
 	.add(new StructureToken(StructureToken::Symbol, ";")).safe()
 	;
 	
-	StructureNode class_decls("class_decls");
+	/*StructureNode class_decls("class_decls");
 	class_decls.fork()
 	.add(new StructureToken(StructureToken::Reference, &class_decl))
 	;
 	class_decls.fork()
 	.add(new StructureToken(StructureToken::Reference, &class_decl))
 	.add(new StructureToken(StructureToken::Reference, &class_decls))
-	;
+	;*/
 	
 	StructureNode root("root");
-	root.fork().add(new StructureToken(StructureToken::Reference, &class_decls));
+	root.fork().add(new StructureToken(StructureToken::Reference, &class_decl/*s*/));
 	
 	std::cout << (std::string)root;
-	std::cout << (std::string)class_super;
+	//std::cout << (std::string)class_super;
 	
 	//Create a new matcher, just for testing.
 	Match rootMatch(NULL, 0, 0);
@@ -151,6 +156,10 @@ void Analyzer::process(Token * token)
 		for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++)
 			std::cout << (std::string)**m << std::endl;*/
 	}
+	
+	//Dump the branches.
+	for (std::set<Match *>::iterator m = branches.begin(); m != branches.end(); m++)
+		std::cout << (std::string)**m << (currentEnds.count(*m) ? "" : " ◼") << std::endl;
 	
 	//Dump some stuff to the user window.
 	std::stringstream out;

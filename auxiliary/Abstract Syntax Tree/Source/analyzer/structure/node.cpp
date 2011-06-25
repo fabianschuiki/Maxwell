@@ -30,8 +30,18 @@ const StructureNode::Branches & StructureNode::getBranches() const
 
 
 
+int StructureNode::getBranchLocation(int token)
+{
+	if (branchLocations.count(token))
+		return branchLocations[token];
+	return -1;
+}
+
+
+
 StructureNode & StructureNode::fork()
 {
+	assert(branchStack.empty() && "trying to fork with unterminated branches");
 	branches.push_back(Tokens());
 	return *this;
 }
@@ -53,6 +63,7 @@ StructureNode & StructureNode::safe()
 StructureNode & StructureNode::many()
 {
 	assert(!branches.empty() && "no branch forked to start many-group");
+	branchStack.push(branches.back().size());
 	branches.back().push_back(new StructureToken(StructureToken::Many));
 	return *this;
 }
@@ -60,14 +71,24 @@ StructureNode & StructureNode::many()
 StructureNode & StructureNode::opt()
 {
 	assert(!branches.empty() && "no branch forked to start optional-group");
+	branchStack.push(branches.back().size());
 	branches.back().push_back(new StructureToken(StructureToken::Optional));
 	return *this;
 }
 
 StructureNode & StructureNode::done()
 {
-	assert(!branches.empty() && "no branch forked to end group");
+	assert(!branches.empty() && !branchStack.empty() && "no branch forked to end group");
+	
+	//Store the branch locations. Branching always works in the forward direction, i.e. to this
+	//token, but not always into the other (e.g. with optional tokens).
+	int x = branches.back().size();
+	if (branches.back()[branchStack.top()]->type != StructureToken::Optional)
+		branchLocations[x] = branchStack.top();
+	branchLocations[branchStack.top()] = x;
+	
 	branches.back().push_back(new StructureToken(StructureToken::Done));
+	branchStack.pop();
 	return *this;
 }
 

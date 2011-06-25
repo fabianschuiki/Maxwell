@@ -41,5 +41,10 @@ StructureToken::operator std::string ()
 
 bool StructureToken::dontMatch() const
 {
-	return (type == Empty || type == Reference || type >= Optional);
+	return (type == Empty || type == Reference || isBranch());
+}
+
+bool StructureToken::isBranch() const
+{
+	return (type >= Optional);
 }

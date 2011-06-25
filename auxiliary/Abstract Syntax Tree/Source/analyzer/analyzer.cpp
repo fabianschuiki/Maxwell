@@ -72,8 +72,17 @@ void Analyzer::process(Token * token)
 	.add(new StructureToken(StructureToken::Keyword, "class"))
 	.add(new StructureToken(StructureToken::Identifier))
 	.opt()
-	.add(new StructureToken(StructureToken::Symbol, ":"))
+	.add(new StructureToken(StructureToken::Symbol, ":")).safe()
 	.add(new StructureToken(StructureToken::Identifier))
+	.done()
+	.opt()
+	.add(new StructureToken(StructureToken::Symbol, "<")).safe()
+	.add(new StructureToken(StructureToken::Identifier))
+	.many()
+	.add(new StructureToken(StructureToken::Symbol, ","))
+	.add(new StructureToken(StructureToken::Identifier))
+	.done()
+	.add(new StructureToken(StructureToken::Symbol, ">")).safe()
 	.done()
 	//.add(new StructureToken(StructureToken::Reference, &class_super))
 	//.add(new StructureToken(StructureToken::Reference, &class_intf_decl))
@@ -90,7 +99,10 @@ void Analyzer::process(Token * token)
 	;*/
 	
 	StructureNode root("root");
-	root.fork().add(new StructureToken(StructureToken::Reference, &class_decl/*s*/));
+	root.fork()
+	.many()
+	.add(new StructureToken(StructureToken::Reference, &class_decl/*s*/))
+	.done();
 	
 	std::cout << (std::string)class_decl;
 	//std::cout << (std::string)class_super;
@@ -140,16 +152,16 @@ void Analyzer::process(Token * token)
 			}
 		}
 		
+		//Debug copying.
+		if (!leadingEnds.empty())
+			currentEnds = leadingEnds;
+		
 		//If there were any safe matches, iterate through the leading ends and remove all that are
 		//no such match.
 		if (anySafeMatch)
 			for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++)
 				if (!(*m)->isSafeMatch())
 					leadingEnds.erase(m);
-		
-		//Debug copying.
-		if (!leadingEnds.empty())
-			currentEnds = leadingEnds;
 		
 		//Dump the branches.
 		/*std::cout << "-----" << std::endl;
@@ -159,7 +171,8 @@ void Analyzer::process(Token * token)
 	
 	//Dump the branches.
 	for (std::set<Match *>::iterator m = branches.begin(); m != branches.end(); m++)
-		std::cout << (std::string)**m << (currentEnds.count(*m) ? "" : " ◼") << std::endl;
+		std::cout << (std::string)**m << (currentEnds.count(*m) ? "" : " ◼")
+		<< "   | " << (*m)->getUnsafeMatch() * 100 << "%" << std::endl;
 	
 	//Dump some stuff to the user window.
 	std::stringstream out;

@@ -40,20 +40,23 @@ StructureNode * Match::getStructureNode() const
 
 
 
-void Match::findNextToken(StructureNode ** nn, int * nb, int * nt, Match ** nm) const
+void Match::findNextToken(int cn, StructureNode ** nn, int * nb, int * nt, Match ** nm) const
 {
+	if (cn < 0)
+		cn = tokenIndex;
+	
 	//If theres another token left in the node, that's our next token.
-	if (node && (tokenIndex + 1) < node->getBranches()[branchIndex].size()) {
+	if (node && (cn + 1) < node->getBranches()[branchIndex].size()) {
 		*nn = node;
 		*nb = branchIndex;
-		*nt = tokenIndex + 1;
+		*nt = cn + 1;
 		*nm = this->parent;
 	}
 	
 	//Otherwise we have to ask our parent what the next token is since we've reached the end of our
 	//branch.
 	else if (parent) {
-		parent->findNextToken(nn, nb, nt, nm);
+		parent->findNextToken(-1, nn, nb, nt, nm);
 	}
 	
 	//Otherwise there's simply nothing left in the structure.
@@ -103,24 +106,51 @@ void Match::makeNextMatch(StructureNode * nextNode)
 
 void Match::makeNextMatch(StructureToken * nt)
 {
-	//Find our next token.
-	StructureNode * nextNode;
-	int nextBranch, nextToken;
-	Match * nextParent;
-	findNextToken(&nextNode, &nextBranch, &nextToken, &nextParent);
+	//Fill a vector of ints with token locations that we need to find the next token of and create
+	//successive matches.
+	std::vector<int> tokenOffsets;
+	tokenOffsets.push_back(tokenIndex);
 	
-	//If we haven't found a new token there's nothing left to do.
-	if (!nextNode)
-		return;
+	//If this is an optional token we have to created two branches, one proceeding from the current
+	//location and one skipping ahead to the token after the done statement.
+	if (nt->isBranch()) {
+		int branch = node->getBranchLocation(tokenIndex);
+		if (branch >= 0)
+			tokenOffsets.push_back(branch);
+	}
 	
-	//Create a new match for the given node, branch and token index.
-	next = new Match(nextNode, nextBranch, nextToken);
-	next->prev = this;
-	next->parent = nextParent;
-	if (nt->dontMatch())
-		next->setToken(token);
-	else
-		next->setToken(token ? token->next : NULL);
+	//Iterate through the token offsets and create a new match for each.
+	Match * last = NULL;
+	for (int i = 0; i < tokenOffsets.size(); i++) {
+		
+		//Find the next token.
+		StructureNode * nextNode;
+		int nextBranch, nextToken;
+		Match * nextParent;
+		findNextToken(tokenOffsets[i], &nextNode, &nextBranch, &nextToken, &nextParent);
+		
+		//If we haven't found a new token just skip ahead.
+		if (!nextNode)
+			continue;
+		
+		//Create a new match for the given node, branch and token index.
+		Match * m = new Match(nextNode, nextBranch, nextToken);
+		m->prev = this;
+		m->parent = nextParent;
+		
+		//Link the match into the tree.
+		if (!next) next = m;
+		m->prevSibling = last;
+		if (last) last->nextSibling = m;
+		last = m;
+		
+		//Based on whether we perform any token matching, we pass on our token to the match or get
+		//the successive token and pass that.
+		if (nt->dontMatch())
+			m->setToken(token);
+		else
+			m->setToken(token ? token->next : NULL);
+	}
 }
 
 
@@ -192,7 +222,21 @@ bool Match::isSafeMatch() const
 
 float Match::getUnsafeMatch() const
 {
-	return unsafeMatch;
+	/*assert(unsafeMatch >= 0);
+	return unsafeMatch;*/
+	const Match * m = this;
+	float usm = 0;
+	int usmc = 0;
+	while (m) {
+		if (m->structureToken && !m->structureToken->dontMatch()) {
+			usm += m->getMatch();
+			usmc++;
+		}
+		m = m->prev;
+		if (m && m->isSafeMatch())
+			break;
+	}
+	return usm / usmc;
 }
 
 void Match::calculateUnsafeMatch()
@@ -206,7 +250,7 @@ void Match::calculateUnsafeMatch()
 			usmc++;
 		}
 		m = m->prev;
-		if (m && m->safe)
+		if (m && (m->node != node || m->isSafeMatch()))
 			break;
 	}
 	unsafeMatch = usm / usmc;
@@ -219,8 +263,10 @@ void Match::compare()
 	match = 0;
 	
 	//There are no compares for reference tokens.
-	if (!structureToken || structureToken->dontMatch())
+	if (!structureToken || structureToken->dontMatch()) {
+		calculateUnsafeMatch();
 		return;
+	}
 	
 	//Based on the structure token we have to choose a different compare function.
 	switch (structureToken->type) {
@@ -264,7 +310,7 @@ Match::operator std::string () const
 			out << " ";
 		out << (std::string)*structureToken;
 		/*if (safe)
-			out << "[" << getUnsafeMatch() * 100 << "%] ";*/
+			out << "[" << getUnsafeMatch() * 100 << "%]";*/
 	}
 	return out.str();
 }

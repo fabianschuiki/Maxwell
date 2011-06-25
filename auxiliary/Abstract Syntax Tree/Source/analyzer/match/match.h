@@ -31,8 +31,8 @@ public:
 	StructureNode * getStructureNode() const;
 	StructureToken * getStructureToken() const;
 	
-	void findNextToken(StructureNode ** nextNode, int * nextBranch, int * nextToken,
-					   Match ** nextParent) const;
+	void findNextToken(int currentToken, StructureNode ** nextNode, int * nextBranch,
+					   int * nextToken, Match ** nextParent) const;
 	void makeNextMatch();
 	void makeNextMatch(StructureNode * nextNode);
 	void makeNextMatch(StructureToken * nextToken);

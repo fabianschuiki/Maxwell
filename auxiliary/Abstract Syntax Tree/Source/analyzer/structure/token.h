@@ -34,6 +34,7 @@ public:
 	void init();
 	
 	bool dontMatch() const;
+	bool isBranch() const;
 	
 	operator std::string ();
 };

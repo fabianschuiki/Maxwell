@@ -1,2 +1,1 @@
-class Hello : Object <KVO, Comparable> {
-}
+class Object : Object <KVO, Comparable>;

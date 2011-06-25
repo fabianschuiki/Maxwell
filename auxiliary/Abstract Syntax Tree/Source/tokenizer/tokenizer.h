@@ -17,5 +17,4 @@ public:
 	~Tokenizer();
 	
 	void process(std::istream & input);
-	//void spawnTokens(Token::Kind kind, const std::string & buffer,
 };

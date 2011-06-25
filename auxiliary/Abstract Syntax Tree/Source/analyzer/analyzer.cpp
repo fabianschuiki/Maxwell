@@ -3,7 +3,7 @@
 #include <iostream>
 #include <set>
 #include "analyzer.h"
-#include "structure/node.h"
+#include "structure/root.h"
 #include "match/match.h"
 
 
@@ -102,13 +102,15 @@ void Analyzer::process(Token * token)
 	.add(new StructureToken(StructureToken::Reference, &class_decls))
 	;*/
 	
-	StructureNode root("root");
+	/*StructureNode root("root");
 	root.fork()
 	.many()
-	.add(new StructureToken(StructureToken::Reference, &class_decl/*s*/))
-	.done();
+	.add(new StructureToken(StructureToken::Reference, &class_decl))
+	.done();*/
 	
-	std::cout << (std::string)class_decl;
+	StructureRoot root;
+	
+	//std::cout << (std::string)class_decl;
 	//std::cout << (std::string)class_super;
 	
 	//Create a new matcher, just for testing.

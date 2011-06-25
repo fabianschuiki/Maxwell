@@ -88,7 +88,9 @@ void Analyzer::process(Token * token)
 	.done()
 	//.add(new StructureToken(StructureToken::Reference, &class_super))
 	//.add(new StructureToken(StructureToken::Reference, &class_intf_decl))
-	.add(new StructureToken(StructureToken::Symbol, ";"))/*.safe()*/
+	//.add(new StructureToken(StructureToken::Symbol, ";"))/*.safe()*/
+	.add(new StructureToken(StructureToken::Symbol, "{"))
+	.add(new StructureToken(StructureToken::Symbol, "}"))
 	;
 	
 	/*StructureNode class_decls("class_decls");
@@ -166,14 +168,14 @@ void Analyzer::process(Token * token)
 				leadingEnds.erase(m);*/
 		
 		//Produce some debug output.
-		for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++) {
+		/*for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++) {
 			std::cout << (std::string)**m << " (" << (*m)->getUnsafeMatch()*100 << "%)";
 			if ((*m)->triesLeft >= 0) std::cout << " [" << (*m)->triesLeft << " to beat "
 				<< (*m)->matchToBeat*100 << "%]";
 			if (best == *m) std::cout << " <--*";
 			std::cout << std::endl;
 		}
-		std::cout << std::endl;
+		std::cout << std::endl;*/
 		
 		//If there was a best match found, calculate its next matches
 		bool anySafeMatch = false;
@@ -237,19 +239,19 @@ void Analyzer::process(Token * token)
 	}
 	
 	//Dump the branches.
-	std::cout << std::endl;
+	/*std::cout << std::endl;
 	for (std::set<Match *>::iterator m = branches.begin(); m != branches.end(); m++)
 		std::cout << (std::string)**m << (currentEnds.count(*m) ? "" : " ◼")
-		<< "   | " << (*m)->getUnsafeMatch() * 100 << "%" << std::endl;
-	std::cout << std::endl;
+		<< "   | " << (*m)->getUnsafeMatch() * 100 << "%" << std::endl;*/
+	/*std::cout << std::endl;
 	for (std::set<Match *>::iterator m = finished.begin(); m != finished.end(); m++)
 		std::cout << (std::string)**m
-		<< "   | " << (*m)->getUnsafeMatch() * 100 << "%" << std::endl;
+		<< "   | " << (*m)->getUnsafeMatch() * 100 << "%" << std::endl;*/
 	
 	//Dump some stuff to the user window.
 	std::stringstream out;
 	for (std::set<Match *>::iterator m = finished.begin(); m != finished.end(); m++) {
-		out << (std::string)**m << std::endl;
+		out << (std::string)**m << " (" << (*m)->getUnsafeMatch()*100 << "%)" << std::endl;
 		StructureNode * n = (*m)->getStructureNode();
 		if (n)
 			out << (std::string)*n << std::endl;

@@ -361,10 +361,10 @@ Match::operator std::string () const
 		if (!out.str().empty())
 			out << " ";
 		out << (std::string)*structureToken;
-		if (safe)
+		/*if (safe)
 			out << "[" << getUnsafeMatch() * 100 << "%]";
 		if (structureToken->type == StructureToken::Symbol)
-			out << "[" << match * 100 << "%]";
+			out << "[" << match * 100 << "%]";*/
 	}
 	return out.str();
 }

@@ -52,14 +52,51 @@ void Analyzer::process(Token * token)
 	//As long as there are any leading ends, keep advancing in the matching process.
 	while (!leadingEnds.empty()) {
 		
+		//Copy the current leading ends and clear the set so we can fill them with the successors
+		//again.
+		std::set<Match *> currentEnds = leadingEnds;
+		leadingEnds.clear();
+		
 		//Iterate over the current ends and advance each of them. Also keep track of the best match
 		//so far.
 		float bestMatch = 0;
 		Match * best = NULL;
-		std::set<Match *> currentEnds = leadingEnds;
-		leadingEnds.clear();
-		
+		bool anySafeMatches = false;
 		for (std::set<Match *>::iterator m = currentEnds.begin(); m != currentEnds.end(); m++) {
+			
+			//Decrease the expiration counter. If it reaches 0, don't bother to cope with this
+			//match at all.
+			if ((*m)->expiresIn > -1)
+				if (--(*m)->expiresIn <= 0)
+					continue;
+			
+			//If this is a recursive match, we have to check whether all of its non-recursive
+			//siblings failed to match which will cause us to interrupt here to prevent an infinite
+			//recursion.
+			if ((*m)->isRecursive()) {
+				std::cout << "checking for recursion:" << std::endl;
+				std::cout << "\t" << (std::string)**m << std::endl;
+				bool someMatched = false;
+				bool someMatchedSafely = false;
+				Match * pm = (*m)->getPrev();
+				while (pm && pm->isRecursive()) {
+					Match * nm = pm->getNext();
+					while (nm && !someMatched) {
+						if (nm != *m && !nm->isRecursive()) {
+							if (currentEnds.count(nm))
+								someMatched = true;
+							if (nm->isSafeMatch())
+								someMatchedSafely = true;
+						}
+						nm = nm->getNextSibling();
+					}
+					pm = pm->getPrev();
+				}
+				if (!someMatched || someMatchedSafely) {
+					std::cout << "preventing recursion" << std::endl;
+					continue;
+				}
+			}
 			
 			//Make the successive matches.
 			(*m)->makeNextMatch();
@@ -68,16 +105,40 @@ void Analyzer::process(Token * token)
 			Match * nm = (*m)->getNext();
 			while (nm) {
 				
+				//Keep track of whether there were any safe matches.
+				if (nm->isSafeMatch())
+					anySafeMatches = true;
+				
 				//Keep track of the best match.
-				if (!best || nm->getSeriesMatch() > bestMatch) {
+				if (!best || nm->getUnsafeMatch() > bestMatch) {
 					best = nm;
-					bestMatch = nm->getSeriesMatch();
+					bestMatch = nm->getUnsafeMatch();
 				}
 				
 				//If the match ran out of tokens, add it to the set of finished branches so we can
 				//come back later and find the one branch that scored the best.
-				if (!nm->getToken())
-					finished.insert(nm);
+				if (!nm->getToken()) {
+					
+					//Iterate through the finished matches and find the lowest one.
+					Match * lowest = NULL;
+					float lowestMatch = 0;
+					if (finished.size() >= 3) {
+						for (std::set<Match *>::iterator fm = finished.begin();
+							 fm != finished.end(); fm++) {
+							if (!lowest || (*fm)->getSeriesMatch() < lowestMatch) {
+								lowest = *fm;
+								lowestMatch = (*fm)->getSeriesMatch();
+							}
+						}
+					}
+					
+					//Check whether the current match is better than the lowest in the finished set.
+					if (nm->getSeriesMatch() > lowestMatch) {
+						if (lowest)
+							finished.erase(lowest);
+						finished.insert(nm);
+					}
+				}
 				
 				//Otherwise we have to decide whether we want to follow this branch any further.
 				else {
@@ -92,86 +153,35 @@ void Analyzer::process(Token * token)
 		//Erase matches that lie too far behind the best.
 		currentEnds = leadingEnds;
 		for (std::set<Match *>::iterator m = currentEnds.begin(); m != currentEnds.end(); m++)
-			if ((*m)->getSeriesMatch() < bestMatch * 0.5)
+			if ((*m)->getUnsafeMatch() < bestMatch * 0.75)
 				leadingEnds.erase(*m);
+		
+		//If there was a safe match, mark all leading ends that aren't as to expire in some defined
+		//number of iterations.
+		if (anySafeMatches)
+			for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++)
+				if (!(*m)->isSafeMatch() && (*m)->expiresIn < 0)
+					(*m)->expiresIn = 3;
 		
 		//Produce some debug output.
 		for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++) {
-			std::cout << (std::string)**m << " (" << (*m)->getSeriesMatch()*100 << "%)";
+			std::cout << (std::string)**m << " (" << (*m)->getUnsafeMatch()*100 << "%)";
+			if ((*m)->expiresIn > -1) std::cout << " [expires in " << (*m)->expiresIn << "]";
+			if ((*m)->isSafeMatch()) std::cout << " <--- safe ---*";
 			std::cout << std::endl;
 		}
 		std::cout << std::endl;
-		
-		/*//If there was a best match found, calculate its next matches
-		bool anySafeMatch = false;
-		float bestSafeMatch = 0;
-		if (best) {
-			leadingEnds.erase(best);
-			//best->triesLeft = -1;
-			best->makeNextMatch();
-			Match * nm = best->getNext();
-			while (nm) {
-				if (best->triesLeft > 0)
-					nm->triesLeft = (best->triesLeft - 1);
-				nm->matchToBeat = best->matchToBeat;
-				
-				if (nm->getToken()) {
-					if (wasBestMatch) {
-						if (nm->isSafeMatch()) {
-							anySafeMatch = true;
-							bestSafeMatch = nm->getSeriesMatch();
-						}
-						if (nm->getDeltaMatch() >= 0)
-							nm->triesLeft = -1;
-					}
-					
-					//Add this to the leading ends if it matches at least a bit and there are no
-					//equivalent matches present.
-					if (nm->triesLeft != 0 && nm->getSeriesMatch() > 0.5) {
-						leadingEnds.insert(nm);
-					}
-					
-					//Keep track of this branch.
-					//branches.erase(nm->getPrev());
-					//branches.insert(nm);
-				} else {
-					finished.insert(nm);
-					bestFinishedMatch = std::max<float>(bestFinishedMatch, nm->getSeriesMatch());
-					std::cout << "match: " << (std::string)*nm << std::endl;
-				}
-				
-				//Jump to the next sibling.
-				nm = nm->getNextSibling();
-			}
-		}
-		
-		//If there were any safe matches, iterate through the leading ends and remove all that are
-		//no such match.
-		if (anySafeMatch)
-			for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++)
-				if (!(*m)->isSafeMatch() && (*m)->triesLeft == -1)
-					(*m)->triesLeft = 2;
-		
-		//If there are no more leading ends and we have no finished branch, insert the last end we
-		//tried into the finished array.
-		if (leadingEnds.empty() && finished.empty())
-			finished.insert(best);
-		*/
-		//Dump the branches.
-		/*std::cout << "-----" << std::endl;
-		for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++)
-			std::cout << (std::string)**m << std::endl;*/
 	}
 	
 	//Dump the branches.
 	/*std::cout << std::endl;
 	for (std::set<Match *>::iterator m = branches.begin(); m != branches.end(); m++)
 		std::cout << (std::string)**m << (currentEnds.count(*m) ? "" : " ◼")
-		<< "   | " << (*m)->getSeriesMatch() * 100 << "%" << std::endl;*/
+		<< "   | " << (*m)->getUnsafeMatch() * 100 << "%" << std::endl;*/
 	/*std::cout << std::endl;
 	for (std::set<Match *>::iterator m = finished.begin(); m != finished.end(); m++)
 		std::cout << (std::string)**m
-		<< "   | " << (*m)->getSeriesMatch() * 100 << "%" << std::endl;*/
+		<< "   | " << (*m)->getUnsafeMatch() * 100 << "%" << std::endl;*/
 	
 	//Dump some stuff to the user window.
 	std::stringstream out;
@@ -184,4 +194,5 @@ void Analyzer::process(Token * token)
 	}
 	
 	temp = out.str();
+	std::cout << std::endl << "FINISHED:" << std::endl << temp;
 }

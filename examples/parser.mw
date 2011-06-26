@@ -1,4 +1,9 @@
-class Object : Object <KVO, Comparable> {
-	int location = ;
-	int length;
+//
+//	Example Maxwell class definition.
+//
+
+
+class Hello : World
+{
+	int location = 300;
 }

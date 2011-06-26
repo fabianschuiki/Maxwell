@@ -13,6 +13,7 @@ private:
 	float match;
 	
 	static std::map<const Match * const, float> unsafeMatchCache;
+	static std::map<const Match * const, float> seriesMatchCache;
 	
 protected:
 	Token * token;
@@ -53,8 +54,8 @@ public:
 	bool isSafeMatch() const;
 	bool dontMatch() const;
 	
+	float getUnsafeMatch() const;
 	float getSeriesMatch() const;
-	float getDeltaMatch() const;
 	
 	bool isRecursive() const;
 	
@@ -63,6 +64,5 @@ public:
 	operator std::string () const;
 	
 public:
-	int triesLeft;
-	float matchToBeat;
+	int expiresIn;
 };

@@ -9,6 +9,7 @@
 #define ref(r)	.add(new StructureToken(StructureToken::Reference, r))
 #define opt(x)	.opt()x.done()
 #define many(x)	.many()x.done()
+#define safe	.safe()
 
 #define SEMICOLON	sym(";")
 #define COLON		sym(":")
@@ -46,7 +47,7 @@ StructureRoot::StructureRoot() : StructureNode("root")
 	/* Only class declarations and definitions as well as some import commands are allowed at root
 	 * level. */
 	(*root_stmt)
-	.fork() ref(class_decl) SEMICOLON
+	.fork() ref(class_decl) SEMICOLON safe
 	.fork() ref(class_def)
 	;
 	
@@ -61,11 +62,11 @@ StructureRoot::StructureRoot() : StructureNode("root")
 	/* A class definition consists of a class declaration followed by curly braces and an arbitrary
 	 * number of class statements. */
 	(*class_def)
-	.fork() ref(class_decl) LBRACE many(ref(class_stmt)) RBRACE;
+	.fork() ref(class_decl) LBRACE safe many(ref(class_stmt)) RBRACE safe;
 	
 	/* A class statement can be a variable definition or a function declaration/definition. */
 	(*class_stmt)
-	.fork() ref(var_def) SEMICOLON;
+	.fork() ref(var_def) SEMICOLON safe;
 	
 	
 	
@@ -78,7 +79,7 @@ StructureRoot::StructureRoot() : StructureNode("root")
 	/* A variable definition is a variable declaration optionally followed by an initial
 	 * assignment. */
 	(*var_def)
-	.fork() ref(var_decl) opt(EQUAL ref(expr));
+	.fork() ref(var_decl) opt(EQUAL safe ref(expr));
 	
 	
 	

@@ -136,10 +136,6 @@
 	NSTimeInterval duration = ([NSDate timeIntervalSinceReferenceDate] - start);
 	std::cout << " - [" << duration * 1000 << "ms]" << std::endl;
 	
-	//Dump some temporary information.
-	NSString * temp = [NSString stringWithUTF8String:a->temp.c_str()];
-	self.tokens = [[[NSAttributedString alloc] initWithString:temp attributes:basicAttrs] autorelease];
-	
 	//Store the results.
 	[resultsLock lock];
 	if (tokenizer) delete tokenizer;
@@ -164,6 +160,12 @@
 - (void)processCodeDone
 {
 	[self formatCode];
+	
+	//Dump some temporary information.
+	if (analyzer) {
+		NSString * temp = [NSString stringWithUTF8String:analyzer->temp.c_str()];
+		self.tokens = [[NSAttributedString alloc] initWithString:temp attributes:basicAttrs];
+	}
 }
 
 @end

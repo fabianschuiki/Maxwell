@@ -5,6 +5,7 @@
 #include "../../stringdiff.h"
 
 std::map<const Match * const, float> Match::unsafeMatchCache;
+std::map<const Match * const, float> Match::seriesMatchCache;
 
 
 
@@ -21,10 +22,10 @@ structureToken(n ? n->getBranches()[b][t] : NULL)
 	
 	safe = (structureToken && structureToken->safe);
 	
-	matchToBeat = 0;
-	triesLeft = -1;
+	expiresIn = -1;
 	
 	unsafeMatchCache.erase(this);
+	seriesMatchCache.erase(this);
 }
 
 Match::~Match()
@@ -33,6 +34,7 @@ Match::~Match()
 		delete next;
 	parent = next = prev = nextSibling = prevSibling = NULL;
 	unsafeMatchCache.erase(this);
+	seriesMatchCache.erase(this);
 }
 
 
@@ -98,6 +100,7 @@ void Match::makeNextMatch(StructureNode * nextNode)
 		Match * m = new Match(nextNode, b, 0);
 		m->prev = this;
 		m->parent = this;
+		m->expiresIn = expiresIn;
 		m->setToken(token);
 		
 		//If this is the first successor, make it our next.
@@ -146,6 +149,7 @@ void Match::makeNextMatch(StructureToken * nt)
 		Match * m = new Match(nextNode, nextBranch, nextToken);
 		m->prev = this;
 		m->parent = nextParent;
+		m->expiresIn = expiresIn;
 		
 		//Link the match into the tree.
 		if (!next) next = m;
@@ -224,7 +228,7 @@ void Match::setSafe(bool s)
 
 bool Match::isSafeMatch() const
 {
-	return (/*safe &&*/ getSeriesMatch() > /*(1 - 1e-5)*/0.95);
+	return (safe && getUnsafeMatch() >= /*(1 - 1e-5)*/0.95);
 }
 
 bool Match::dontMatch() const
@@ -235,23 +239,23 @@ bool Match::dontMatch() const
 
 
 
-float Match::getSeriesMatch() const
+float Match::getUnsafeMatch() const
 {
 	float v;
 	if (!unsafeMatchCache.count(this)) {
-		//Get the previous match, if there is any.
-		float prevMatch = (prev ? prev->getSeriesMatch() : 1);
 		
-		//If our token is not used for matching, simply pass through the result of our previous
-		//match.
-		if (dontMatch())
-			v = prevMatch;
+		const Match * m = this;
+		float summedMatches = 0;
+		int matchCount = 0;
+		while (m && (m == this || !m->isSafe())) {
+			if (!m->dontMatch()) {
+				summedMatches += m->match;
+				matchCount++;
+			}
+			m = m->prev;
+		}
+		v = (summedMatches / matchCount);
 		
-		//Otherwise we calculate the average between our match and the previous one, if possible.
-		else
-			v = (match + prevMatch) / 2;
-		
-		//v = usm;
 		unsafeMatchCache[this] = v;
 	} else {
 		v = unsafeMatchCache[this];
@@ -259,11 +263,27 @@ float Match::getSeriesMatch() const
 	return v;
 }
 
-float Match::getDeltaMatch() const
+float Match::getSeriesMatch() const
 {
-	float v = getSeriesMatch();
-	if (prev)
-		v -= prev->getSeriesMatch();
+	float v;
+	if (!seriesMatchCache.count(this)) {
+		
+		const Match * m = this;
+		float summedMatches = 0;
+		int matchCount = 0;
+		while (m) {
+			if (!m->dontMatch()) {
+				summedMatches += m->match;
+				matchCount++;
+			}
+			m = m->prev;
+		}
+		v = (summedMatches / matchCount);
+		
+		seriesMatchCache[this] = v;
+	} else {
+		v = seriesMatchCache[this];
+	}
 	return v;
 }
 
@@ -358,16 +378,16 @@ Match::operator std::string () const
 	if (!structureToken || (!prev && !parent))
 		return "";
 	std::stringstream out;
-	if (/*!safe &&*/ prev)
+	if (!safe && prev)
 		out << (std::string)*prev;
-	//if (!structureToken->dontMatch()) {
+	if (!structureToken->dontMatch()) {
 		if (!out.str().empty())
 			out << " ";
 		out << (std::string)*structureToken;
 		/*if (safe)
-			out << "[" << getSeriesMatch() * 100 << "%]";
+			out << "[" << getUnsafeMatch() * 100 << "%]";
 		if (structureToken->type == StructureToken::Symbol)
 			out << "[" << match * 100 << "%]";*/
-	//}
+	}
 	return out.str();
 }

@@ -30,9 +30,9 @@ StructureToken::operator std::string ()
 			
 		case Reference:		out << (reference ? reference->getName() : "???"); break;
 			
-		case Optional:		out << "?{"; break;
-		case Many:			out << "*{"; break;
-		case Done:			out << "}"; break;
+		case Optional:		out << "?«"; break;
+		case Many:			out << "*«"; break;
+		case Done:			out << "»"; break;
 			
 	}
 	//if (safe) out << "•";

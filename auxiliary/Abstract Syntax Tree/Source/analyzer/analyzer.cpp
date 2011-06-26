@@ -44,59 +44,65 @@ void Analyzer::process(Token * token)
 	
 	//Keep a set of current leading ends.
 	std::set<Match *> leadingEnds, finished;
-	//std::set<Match *> branches;
+	std::set<Match *> branches;
 	leadingEnds.insert(rootMatch);
-	//branches.insert(rootMatch);
+	branches.insert(rootMatch);
 	float bestFinishedMatch = 0;
 	
 	//As long as there are any leading ends, keep advancing in the matching process.
-	int iterations = 0;
-	while (!leadingEnds.empty() && bestFinishedMatch < 0.9) {
-		//assert(iterations++ < 20000);
+	while (!leadingEnds.empty()) {
 		
-		//Get rid of matches that lie too far behind the best finished match.
-		for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++)
-			if ((*m)->getSeriesMatch() < bestFinishedMatch * 0.5)
-				leadingEnds.erase(m);
-		
-		//Iterate over the current ends and find either the first one that doesn't match, which has
-		//the highest priority, or the one yielding the best match so far.
+		//Iterate over the current ends and advance each of them. Also keep track of the best match
+		//so far.
 		float bestMatch = 0;
 		Match * best = NULL;
-		bool wasBestMatch = true;
-		for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++) {
-			float match = (*m)->getSeriesMatch();
-			//std::cout << (std::string)**m << " (" << match*100 << "%)" << std::endl;
-			if ((*m)->dontMatch() && !(*m)->isRecursive()) {
-				best = (*m);
-				bestMatch = match;
-				wasBestMatch = false;
-			}
-			if (wasBestMatch && (!best || best->isRecursive() || match > bestMatch)) {
-				best = (*m);
-				bestMatch = match;
-			}
+		std::set<Match *> currentEnds = leadingEnds;
+		leadingEnds.clear();
+		
+		for (std::set<Match *>::iterator m = currentEnds.begin(); m != currentEnds.end(); m++) {
 			
-			if (match < 0.75 && (*m)->triesLeft == -1)
-				(*m)->triesLeft = (match / 0.75) * 5;
+			//Make the successive matches.
+			(*m)->makeNextMatch();
+			
+			//Iterate through them.
+			Match * nm = (*m)->getNext();
+			while (nm) {
+				
+				//Keep track of the best match.
+				if (!best || nm->getSeriesMatch() > bestMatch) {
+					best = nm;
+					bestMatch = nm->getSeriesMatch();
+				}
+				
+				//If the match ran out of tokens, add it to the set of finished branches so we can
+				//come back later and find the one branch that scored the best.
+				if (!nm->getToken())
+					finished.insert(nm);
+				
+				//Otherwise we have to decide whether we want to follow this branch any further.
+				else {
+					leadingEnds.insert(nm);
+				}
+				
+				//Jump to the next sibling.
+				nm = nm->getNextSibling();
+			}
 		}
 		
-		//Erase matches that are too weak.
-		/*for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++)
-			if (((*m)->triesLeft > 0 && --(*m)->triesLeft == 0))
-				leadingEnds.erase(m);*/
+		//Erase matches that lie too far behind the best.
+		currentEnds = leadingEnds;
+		for (std::set<Match *>::iterator m = currentEnds.begin(); m != currentEnds.end(); m++)
+			if ((*m)->getSeriesMatch() < bestMatch * 0.5)
+				leadingEnds.erase(*m);
 		
 		//Produce some debug output.
 		for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++) {
-			std::cout << (std::string)**m << " (" << (*m)->getSeriesMatch()*100 << "%, Δ"
-			<< (*m)->getDeltaMatch()*100 << "%)";
-			if ((*m)->triesLeft >= 0) std::cout << " [" << (*m)->triesLeft << "]";
-			if (best == *m) std::cout << " <--*";
+			std::cout << (std::string)**m << " (" << (*m)->getSeriesMatch()*100 << "%)";
 			std::cout << std::endl;
 		}
 		std::cout << std::endl;
 		
-		//If there was a best match found, calculate its next matches
+		/*//If there was a best match found, calculate its next matches
 		bool anySafeMatch = false;
 		float bestSafeMatch = 0;
 		if (best) {
@@ -122,14 +128,12 @@ void Analyzer::process(Token * token)
 					//Add this to the leading ends if it matches at least a bit and there are no
 					//equivalent matches present.
 					if (nm->triesLeft != 0 && nm->getSeriesMatch() > 0.5) {
-						/*bool equivalent = false;
-						for*/
 						leadingEnds.insert(nm);
 					}
 					
 					//Keep track of this branch.
-					/*branches.erase(nm->getPrev());
-					branches.insert(nm);*/
+					//branches.erase(nm->getPrev());
+					//branches.insert(nm);
 				} else {
 					finished.insert(nm);
 					bestFinishedMatch = std::max<float>(bestFinishedMatch, nm->getSeriesMatch());
@@ -152,7 +156,7 @@ void Analyzer::process(Token * token)
 		//tried into the finished array.
 		if (leadingEnds.empty() && finished.empty())
 			finished.insert(best);
-		
+		*/
 		//Dump the branches.
 		/*std::cout << "-----" << std::endl;
 		for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++)

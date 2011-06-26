@@ -17,6 +17,12 @@
 #define DOT			sym(".")
 #define EQUAL		sym("=")
 
+//Binary Operators
+#define PLUS		sym("+")
+#define MINUS		sym("-")
+#define ASTERISK	sym("*")
+#define FSLASH		sym("/")
+
 //Compare Operators
 #define CLT	sym("<")
 #define CLE	sym("<=")
@@ -37,7 +43,10 @@ StructureRoot::StructureRoot() : StructureNode("root")
 	//Introduce all possible nodes.
 	node(root_stmt);
 	node(class_decl); node(class_def); node(class_stmt);
+	node(func_decl); node(func_def); node(func_shared); node(func_args); node(func_arg);
+	node(func_stmt);
 	node(var_decl); node(var_def);
+	node(type);
 	node(expr);
 	
 	//The root node accepts an arbitrary amount of root statements.
@@ -57,16 +66,53 @@ StructureRoot::StructureRoot() : StructureNode("root")
 	/* A class declaration consists of the keyword "class" followed by the class named, optionally
 	 * followed by a colon and the superclass, optionally followed by a list of interfaces. */
 	(*class_decl)
-	.fork() key("class") ident opt(COLON ident) opt(CLT ident many(COMMA ident) CGT);
-	
+	.fork() key("class") ident opt(COLON ident) opt(CLT ident many(COMMA ident) CGT)
+	;
 	/* A class definition consists of a class declaration followed by curly braces and an arbitrary
 	 * number of class statements. */
 	(*class_def)
-	.fork() ref(class_decl) LBRACE safe many(ref(class_stmt)) RBRACE safe;
-	
+	.fork() ref(class_decl) LBRACE safe many(ref(class_stmt)) RBRACE safe
+	;
 	/* A class statement can be a variable definition or a function declaration/definition. */
 	(*class_stmt)
-	.fork() ref(var_def) SEMICOLON safe;
+	.fork() ref(var_def)
+	.fork() ref(func_def)
+	;
+	
+	
+	
+	/*** Fucntions ***/
+	/* A function definition consists of either a + or -, depending on whether the function is to be
+	 * shared (i.e. a class function) or an instance function. Following is the return type and an
+	 * arbitrary list of named arguments. */
+	(*func_decl)
+	.fork() ref(func_shared) ref(type) ref(func_args)
+	;
+	(*func_shared)
+	.fork() PLUS
+	.fork() MINUS
+	;
+	/* Function arguments are either simply an identifier, or a list of argument names and types. */
+	(*func_args)
+	.fork() ident
+	.fork() ref(func_arg) many(ref(func_arg))
+	;
+	/* A function argument consists of the argument name followed by a : and the argument type in
+	 * parenthesis. */
+	(*func_arg)
+	.fork() ident COLON LPAREN ref(type) opt(ident) RPAREN
+	;
+	/* A function definition is simply the function declaration followed by an arbitrary amount of
+	 * function statements in curly braces. */
+	(*func_def)
+	.fork() ref(func_decl) SEMICOLON safe
+	.fork() ref(func_decl) LBRACE safe many(ref(func_stmt)) RBRACE safe
+	;
+	/* A function statement is either an expression or a variable definition. */
+	(*func_stmt)
+	.fork() ref(var_def) SEMICOLON safe
+	.fork() ref(expr) SEMICOLON safe
+	;
 	
 	
 	
@@ -74,12 +120,21 @@ StructureRoot::StructureRoot() : StructureNode("root")
 	/* A variable declaration consists of the variable type, a list of qualifiers and the variable
 	 * name. */
 	(*var_decl)
-	.fork() ident ident;
-	
+	.fork() ref(type) ident
+	;
 	/* A variable definition is a variable declaration optionally followed by an initial
 	 * assignment. */
 	(*var_def)
-	.fork() ref(var_decl) opt(EQUAL safe ref(expr));
+	.fork() ref(var_decl) opt(EQUAL safe ref(expr)) SEMICOLON safe
+	;
+	
+	
+	
+	/*** Types ***/
+	(*type)
+	.fork() ident
+	.fork() LPAREN ref(type) COMMA ref(type) many(COMMA ref(type)) RPAREN
+	;
 	
 	
 	

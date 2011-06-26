@@ -164,13 +164,13 @@ void Analyzer::process(Token * token)
 					(*m)->expiresIn = 3;
 		
 		//Produce some debug output.
-		for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++) {
+		/*for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++) {
 			std::cout << (std::string)**m << " (" << (*m)->getUnsafeMatch()*100 << "%)";
 			if ((*m)->expiresIn > -1) std::cout << " [expires in " << (*m)->expiresIn << "]";
 			if ((*m)->isSafeMatch()) std::cout << " <--- safe ---*";
 			std::cout << std::endl;
 		}
-		std::cout << std::endl;
+		std::cout << std::endl;*/
 	}
 	
 	//Dump the branches.

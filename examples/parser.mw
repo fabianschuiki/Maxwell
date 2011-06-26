@@ -6,4 +6,11 @@
 class Hello : World
 {
 	int location = 300;
+	
+	- void drinkBeer {
+		"Hello World";
+	}
+	
+	+ (int, int) getCoordinatesFrom:((float, float)) to:(float) {
+	}
 }

@@ -1,16 +1,17 @@
 #pragma once
 #include "../tokenizer/token.h"
+#include "match/match.h"
 
 
 class Analyzer {
 private:
-	//Match * rootMatch;
+	Match * rootMatch;
 	
 public:
 	Analyzer();
 	~Analyzer();
 	
-	//Match * getRootMatch();
+	Match * getRootMatch();
 	
 	void process(Token * token);
 	

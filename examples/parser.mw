@@ -1,1 +1,4 @@
-class Object : Object <KVO, Comparable>;
+class Object : Object <KVO, Comparable> {
+	int location = ;
+	int length;
+}

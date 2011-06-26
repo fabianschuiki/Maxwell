@@ -224,7 +224,7 @@ void Match::setSafe(bool s)
 
 bool Match::isSafeMatch() const
 {
-	return (/*safe &&*/ getUnsafeMatch() > /*(1 - 1e-5)*/0.95);
+	return (/*safe &&*/ getSeriesMatch() > /*(1 - 1e-5)*/0.95);
 }
 
 bool Match::dontMatch() const
@@ -235,27 +235,12 @@ bool Match::dontMatch() const
 
 
 
-float Match::getUnsafeMatch() const
+float Match::getSeriesMatch() const
 {
 	float v;
 	if (!unsafeMatchCache.count(this)) {
-		/*const Match * m = this;
-		float usm = 1;
-		//int usmc = 0;
-		while (m) {
-			if (m->structureToken && !m->structureToken->dontMatch()) {
-				usm += m->getMatch();
-				usm /= 2;
-				//usmc++;
-			}
-			if (m && m != this && m->isSafeMatch())
-				break;
-			m = m->prev;
-		}*/
-		//v = (usmc > 0 ? usm / usmc : 1);
-		
 		//Get the previous match, if there is any.
-		float prevMatch = (prev ? prev->getUnsafeMatch() : 1);
+		float prevMatch = (prev ? prev->getSeriesMatch() : 1);
 		
 		//If our token is not used for matching, simply pass through the result of our previous
 		//match.
@@ -272,6 +257,24 @@ float Match::getUnsafeMatch() const
 		v = unsafeMatchCache[this];
 	}
 	return v;
+}
+
+float Match::getDeltaMatch() const
+{
+	float v = getSeriesMatch();
+	if (prev)
+		v -= prev->getSeriesMatch();
+	return v;
+}
+
+
+
+bool Match::isRecursive() const
+{
+	return (structureToken && prev && prev->structureToken &&
+			structureToken->type == StructureToken::Reference &&
+			prev->structureToken->type == StructureToken::Reference &&
+			structureToken->reference == prev->structureToken->reference);
 }
 
 
@@ -357,14 +360,14 @@ Match::operator std::string () const
 	std::stringstream out;
 	if (/*!safe &&*/ prev)
 		out << (std::string)*prev;
-	if (!structureToken->dontMatch()) {
+	//if (!structureToken->dontMatch()) {
 		if (!out.str().empty())
 			out << " ";
 		out << (std::string)*structureToken;
 		/*if (safe)
-			out << "[" << getUnsafeMatch() * 100 << "%]";
+			out << "[" << getSeriesMatch() * 100 << "%]";
 		if (structureToken->type == StructureToken::Symbol)
 			out << "[" << match * 100 << "%]";*/
-	}
+	//}
 	return out.str();
 }

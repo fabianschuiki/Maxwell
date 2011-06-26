@@ -53,7 +53,10 @@ public:
 	bool isSafeMatch() const;
 	bool dontMatch() const;
 	
-	float getUnsafeMatch() const;
+	float getSeriesMatch() const;
+	float getDeltaMatch() const;
+	
+	bool isRecursive() const;
 	
 	void compare();
 	

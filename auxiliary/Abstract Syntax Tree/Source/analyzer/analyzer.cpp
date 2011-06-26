@@ -4,25 +4,24 @@
 #include <set>
 #include "analyzer.h"
 #include "structure/root.h"
-#include "match/match.h"
 
 
-/*RootMatch * Analyzer::getRootMatch()
+Match * Analyzer::getRootMatch()
 {
 	return rootMatch;
-}*/
+}
 
 
 
 Analyzer::Analyzer()
 {
-	//rootMatch = NULL;
+	rootMatch = NULL;
 }
 
 Analyzer::~Analyzer()
 {
-	/*if (rootMatch)
-		delete rootMatch;*/
+	if (rootMatch)
+		delete rootMatch;
 }
 
 
@@ -30,118 +29,34 @@ Analyzer::~Analyzer()
 void Analyzer::process(Token * token)
 {
 	//Delete the existing root match.
-	/*if (rootMatch)
+	if (rootMatch)
 		delete rootMatch;
-	rootMatch = NULL;*/
+	rootMatch = NULL;
 	
-	//Abort if we don't have a valid token.
-	if (!token) return;
-	std::cout << "------------------------------------------------------------" << std::endl;
-	
-	//Debug stuff.
-	/*StructureNode class_super("class_super");
-	class_super.fork().add(new StructureToken(StructureToken::Empty));
-	class_super.fork()
-	.add(new StructureToken(StructureToken::Symbol, ":")).safe()
-	.add(new StructureToken(StructureToken::Identifier))
-	;*/
-	
-	/*StructureNode class_intf("class_intf");
-	class_intf.fork()
-	.add(new StructureToken(StructureToken::Identifier))
-	;
-	
-	StructureNode class_intfs("class_intfs");
-	class_intfs.fork()
-	.add(new StructureToken(StructureToken::Reference, &class_intf))
-	;
-	class_intfs.fork()
-	.add(new StructureToken(StructureToken::Reference, &class_intf))
-	.add(new StructureToken(StructureToken::Symbol, ",")).safe()
-	.add(new StructureToken(StructureToken::Reference, &class_intfs))
-	;
-	
-	StructureNode class_intf_decl("class_intf_decl");
-	class_intf_decl.fork().add(new StructureToken(StructureToken::Empty));
-	class_intf_decl.fork()
-	.add(new StructureToken(StructureToken::Symbol, "<")).safe()
-	.add(new StructureToken(StructureToken::Reference, &class_intfs))
-	.add(new StructureToken(StructureToken::Symbol, ">")).safe()
-	;*/
-	
-	StructureNode class_decl("class_decl");
-	class_decl.fork()
-	.add(new StructureToken(StructureToken::Keyword, "class"))
-	.add(new StructureToken(StructureToken::Identifier))
-	.opt()
-	.add(new StructureToken(StructureToken::Symbol, ":"))/*.safe()*/
-	.add(new StructureToken(StructureToken::Identifier))
-	.done()
-	.opt()
-	.add(new StructureToken(StructureToken::Symbol, "<"))/*.safe()*/
-	.add(new StructureToken(StructureToken::Identifier))
-	.many()
-	.add(new StructureToken(StructureToken::Symbol, ","))
-	.add(new StructureToken(StructureToken::Identifier))
-	.done()
-	.add(new StructureToken(StructureToken::Symbol, ">"))/*.safe()*/
-	.done()
-	//.add(new StructureToken(StructureToken::Reference, &class_super))
-	//.add(new StructureToken(StructureToken::Reference, &class_intf_decl))
-	//.add(new StructureToken(StructureToken::Symbol, ";"))/*.safe()*/
-	.add(new StructureToken(StructureToken::Symbol, "{"))
-	.add(new StructureToken(StructureToken::Symbol, "}"))
-	;
-	
-	/*StructureNode class_decls("class_decls");
-	class_decls.fork()
-	.add(new StructureToken(StructureToken::Reference, &class_decl))
-	;
-	class_decls.fork()
-	.add(new StructureToken(StructureToken::Reference, &class_decl))
-	.add(new StructureToken(StructureToken::Reference, &class_decls))
-	;*/
-	
-	/*StructureNode root("root");
-	root.fork()
-	.many()
-	.add(new StructureToken(StructureToken::Reference, &class_decl))
-	.done();*/
-	
+	//Create the root structure instance which holds a template of the entire Maxwell syntax tree.
 	StructureRoot root;
 	
-	//std::cout << (std::string)class_decl;
-	//std::cout << (std::string)class_super;
-	
-	//Create a new matcher, just for testing.
-	Match rootMatch(NULL, 0, 0);
-	rootMatch.setSafe(true);
-	rootMatch.setToken(token);
-	rootMatch.makeNextMatch(&root);
+	//Create a new root match.
+	rootMatch = new Match(NULL, 0, 0);
+	rootMatch->setSafe(true);
+	rootMatch->setToken(token);
+	rootMatch->makeNextMatch(&root);
 	
 	//Keep a set of current leading ends.
-	std::set<Match *> leadingEnds, currentEnds, finished;
-	std::set<Match *> branches;
-	leadingEnds.insert(&rootMatch);
-	branches.insert(&rootMatch);
+	std::set<Match *> leadingEnds, finished;
+	//std::set<Match *> branches;
+	leadingEnds.insert(rootMatch);
+	//branches.insert(rootMatch);
 	float bestFinishedMatch = 0;
 	
 	//As long as there are any leading ends, keep advancing in the matching process.
 	int iterations = 0;
 	while (!leadingEnds.empty() && bestFinishedMatch < 0.9) {
-		if (iterations++ > 200) {
-			std::cout << "ABORTING" << std::endl;
-			break;
-		}
-		
-		//Duplicate the set of matches since we need to iterate over them while modifying the
-		//content.
-		currentEnds = leadingEnds;
-		//leadingEnds.clear();
+		//assert(iterations++ < 20000);
 		
 		//Get rid of matches that lie too far behind the best finished match.
 		for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++)
-			if ((*m)->getUnsafeMatch() < bestFinishedMatch * 0.5)
+			if ((*m)->getSeriesMatch() < bestFinishedMatch * 0.5)
 				leadingEnds.erase(m);
 		
 		//Iterate over the current ends and find either the first one that doesn't match, which has
@@ -150,18 +65,20 @@ void Analyzer::process(Token * token)
 		Match * best = NULL;
 		bool wasBestMatch = true;
 		for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++) {
-			float match = (*m)->getUnsafeMatch();
+			float match = (*m)->getSeriesMatch();
 			//std::cout << (std::string)**m << " (" << match*100 << "%)" << std::endl;
-			if ((*m)->dontMatch()) {
+			if ((*m)->dontMatch() && !(*m)->isRecursive()) {
 				best = (*m);
 				bestMatch = match;
 				wasBestMatch = false;
-				break;
 			}
-			if (!best || match > bestMatch) {
+			if (wasBestMatch && (!best || best->isRecursive() || match > bestMatch)) {
 				best = (*m);
 				bestMatch = match;
 			}
+			
+			if (match < 0.75 && (*m)->triesLeft == -1)
+				(*m)->triesLeft = (match / 0.75) * 5;
 		}
 		
 		//Erase matches that are too weak.
@@ -170,14 +87,14 @@ void Analyzer::process(Token * token)
 				leadingEnds.erase(m);*/
 		
 		//Produce some debug output.
-		/*for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++) {
-			std::cout << (std::string)**m << " (" << (*m)->getUnsafeMatch()*100 << "%)";
-			if ((*m)->triesLeft >= 0) std::cout << " [" << (*m)->triesLeft << " to beat "
-				<< (*m)->matchToBeat*100 << "%]";
+		for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++) {
+			std::cout << (std::string)**m << " (" << (*m)->getSeriesMatch()*100 << "%, Δ"
+			<< (*m)->getDeltaMatch()*100 << "%)";
+			if ((*m)->triesLeft >= 0) std::cout << " [" << (*m)->triesLeft << "]";
 			if (best == *m) std::cout << " <--*";
 			std::cout << std::endl;
 		}
-		std::cout << std::endl;*/
+		std::cout << std::endl;
 		
 		//If there was a best match found, calculate its next matches
 		bool anySafeMatch = false;
@@ -196,22 +113,27 @@ void Analyzer::process(Token * token)
 					if (wasBestMatch) {
 						if (nm->isSafeMatch()) {
 							anySafeMatch = true;
-							bestSafeMatch = nm->getUnsafeMatch();
+							bestSafeMatch = nm->getSeriesMatch();
 						}
-						nm->triesLeft = -1;
+						if (nm->getDeltaMatch() >= 0)
+							nm->triesLeft = -1;
 					}
 					
-					//Add this to the leading ends if it matches at least a bit.
-					//if (nm->getUnsafeMatch() > 0.5)
-					if (nm->triesLeft != 0)
+					//Add this to the leading ends if it matches at least a bit and there are no
+					//equivalent matches present.
+					if (nm->triesLeft != 0 && nm->getSeriesMatch() > 0.5) {
+						/*bool equivalent = false;
+						for*/
 						leadingEnds.insert(nm);
+					}
 					
 					//Keep track of this branch.
-					branches.erase(nm->getPrev());
-					branches.insert(nm);
+					/*branches.erase(nm->getPrev());
+					branches.insert(nm);*/
 				} else {
 					finished.insert(nm);
-					bestFinishedMatch = std::max<float>(bestFinishedMatch, nm->getUnsafeMatch());
+					bestFinishedMatch = std::max<float>(bestFinishedMatch, nm->getSeriesMatch());
+					std::cout << "match: " << (std::string)*nm << std::endl;
 				}
 				
 				//Jump to the next sibling.
@@ -219,20 +141,17 @@ void Analyzer::process(Token * token)
 			}
 		}
 		
-		//Debug copying.
-		if (!leadingEnds.empty())
-			currentEnds = leadingEnds;
-		
 		//If there were any safe matches, iterate through the leading ends and remove all that are
 		//no such match.
-		if (anySafeMatch) {
-			for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++) {
-				if (!(*m)->isSafeMatch() && (*m)->triesLeft == -1) {
+		if (anySafeMatch)
+			for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++)
+				if (!(*m)->isSafeMatch() && (*m)->triesLeft == -1)
 					(*m)->triesLeft = 2;
-					(*m)->matchToBeat = bestSafeMatch;
-				}
-			}
-		}
+		
+		//If there are no more leading ends and we have no finished branch, insert the last end we
+		//tried into the finished array.
+		if (leadingEnds.empty() && finished.empty())
+			finished.insert(best);
 		
 		//Dump the branches.
 		/*std::cout << "-----" << std::endl;
@@ -244,16 +163,16 @@ void Analyzer::process(Token * token)
 	/*std::cout << std::endl;
 	for (std::set<Match *>::iterator m = branches.begin(); m != branches.end(); m++)
 		std::cout << (std::string)**m << (currentEnds.count(*m) ? "" : " ◼")
-		<< "   | " << (*m)->getUnsafeMatch() * 100 << "%" << std::endl;*/
+		<< "   | " << (*m)->getSeriesMatch() * 100 << "%" << std::endl;*/
 	/*std::cout << std::endl;
 	for (std::set<Match *>::iterator m = finished.begin(); m != finished.end(); m++)
 		std::cout << (std::string)**m
-		<< "   | " << (*m)->getUnsafeMatch() * 100 << "%" << std::endl;*/
+		<< "   | " << (*m)->getSeriesMatch() * 100 << "%" << std::endl;*/
 	
 	//Dump some stuff to the user window.
 	std::stringstream out;
 	for (std::set<Match *>::iterator m = finished.begin(); m != finished.end(); m++) {
-		out << (std::string)**m << " (" << (*m)->getUnsafeMatch()*100 << "%)" << std::endl;
+		out << (std::string)**m << " (" << (*m)->getSeriesMatch()*100 << "%)" << std::endl;
 		StructureNode * n = (*m)->getStructureNode();
 		if (n)
 			out << (std::string)*n << std::endl;

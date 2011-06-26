@@ -177,10 +177,11 @@ void Tokenizer::process(std::istream & input)
 		if (bufferKind == Token::kIdentifierToken && kind == Token::kNumericToken)
 			kind = bufferKind;
 		
-		//Numeric buffers suck up all tokens, since the value's validity is checked at a later
-		//stage.
-		if (bufferKind == Token::kNumericToken && kind != Token::kInvalidToken)
-			kind = bufferKind;
+		//Numeric buffers suck up all identifier and some symbol tokens, since the value's validity
+		//is checked at a later stage.
+		if (bufferKind == Token::kNumericToken)
+			if (kind == Token::kIdentifierToken || buffer == ".")
+				kind = bufferKind;
 		
 		//If the buffer kind and this token kind disagree, wrap up the current buffer.
 		if ((bufferKind != kind || wrapUpAnyway) && !buffer.empty()) {

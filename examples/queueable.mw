@@ -17,7 +17,7 @@ class Room
 	
 	- void test
 	{
-		/* Simply calling the queueable function will not executed it, but rather mark it as
+		/* Simply calling the queueable function will not execute it, but rather mark it as
 		 * queued. */
 		this:updatePopopulation;
 		

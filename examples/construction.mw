@@ -65,6 +65,6 @@ class Shelf
 		 * the name of the class that you want to instantiate. */
 		Book book1 = new Book;
 		Book book2 = new Book ();
-		Book book3 = new Book (withPages:436 andDimensions(20, 40));
+		Book book3 = new Book (withPages:436 andDimensions:(20, 40));
 	}
 }

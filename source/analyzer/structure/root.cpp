@@ -40,25 +40,34 @@
 
 StructureRoot::StructureRoot() : StructureNode("root")
 {
-	//Introduce all possible nodes.
+	//List of all possible nodes.
 	node(root_stmt);
-	node(class_decl); node(class_def); node(class_stmt);
-	node(func_decl); node(func_def); node(func_shared); node(func_args); node(func_arg);
-	node(func_stmt);
-	node(var_decl); node(var_def);
-	node(type);
-	node(expr);
+    node(expr);
+    node(op_binary); node(op_unary);
 	
-	//The root node accepts an arbitrary amount of root statements.
+	/*** Root node ***/
 	fork() many(ref(root_stmt));
 	
 	/*** Root Statement ***/
-	/* Only class declarations and definitions as well as some import commands are allowed at root
-	 * level. */
 	(*root_stmt)
-	.fork() ref(class_decl) SEMICOLON safe
-	.fork() ref(class_def)
+	.fork() ref(expr) SEMICOLON
 	;
+    
+    /*** Expression ***/
+    (*expr)
+    .fork() numeric
+    .fork() ident
+    .fork() LPAREN ref(expr) RPAREN
+    .fork() ref(expr) ref(op_binary) ref(expr)
+    ;
+    
+    /*** Operators ***/
+    (*op_binary)
+    .fork() PLUS
+    .fork() MINUS
+    .fork() ASTERISK
+    .fork() FSLASH
+    ;
 }
 
 StructureRoot::~StructureRoot()

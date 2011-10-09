@@ -82,6 +82,7 @@ void Analyzer::process(Token * token)
 				while (pm && pm->isRecursive()) {
 					Match * nm = pm->getNext();
 					while (nm && !someMatched) {
+                        std::cout << "\ttrying " << (std::string)*nm << std::endl;
 						if (nm != *m && !nm->isRecursive()) {
 							if (currentEnds.count(nm))
 								someMatched = true;
@@ -164,13 +165,13 @@ void Analyzer::process(Token * token)
 					(*m)->expiresIn = 3;
 		
 		//Produce some debug output.
-		/*for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++) {
+		for (std::set<Match *>::iterator m = leadingEnds.begin(); m != leadingEnds.end(); m++) {
 			std::cout << (std::string)**m << " (" << (*m)->getUnsafeMatch()*100 << "%)";
 			if ((*m)->expiresIn > -1) std::cout << " [expires in " << (*m)->expiresIn << "]";
 			if ((*m)->isSafeMatch()) std::cout << " <--- safe ---*";
 			std::cout << std::endl;
 		}
-		std::cout << std::endl;*/
+		std::cout << "---------------------------------------" << std::endl;
 	}
 	
 	//Dump the branches.
@@ -178,10 +179,10 @@ void Analyzer::process(Token * token)
 	for (std::set<Match *>::iterator m = branches.begin(); m != branches.end(); m++)
 		std::cout << (std::string)**m << (currentEnds.count(*m) ? "" : " ◼")
 		<< "   | " << (*m)->getUnsafeMatch() * 100 << "%" << std::endl;*/
-	/*std::cout << std::endl;
+	std::cout << std::endl;
 	for (std::set<Match *>::iterator m = finished.begin(); m != finished.end(); m++)
 		std::cout << (std::string)**m
-		<< "   | " << (*m)->getUnsafeMatch() * 100 << "%" << std::endl;*/
+		<< "   | " << (*m)->getUnsafeMatch() * 100 << "%" << std::endl;
 	
 	//Dump some stuff to the user window.
 	std::stringstream out;

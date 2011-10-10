@@ -6,6 +6,7 @@
 
 std::map<const Match * const, float> Match::unsafeMatchCache;
 std::map<const Match * const, float> Match::seriesMatchCache;
+std::map<const Match * const, unsigned int> Match::depthCache;
 
 
 
@@ -247,7 +248,7 @@ float Match::getUnsafeMatch() const
 		const Match * m = this;
 		float summedMatches = 0;
 		int matchCount = 0;
-		while (m /*&& (m == this || !m->isSafe())*/) {
+		while (m && (m == this || !m->isSafe())) {
 			if (!m->dontMatch()) {
 				summedMatches += m->match;
 				matchCount++;
@@ -287,6 +288,24 @@ float Match::getSeriesMatch() const
 	} else {
 		v = seriesMatchCache[this];
 	}
+	return v;
+}
+
+float Match::getFinalMatch() const
+{
+    return getUnsafeMatch();
+}
+
+
+
+unsigned int Match::getDepth() const
+{
+    unsigned int v = 0;
+	if (!depthCache.count(this))
+		for (const Match * m = this; m; m = m->prev)
+            v++;
+    else
+		v = depthCache[this];
 	return v;
 }
 
@@ -379,11 +398,11 @@ void Match::compare()
 Match::operator std::string () const
 {
 	if (!structureToken || (!prev && !parent))
-		return "";
+		return "#";
 	std::stringstream out;
-	if (/*!safe &&*/ prev)
+	if (!safe && prev)
 		out << (std::string)*prev;
-	if (!structureToken->dontMatch()) {
+	if (/*!structureToken->dontMatch()*/true) {
 		if (!out.str().empty())
 			out << " ";
 		out << (std::string)*structureToken;

@@ -14,6 +14,7 @@ private:
 	
 	static std::map<const Match * const, float> unsafeMatchCache;
 	static std::map<const Match * const, float> seriesMatchCache;
+    static std::map<const Match * const, unsigned int> depthCache;
 	
 protected:
 	Token * token;
@@ -56,6 +57,9 @@ public:
 	
 	float getUnsafeMatch() const;
 	float getSeriesMatch() const;
+    float getFinalMatch() const;
+    
+    unsigned int getDepth() const;
 	
 	bool isRecursive() const;
 	

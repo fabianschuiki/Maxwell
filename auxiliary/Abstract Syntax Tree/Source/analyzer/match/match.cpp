@@ -247,14 +247,17 @@ float Match::getUnsafeMatch() const
 		const Match * m = this;
 		float summedMatches = 0;
 		int matchCount = 0;
-		while (m && (m == this || !m->isSafe())) {
+		while (m /*&& (m == this || !m->isSafe())*/) {
 			if (!m->dontMatch()) {
 				summedMatches += m->match;
 				matchCount++;
 			}
 			m = m->prev;
 		}
-		v = (summedMatches / matchCount);
+        if (matchCount > 0)
+            v = (summedMatches / matchCount);
+        else
+            v = 1;
 		
 		unsafeMatchCache[this] = v;
 	} else {

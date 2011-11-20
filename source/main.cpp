@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include "lexer.h"
 
 
 int main(int argc, char * argv[])
@@ -12,7 +13,8 @@ int main(int argc, char * argv[])
     char * input = argv[1];
     std::ifstream fin(input);
 	
-	
+	//Parse the input.
+	Lexer::Group * root = Lexer::parse(&fin);
     
 	return 0;
 }

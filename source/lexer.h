@@ -1,3 +1,4 @@
+#include <string>
 #include <vector>
 
 
@@ -6,13 +7,28 @@ namespace Lexer {
 	struct Node {
 		enum Type {
 			TypeGroup,
+			TypeIdentifier,
 		};
 		const Type type;
-		Node(Type t) : type(t) {}
+		Node(Type t);
 	};
 	
 	struct Group : public Node {
+		enum Subtype {
+			SubtypeRoot,
+			SubtypeBrackets,
+			SubtypeBraces,
+			SubtypeParanthesis,
+		};
+		const Subtype subtype;
 		std::vector<Node *> children;
-		Group() : Node(TypeGroup) {}
+		Group(Subtype s);
 	};
+	
+	struct Identifier : public Node {
+		std::string string;
+		Identifier();
+	};
+	
+	Group * parse(std::istream * in);
 }

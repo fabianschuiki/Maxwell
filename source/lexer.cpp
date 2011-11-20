@@ -1,3 +1,4 @@
+#include <iostream>
 #include <sstream>
 #include "lexer.h"
 using namespace Lexer;
@@ -23,7 +24,8 @@ Group * Lexer::parse(std::istream * in)
 	{
 		//Read the next character and move the character archive.
 		inc[0] = inc[1];
-		inc[1] = in->getchar();
+		inc[1] = in->get();
+		std::cout << "read" << inc[1] << std::endl;
 	}
 	
 	//Return the root.

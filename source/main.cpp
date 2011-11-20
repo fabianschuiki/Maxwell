@@ -1,9 +1,6 @@
 #include <iostream>
 #include <fstream>
 
-#include "tokenizer/tokenizer.h"
-#include "analyzer/analyzer.h"
-
 
 int main(int argc, char * argv[])
 {
@@ -15,13 +12,7 @@ int main(int argc, char * argv[])
     char * input = argv[1];
     std::ifstream fin(input);
     
-    //Tokenize the input.
-    Tokenizer t;
-    t.process(fin);
     
-    //Analyze the tokens.
-    Analyzer a;
-    a.process(t.getFirstToken());
     
 	return 0;
 }

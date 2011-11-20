@@ -11,8 +11,8 @@ int main(int argc, char * argv[])
     }
     char * input = argv[1];
     std::ifstream fin(input);
-    
-    
+	
+	
     
 	return 0;
 }

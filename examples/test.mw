@@ -1,0 +1,4 @@
+test double a => double
+{
+	return a + 5;
+}

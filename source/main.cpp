@@ -15,6 +15,7 @@ int main(int argc, char * argv[])
 	
 	//Parse the input.
 	Lexer::Group * root = Lexer::parse(&fin);
-    
+	std::cout << "read:\n" << root->desc() << "\n";
+	
 	return 0;
 }

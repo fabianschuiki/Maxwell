@@ -1,34 +1,75 @@
 #include <string>
-#include <vector>
-
+#include "location.h"
 
 namespace Lexer {
 	
+	/** Basic node class from which all Lexer tokens and groups inherit. */
 	struct Node {
+		
+		//Node Type
 		enum Type {
-			TypeGroup,
-			TypeIdentifier,
+			kInvalid,
+			kGroup,
+			kIdentifier,
+			kSymbol,
+			kNumeric,
+			kString,
 		};
 		const Type type;
+		
+		//Hierarchy.
+		Node * next;
+		
+		//Content and location.
+		std::string text;
+		Range range;
+		
+		//Factory and construction.
+		static Node * make(Type type,
+		                   const std::string & text,
+		                   const Range & range);
 		Node(Type t);
+		virtual ~Node();
+		
+		//Description.
+		virtual std::string desc();
 	};
 	
+	/** Group of nodes. */
 	struct Group : public Node {
+		
+		//Subtype
 		enum Subtype {
-			SubtypeRoot,
-			SubtypeBrackets,
-			SubtypeBraces,
-			SubtypeParanthesis,
+			kInvalidGroup,
+			kRoot,
+			kBrackets,
+			kBraces,
+			kParanthesis,
 		};
 		const Subtype subtype;
-		std::vector<Node *> children;
+		
+		//Hierarchy.
+		Node * firstChild;
+		Node * lastChild;
+		void addChild(Node * c);
+		
+		//Delimiters.
+		const std::string getOpeningSymbol();
+		const std::string getClosingSymbol();
+		static Subtype subtypeForOpeningSymbol(const std::string & os);
+		
+		//Construction.
 		Group(Subtype s);
+		~Group();
+		
+		//Description.
+		std::string desc();
 	};
 	
+	/** Identifier Token. This can be anything from typename to keyword. */
 	struct Identifier : public Node {
-		std::string string;
 		Identifier();
 	};
 	
-	Group * parse(std::istream * in);
+	Group * parse(std::istream * input);
 }

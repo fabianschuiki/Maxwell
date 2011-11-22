@@ -42,7 +42,7 @@ Node::~Node()
 	}
 }
 
-std::string Node::desc()
+std::string Node::describe(int depth, int indent)
 {
 	return text;
 }
@@ -101,25 +101,32 @@ Group::Subtype Group::subtypeForOpeningSymbol(const std::string & os)
 	return kInvalidGroup;
 }
 
-std::string Group::desc()
+std::string Group::describe(int depth, int indent)
 {
+	std::string brk = "\n";
+	brk += std::string(indent * 4, ' ');
 	std::stringstream s;
 	s << getOpeningSymbol();
+	bool wasBreak = false;
 	if (subtype == kBraces)
-		s << "\n";
-	Node * c = firstChild;
-	bool first = true;
-	while (c) {
-		if (!first)
-			s << " ";
-		first = false;
-		s << c->desc();
-		if (c->type == Node::kSymbol && c->text == ";")
-			s << "\n";
-		c = c->next;
+		s << brk;
+	if (depth != 0) {
+		Node * c = firstChild;
+		bool first = true;
+		while (c) {
+			if (!first)
+				s << " ";
+			first = false;
+			s << c->describe((depth > 0 ? depth - 1 : depth), indent + 1);
+			if (c->type == Node::kSymbol && c->text == ";") {
+				s << brk;
+				first = true;
+			}
+			c = c->next;
+		}
+	} else {
+		s << "...";
 	}
-	if (subtype == kBraces);
-		s << "\n";
 	s << getClosingSymbol();
 	return s.str();
 }

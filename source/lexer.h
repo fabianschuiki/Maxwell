@@ -32,7 +32,7 @@ namespace Lexer {
 		virtual ~Node();
 		
 		//Description.
-		virtual std::string desc();
+		virtual std::string describe(int depth = -1, int indent = 0);
 	};
 	
 	/** Group of nodes. */
@@ -63,7 +63,7 @@ namespace Lexer {
 		~Group();
 		
 		//Description.
-		std::string desc();
+		std::string describe(int depth = -1, int indent = 0);
 	};
 	
 	/** Identifier Token. This can be anything from typename to keyword. */

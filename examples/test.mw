@@ -1,11 +1,7 @@
-//Hello World
-/* blabla ablabl
-blablab
-asodfjiasf
-drgiuhsdriug
-sdrguh
-*/
+/** Debugging file for Maxwell language. */
+
 test double a => double
 {
+	//Calculate a simple sum.
 	return a + 5;
 }

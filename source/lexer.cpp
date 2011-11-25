@@ -107,8 +107,7 @@ std::string Group::describe(int depth, int indent)
 	brk += std::string(indent * 4, ' ');
 	std::stringstream s;
 	s << getOpeningSymbol();
-	bool wasBreak = false;
-	if (subtype == kBraces)
+	if (subtype == kBraces && depth != 0)
 		s << brk;
 	if (depth != 0) {
 		Node * c = firstChild;
@@ -125,7 +124,7 @@ std::string Group::describe(int depth, int indent)
 			c = c->next;
 		}
 	} else {
-		s << "...";
+		s << " ... ";
 	}
 	s << getClosingSymbol();
 	return s.str();

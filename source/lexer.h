@@ -32,6 +32,10 @@ namespace Lexer {
 		Node(Type t);
 		virtual ~Node();
 		
+		//Convenience.
+		bool isIdentifier(const std::string & name = "") const;
+		bool isSymbol(const std::string & name = "") const;
+		
 		//Description.
 		virtual std::string describe(int depth = -1, int indent = 0);
 	};

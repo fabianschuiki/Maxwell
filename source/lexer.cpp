@@ -42,6 +42,16 @@ Node::~Node()
 	}
 }
 
+bool Node::isIdentifier(const std::string & name = "") const
+{
+	return (type == kIdentifier && (name.empty() || text == name));
+}
+
+bool Node::isSymbol(const std::string & name = "") const
+{
+	return (type == kSymbol && (name.empty() || text == name));
+}
+
 std::string Node::describe(int depth, int indent)
 {
 	return text;

@@ -1,7 +1,20 @@
 /** Debugging file for Maxwell language. */
 
-test double a => double
+//Simple function.
+test (double a, double b) => double
 {
 	//Calculate a simple sum.
 	return a + 5;
+}
+
+//A method.
+/*helloWorld
+{
+	//Calculate an even simpler sum.
+	return 5 + 6 * 2;
+}*/
+
+//Something that only returns stuff.
+returnator => double
+{
 }

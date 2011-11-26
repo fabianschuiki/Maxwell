@@ -17,10 +17,31 @@ std::string describeNodes(const Parser::Nodes & n)
 }
 
 
+/** Parses the given root group of tokens. */
 void Parser::parse(Lexer::Group * root)
 {
 	Lexer::Node * current = root->firstChild;
-	std::cout << describeNodes(scan(current)) << std::endl;
+	
+	//Process whatever is there.
+	while (current) {
+		Nodes nodes = scan(current);
+		if (nodes.empty())
+			break;
+		
+		//Dump the scanned nodes.
+		std::cout << describeNodes(nodes) << std::endl;
+		
+		//Check whether this is a function definition.
+		if (nodes.size() > 2) {
+			if (nodes[0]->isIdentifier() && nodes[1]->isSymbol(":")) {
+			}
+		}
+		
+		//Fetch the last node we scanned and make its next node the current one
+		//so parsing proceeds from there.
+		Lexer::Node * last = nodes.back();
+		current = last->next;
+	}
 }
 
 /** Scans through the nodes up to the next group or ';' and accumulates the
@@ -34,7 +55,8 @@ Parser::Nodes Parser::scan(Lexer::Node * start)
 	Lexer::Node * node = start;
 	while (node) {
 		nodes.push_back(node);
-		if (node->type == Lexer::Node::kGroup)
+		Lexer::Group * group = (Lexer::Group *)node;
+		if (node->type == Lexer::Node::kGroup && group->subtype == Lexer::Group::kBraces)
 			break;
 		if (node->type == Lexer::Node::kSymbol && node->text == ";")
 			break;

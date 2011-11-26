@@ -35,6 +35,7 @@ namespace Lexer {
 		//Convenience.
 		bool isIdentifier(const std::string & name = "") const;
 		bool isSymbol(const std::string & name = "") const;
+		bool isGroup() const;
 		
 		//Description.
 		virtual std::string describe(int depth = -1, int indent = 0);

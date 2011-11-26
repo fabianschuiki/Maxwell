@@ -31,17 +31,42 @@ void Parser::parse(Lexer::Group * root)
 		//Dump the scanned nodes.
 		std::cout << describeNodes(nodes) << std::endl;
 		
-		//Check whether this is a function definition.
-		if (nodes.size() > 2) {
-			if (nodes[0]->isIdentifier() && nodes[1]->isSymbol(":")) {
-			}
-		}
+		//Try to parse.
+		parseFunction(nodes);
 		
 		//Fetch the last node we scanned and make its next node the current one
 		//so parsing proceeds from there.
 		Lexer::Node * last = nodes.back();
 		current = last->next;
 	}
+}
+
+/** Tries to parse the given nodes as function. */
+bool Parser::parseFunction(const Nodes & nodes)
+{
+	//First of all check for the telltale sign this is a function which is the => symbol.
+	int mapop = -1;
+	for (int i = 0; i < nodes.size(); i++)
+		if (nodes[i]->isSymbol("=>"))
+			mapop = i;
+	
+	//The first token needs to be an identifier naming the function.
+	Lexer::Node * name = nodes[0];
+	if (!name->isIdentifier())
+		return false;
+	
+	//Eat the input and output arguments.
+	Nodes input, output;
+	for (int i = 1; i < nodes.size() - 1; i++) {
+		if (i < mapop)
+			input.push_back(nodes[i]);
+		if (i > mapop)
+			output.push_back(nodes[i]);
+	}
+	
+	//Dump stuff.
+	std::cout << "function " << name->text << ", input " << describeNodes(input) << ", output " << describeNodes(output) << std::endl;
+	return true;
 }
 
 /** Scans through the nodes up to the next group or ';' and accumulates the

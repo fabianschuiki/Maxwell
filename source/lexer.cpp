@@ -52,9 +52,9 @@ bool Node::isSymbol(const std::string & name) const
 	return (type == kSymbol && (name.empty() || text == name));
 }
 
-bool Node::isGroup() const
+bool Node::isGroup(int subtype) const
 {
-	return (type == kGroup);
+	return (type == kGroup && (!subtype || ((Group *)this)->subtype == subtype));
 }
 
 std::string Node::describe(int depth, int indent)

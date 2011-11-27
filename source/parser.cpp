@@ -42,7 +42,7 @@ void Parser::parse(Lexer::Group * root)
 }
 
 /** Tries to parse the given nodes as function. */
-bool Parser::parseFunction(const Nodes & nodes)
+Parser::Function * Parser::parseFunction(const Nodes & nodes)
 {
 	//First of all check for the telltale sign this is a function which is the => symbol.
 	int mapop = -1;
@@ -53,7 +53,7 @@ bool Parser::parseFunction(const Nodes & nodes)
 	//The first token needs to be an identifier naming the function.
 	Lexer::Node * name = nodes[0];
 	if (!name->isIdentifier())
-		return false;
+		return NULL;
 	
 	//Eat the input and output arguments.
 	Nodes input, output;
@@ -66,7 +66,61 @@ bool Parser::parseFunction(const Nodes & nodes)
 	
 	//Dump stuff.
 	std::cout << "function " << name->text << ", input " << describeNodes(input) << ", output " << describeNodes(output) << std::endl;
-	return true;
+	//return true;
+}
+
+/** Tries to parse the given nodes as function arguments. */
+Parser::FunctionArgs * Parser::parseFunctionArgs(const Nodes & nodes)
+{
+	//If the first node is a group, call the function again with the group's
+	//child nodes as arguments.
+	if (!nodes.empty() && nodes[0]->isGroup(Lexer::Group::kParenthesis)) {
+		Nodes n;
+		Lexer::Node * c = ((Group *)nodes[0])->firstChild;
+		while (c) {
+			n.push_back(c);
+			c = c->next;
+		}
+		return parseFunctionArgs(n);
+	}
+	
+	//Scan the arguments.
+	FunctionArgs * args = new FunctionArgs;
+	Nodes buffer;
+	for (int i = 0; i < nodes.size(); i++) {
+		if (nodes[i]->isSymbol(",")) {
+			args->args.push_back(parseFunctionArg(buffer));
+			buffer.clear();
+		} else {
+			buffer.push_back(nodes[i]);
+		}
+	}
+	if (!buffer.empty())
+		args->args.push_back(parseFunctionArg(buffer));
+	return args;
+}
+
+/** Tries to parse the given nodes as a function argument. */
+FunctionArg * Parser::parseFunctionArg(const Nodes & nodes)
+{
+	if (nodes.empty())
+		return NULL;
+	
+	//Fetch the details on the argument.
+	FunctionArg * arg = new FunctionArg;
+	if (!nodes[0]->isIdentifier()) {
+		delete arg;
+		return NULL;
+	}
+	arg->type = nodes[0]->text;
+	if (nodes.size() > 1) {
+		if (!nodes[1]->isIdentifier()) {
+			delete arg;
+			return NULL;
+		}
+		arg->name = nodes[1]->text;
+	}
+	return arg;
 }
 
 /** Scans through the nodes up to the next group or ';' and accumulates the

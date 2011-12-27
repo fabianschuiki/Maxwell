@@ -1,0 +1,8 @@
+/* Maxwell debug file. */
+a int    = 45;
+b double = 6.94e+12;
+
+//Pretty straightforward squaring function.
+square (x double) => double {
+	return x*x;
+}

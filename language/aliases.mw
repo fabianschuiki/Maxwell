@@ -1,0 +1,7 @@
+//Exhaustive variable names can be shortened using aliases.
+//Consider the following function which moves all elements of a pseudo-C array one index backward:
+longArrayName array;
+
+a -> longArrayName; //a is an alias for longArrayName.
+for (i := 0; i < a.length - 1; i++)
+	a[i] = a[i+1];

@@ -1,0 +1,15 @@
+/** This file shows off some of the function input and output arguments flexibility. */
+
+//Consider the following method:
+method (a, b, c) {
+	//do something...
+}
+
+//The following are valid function calls.
+method(1, 2, 3);          //anonymous arguments are filled according to the parameter list.
+method(b: 2, a: 1, c: 3); //named arguments are mapped according to the argument names.
+
+//Maps may also be used as function arguments. Notice the difference:
+m map = { a: 5, b: 2, c: 4 };
+method(m);  //passes the map m as first argument (a)
+method(<m); //uses the contents of the map to assign the arguments (5, 2, 4)

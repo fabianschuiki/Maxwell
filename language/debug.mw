@@ -1,8 +1,16 @@
 /* Maxwell debug file. */
+gamma int;
+checka;
 a int    = 45;
 b double = 6.94e+12;
+s string = "Hello, World!";
+c int    = (65 + 4.6);
+d int    = 65 + 4.6;
 
 //Pretty straightforward squaring function.
 square (x double) => double {
+	if {
+		mytest(true);
+	}
 	return x*x;
 }

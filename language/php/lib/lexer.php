@@ -8,11 +8,18 @@ class Lexer
 	
 	//Symbol combinations that are merged into one symbol token.
 	static public $symbolCombinations = array(
-		"=>",
+		"=>"
+	);
+	
+	//Keywords.
+	static public $keywords = array(
+		'if', 'else',
+		'return',
 	);
 	
 	//The input string that is to be tokenized.
 	protected $input;
+	public $inputFileName;
 	
 	//The parsed root group node.
 	public $rootGroup;
@@ -34,6 +41,9 @@ class Lexer
 		$bufferRange = new Range;
 		$buffer      = "";
 		
+		//Keep the name around.
+		$bufferRange->file = $this->inputFileName;
+		
 		//Location tracking.
 		$loc = new Location;
 		
@@ -50,7 +60,7 @@ class Lexer
 			$nc  = $this->input[$i+1];
 			
 			//Advance the location.
-			if (c == "\n") {
+			if ($c == "\n") {
 				$loc->line++;
 				$loc->column = 0;
 			}
@@ -141,8 +151,7 @@ class Lexer
 			
 			//Numeric buffers suck up all identifiers and some symbol tokens.
 			if ($bufferType == 'numeric') {
-				if ($newBufferType == 'identifier' ||
-					$c == '.' ||
+				if ($newBufferType == 'identifier' || $c == '.' ||
 					(strchr("eE", $pc) !== false && strchr("+-", $c) !== false)) {
 					$newBufferType = $bufferType;
 					$wrapUpAnyway = false;
@@ -164,9 +173,14 @@ class Lexer
 					//If this is a bracket symbol, create a new group token.
 					if ($bufferType == 'symbol' && strchr("({[", $buffer) !== false) {
 						$subtypes = array('(' => '()', '{' => '{}', '[' => '[]');
-						$n = new Group('group', $bufferRange, $subtypes[$buffer]);
+						$n = new Group('group', clone $bufferRange, $subtypes[$buffer]);
 					} else {
-						$n = new Token($bufferType, $bufferRange, $buffer);
+						$n = new Token($bufferType, clone $bufferRange, $buffer);
+						
+						//Potentially turn the token into a keyword.
+						if (in_array($n->text, self::$keywords)) {
+							$n->type = 'keyword';
+						}
 					}
 					
 					//Add the node to the topmost group.
@@ -205,14 +219,25 @@ class Lexer
 /** Describes the location of a token through the start and end line and column. */
 class Location
 {
-	public $line   = 0;
+	public $line   = 1;
 	public $column = 0;
 	public $offset = 0;
 }
 class Range
 {
+	public $file;
 	public $start;
 	public $end;
+	
+	public function __toString() {
+		$s = $this->file.':';
+		$s .= $this->start->line.'.'.$this->start->column;
+		$s .= '-';
+		if ($this->start->line != $this->end->line)
+			$s .= $this->end->line.'.';
+		$s .= $this->end->column;
+		return $s;
+	}
 }
 
 /** Basic lexer node. */
@@ -224,6 +249,14 @@ class Node
 		$this->type  = $type;
 		$this->range = $range;
 	}
+	
+	//Convenience.
+	public function is($type)      { return $this->type == $type; }
+	public function isIdentifier() { return $this->is('identifier'); }
+	public function isKeyword()    { return $this->is('keyword'); }
+	public function isSymbol()     { return $this->is('symbol'); }
+	public function isNumeric()    { return $this->is('numeric'); }
+	public function isString()     { return $this->is('string'); }
 }
 
 /** Group node. */
@@ -245,22 +278,31 @@ class Group extends Node
 		return ($this->subtype == 'root' ? null : $this->subtype[1]);
 	}
 	
-	public function desc($depth = -1) {
+	public function desc($depth = -1, $indent = 0) {
+		$break = "\n".str_repeat('    ', max($indent - 1, 0));
 		$descChildren = ($depth > 0 || $depth == -1);
 		$s = '';
+		$afterBreak = false;
 		if ($this->subtype != 'root') {
 			$os = $this->openingSymbol();
 			$s .= $os;
-			if ($os == '{' && $descChildren)
-				$s .= "\n";
-			else
+			if ($os == '{' && $descChildren) {
+				$s .= $break;
+				$afterBreak = true;
+			} else {
 				$s .= ' ';
+			}
 		}
 		if ($descChildren) {
 			foreach ($this->children as $c) {
-				$s .= $c->desc($depth == -1 ? -1 : $depth - 1);
-				if ($c->type == 'symbol' && $c->text == ';') {
-					$s .= "\n";
+				if ($afterBreak && $this->subtype != 'root') {
+					$s .= '    ';
+					$afterBreak = false;
+				}
+				$s .= $c->desc($depth == -1 ? -1 : $depth - 1, $indent + 1);
+				if (($c->type == 'symbol' && $c->text == ';') || ($c->type == 'group' && $c->subtype == '{}')) {
+					$s .= $break;
+					$afterBreak = true;
 				} else {
 					$s .= " ";
 				}
@@ -285,13 +327,19 @@ class Token extends Node
 	public function desc() {
 		switch ($this->type) {
 			case 'identifier': {
-				return '«'.$this->text.'»';
+				return "\033[0m".$this->text."\033[0m";
+			} break;
+			case 'keyword': {
+				return "\033[1;34m".$this->text."\033[0m";
 			} break;
 			case 'symbol': {
-				return $this->text;
+				return "\033[0m".$this->text."\033[0m";
 			} break;
 			case 'numeric': {
-				return '#'.$this->text;
+				return "\033[0;36m#".$this->text."\033[0m";
+			} break;
+			case 'string': {
+				return "\033[0;33m\"".$this->text."\"\033[0m";
 			} break;
 		}
 		return $this->type.'?'.$this->text;

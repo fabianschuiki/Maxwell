@@ -1,25 +1,7 @@
-/* Maxwell debug file. */
-gamma int;
-checka;
-a int    = 45;
-b double = 6.94e+12;
-s string = "Hello, World!";
-
-//Precedence tests.
-ptest1 int = (65 + 4.6) * 5;
-ptest2 int = 65 + 4.6 * 5;
-
-//Anonymous function test.
-/*nony func = ((int, int) => (double) {
-	return "Hello World";
-});*/
-
 //Pretty straightforward squaring function.
 square (x double) => double {
 	return x*x;
 }
 
-//Flat method.
-myMethod {
-	gamma double = 1358.2;
-}
+//Try the squaring function.
+square(5);

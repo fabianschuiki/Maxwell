@@ -34,7 +34,8 @@ class FunctionStmt extends Statement
 	public $function;
 	public function desc($indent = 0) {
 		$s = "\033[1;33m".$this->name->text."\033[0m ";
-		$s .= $this->function->desc($indent);
+		if ($this->function)
+			$s .= $this->function->desc($indent);
 		return $s;
 	}
 }
@@ -95,7 +96,7 @@ class BinaryOperatorExpr extends Expression
 	}
 }
 
-class AnonymousFunctionExpr extends Expression
+class FunctionExpr extends Expression
 {
 	public $inputs;
 	public $outputs;
@@ -114,6 +115,28 @@ class AnonymousFunctionExpr extends Expression
 	}
 }
 
-class FunctionArgumentExpr extends VariableExpr
+class FunctionArg extends VariableExpr
 {
+}
+
+class FunctionCallExpr extends Expression
+{
+	public $name;
+	public $arguments;
+	public function desc() {
+		return $this->name->text.'('.implode(', ', $this->arguments).')';
+	}
+}
+
+class FunctionCallArg extends Expression
+{
+	public $name;
+	public $expr;
+	public function desc() {
+		$s = '';
+		if ($this->name)
+			$s .= $this->name->text.': ';
+		$s .= $this->expr->desc();
+		return $s;
+	}
 }

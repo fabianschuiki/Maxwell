@@ -108,9 +108,9 @@ class Parser
 			}
 		}
 		
-		//Capture anonymous function expressions.
-		if (($arrow = $scanner->find('symbol', '=>')) !== false) {
-			return $this->parseAnonymousFunctionExpr($tokens, $arrow);
+		//Capture function calls.
+		if (count($tokens) >= 2 && $tokens[count($tokens) - 1]->isGroup('()')) {
+			return $this->parseFunctionCallExpr($tokens);
 		}
 		
 		//Check whether this seems to be a variable expression.
@@ -174,7 +174,7 @@ class Parser
 	}
 	
 	/** Parses the tokens as if they were an anonymous function expression. */
-	private function parseAnonymousFunctionExpr($tokens) {
+	private function parseFunctionExpr($tokens) {
 		//Pop off last token which needs to be a block.
 		$body = array_pop($tokens);
 		if (!$body || !$body->isGroup('{}')) {
@@ -197,15 +197,15 @@ class Parser
 		$outputs = array_slice($tokens, $arrow + 1);
 		
 		//Create the function expression.
-		$e = new AST\AnonymousFunctionExpr;
-		$e->inputs  = $this->parseFunctionArguments($inputs);
-		$e->outputs = $this->parseFunctionArguments($outputs);
+		$e = new AST\FunctionExpr;
+		$e->inputs  = $this->parseFunctionArgs($inputs);
+		$e->outputs = $this->parseFunctionArgs($outputs);
 		$e->body    = $this->parseBlock($body->children);
 		return $e;
 	}
 	
 	/** Parses the tokens as if they were the argument list of a function. */
-	private function parseFunctionArguments($tokens) {
+	private function parseFunctionArgs($tokens) {
 		if (count($tokens) == 0) {
 			return null;
 		}
@@ -219,7 +219,7 @@ class Parser
 		//Scan the arguments which are separated by commas (,).
 		$arguments = array();
 		while ($t = $scanner->scan('symbol', ',')) {
-			$a = $this->parseFunctionArgument($t);
+			$a = $this->parseFunctionArg($t);
 			if ($a)
 				$arguments[] = $a;
 		}
@@ -228,7 +228,7 @@ class Parser
 	}
 	
 	/** Parses the tokens as if they were a single function argument. */
-	private function parseFunctionArgument($tokens) {
+	private function parseFunctionArg($tokens) {
 		if (count($tokens) == 0) {
 			$this->issues[] = new Issue(
 				'function argument needs at least a name'
@@ -236,9 +236,50 @@ class Parser
 			return null;
 		}
 		
-		$a = new AST\FunctionArgumentExpr;
+		$a = new AST\FunctionArg;
 		$a->name = $tokens[0];
 		$a->type = $tokens[1];
+		return $a;
+	}
+	
+	/** Parses the tokens as if they were a function call. */
+	private function parseFunctionCallExpr($tokens) {
+		$args = array_pop($tokens);
+		$e = new AST\FunctionCallExpr;
+		$e->name = $tokens[0];
+		$e->arguments = $this->parseFunctionCallArgs($args->children);
+		return $e;
+	}
+	
+	/** Parses the tokens as if they were arguments to a function call. */
+	private function parseFunctionCallArgs($tokens) {
+		$scanner = new Scanner($tokens);
+		$arguments = array();
+		while ($t = $scanner->scan('symbol', ',')) {
+			$a = $this->parseFunctionCallArg($t);
+			if ($a)
+				$arguments[] = $a;
+		}
+		return $arguments;
+	}
+	
+	/** Parses the tokens as if they were one single argument to a function call. */
+	private function parseFunctionCallArg($tokens) {
+		$scanner = new Scanner($tokens);
+		$colon = $scanner->find('symbol', ':');
+		$a = new AST\FunctionCallArg;
+		if ($colon !== false) {
+			if ($colon != 1) {
+				$this->issues[] = new Issue(
+					'garbage in front of function call argument name',
+					array_slice($tokens, 0, $colon - 1)
+				);
+				return null;
+			}
+			$a->name = $tokens[$colon - 1];
+			$tokens = array_slice($tokens, $colon + 1);
+		}
+		$a->expr = $this->parseExpression($tokens);
 		return $a;
 	}
 	
@@ -261,7 +302,7 @@ class Parser
 		
 		$s = new AST\FunctionStmt;
 		$s->name = $tokens[0];
-		$s->function = $this->parseAnonymousFunctionExpr(array_slice($tokens, 1));
+		$s->function = $this->parseFunctionExpr(array_slice($tokens, 1));
 		return $s;
 	}
 }

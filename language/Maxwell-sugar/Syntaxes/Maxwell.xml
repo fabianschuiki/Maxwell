@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<syntax name="language-root.maxwell">
+	<zones>
+		<!--
+			Comments
+			========
+		-->
+		<zone name="comment.line">
+			<starts-with>
+				<expression>//</expression>
+				<capture number="0" name="punctuation.definition.begin"/>
+			</starts-with>
+			<ends-with>$[\n\r]*</ends-with>
+		</zone>
+		<zone name="comment.block">
+			<starts-with>
+				<expression>/\*</expression>
+				<capture number="0" name="punctuation.definition.begin"/>
+			</starts-with>
+			<ends-with>
+				<expression>\*/</expression>
+				<capture number="0" name="punctuation.definition.end"/>
+			</ends-with>
+		</zone>
+		
+		<!--
+			Reserved Keywords
+			=================
+		-->
+		<!-- Keywords -->
+		<zone name="keyword.control">
+			<expression>\b(if|else(\s*if)?|for|return)\b</expression>
+		</zone>
+		
+		<!-- Built-in types -->
+		<zone name="storage.type">
+			<expression>\b(int|double|string)\b</expression>
+		</zone>
+		
+		<!--
+			Constants
+			=========
+		-->
+		<!-- Numeric Constants -->
+		<zone name="constant.numeric">
+		    <expression>\b([0-9]([0-9a-fA-F]|\+|-|\.)*)</expression>
+		</zone>
+	</zones>
+</syntax>

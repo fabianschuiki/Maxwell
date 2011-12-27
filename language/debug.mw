@@ -9,10 +9,17 @@ s string = "Hello, World!";
 ptest1 int = (65 + 4.6) * 5;
 ptest2 int = 65 + 4.6 * 5;
 
+//Anonymous function test.
+/*nony func = ((int, int) => (double) {
+	return "Hello World";
+});*/
+
 //Pretty straightforward squaring function.
 square (x double) => double {
-	if {
-		mytest(true);
-	}
 	return x*x;
+}
+
+//Flat method.
+myMethod {
+	gamma double = 1358.2;
 }

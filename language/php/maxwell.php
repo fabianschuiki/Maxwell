@@ -17,19 +17,18 @@ $lexer->execute();
 echo $lexer->rootGroup->desc()."\n";
 
 //Run the tokens through the parser.
-echo "\033[1m"."Abstract Syntax Tree Synthesis:\n"."\033[0m";
+echo "\033[1m"."Abstract Syntax Tree:\n"."\033[0m";
 $parser = new Parser\Parser($lexer->rootGroup);
 $parser->execute();
 
 //Dump the parser issues.
 if (count($parser->issues)) {
-	echo "\n\033[1mParser issues:\033[0m\n";
 	foreach ($parser->issues as $i) {
 		echo $i."\n";
 	}
 	//exit;
+	echo "\n";
 }
 
 //Dump the syntax tree.
-echo "\n\033[1m"."Abstract Syntax Tree:\n"."\033[0m";
 echo $parser->rootBlock->desc()."\n";

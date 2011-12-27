@@ -33,13 +33,17 @@ class Parser
 	
 	/** Parses the root group into an abstract syntax tree. */
 	public function execute() {
-		$this->rootBlock = new AST\Block();
-		
-		//Scan the group statement-wise, calling the parsing function based on whether the
-		//statement is followed by a block ({...}) or not (;).
-		$scanner = new Scanner($this->rootGroup->children);
+		$this->rootBlock = $this->parseBlock($this->rootGroup->children);
+	}
+	
+	/** Parses a sequence of statements. */
+	private function parseBlock($tokens) {
+		$block = new AST\Block();
+		$scanner = new Scanner($tokens);
 		while ($tokens = $scanner->scanStatement()) {
-			//echo "scanned: ".tokens2str($tokens)."\n";
+			
+			//Depending on whether the last token is a ; or a {} block, we call a different
+			//statement parsing function.
 			$lastToken = $tokens[count($tokens) - 1];
 			if ($lastToken->type == 'symbol' && $lastToken->text == ';') {
 				array_pop($tokens);
@@ -47,8 +51,10 @@ class Parser
 			} else {
 				$stmt = $this->parseBlockStatement($tokens);
 			}
+			
+			//If we obtained a valid statement, add it to the block.
 			if ($stmt instanceof AST\Statement) {
-				$this->rootBlock->statements[] = $stmt;
+				$block->statements[] = $stmt;
 			} else {
 				$this->issues[] = new Issue(
 					'unable to parse into statement',
@@ -56,11 +62,25 @@ class Parser
 				);
 			}
 		}
+		return $block;
 	}
 	
 	/** Parses statements that don't have a trailing block. */
 	private function parseBlocklessStatement($tokens) {
-		echo "scanned: ".tokens2str($tokens)."\n";
+		
+		//Capture keyword-introduced statements.
+		if ($tokens[0]->isKeyword()) {
+			$keyword = array_shift($tokens);
+			
+			//Capture return statements.
+			if ($keyword->text == 'return') {
+				$s = new AST\ReturnStmt;
+				$s->expr = $this->parseExpression($tokens);
+				return $s;
+			}
+		}
+		
+		//This seems to be an expression statement.
 		$s = new AST\ExpressionStmt;
 		$s->expr = $this->parseExpression($tokens);
 		return $s;
@@ -86,6 +106,11 @@ class Parser
 					array_slice($tokens, $op + 1)
 				);
 			}
+		}
+		
+		//Capture anonymous function expressions.
+		if (($arrow = $scanner->find('symbol', '=>')) !== false) {
+			return $this->parseAnonymousFunctionExpr($tokens, $arrow);
 		}
 		
 		//Check whether this seems to be a variable expression.
@@ -148,9 +173,96 @@ class Parser
 		return $e;
 	}
 	
+	/** Parses the tokens as if they were an anonymous function expression. */
+	private function parseAnonymousFunctionExpr($tokens) {
+		//Pop off last token which needs to be a block.
+		$body = array_pop($tokens);
+		if (!$body || !$body->isGroup('{}')) {
+			$this->issues[] = new Issue(
+				'function needs to have a body { }',
+				$body
+			);
+			return null;
+		}
+		
+		//Create a scanner for the input and outputs.
+		$scanner = new Scanner($tokens);
+		
+		//Try to separate inputs from outputs.
+		$arrow = $scanner->find('symbol', '=>');
+		if ($arrow === false) {
+			$arrow = count($tokens) - 1;
+		}
+		$inputs  = array_slice($tokens, 0, $arrow);
+		$outputs = array_slice($tokens, $arrow + 1);
+		
+		//Create the function expression.
+		$e = new AST\AnonymousFunctionExpr;
+		$e->inputs  = $this->parseFunctionArguments($inputs);
+		$e->outputs = $this->parseFunctionArguments($outputs);
+		$e->body    = $this->parseBlock($body->children);
+		return $e;
+	}
+	
+	/** Parses the tokens as if they were the argument list of a function. */
+	private function parseFunctionArguments($tokens) {
+		if (count($tokens) == 0) {
+			return null;
+		}
+		if ($tokens[0]->isGroup('()')) {
+			$tokens = $tokens[0]->children;
+		}
+		
+		//Create a scanner for the tokens.
+		$scanner = new Scanner($tokens);
+		
+		//Scan the arguments which are separated by commas (,).
+		$arguments = array();
+		while ($t = $scanner->scan('symbol', ',')) {
+			$a = $this->parseFunctionArgument($t);
+			if ($a)
+				$arguments[] = $a;
+		}
+		
+		return $arguments;
+	}
+	
+	/** Parses the tokens as if they were a single function argument. */
+	private function parseFunctionArgument($tokens) {
+		if (count($tokens) == 0) {
+			$this->issues[] = new Issue(
+				'function argument needs at least a name'
+			);
+			return null;
+		}
+		
+		$a = new AST\FunctionArgumentExpr;
+		$a->name = $tokens[0];
+		$a->type = $tokens[1];
+		return $a;
+	}
+	
 	/** Parses statements that have a trailing block, like functions or flow controllers. */
 	private function parseBlockStatement($tokens) {
-		echo "scanned: ".tokens2str($tokens)."\n";
+	
+		//This seems to be a function.
+		return $this->parseFunctionStmt($tokens);
+	}
+	
+	/** Parses the tokens as if they were a function statement. */
+	private function parseFunctionStmt($tokens) {
+		if (!$tokens[0]->isIdentifier()) {
+			$this->issues[] = new Issue(
+				'first token needs to be the function name',
+				$tokens[0]
+			);
+			return null;
+		}
+		
+		$s = new AST\FunctionStmt;
+		$s->name = $tokens[0];
+		$s->function = $this->parseAnonymousFunctionExpr(array_slice($tokens, 1));
+		return $s;
 	}
 }
 
@@ -200,7 +312,7 @@ class Scanner
 	
 	/** Scans up to the next statement delimiter (; or {). */
 	public function scanStatement() {
-		if (!is_array($this->tokens))
+		if (!is_array($this->tokens) || count($this->tokens) == 0)
 			return null;
 		$res = array();
 		for ($i = 0; $i < count($this->tokens); $i++) {
@@ -215,17 +327,29 @@ class Scanner
 	}
 	
 	/** Returns the position of the first token that matches type and text. */
-	public function find($type, $text = null, $fromRight = false) {
+	public function find($type = null, $text = null, $fromRight = false) {
 		for ($i = 0; $i < count($this->tokens); $i++) {
 			$index = ($fromRight ? count($this->tokens) - 1 - $i : $i);
 			$t = $this->tokens[$index];
-			if ($t->type == $type || (is_array($type) && in_array($t->type, $type))) {
-				if (!$text || $t->text == $text || (is_array($text) && in_array($t->text, $text))) {
-					return $index;
-				}
+			if ((!$type || $t->type == $type || (is_array($type) && in_array($t->type, $type))) &&
+				(!$text || $t->text == $text || (is_array($text) && in_array($t->text, $text)))) {
+				return $index;
 			}
 		}
 		return false;
+	}
+	
+	/** Scans up to the next token that matches. */
+	public function scan($type = null, $text = null) {
+		if (!is_array($this->tokens) || count($this->tokens) == 0)
+			return null;
+		$i = $this->find($type, $text);
+		if ($i === false) {
+			$i = count($this->tokens) - 1;
+		}
+		$res          = array_slice($this->tokens, 0, $i+1);
+		$this->tokens = array_slice($this->tokens, $i+1);
+		return $res;
 	}
 }
 

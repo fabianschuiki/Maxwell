@@ -1,5 +1,6 @@
 <?php
 namespace Parser\AST;
+require_once __DIR__.'/helper.php';
 
 class Block
 {
@@ -24,6 +25,26 @@ class ExpressionStmt extends Statement
 	public $expr;
 	public function desc() {
 		return $this->expr->desc().';';
+	}
+}
+
+class FunctionStmt extends Statement
+{
+	public $name;
+	public $function;
+	public function desc($indent = 0) {
+		$s = "\033[1;33m".$this->name->text."\033[0m ";
+		$s .= $this->function->desc($indent);
+		return $s;
+	}
+}
+
+class ReturnStmt extends Statement
+{
+	public $keyword;
+	public $expr;
+	public function desc() {
+		return keyword('return').' '.$this->expr->desc().';';
 	}
 }
 
@@ -74,16 +95,25 @@ class BinaryOperatorExpr extends Expression
 	}
 }
 
+class AnonymousFunctionExpr extends Expression
+{
+	public $inputs;
+	public $outputs;
+	public $body;
+	public function desc($indent = 0) {
+		$s = '';
+		if (count($this->inputs)) {
+			$s .= '('.implode(', ', $this->inputs).') ';
+		}
+		if (count($this->outputs)) {
+			$s .= '=> ';
+			$s .= '('.implode(', ', $this->outputs).') ';
+		}
+		$s .= $this->body->desc($indent);
+		return $s;
+	}
+}
 
-/**
- * Helper Functions
- */
-function typename($token) {
-	return "\033[0;31m".$token->text."\033[0m";
-}
-function numeric($token) {
-	return "\033[0;36m".$token->text."\033[0m";
-}
-function string($token) {
-	return "\033[0;33m\"".$token->text."\"\033[0m";
+class FunctionArgumentExpr extends VariableExpr
+{
 }

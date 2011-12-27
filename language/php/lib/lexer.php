@@ -1,5 +1,6 @@
 <?php
 namespace Lexer;
+require_once __DIR__.'/helper.php';
 
 class Lexer
 {
@@ -253,10 +254,15 @@ class Node
 	//Convenience.
 	public function is($type)      { return $this->type == $type; }
 	public function isIdentifier() { return $this->is('identifier'); }
-	public function isKeyword()    { return $this->is('keyword'); }
+	public function isKeyword($text = null) {
+		return $this->is('keyword') && (!$text || $this->text == $text);
+	}
 	public function isSymbol()     { return $this->is('symbol'); }
 	public function isNumeric()    { return $this->is('numeric'); }
 	public function isString()     { return $this->is('string'); }
+	public function isGroup($subtype = null) {
+		return $this->is('group') && (!$subtype || $this->subtype == $subtype);
+	}
 }
 
 /** Group node. */
@@ -327,19 +333,19 @@ class Token extends Node
 	public function desc() {
 		switch ($this->type) {
 			case 'identifier': {
-				return "\033[0m".$this->text."\033[0m";
+				return $this->text;
 			} break;
 			case 'keyword': {
-				return "\033[1;34m".$this->text."\033[0m";
+				return keyword($this);
 			} break;
 			case 'symbol': {
-				return "\033[0m".$this->text."\033[0m";
+				return $this->text;
 			} break;
 			case 'numeric': {
-				return "\033[0;36m#".$this->text."\033[0m";
+				return numeric($this);
 			} break;
 			case 'string': {
-				return "\033[0;33m\"".$this->text."\"\033[0m";
+				return string($this);
 			} break;
 		}
 		return $this->type.'?'.$this->text;

@@ -4,4 +4,4 @@ square (x double) => double {
 }
 
 //Try the squaring function.
-square(5);
+r double = square(5);

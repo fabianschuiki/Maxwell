@@ -4,8 +4,10 @@ checka;
 a int    = 45;
 b double = 6.94e+12;
 s string = "Hello, World!";
-c int    = (65 + 4.6);
-d int    = 65 + 4.6;
+
+//Precedence tests.
+ptest1 int = (65 + 4.6) * 5;
+ptest2 int = 65 + 4.6 * 5;
 
 //Pretty straightforward squaring function.
 square (x double) => double {

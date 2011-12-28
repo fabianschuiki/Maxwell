@@ -42,10 +42,9 @@ class FunctionStmt extends Statement
 
 class ReturnStmt extends Statement
 {
-	public $keyword;
-	public $expr;
+	public $exprs;
 	public function desc() {
-		return keyword('return').' '.$this->expr->desc().';';
+		return keyword('return').' '.implode(', ', $this->exprs).';';
 	}
 }
 
@@ -70,12 +69,20 @@ class StringExpr extends Expression
 	}
 }
 
+class IdentifierExpr extends Expression
+{
+	public $identifier;
+	public function desc() {
+		return $this->identifier->text;
+	}
+}
+
 class VariableExpr extends Expression
 {
 	public $name;
 	public $type;
 	public function desc() {
-		$s = $this->name->text;
+		$s = varname($this->name);
 		if ($this->type)
 			$s .= ' '.typename($this->type);
 		return $s;

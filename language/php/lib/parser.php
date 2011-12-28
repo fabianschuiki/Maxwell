@@ -75,7 +75,11 @@ class Parser
 			//Capture return statements.
 			if ($keyword->text == 'return') {
 				$s = new AST\ReturnStmt;
-				$s->expr = $this->parseExpression($tokens);
+				$s->exprs = array();
+				$scanner = new Scanner($tokens);
+				while ($t = $scanner->scan('symbol', ',', false)) {
+					$s->exprs[] = $this->parseExpression($t);
+				}
 				return $s;
 			}
 		}
@@ -114,7 +118,7 @@ class Parser
 		}
 		
 		//Check whether this seems to be a variable expression.
-		if ($tokens[0]->isIdentifier() && (!$tokens[1] || $tokens[1]->isIdentifier())) {
+		if (count($tokens) == 2 && $tokens[0]->isIdentifier() && $tokens[1]->isIdentifier()) {
 			return $this->parseVariableExpr($tokens);
 		}
 		
@@ -138,6 +142,13 @@ class Parser
 			if ($token->isString()) {
 				$e = new AST\StringExpr;
 				$e->value = $token;
+				return $e;
+			}
+			
+			//Identifiers.
+			if ($token->isIdentifier()) {
+				$e = new AST\IdentifierExpr;
+				$e->identifier = $token;
 				return $e;
 			}
 		}
@@ -381,14 +392,14 @@ class Scanner
 	}
 	
 	/** Scans up to the next token that matches. */
-	public function scan($type = null, $text = null) {
+	public function scan($type = null, $text = null, $withToken = true) {
 		if (!is_array($this->tokens) || count($this->tokens) == 0)
 			return null;
 		$i = $this->find($type, $text);
 		if ($i === false) {
-			$i = count($this->tokens) - 1;
+			$i = count($this->tokens);
 		}
-		$res          = array_slice($this->tokens, 0, $i+1);
+		$res          = array_slice($this->tokens, 0, ($withToken ? $i+1 : $i));
 		$this->tokens = array_slice($this->tokens, $i+1);
 		return $res;
 	}

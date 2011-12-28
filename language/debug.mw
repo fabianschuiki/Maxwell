@@ -1,5 +1,5 @@
 //Pretty straightforward squaring function.
-square (x double) => double {
+square (x double) => (r double) {
 	return x*x;
 }
 

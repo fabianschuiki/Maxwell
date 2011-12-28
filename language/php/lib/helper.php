@@ -1,6 +1,9 @@
 <?php
 
 /** Formatting helper functions. */
+function varname($token) {
+	return "\033[0;32m".(is_string($token) ? $token : $token->text)."\033[0m";
+}
 function typename($token) {
 	return "\033[0;35m".(is_string($token) ? $token : $token->text)."\033[0m";
 }

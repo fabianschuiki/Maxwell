@@ -1,7 +1,13 @@
-//Pretty straightforward squaring function.
-square (x double) => (r double) {
-	return x*x;
-}
+/** Variants of variable declarations. */
 
-//Try the squaring function.
-r double = square(5);
+//Strongly typed.
+a int;     //@a = int, a = int(0)
+b int = 5; //@b = int, b = int(5)
+
+//Dynamically typed.
+c ~;       //@c = dynamic, c = nil
+d ~ = 5;   //@d = dynamic, d = int(5)
+
+//Implicitly typed.
+e := 5;    //@e = int, e = int(5)
+f := nil;  //@f = dynamic, f = nil

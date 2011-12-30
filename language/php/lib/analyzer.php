@@ -1,6 +1,5 @@
 <?php
 namespace Analyzer;
-use \Parser\AST;
 
 class Analyzer
 {

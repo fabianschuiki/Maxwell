@@ -1,0 +1,10 @@
+package main;
+import os, http;
+
+//Some test function.
+main {
+	interactive bool = false;
+	http ~ = nil;
+	
+	return "Test";
+}

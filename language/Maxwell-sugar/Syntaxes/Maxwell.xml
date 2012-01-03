@@ -29,12 +29,12 @@
 		-->
 		<!-- Keywords -->
 		<zone name="keyword.control">
-			<expression>\b(if|else(\s*if)?|for|return)\b</expression>
+			<expression>\b(if|else(\s*if)?|for|return|package|import)\b</expression>
 		</zone>
 		
 		<!-- Built-in types -->
-		<zone name="storage.type">
-			<expression>\b(int|double|string)\b</expression>
+		<zone name="keyword.storage.type">
+			<expression>\b(int|double|float|bool|string|func(tion)?|map|set|array|object)\b|(~)</expression>
 		</zone>
 		
 		<!--
@@ -44,6 +44,11 @@
 		<!-- Numeric Constants -->
 		<zone name="constant.numeric">
 		    <expression>\b([0-9]([0-9a-fA-F]|\+|-|\.)*)</expression>
+		</zone>
+		
+		<!-- Language Constants -->
+		<zone name="constant.language">
+			<expression>\b(true|false|nil)\b</expression>
 		</zone>
 	</zones>
 </syntax>

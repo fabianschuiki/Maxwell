@@ -1,0 +1,20 @@
+//Assume the following types exist.
+type S {};
+type A : S { functionA { ... } };
+type B : S { functionB { ... } };
+type C : S { functionC { ... } };
+
+process (x S)
+{
+	//Special procedure to follow if the given object is of type A.
+	if (x.type == A) {
+		x.functionA(); //fails since x is of type S
+		assume x isa A;
+		x.functionA(); //works since x now is assumed to be of type A
+	}
+	
+	//Assumptions should also work automatically:
+	casesof (x.type) {
+		A: {
+		}
+	}

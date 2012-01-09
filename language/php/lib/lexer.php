@@ -9,7 +9,12 @@ class Lexer
 	
 	//Symbol combinations that are merged into one symbol token.
 	static public $symbolCombinations = array(
-		"=>"
+		"=>", ":=",
+	);
+	
+	//Symbols that are treated as identifiers.
+	static public $identifierSymbols = array(
+		"~",
 	);
 	
 	//Keywords.
@@ -172,6 +177,11 @@ class Lexer
 				
 				//Otherwise we create a new node for this token.
 				else {
+					//If this is one of the identifier symbols, alter the buffer type.
+					if (in_array($buffer, static::$identifierSymbols)) {
+						$bufferType = 'identifier';
+					}
+					
 					//If this is a bracket symbol, create a new group token.
 					if ($bufferType == 'symbol' && strchr("({[", $buffer) !== false) {
 						$subtypes = array('(' => '()', '{' => '{}', '[' => '[]');

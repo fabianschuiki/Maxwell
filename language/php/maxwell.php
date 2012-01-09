@@ -38,7 +38,7 @@ echo $parser->rootBlock->desc()."\n\n";
 
 
 //Analyze the syntax tree.
-echo "\033[1m"."Analyzed Syntax Tree:\n"."\033[0m";
+/*echo "\033[1m"."Analyzed Syntax Tree:\n"."\033[0m";
 $analyzer = new Analyzer\Analyzer($parser->rootBlock);
 $analyzer->execute();
 
@@ -58,4 +58,4 @@ echo $compiler->code."\n";
 $outputFile = __DIR__.'/compiled/'.basename($inputFile).'.php';
 if (!file_exists(dirname($outputFile)))
 	mkdir(dirname($outputFile), 0777, true);
-file_put_contents($outputFile, "<?php\n".$compiler->code);
+file_put_contents($outputFile, "<?php\n".$compiler->code);*/

@@ -116,7 +116,7 @@ class Parser
 		//Identifier
 		if ($tc == 1 && $tokens[0]->isIdentifier()) {
 			$e = new ASTNode('expr.ident');
-			$e->ident = $tokens[0];
+			$e->name = $tokens[0];
 			return $e;
 		}
 		
@@ -257,6 +257,9 @@ class ASTNode
 			}
 			case 'expr.const.lang': {
 				return keyword($this->value);
+			}
+			case 'expr.ident': {
+				return $this->name->text;
 			}
 		}
 	}

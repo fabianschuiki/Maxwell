@@ -77,6 +77,10 @@ class Parser
 		$tc = count($tokens);
 		$scanner = new Scanner($tokens);
 		
+		if ($tc == 1 && $tokens[0]->isGroup('()')) {
+			return $this->parseExpression($tokens[0]->children);
+		}
+		
 		//Operators
 		foreach (self::$operators as $operators) {
 			$op = $scanner->find('symbol', $operators, true);
@@ -222,6 +226,14 @@ class ASTNode
 	public function __construct($kind) {
 		$this->kind = $kind;
 	}
+	public function nodes() {
+		switch ($this->kind) {
+		case 'block':          return $this->statements; break;
+		case 'stmt.expr':      return array($this->expr); break;
+		case 'expr.op.binary': return array($this->lhs, $this->rhs); break;
+		}
+		return array();
+	}
 	public function desc($indent = 0) {
 		switch ($this->kind) {
 			case 'issue': {
@@ -245,8 +257,8 @@ class ASTNode
 			case 'expr.op.binary': {
 				$l = $this->lhs->desc();
 				$r = $this->rhs->desc();
-				if ($l->kind == 'expr.op.binary') $l = "($l)";
-				if ($r->kind == 'expr.op.binary') $r = "($r)";
+				if ($this->lhs->kind == 'expr.op.binary') $l = "($l)";
+				if ($this->rhs->kind == 'expr.op.binary') $r = "($r)";
 				return $l.' '.$this->op->text.' '.$r;
 			}
 			case 'expr.const.num': {

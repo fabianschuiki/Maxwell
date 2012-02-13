@@ -38,7 +38,7 @@ echo $parser->rootBlock->desc()."\n\n";
 
 
 //Analyze the syntax tree.
-/*echo "\033[1m"."Analyzed Syntax Tree:\n"."\033[0m";
+echo "\033[1m"."Analyzed Syntax Tree:\n"."\033[0m";
 $analyzer = new Analyzer\Analyzer($parser->rootBlock);
 $analyzer->execute();
 
@@ -46,7 +46,7 @@ $analyzer->execute();
 //print_r($parser->rootBlock);
 
 
-//Compile the syntax tree down to PHP.
+/*//Compile the syntax tree down to PHP.
 echo "\033[1m"."Compiled PHP Code:\n"."\033[0m";
 $compiler = new Compiler\Compiler($parser->rootBlock);
 $compiler->execute();

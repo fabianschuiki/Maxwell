@@ -1,7 +1,9 @@
 /** Variants of variable declarations. */
 
+a := 24;
+
 //Strongly typed.
-a int;     //@a = int, a = int(0)
+/*a int;     //@a = int, a = int(0)
 b int = 5; //@b = int, b = int(5)
 
 //Dynamically typed.
@@ -11,3 +13,6 @@ d ~ = 5;   //@d = dynamic, d = int(5)
 //Implicitly typed.
 e := 5;    //@e = int, e = int(5)
 f := nil;  //@f = dynamic, f = nil
+
+//Simple assignment.
+a = (24 + 78 * d);*/

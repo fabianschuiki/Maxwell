@@ -60,11 +60,12 @@ class Lexer
 		//Iterate through every character in the input string.
 		$context = 'code';
 		$len = strlen($this->input);
+		$pc = $c = 0;
 		for ($i = 0; $i < $len + 1; $i++) {
 			$ppc = $pc;
 			$pc  = $c;
-			$c   = ($i < $len ? $this->input[$i] : null);
-			$nc  = $this->input[$i+1];
+			$c   = ($i   < $len ? $this->input[$i]   : null);
+			$nc  = ($i+1 < $len ? $this->input[$i+1] : null);
 			
 			//Advance the location.
 			if ($c == "\n") {

@@ -1,0 +1,21 @@
+<html><head><title>debug.mw</title></head><body><style>
+pre { color: #aaa; }
+span.identifier, span.symbol, span.keyword { color: #000000; }
+span.numeric { color: #3465a4; }
+span.keyword { font-weight: bold; }
+span.string { color: #3465a4; }
+
+</style><pre>/** Debugging some stuff. */
+
+<span class="keyword">func</span> <span class="identifier">test</span> <span class="symbol">(</span><span class="symbol">)</span>
+<span class="symbol">{</span>
+	<span class="identifier">a</span> <span class="identifier">int</span> <span class="symbol">=</span> <span class="numeric">54</span><span class="symbol">;</span>
+	<span class="keyword">if</span> <span class="symbol">(</span><span class="identifier">a</span> <span class="symbol">=</span><span class="symbol">=</span> <span class="numeric">32</span><span class="symbol">)</span> <span class="symbol">{</span>
+		<span class="identifier">doSomething</span><span class="symbol">(</span>"<span class="string">useful</span>"<span class="symbol">)</span><span class="symbol">;</span>
+	<span class="symbol">}</span> <span class="keyword">else</span> <span class="symbol">{</span>
+		<span class="identifier">whatever</span><span class="symbol">.</span><span class="identifier">splash</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">;</span>
+	<span class="symbol">}</span>
+	<span class="keyword">return</span> <span class="identifier">a</span><span class="symbol">;</span>
+<span class="symbol">}</span>
+
+</pre></body></html>

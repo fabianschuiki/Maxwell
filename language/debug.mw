@@ -1,6 +1,6 @@
 /** Debugging some stuff. */
 
-func test ()
+func test
 {
 	a int = 54;
 	if (a == 32) {

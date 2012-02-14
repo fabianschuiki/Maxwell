@@ -3,38 +3,30 @@
 class SourceColorizer
 {
 	public $input;
-	public $tokens;
+	public $flatTokens;
 	public $output;
 	
 	public function colorize()
 	{
-		$this->output = <<<EOF
-<style>
-pre { color: #aaa; }
-span.identifier, span.symbol, span.keyword { color: #000000; }
-span.numeric { color: #3465a4; }
-span.keyword { font-weight: bold; }
-span.string { color: #3465a4; }
-
-</style>
-EOF;
-		
-		$this->output .= "<pre>";
+		$this->output = "";
 		$s = 0;
 		
-		foreach ($this->tokens as $t) {
+		foreach ($this->flatTokens as $t) {
 			$e = $t->range->start->offset;
 			$this->output .= substr($this->input, $s, $e-$s);
 			$s = $e;
 			
+			$context = (isset($t->context) ? $t->context : '');
+			
 			$e = $t->range->end->offset;
-			$this->output .= '<span class="'.$t->type.'">';
+			$this->output .= '<span class="'.$t->type.' '.str_replace('.', '-', $context).'"';
+			$this->output .= ' data-context="'.$context.'"';
+			$this->output .= '>';
 			$this->output .= substr($this->input, $s, $e-$s);
 			$this->output .= '</span>';
 			$s = $e;
 		}
 		
 		$this->output .= substr($this->input, $s);
-		$this->output .= "</pre>";
 	}
 }

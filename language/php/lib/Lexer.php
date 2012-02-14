@@ -3,20 +3,20 @@
 class Lexer
 {
 	static public $symbols;
-	static public $symbolCombinations = array("=>", ":=");
+	static public $symbolCombinations = array('==', '!=', "=>", ":=");
 	static public $identifierSymbols = array("~");
 	static public $keywords = array('func', 'if', 'else', 'return');
 	
 	public $input;
 	public $name;
 	public $tokens;
-	public $groupedTokens;
+	public $flatTokens;
 	public $issues;
 	
 	public function run()
 	{
 		$this->tokens = array();
-		$this->groupedTokens = array();
+		$this->flatTokens = array();
 		$this->issues = array();
 		
 		//Accumulation buffer for tokens.
@@ -156,13 +156,13 @@ class Lexer
 				$dt->type  = $bufferType;
 				$dt->range = clone $bufferRange;
 				$dt->text  = $buffer;
-				$this->tokens[] = $dt;
+				$this->flatTokens[] = $dt;
 				
 				//If the current token is a symbol and it closes the topmost group on the stack,
 				//remove the group and ignore the symbol.
 				if ($bufferType == 'symbol' && strchr(")}]", $buffer) !== false) {
 					if (count($groupStack) > 0) {
-						$style = $groupStack[0]->style;
+						$style = $groupStack[0]->text;
 						if ($style[1] != $buffer) {
 							$this->issues[] = "$bufferRange: symbol $buffer doesn't close previous group $style properly";
 						} else {
@@ -182,14 +182,14 @@ class Lexer
 						$dt = new TokenGroup;
 						$dt->type  = 'group';
 						$dt->range = clone $bufferRange;
-						$dt->style = $styles[$buffer];
+						$dt->text = $styles[$buffer];
 					}
 					
 					//Add the node to the topmost group.
 					if (count($groupStack) > 0) {
 						$groupStack[0]->tokens[] = $dt;
 					} else {
-						$this->groupedTokens[] = $dt;
+						$this->tokens[] = $dt;
 					}
 					
 					//If the new node is a group, add it to the top of the stack.
@@ -218,6 +218,10 @@ class Lexer
 			
 			//Adjust the buffer range's end.
 			$bufferRange->end = clone $loc;
+		}
+		
+		foreach ($this->issues as $i) {
+			echo $i."\n";
 		}
 	}
 }

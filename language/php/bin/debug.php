@@ -25,3 +25,8 @@ require __DIR__.'/../lib/dump.html.php';
 $html = ob_get_contents();
 ob_end_clean();
 file_put_contents($file->path.'.html', $html);
+
+$compiler = new Compiler;
+$compiler->nodes = $parser->nodes;
+$compiler->run();
+file_put_contents($file->path.'.php', $compiler->output);

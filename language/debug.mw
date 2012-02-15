@@ -1,13 +1,15 @@
 /** Debugging some stuff. */
 
-func test
+func main
 {
 	int a = 54;
-	if (a == 32) {
+	int b = 87.9;
+	if (int p = 32) {
 		doSomething("useful");
 	} else {
 		whatever.splash();
 	}
-	return a;
+	int x = a + b * 2;
+	return x;
 }
 

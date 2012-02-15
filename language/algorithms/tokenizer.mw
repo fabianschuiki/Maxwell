@@ -1,0 +1,46 @@
+/**
+ * A tokenizer written in Maxwell.
+ */
+
+//Iterates through the given string and separates it into individual tokens.
+func tokenize: (input string) -> (tokens [Token]) {
+	//Create a new scanner for the input string.
+	scn := input.scanner;
+	
+	//Scan the start characters.
+	for (scn.scanChars) {
+		if (scn == "/*") tokens[] = {scn.scan("*/")};
+		if (scn == "//") tokens[] = {scn.scan("\n")};
+	}
+}
+
+func parse: (string input) -> (string|int|array) {
+	if (input == "hello")
+		return "hello";
+	if (input == "5")
+		return 5;
+	if (input == "[1,2]")
+		return array(1, 2);
+}
+
+func main: {
+	s := parse("Hello World");
+	switch @s {
+		string: { s = s + "!"; echo s; }
+		int:    { echo s*2; }
+		array:  { echo s[0]+s[1]; }
+	}
+}
+
+type Token {
+}
+
+func main: {
+	tokenize("Hello World");
+}
+
+func square: x -> r { r = x*x; }
+
+
+a int = 5;
+b := square(5);

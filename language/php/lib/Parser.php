@@ -31,6 +31,7 @@ class Parser
 	private function parseKeywordDef(Token &$keyword, array &$ts)
 	{
 		if ($keyword->text == 'func') return $this->parseFuncDef($ts);
+		if ($keyword->text == 'type') return $this->parseTypeDef($ts);
 		$this->issues[] = "{$keyword->range}: keyword {$keyword->text} has no meaning here";
 		return null;
 	}
@@ -39,7 +40,7 @@ class Parser
 	{
 		$name = array_shift($ts);
 		if (!$name->is('identifier')) {
-			$this->issues[] = "{$name->range}: function requires a name, $name given";
+			$this->issues[] = "{$name->range}: function requires a name, $name found";
 			return null;
 		}
 		$body = array_shift($ts);
@@ -56,6 +57,15 @@ class Parser
 		$f->body  = $this->parseBlock($body);
 		$f->nodes = array($f->body);
 		return $f;
+	}
+	
+	private function parseTypeDef(array &$ts)
+	{
+		$name = array_shift($ts);
+		if (!$name->is('identifier')) {
+			$this->issues[] = "{$name->range}: type requires a name, $name found";
+			return null;
+		}
 	}
 	
 	private function parseBlock(TokenGroup &$grp)

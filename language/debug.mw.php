@@ -1,7 +1,12 @@
 #!/usr/bin/php
 <?php
-/** compiled on 2012-02-15T19:11:51+01:00 */
+/** compiled on 2012-02-15T20:18:53+01:00 */
 require_once '/home/fabian/Arbeitsfläche/Maxwell/language/php/lib/runtime.php';
+
+function cast($in, &$out)
+{
+	$va;
+};
 
 function main($in, &$out)
 {

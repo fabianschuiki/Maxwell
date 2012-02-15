@@ -1,5 +1,14 @@
 /** Debugging some stuff. */
 
+type int {}
+type float {}
+
+func cast (int a) -> (float b)
+{
+}
+
+func (=) a -> b { a.value = b.value; }
+
 func main
 {
 	int a = 54;
@@ -12,4 +21,3 @@ func main
 	int x = a + b * 2;
 	return x;
 }
-

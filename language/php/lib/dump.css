@@ -1,0 +1,55 @@
+body, html {
+	padding: 0;
+	margin: 0;
+}
+
+div.col {
+	overflow: scroll;
+	position: absolute;
+	width: 50%;
+	top: 0;
+	bottom: 0;
+}
+
+div.col.left {
+	left: 0;
+}
+
+div.col.right {
+	right: 0;
+}
+
+pre.code {
+	color: #aaa;
+	margin: 1em;
+}
+
+.identifier, .symbol, .keyword { color: #000000; }
+.numeric { color: #3465a4; }
+.keyword { font-weight: bold; }
+.string { color: #3465a4; }
+
+.expr-var-type { font-weight: bold; color: #4e9a06; }
+.expr-ident { font-style: italic; }
+.expr-member { color: #75507b; }
+
+div.nodes {
+	margin: 1em;
+	margin-left: -1em;
+	font-family: monospace;
+}
+
+div.node {
+	margin-left: 2em;
+	border: 1px solid #d3d7cf;
+}
+
+div.nodes span.kind {
+	font-weight: bold;
+}
+
+div.nodes div.attr span.value.token { color: #3465a4; }
+div.nodes div.attr span.value.type  { color: #f57900; }
+
+div.node div.scope div.scope-entry { margin-left: 2em; }
+div.node div.scope span.scope-kind { color: #75507b; }

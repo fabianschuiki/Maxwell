@@ -2,6 +2,7 @@
 
 class Range
 {
+	public $source;
 	public $start;
 	public $end;
 	

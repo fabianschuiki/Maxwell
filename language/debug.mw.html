@@ -1,32 +1,83 @@
 <html>
-<head>
-	<title>debug.mw</title>
-	
-	<style>
-		pre { color: #aaa; }
-		.identifier, .symbol, .keyword { color: #000000; }
-		.numeric { color: #3465a4; }
-		.keyword { font-weight: bold; }
-		.string { color: #3465a4; }
-		
-		.expr-var-type { font-weight: bold; color: #4e9a06; }
-	</style>
-</head>
-<body>
+	<head>
+		<title>debug.mw</title>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+		<style>body, html {
+	padding: 0;
+	margin: 0;
+}
 
-	<pre>/** Debugging some stuff. */
+div.col {
+	overflow: scroll;
+	position: absolute;
+	width: 50%;
+	top: 0;
+	bottom: 0;
+}
 
-<span class="keyword " data-context="">func</span> <span class="identifier func-name" data-context="func.name">test</span>
-<span class="symbol " data-context="">{</span>
-	<span class="identifier expr-var-name" data-context="expr.var.name">a</span> <span class="identifier expr-var-type" data-context="expr.var.type">int</span> <span class="symbol expr-op-binary" data-context="expr.op.binary">=</span> <span class="numeric " data-context="">54</span><span class="symbol " data-context="">;</span>
-	<span class="keyword " data-context="">if</span> <span class="symbol " data-context="">(</span><span class="identifier " data-context="">a</span> <span class="symbol " data-context="">==</span> <span class="numeric " data-context="">32</span><span class="symbol " data-context="">)</span> <span class="symbol " data-context="">{</span>
-		<span class="identifier " data-context="">doSomething</span><span class="symbol " data-context="">(</span>"<span class="string " data-context="">useful</span>"<span class="symbol " data-context="">)</span><span class="symbol " data-context="">;</span>
-	<span class="symbol " data-context="">}</span> <span class="keyword " data-context="">else</span> <span class="symbol " data-context="">{</span>
-		<span class="identifier " data-context="">whatever</span><span class="symbol " data-context="">.</span><span class="identifier " data-context="">splash</span><span class="symbol " data-context="">(</span><span class="symbol " data-context="">)</span><span class="symbol " data-context="">;</span>
-	<span class="symbol " data-context="">}</span>
-	<span class="keyword " data-context="">return</span> <span class="identifier " data-context="">a</span><span class="symbol " data-context="">;</span>
-<span class="symbol " data-context="">}</span>
+div.col.left {
+	left: 0;
+}
 
-</pre>
-</body>
+div.col.right {
+	right: 0;
+}
+
+pre.code {
+	color: #aaa;
+	margin: 1em;
+}
+
+.identifier, .symbol, .keyword { color: #000000; }
+.numeric { color: #3465a4; }
+.keyword { font-weight: bold; }
+.string { color: #3465a4; }
+
+.expr-var-type { font-weight: bold; color: #4e9a06; }
+.expr-ident { font-style: italic; }
+.expr-member { color: #75507b; }
+
+div.nodes {
+	margin: 1em;
+	margin-left: -1em;
+	font-family: monospace;
+}
+
+div.node {
+	margin-left: 2em;
+	border: 1px solid #d3d7cf;
+}
+
+div.nodes span.kind {
+	font-weight: bold;
+}
+
+div.nodes div.attr span.value.token { color: #3465a4; }
+div.nodes div.attr span.value.type  { color: #f57900; }
+
+div.node div.scope div.scope-entry { margin-left: 2em; }
+div.node div.scope span.scope-kind { color: #75507b; }
+</style>
+	</head>
+
+	<body>
+		<div class="col left">
+			<pre class="code">/** Debugging some stuff. */
+
+<span id="token-0" class="keyword " data-context="">func</span> <span id="token-1" class="identifier func-name" data-context="func.name">test</span>
+<span id="token-2" class="symbol " data-context="">{</span>
+	<span id="token-3" class="identifier expr-var-type" data-context="expr.var.type">int</span> <span id="token-4" class="identifier expr-var-name" data-context="expr.var.name">a</span> <span id="token-5" class="symbol expr-op-binary" data-context="expr.op.binary">=</span> <span id="token-6" class="numeric " data-context="">54</span><span id="token-7" class="symbol " data-context="">;</span>
+	<span id="token-8" class="keyword " data-context="">if</span> <span id="token-9" class="symbol " data-context="">(</span><span id="token-10" class="identifier expr-ident" data-context="expr.ident">a</span> <span id="token-11" class="symbol expr-op-binary" data-context="expr.op.binary">==</span> <span id="token-12" class="numeric " data-context="">32</span><span id="token-13" class="symbol " data-context="">)</span> <span id="token-14" class="symbol " data-context="">{</span>
+		<span id="token-15" class="identifier expr-ident" data-context="expr.ident">doSomething</span><span id="token-16" class="symbol " data-context="">(</span>"<span id="token-17" class="string " data-context="">useful</span>"<span id="token-18" class="symbol " data-context="">)</span><span id="token-19" class="symbol " data-context="">;</span>
+	<span id="token-20" class="symbol " data-context="">}</span> <span id="token-21" class="keyword " data-context="">else</span> <span id="token-22" class="symbol " data-context="">{</span>
+		<span id="token-23" class="identifier expr-ident" data-context="expr.ident">whatever</span><span id="token-24" class="symbol " data-context="">.</span><span id="token-25" class="identifier expr-member" data-context="expr.member">splash</span><span id="token-26" class="symbol " data-context="">(</span><span id="token-27" class="symbol " data-context="">)</span><span id="token-28" class="symbol " data-context="">;</span>
+	<span id="token-29" class="symbol " data-context="">}</span>
+	<span id="token-30" class="keyword " data-context="">return</span> <span id="token-31" class="identifier expr-ident" data-context="expr.ident">a</span><span id="token-32" class="symbol " data-context="">;</span>
+<span id="token-33" class="symbol " data-context="">}</span></pre>
+		</div>
+		<div class="col right">
+			<div class="nodes">
+			<div class="node"><span class="kind">def.func</span><div class="attrs"><div class="attr"><span class="key">name</span>: <span class="value token">test</span></div><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div></div><div class="subnodes"><span class="name">body</span>: <div class="node"><span class="kind">stmt.block</span><div class="attrs"><div class="attr"><span class="key">group</span>: <span class="value token">{}</span></div><div class="attr"><span class="key">scope</span>: <div class="scope"><div class="scope-entry"><span class="scope-name">a</span> = <span class="scope-kind">expr.var</span></div></div></div></div><div class="subnodes"><span class="name">nodes</span>:<div class="node"><span class="kind">expr.op.binary</span><div class="attrs"><div class="attr"><span class="key">op</span>: <span class="value token">=</span></div><div class="attr"><span class="key">scope</span>: <div class="scope"><div class="scope-entry"><span class="scope-name">a</span> = <span class="scope-kind">expr.var</span></div></div></div><div class="attr"><span class="key">requiredType</span>: <span class="value type">*</span></div><div class="attr"><span class="key">possibleType</span>: <span class="value type">int</span></div><div class="attr"><span class="key">type</span>: <span class="value type">int</span></div></div><div class="subnodes"><span class="name">lhs</span>: <div class="node"><span class="kind">expr.var</span><div class="attrs"><div class="attr"><span class="key">name</span>: <span class="value token">a</span></div><div class="attr"><span class="key">datatype</span>: <span class="value token">int</span></div><div class="attr"><span class="key">scope</span>: <div class="scope"><div class="scope-entry"><span class="scope-name">a</span> = <span class="scope-kind">expr.var</span></div></div></div><div class="attr"><span class="key">requiredType</span>: <span class="value type">int</span></div><div class="attr"><span class="key">possibleType</span>: <span class="value type">int</span></div><div class="attr"><span class="key">type</span>: <span class="value type">int</span></div></div><div class="subnodes"></div></div><span class="name">rhs</span>: <div class="node"><span class="kind">expr.const.numeric</span><div class="attrs"><div class="attr"><span class="key">value</span>: <span class="value token">54</span></div><div class="attr"><span class="key">scope</span>: <div class="scope"><div class="scope-entry"><span class="scope-name">a</span> = <span class="scope-kind">expr.var</span></div></div></div><div class="attr"><span class="key">requiredType</span>: <span class="value type">int</span></div><div class="attr"><span class="key">possibleType</span>: <span class="value type">int, float</span></div><div class="attr"><span class="key">type</span>: <span class="value type">int</span></div></div><div class="subnodes"></div></div></div></div><div class="node"><span class="kind">stmt.if</span><div class="attrs"><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div></div><div class="subnodes"><span class="name">condition</span>: <div class="node"><span class="kind">expr.op.binary</span><div class="attrs"><div class="attr"><span class="key">op</span>: <span class="value token">==</span></div><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div><div class="attr"><span class="key">requiredType</span>: <span class="value type">*</span></div><div class="attr"><span class="key">possibleType</span>: <span class="value type">int</span></div><div class="attr"><span class="key">type</span>: <span class="value type">int</span></div></div><div class="subnodes"><span class="name">lhs</span>: <div class="node"><span class="kind">expr.ident</span><div class="attrs"><div class="attr"><span class="key">name</span>: <span class="value token">a</span></div><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div><div class="attr"><span class="key">requiredType</span>: <span class="value type">int</span></div><div class="attr"><span class="key">possibleType</span>: <span class="value type">int</span></div><div class="attr"><span class="key">type</span>: <span class="value type">int</span></div></div><div class="subnodes"><span class="name">target</span>: <span style="color: #4e9a06;">bound</span></div></div><span class="name">rhs</span>: <div class="node"><span class="kind">expr.const.numeric</span><div class="attrs"><div class="attr"><span class="key">value</span>: <span class="value token">32</span></div><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div><div class="attr"><span class="key">requiredType</span>: <span class="value type">int</span></div><div class="attr"><span class="key">possibleType</span>: <span class="value type">int, float</span></div><div class="attr"><span class="key">type</span>: <span class="value type">int</span></div></div><div class="subnodes"></div></div></div></div><span class="name">body</span>: <div class="node"><span class="kind">stmt.block</span><div class="attrs"><div class="attr"><span class="key">group</span>: <span class="value token">{}</span></div><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div></div><div class="subnodes"><span class="name">nodes</span>:<div class="node"><span class="kind">expr.call</span><div class="attrs"><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div><div class="attr"><span class="key">requiredType</span>: <span class="value type">*</span></div><div class="attr"><span class="key">possibleType</span>: <span class="value type">*</span></div><div class="attr"><span class="key">type</span>: <span class="value type">*</span></div></div><div class="subnodes"><span class="name">args</span>: <div class="node"><span class="kind">expr.call.arg</span><div class="attrs"><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div></div><div class="subnodes"><span class="name">expr</span>: <div class="node"><span class="kind">expr.const.string</span><div class="attrs"><div class="attr"><span class="key">value</span>: <span class="value token">useful</span></div><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div></div><div class="subnodes"></div></div></div></div><span class="name">callee</span>: <div class="node"><span class="kind">expr.ident</span><div class="attrs"><div class="attr"><span class="key">name</span>: <span class="value token">doSomething</span></div><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div><div class="attr"><span class="key">target</span>: </div></div><div class="subnodes"></div></div></div></div></div></div><span class="name">else</span>: <div class="node"><span class="kind">stmt.else</span><div class="attrs"><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div></div><div class="subnodes"><span class="name">body</span>: <div class="node"><span class="kind">stmt.block</span><div class="attrs"><div class="attr"><span class="key">group</span>: <span class="value token">{}</span></div><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div></div><div class="subnodes"><span class="name">nodes</span>:<div class="node"><span class="kind">expr.call</span><div class="attrs"><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div><div class="attr"><span class="key">requiredType</span>: <span class="value type">*</span></div><div class="attr"><span class="key">possibleType</span>: <span class="value type">*</span></div><div class="attr"><span class="key">type</span>: <span class="value type">*</span></div></div><div class="subnodes"><span class="name">args</span>: <span class="name">callee</span>: <div class="node"><span class="kind">expr.member</span><div class="attrs"><div class="attr"><span class="key">member</span>: <span class="value token">splash</span></div><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div></div><div class="subnodes"><span class="name">expr</span>: <div class="node"><span class="kind">expr.ident</span><div class="attrs"><div class="attr"><span class="key">name</span>: <span class="value token">whatever</span></div><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div><div class="attr"><span class="key">target</span>: </div></div><div class="subnodes"></div></div></div></div></div></div></div></div></div></div></div></div><div class="node"><span class="kind">stmt.return</span><div class="attrs"><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div></div><div class="subnodes"><span class="name">expr</span>: <div class="node"><span class="kind">expr.ident</span><div class="attrs"><div class="attr"><span class="key">name</span>: <span class="value token">a</span></div><div class="attr"><span class="key">scope</span>: <div class="scope"></div></div><div class="attr"><span class="key">requiredType</span>: <span class="value type">*</span></div><div class="attr"><span class="key">possibleType</span>: <span class="value type">int</span></div><div class="attr"><span class="key">type</span>: <span class="value type">int</span></div></div><div class="subnodes"><span class="name">target</span>: <span style="color: #4e9a06;">bound</span></div></div></div></div></div></div></div></div>			</div>
+		</div>
+	</body>
 </html>

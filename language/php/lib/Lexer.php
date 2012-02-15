@@ -2,19 +2,16 @@
 
 class Lexer
 {
-	static public $symbols;
-	static public $symbolCombinations = array('==', '!=', "=>", ":=");
-	static public $identifierSymbols = array("~");
-	static public $keywords = array('func', 'if', 'else', 'return');
-	
-	public $input;
-	public $name;
+	public $file;
 	public $tokens;
 	public $flatTokens;
 	public $issues;
 	
 	public function run()
 	{
+		assert($this->file);
+		$input = $this->file->content;
+		
 		$this->tokens = array();
 		$this->flatTokens = array();
 		$this->issues = array();
@@ -22,6 +19,7 @@ class Lexer
 		//Accumulation buffer for tokens.
 		$bufferType  = null;
 		$bufferRange = new Range;
+		$bufferRange->source = $this->file;
 		$buffer      = "";
 		
 		//Location tracking.
@@ -32,13 +30,13 @@ class Lexer
 		
 		//Iterate through every character in the input string.
 		$context = 'code';
-		$len = strlen($this->input);
+		$len = strlen($input);
 		$pc = $c = 0;
 		for ($i = 0; $i < $len + 1; $i++) {
 			$ppc = $pc;
 			$pc  = $c;
-			$c   = ($i   < $len ? $this->input[$i]   : null);
-			$nc  = ($i+1 < $len ? $this->input[$i+1] : null);
+			$c   = ($i   < $len ? $input[$i]   : null);
+			$nc  = ($i+1 < $len ? $input[$i+1] : null);
 			
 			//Advance the location.
 			if ($c == "\n") {
@@ -69,7 +67,7 @@ class Lexer
 					}
 					
 					//Symbols
-					$isSymbol = in_array(ord($c), self::$symbols);
+					$isSymbol = in_array(ord($c), Language::$symbols);
 					if ($isSymbol) {
 						//Mark the buffer as being a symbol and to be wrapped up immediately,
 						//since we want symbols to be separate tokens, not clumped together.
@@ -80,7 +78,7 @@ class Lexer
 						//what's already in the buffer, in which case we leave the symbols
 						//clumped together.
 						$lookaheadBuffer = $buffer . $c;
-						if (in_array($lookaheadBuffer, self::$symbolCombinations)) {
+						if (in_array($lookaheadBuffer, Language::$symbolCombinations)) {
 							$wrapUpAnyway = false;
 						}
 						break;
@@ -144,10 +142,10 @@ class Lexer
 			if (($bufferType != $newBufferType || $wrapUpAnyway) && $buffer != '') {
 				
 				//Buffer type alterations based on content.
-				if (in_array($buffer, static::$identifierSymbols)) {
+				if (in_array($buffer, Language::$identifierSymbols)) {
 					$bufferType = 'identifier';
 				}
-				if (in_array($buffer, static::$keywords)) {
+				if (in_array($buffer, Language::$keywords)) {
 					$bufferType = 'keyword';
 				}
 				
@@ -225,11 +223,3 @@ class Lexer
 		}
 	}
 }
-
-//Initialize the lexer symbols.
-Lexer::$symbols = array_merge(
-	range(0x21, 0x2F),
-	range(0x3A, 0x3F),
-	range(0x5B, 0x5E),
-	range(0x7B, 0x7E)
-);

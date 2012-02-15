@@ -2,7 +2,7 @@
 
 func test
 {
-	a int = 54;
+	int a = 54;
 	if (a == 32) {
 		doSomething("useful");
 	} else {

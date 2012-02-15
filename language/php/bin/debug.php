@@ -2,18 +2,26 @@
 <?php
 require_once __DIR__.'/../lib/autoload.php';
 
+$file = new SourceFile;
+$file->path = $argv[1];
+$file->load();
+
 $lexer = new Lexer;
-$lexer->input = file_get_contents($argv[1]);
+$lexer->file = $file;
 $lexer->run();
 
 $parser = new Parser;
 $parser->tokens = $lexer->tokens;
 $parser->run();
 
-$sc = new SourceColorizer;
-$sc->input  = $lexer->input;
-$sc->flatTokens = $lexer->flatTokens;
-$sc->colorize();
+$analyzer = new Analyzer;
+$analyzer->nodes = $parser->nodes;
+$analyzer->run();
 
-$template = file_get_contents(__DIR__.'/../lib/SourceColorizer.html');
-file_put_contents($argv[1].'.html', str_replace(array('#title', '#body'), array(basename($argv[1]), $sc->output), $template));
+ob_start();
+$tokens = $lexer->flatTokens;
+$nodes  = $parser->nodes;
+require __DIR__.'/../lib/dump.html.php';
+$html = ob_get_contents();
+ob_end_clean();
+file_put_contents($file->path.'.html', $html);

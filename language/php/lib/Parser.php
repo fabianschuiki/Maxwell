@@ -2,13 +2,6 @@
 
 class Parser
 {
-	static public $operators = array(
-		array('=', ':='),
-		array('==', '!='),
-		array('+', '-'),
-		array('*', '/'),
-	);
-	
 	public $tokens;
 	public $nodes;
 	public $issues;
@@ -58,16 +51,17 @@ class Parser
 		$body->context = 'func.body';
 		
 		$f = new Node;
-		$f->type  = 'def.func';
+		$f->kind  = 'def.func';
 		$f->name  = $name;
 		$f->body  = $this->parseBlock($body);
+		$f->nodes = array($f->body);
 		return $f;
 	}
 	
 	private function parseBlock(TokenGroup &$grp)
 	{
 		$b = new Node;
-		$b->type  = 'block';
+		$b->kind  = 'stmt.block';
 		$b->group = $grp;
 		$b->nodes = array();
 		$ts = $grp->tokens;
@@ -78,8 +72,23 @@ class Parser
 		return $b;
 	}
 	
+	private function parseBlockOrStmt(array &$ts)
+	{
+		if ($ts[0]->is('group', '{}')) {
+			return $this->parseBlock(array_shift($ts));
+		} else {
+			$s = $this->parseStmt($ts);
+			$b = new Node;
+			$b->kind = 'stmt.block';
+			$b->nodes = array();
+			if ($s) $b->nodes[] = $s;
+			return $b;
+		}
+	}
+	
 	private function parseStmt(array &$ts)
 	{
+		if ($ts[0]->is('keyword')) return $this->parseKeywordStmt(array_shift($ts), $ts);
 		$sub = array();
 		while (count($ts)) {
 			$t = array_shift($ts);
@@ -93,9 +102,61 @@ class Parser
 		return $this->parseExpr($sub);
 	}
 	
+	private function parseKeywordStmt($keyword, array &$ts)
+	{
+		if ($keyword->text == 'if') {
+			if (!$ts[0]->is('group', '()')) {
+				$this->issues[] = "{$ts[0]->range}: if requires a condition within paranthesis, {$ts[0]} found";
+				return null;
+			}
+			$condition = array_shift($ts);
+			
+			$block = $this->parseBlockOrStmt($ts);
+			
+			if ($ts[0]->is('keyword', 'else')) {
+				$else = $this->parseKeywordStmt(array_shift($ts), $ts);
+			} else {
+				$else = null;
+			}
+			
+			$i = new Node;
+			$i->kind      = 'stmt.if';
+			$i->condition = $this->parseExpr($condition->tokens);
+			$i->body      = $block;
+			$i->else      = $else;
+			$i->nodes     = array($i->condition, $i->body);
+			if ($i->else) $i->nodes[] = $i->else;
+			return $i;
+		}
+		if ($keyword->text == 'else') {
+			$e = new Node;
+			$e->kind  = 'stmt.else';
+			$e->body  = $this->parseBlockOrStmt($ts);
+			$e->nodes = array($e->body);
+			return $e;
+		}
+		if ($keyword->text == 'return') {
+			$sub = array();
+			while (count($ts)) {
+				$t = array_shift($ts);
+				if ($t->is('symbol', ';'))
+					break;
+				$sub[] = $t;
+			}
+			
+			$r = new Node;
+			$r->kind  = 'stmt.return';
+			$r->expr  = $this->parseExpr($sub);
+			$r->nodes = array($r->expr);
+			return $r;
+		}
+		$this->issues[] = "{$keyword->range}: $keyword is meaningless here";
+		return null;
+	}
+	
 	private function parseExpr(array $ts)
 	{
-		foreach (static::$operators as $operators) {
+		foreach (Language::$operators as $operators) {
 			for ($i = 0; $i < count($ts); $i++) {
 				if ($ts[$i]->is('symbol') && in_array($ts[$i]->text, $operators)) {
 					return $this->parseBinOpExpr($ts[$i], array_slice($ts, 0, $i), array_slice($ts, $i+1));
@@ -103,11 +164,25 @@ class Parser
 			}
 		}
 		
-		if ($ts[0]->is('identifier')) return $this->parseIdentExpr(array_shift($ts), $ts);
+		if (count($ts) > 0 && $ts[count($ts)-1]->is('group', '()')) return $this->parseCallExpr($ts);
+		if (count($ts) > 2 && $ts[count($ts)-2]->is('symbol', '.') && $ts[count($ts)-1]->is('identifier')) return $this->parseMemberExpr($ts);
+				
+		$e = null;
+		if ($ts[0]->is('identifier')) $e = $this->parseIdentExpr(array_shift($ts), $ts);
+		else if ($ts[0]->is('numeric')) {
+			$e = new Node;
+			$e->kind  = 'expr.const.numeric';
+			$e->value = array_shift($ts);
+		}
+		else if ($ts[0]->is('string')) {
+			$e = new Node;
+			$e->kind  = 'expr.const.string';
+			$e->value = array_shift($ts);
+		}
 		foreach ($ts as $t) {
 			$this->issues[] = "{$t->range}: garbage $t in expression";
 		}
-		return null;
+		return $e;
 	}
 	
 	private function parseBinOpExpr($operator, array &$lts, array &$rts)
@@ -115,7 +190,7 @@ class Parser
 		$operator->context = 'expr.op.binary';
 		
 		$o = new Node;
-		$o->type  = 'expr.op.binary';
+		$o->kind  = 'expr.op.binary';
 		$o->op    = $operator;
 		$o->lhs   = $this->parseExpr($lts);
 		$o->rhs   = $this->parseExpr($rts);
@@ -123,22 +198,77 @@ class Parser
 		return $o;
 	}
 	
+	private function parseCallExpr(array &$ts)
+	{
+		$f = new Node;
+		$f->kind   = 'expr.call';
+		$f->args   = $this->parseCallArgs(array_pop($ts)->tokens);
+		$f->callee = $this->parseExpr($ts);
+		$f->nodes  = array_merge(array($f->callee), $f->args);
+		return $f;
+	}
+	
+	private function parseCallArgs(array &$ts)
+	{
+		$args = array();
+		while (count($ts)) {
+			$sub = array();
+			while (count($ts)) {
+				$t = array_shift($ts);
+				if ($t->is('symbol', ','))
+					break;
+				$sub[] = $t;
+			}
+			$args[] = $this->parseCallArg($sub);
+		}
+		return $args;
+	}
+	
+	private function parseCallArg(array &$ts)
+	{
+		$a = new Node;
+		$a->kind  = 'expr.call.arg';
+		$a->expr  = $this->parseExpr($ts);
+		$a->nodes = array($a->expr);
+		return $a; 
+	}
+	
+	private function parseMemberExpr(array &$ts)
+	{
+		$member = array_pop($ts);
+		array_pop($ts); //dot operator
+		
+		$member->context = 'expr.member';
+		
+		$m = new Node;
+		$m->kind   = 'expr.member';
+		$m->member = $member;
+		$m->expr   = $this->parseExpr($ts);
+		$m->nodes  = array($m->expr);
+		return $m;
+	}
+	
 	private function parseIdentExpr($ident, array &$ts)
 	{
+		if (!count($ts)) {
+			$ident->context = 'expr.ident';
+			
+			$i = new Node;
+			$i->kind = 'expr.ident';
+			$i->name = $ident;
+			return $i;
+		}
 		if ($ts[0]->is('identifier')) {
-			$type = array_shift($ts);
+			$type = $ident;
+			$name = array_shift($ts);
 			
-			foreach ($ts as $t) {
-				$this->issues[] = "{$t->range}: garbage $t after variable expression";
-			}
-			
-			$ident->context = 'expr.var.name';
+			$name->context = 'expr.var.name';
 			$type->context = 'expr.var.type';
 			
 			$v = new Node;
-			$v->type = 'expr.var';
-			$v->name = $ident;
-			$v->type = $type;
+			$v->kind = 'expr.var';
+			$v->name = $name;
+			$v->datatype = $type;
 			return $v;
 		}
 		return null;

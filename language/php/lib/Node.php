@@ -2,5 +2,9 @@
 
 class Node
 {
-	public $type;
+	public $kind;
+	
+	public function is($k) {
+		return strpos($this->kind, $k) === 0;
+	}
 }

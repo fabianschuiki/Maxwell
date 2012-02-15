@@ -43,6 +43,22 @@ class Parser
 			$this->issues[] = "{$name->range}: function requires a name, $name found";
 			return null;
 		}
+		
+		if ($ts[0]->is('group', '()')) {
+			$args_in = $this->parseFuncArgs(array_shift($ts)->tokens);
+		}
+		if (!isset($args_in)) {
+			$args_in = array();
+		}
+		
+		if ($ts[0]->is('symbol', '->') && $ts[1]->is('group', '()')) {
+			array_shift($ts);
+			$args_out = $this->parseFuncArgs(array_shift($ts)->tokens);
+		}
+		if (!isset($args_out)) {
+			$args_out = array();
+		}
+		
 		$body = array_shift($ts);
 		if (!$body->is('group', '{}')) {
 			$this->issues[] = "{$body->range}: function requires a body, $body found";
@@ -51,12 +67,61 @@ class Parser
 		$name->context = 'func.name';
 		$body->context = 'func.body';
 		
+		$m = new Node;
+		$m->kind  = 'def.func.pattern';
+		$m->in    = $args_in;
+		$m->out   = $args_out;
+		$m->body  = $this->parseBlock($body);
+		$m->nodes = array($m->body);
+		if ($m->in)  $m->nodes += $m->in;
+		if ($m->out) $m->nodes += $m->out;
+		
 		$f = new Node;
-		$f->kind  = 'def.func';
-		$f->name  = $name;
-		$f->body  = $this->parseBlock($body);
-		$f->nodes = array($f->body);
+		$f->kind     = 'def.func';
+		$f->name     = $name;
+		$f->nodes    = array($m);
 		return $f;
+	}
+	
+	private function parseFuncArgs(array &$ts)
+	{
+		$args = array();
+		while (count($ts)) {
+			$sub = array();
+			while (count($ts)) {
+				$t = array_shift($ts);
+				if ($t->is('symbol', ','))
+					break;
+				$sub[] = $t;
+			}
+			$args[] = $this->parseFuncArg($sub);
+		}
+		return $args;
+	}
+	
+	private function parseFuncArg($ts)
+	{
+		$name = array_pop($ts);
+		if (!$name->is('identifier')) {
+			$this->issues[] = "{$name->range}: function argument name required, $name found";
+			return null;
+		}
+		
+		$type = null;
+		if (count($ts) > 0) {
+			$type = array_pop($ts);
+			if (!$type->is('identifier')) {
+				$this->issues[] = "{$type->range}: function argument type should be an identifier, $type found";
+				return null;
+			}
+			$type->context = 'func.arg.type';
+		}
+		
+		$a = new Node;
+		$a->kind  = 'func.arg';
+		$a->name  = $name;
+		$a->type  = $type;
+		return $a;
 	}
 	
 	private function parseTypeDef(array &$ts)
@@ -278,7 +343,7 @@ class Parser
 			$v = new Node;
 			$v->kind = 'expr.var';
 			$v->name = $name;
-			$v->datatype = $type;
+			$v->type = $type;
 			return $v;
 		}
 		return null;

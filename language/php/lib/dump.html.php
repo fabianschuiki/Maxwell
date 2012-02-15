@@ -47,7 +47,7 @@
 							echo '<span class="value type">'.implode(', ',$value->types).'</span>';
 						}
 						if ($value instanceof Scope) {
-							echo '<div class="scope">';
+							/*echo '<div class="scope">';
 							foreach ($value->names as $name => $sn) {
 								echo '<div class="scope-entry">';
 								echo '<span class="scope-name">'.$name.'</span>';
@@ -55,7 +55,8 @@
 								echo '<span class="scope-kind">'.$sn->kind.'</span>';
 								echo '</div>';
 							}
-							echo '</div>';
+							echo '</div>';*/
+							echo '…';
 						}
 						echo '</div>';
 					}

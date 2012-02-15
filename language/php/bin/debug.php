@@ -28,5 +28,5 @@ file_put_contents($file->path.'.html', $html);
 
 $compiler = new Compiler;
 $compiler->nodes = $parser->nodes;
-$compiler->run();
+//$compiler->run();
 file_put_contents($file->path.'.php', $compiler->output);

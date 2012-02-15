@@ -29,7 +29,8 @@ pre.code {
 .keyword { font-weight: bold; }
 .string { color: #3465a4; }
 
-.expr-var-type { font-weight: bold; color: #4e9a06; }
+.expr-var-type,
+.func-arg-type { font-weight: bold; color: #4e9a06; }
 .expr-ident { font-style: italic; }
 .expr-member { color: #75507b; }
 

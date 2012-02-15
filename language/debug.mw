@@ -1,23 +1,13 @@
 /** Debugging some stuff. */
 
-type int {}
-type float {}
-
-func cast (int a) -> (float b)
-{
-}
-
-func (=) a -> b { a.value = b.value; }
+func test (A a) {}
+func test (B b) {}
 
 func main
 {
-	int a = 54;
-	int b = 87.9;
-	if (int p = 32) {
-		doSomething("useful");
-	} else {
-		whatever.splash();
-	}
-	int x = a + b * 2;
-	return x;
+	A x;
+	B y;
+	
+	test(x);
+	test(y);
 }

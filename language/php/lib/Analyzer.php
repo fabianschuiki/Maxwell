@@ -9,10 +9,9 @@ class Analyzer
 	{
 		$this->issues = array();
 		$rootScope = new Scope;
-		foreach ($this->nodes as $n) {
-			$this->analyzeScopes($n, $rootScope);
-			$this->analyzeTypes($n);
-		}
+		foreach ($this->nodes as $n) { $this->analyzeScopes($n, $rootScope); }
+		foreach ($this->nodes as $n) { $this->analyzeTypes($n); }
+		foreach ($this->nodes as $n) { $this->matchFunctions($n); }
 		foreach ($this->issues as $i) {
 			echo "$i\n";
 		}
@@ -34,7 +33,14 @@ class Analyzer
 		} else {
 			$node->scope = new Scope($parent);
 			switch ($node->kind) {
-				case 'def.func': $parent->names[$node->name->text] = $node; break;
+				case 'def.func': {
+					$fn = $node->name->text;
+					if (!isset($parent->names[$fn])) {
+						$parent->names[$fn] = $node;
+					} else {
+						$parent->names[$fn]->nodes += $node->nodes;
+					}
+				} break;
 			}
 		}
 		if (isset($node->nodes)) {
@@ -47,41 +53,68 @@ class Analyzer
 	public function analyzeTypes(Node &$node)
 	{
 		if ($node->is('expr')) {
-			if (!isset($node->requiredType)) {
-				$node->requiredType = new Type;
+			if (!isset($node->a_requiredType)) {
+				$node->a_requiredType = new Type;
+			}
+			if (!isset($node->a_possibleType)) {
+				$node->a_possibleType = new Type;
 			}
 			switch ($node->kind) {
-				case 'expr.const.numeric': $node->possibleType = new Type('int', 'float'); break;
-				case 'expr.const.string':  $node->possibleType = new Type('string'); break;
-				case 'expr.var':           $node->possibleType = new Type($node->datatype->text); break;
+				case 'expr.const.numeric': $node->a_possibleType = new Type('int', 'float'); break;
+				case 'expr.const.string':  $node->a_possibleType = new Type('string'); break;
+				case 'expr.var':           $node->a_possibleType = new Type($node->type->text); break;
 				case 'expr.op.binary': {
 					$this->analyzeTypes($node->lhs);
 					$this->analyzeTypes($node->rhs);
 					
-					$node->possibleType = $node->lhs->type->intersection($node->rhs->type);
-					$node->lhs->requiredType = $node->possibleType;
-					$node->rhs->requiredType = $node->possibleType;
+					$node->a_possibleType = $node->lhs->a_type->intersection($node->rhs->a_type);
+					$node->lhs->a_requiredType = $node->a_possibleType;
+					$node->rhs->a_requiredType = $node->a_possibleType;
 					
 					$this->analyzeTypes($node->lhs);
 					$this->analyzeTypes($node->rhs);
 					
-					if (!count($node->possibleType->types)) {
-						$this->issues[] = "{$node->op->range}: binary operator requires both sides to be of equal type, which is impossible for {$node->lhs->possibleType} and {$node->rhs->possibleType}";
+					if (!count($node->a_possibleType->a_types)) {
+						$this->issues[] = "{$node->op->range}: binary operator requires both sides to be of equal type, which is impossible for {$node->lhs->a_possibleType} and {$node->rhs->a_possibleType}";
 					}
 				} break;
 				case 'expr.ident': {
 					if ($node->target) {
-						$node->possibleType = $node->target->type;
+						$node->a_possibleType = $node->target->a_type;
 					}
 				} break;
-				default: $node->possibleType = new Type; break;
+				case 'expr.call': {
+					foreach ($node->args as $a) {
+						$this->analyzeTypes($a);
+					}
+					$node->a_possibleType = new Type;
+				} break;
+				case 'expr.call.arg': {
+					$this->analyzeTypes($node->expr);
+					$node->a_possibleType = $node->expr->a_possibleType;
+				} break;
 			}
-			$node->type = $node->possibleType->intersection($node->requiredType);
+			if (isset($node->a_possibleType)) {
+				$node->a_type = $node->a_possibleType->intersection($node->a_requiredType);
+			}
 		} else {
 			if (isset($node->nodes)) {
 				foreach ($node->nodes as $n) {
 					$this->analyzeTypes($n);
 				}
+			}
+		}
+	}
+	
+	public function matchFunctions(Node &$node)
+	{
+		if ($node->is('expr.ident') && isset($node->target) && $node->target->is('def.func')) {
+			$patterns = $node->target->nodes;
+			//TODO: implement some pattern matching...
+		}
+		if (isset($node->nodes)) {
+			foreach ($node->nodes as $n) {
+				$this->matchFunctions($n);
 			}
 		}
 	}

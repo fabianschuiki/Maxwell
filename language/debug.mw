@@ -2,8 +2,11 @@
 
 func main
 {
-	int a = 1;
+	/*int a = 1;
 	int b = 19;
 	int x = a + b;
-	show(3 == 2);
+	int y = 10;
+	y = y + 1;
+	show(y);*/
+	show(15/3);
 }

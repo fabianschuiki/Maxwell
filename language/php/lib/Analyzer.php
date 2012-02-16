@@ -8,7 +8,7 @@ class Analyzer
 	public function run()
 	{
 		$this->issues = array();
-		$this->eachNode('convertOperators', $this->nodes);
+		$this->eachNode('reduceNode', $this->nodes);
 		/*$rootScope = new Scope;
 		foreach ($this->nodes as $n) { $this->analyzeScopes($n, $rootScope); }
 		foreach ($this->nodes as $n) { $this->analyzeTypes($n); }
@@ -21,38 +21,41 @@ class Analyzer
 	private function eachNode($func, array &$nodes)
 	{
 		foreach ($nodes as &$node) {
-			if (isset($node->nodes))
-				$this->eachNode($func, $node->nodes);
-			call_user_func(array($this, $func), &$node);
+			$this->eachNode($func, $node->nodes());
+			$node = call_user_func(array($this, $func), $node);
 		}
 	}
 	
-	private function convertOperators(Node &$node)
+	private function reduceNode(Node &$node)
 	{
 		if ($node->is('expr.op.binary')) {
-			$node->kind = 'expr.call';
-			$node->callee = new Node;
-			$node->callee->kind = 'expr.ident';
-			$node->callee->name = 'operator_';
-			for ($i = 0; $i < strlen($node->op->text); $i++)
-				$node->callee->name .= sprintf('%02X', ord($node->op->text[$i]));
-			unset($node->op);
+			if ($node->op->text == '=' && $node->lhs->is('expr.var')) {
+				$node->lhs->initial = $node->rhs;
+				return $node->lhs;
+			} else {
+				$f = new Node;
+				$f->kind = 'expr.call';
+				$f->callee = new Node;
+				$f->callee->kind = 'expr.ident';
+				$f->callee->name = 'operator_';
+				for ($i = 0; $i < strlen($node->op->text); $i++)
+					$f->callee->name .= sprintf('%02X', ord($node->op->text[$i]));
 			
-			$lhs = new Node;
-			$lhs->kind  = 'expr.call.arg';
-			$lhs->expr  = $node->lhs;
-			$lhs->nodes = array($lhs->expr);
-			unset($node->lhs);
+				$lhs = new Node;
+				$lhs->kind  = 'expr.call.arg';
+				$lhs->expr  = $node->lhs;
+				$lhs->nodes = array($lhs->expr);
 			
-			$rhs = new Node;
-			$rhs->kind  = 'expr.call.arg';
-			$rhs->expr  = $node->rhs;
-			$rhs->nodes = array($rhs->expr);
-			unset($node->rhs);
+				$rhs = new Node;
+				$rhs->kind  = 'expr.call.arg';
+				$rhs->expr  = $node->rhs;
+				$rhs->nodes = array($rhs->expr);
 			
-			$node->args = array($lhs, $rhs);
-			$node->nodes = array($node->callee, $lhs, $rhs);
+				$f->args = array($lhs, $rhs);
+				return $f;
+			}
 		}
+		return $node;
 	}
 	
 	public function analyzeScopes(Node &$node, Scope &$parent)

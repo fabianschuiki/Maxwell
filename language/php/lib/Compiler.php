@@ -31,7 +31,7 @@ class Compiler
 	{
 		$c = array();
 		foreach ($nodes as $node) {
-			$c = array_merge($c, $this->compileNode($node));
+			$c = array_merge($c, array("//{$node->kind}"), $this->compileNode($node));
 		}
 		return $c;
 	}
@@ -83,6 +83,11 @@ class Compiler
 		$c = array();
 		$node->c_name = 'v'.$node->name->text;
 		$c[] = $node->type->text.' '.$node->c_name;
+		if (isset($node->initial)) {
+			$cn = $this->compileNode($node->initial);
+			$n = array_pop($cn);
+			$c = array_merge($c, $cn, array($node->c_name.' = '.$n));
+		}
 		$c[] = $node->c_name;
 		return $c;
 	}

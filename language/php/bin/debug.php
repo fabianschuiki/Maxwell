@@ -2,6 +2,8 @@
 <?php
 require_once __DIR__.'/../lib/autoload.php';
 
+error_reporting(E_ALL ^ E_NOTICE);
+
 $file = new SourceFile;
 $file->path = $argv[1];
 $file->load();

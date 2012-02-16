@@ -58,6 +58,9 @@
 							echo '</div>';*/
 							echo '…';
 						}
+						if (is_string($value)) {
+							echo '<span class="value string">'.$value.'</span>';
+						}
 						echo '</div>';
 					}
 					echo '</div>';

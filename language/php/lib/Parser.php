@@ -62,24 +62,21 @@ class Parser
 		$body = array_shift($ts);
 		if (!$body->is('group', '{}')) {
 			$this->issues[] = "{$body->range}: function requires a body, $body found";
+			return null;
 		}
 		
 		$name->context = 'func.name';
 		$body->context = 'func.body';
 		
-		$m = new Node;
-		$m->kind  = 'def.func.pattern';
-		$m->in    = $args_in;
-		$m->out   = $args_out;
-		$m->body  = $this->parseBlock($body);
-		$m->nodes = array($m->body);
-		if ($m->in)  $m->nodes += $m->in;
-		if ($m->out) $m->nodes += $m->out;
-		
 		$f = new Node;
-		$f->kind     = 'def.func';
-		$f->name     = $name;
-		$f->nodes    = array($m);
+		$f->kind  = 'def.func';
+		$f->name  = $name;
+		$f->in    = $args_in;
+		$f->out   = $args_out;
+		$f->body  = $this->parseBlock($body);
+		$f->nodes = array($f->body);
+		$f->nodes += $f->in;
+		$f->nodes += $f->out;
 		return $f;
 	}
 	
@@ -329,8 +326,9 @@ class Parser
 			$ident->context = 'expr.ident';
 			
 			$i = new Node;
-			$i->kind = 'expr.ident';
-			$i->name = $ident;
+			$i->kind  = 'expr.ident';
+			$i->name  = $ident->text;
+			$i->token = $ident;
 			return $i;
 		}
 		if ($ts[0]->is('identifier')) {

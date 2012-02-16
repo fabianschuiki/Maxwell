@@ -28,5 +28,11 @@ file_put_contents($file->path.'.html', $html);
 
 $compiler = new Compiler;
 $compiler->nodes = $parser->nodes;
-//$compiler->run();
-file_put_contents($file->path.'.php', $compiler->output);
+$compiler->run();
+$compiledPath = $file->path.'.c';
+file_put_contents($compiledPath, $compiler->output);
+
+$executablePath = $file->path.'.out';
+passthru('gcc -O3 -o '.escapeshellarg($executablePath).' '.escapeshellarg($compiledPath));
+passthru('objdump -d '.escapeshellarg($executablePath).' > '.escapeshellarg($file->path.'.asm'));
+passthru(escapeshellarg($executablePath));

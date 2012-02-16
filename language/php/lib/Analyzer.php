@@ -8,12 +8,50 @@ class Analyzer
 	public function run()
 	{
 		$this->issues = array();
-		$rootScope = new Scope;
+		$this->eachNode('convertOperators', $this->nodes);
+		/*$rootScope = new Scope;
 		foreach ($this->nodes as $n) { $this->analyzeScopes($n, $rootScope); }
 		foreach ($this->nodes as $n) { $this->analyzeTypes($n); }
-		foreach ($this->nodes as $n) { $this->matchFunctions($n); }
+		foreach ($this->nodes as $n) { $this->matchFunctions($n); }*/
 		foreach ($this->issues as $i) {
 			echo "$i\n";
+		}
+	}
+	
+	private function eachNode($func, array &$nodes)
+	{
+		foreach ($nodes as &$node) {
+			if (isset($node->nodes))
+				$this->eachNode($func, $node->nodes);
+			call_user_func(array($this, $func), &$node);
+		}
+	}
+	
+	private function convertOperators(Node &$node)
+	{
+		if ($node->is('expr.op.binary')) {
+			$node->kind = 'expr.call';
+			$node->callee = new Node;
+			$node->callee->kind = 'expr.ident';
+			$node->callee->name = 'operator_';
+			for ($i = 0; $i < strlen($node->op->text); $i++)
+				$node->callee->name .= sprintf('%02X', ord($node->op->text[$i]));
+			unset($node->op);
+			
+			$lhs = new Node;
+			$lhs->kind  = 'expr.call.arg';
+			$lhs->expr  = $node->lhs;
+			$lhs->nodes = array($lhs->expr);
+			unset($node->lhs);
+			
+			$rhs = new Node;
+			$rhs->kind  = 'expr.call.arg';
+			$rhs->expr  = $node->rhs;
+			$rhs->nodes = array($rhs->expr);
+			unset($node->rhs);
+			
+			$node->args = array($lhs, $rhs);
+			$node->nodes = array($node->callee, $lhs, $rhs);
 		}
 	}
 	

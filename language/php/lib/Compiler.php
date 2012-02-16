@@ -1,65 +1,109 @@
 <?php
 
+function tmp()
+{
+	global $tmpidx;
+	if (!isset($tmpidx))
+		$tmpidx = 0;
+	return '_tmp'.$tmpidx++;
+}
+
 class Compiler
 {
 	public $nodes;
 	public $output;
-	public $scopeID = 0;
 	
 	public function run()
 	{
-		$this->output  = "#!/usr/bin/php\n<?php\n";
-		$this->output .= "/** compiled on ".date("c")." */\n";
-		$this->output .= "require_once '".__DIR__."/runtime.php';\n\n";
-		foreach ($this->nodes as $n) {
-			$this->output .= $this->compileNode($n).";\n\n";
+		$o  = "/* automatically compiled on ".date('c')." */\n\n";
+		$o .= file_get_contents(__DIR__.'/runtime.c');
+		$o .= "\n// --- runtime end ---\n\n";
+		$cn = $this->compileNodes($this->nodes);
+		foreach ($cn as $n) {
+			$o .= "$n\n\n";
 		}
-		$this->output .= "\$ret = array();\n";
-		$this->output .= "main(null, \$ret);\n";
-		$this->output .= "print_r(\$ret);\n";
-		$this->output .= "echo(\"\\n\");\n";
+		$o .= "// --- debugging code ---\n";
+		$o .= "void main() { func_main(); }\n";
+		$this->output = $o;
+	}
+	
+	private function compileNodes(array &$nodes)
+	{
+		$c = array();
+		foreach ($nodes as $node) {
+			$c = array_merge($c, $this->compileNode($node));
+		}
+		return $c;
 	}
 	
 	private function compileNode(Node &$node)
 	{
-		if (isset($node->scope) && !isset($node->scope->c_name)) {
-			$node->scope->c_name = 'scp_'.$this->scopeID++;
-		}
 		switch ($node->kind) {
-			case 'def.func': {
-				$node->c_name = $node->name->text;
-				$c  = "function {$node->c_name}(\$in, &\$out)\n";
-				$c .= $this->compileBlock($node->body);
-				return $c;
-			} break;
-			case 'expr.op.binary': {
-				$c  = $this->compileNode($node->lhs);;
-				$c .= ' '.$node->op->text.' ';
-				$c .= $this->compileNode($node->rhs);
-				return "($c)";
-			} break;
-			case 'expr.var': {
-				$node->c_name = '$v'./*$node->scope->c_name.'["'.*/$node->name->text/*.'"]'*/;
-				return $node->c_name;
-			} break;
-			case 'expr.const.numeric': { return $node->value->text; } break;
-			case 'expr.const.string':  { return '"'.$node->value->text.'"'; } break;
-			case 'expr.ident':         { return $node->target->c_name; } break;
-			case 'stmt.return': {
-				$c  = '$out = '.$this->compileNode($node->expr);
-				$c .= '; return';
-				return $c;
-			} break;
+			case 'def.func':  return $this->compileFuncDef($node); break;
+			case 'expr.call': return $this->compileCallExpr($node); break;
+			case 'expr.var':  return $this->compileVarExpr($node); break;
+			case 'expr.const.numeric': return $this->compileConstExpr($node); break;
+			case 'expr.ident': return array('v'.$node->name); break;
 		}
-		return "/*{$node->kind}*/";
+		return array("/*{$node->kind}*/");
+	}
+	
+	private function compileFuncDef(Node &$node)
+	{
+		/*$c  = 'typedef struct {} func_'.$node->name->text.'_ret;';
+		$c .= "\n";*/
+		$f  = 'void func_';
+		$f .= $node->name->text;
+		$f .= "()\n";
+		$f .= $this->compileBlock($node->body);
+		return array($f);
+	}
+	
+	private function compileCallExpr(Node &$node)
+	{
+		$c = array();
+		$args = array();
+		foreach ($node->args as $arg) {
+			$cn = $this->compileNode($arg->expr);
+			$args[] = '&'.array_pop($cn);
+			$c = array_merge($c, $cn);
+		}
+		
+		$tmp = tmp();
+		$call  = 'int '.$tmp.' = '.$node->callee->name.'(';
+		$call .= implode(', ', $args);
+		$call .= ')';
+		$c[] = $call;
+		$c[] = $tmp;
+		return $c;
+	}
+	
+	private function compileVarExpr(Node &$node)
+	{
+		$c = array();
+		$node->c_name = 'v'.$node->name->text;
+		$c[] = $node->type->text.' '.$node->c_name;
+		$c[] = $node->c_name;
+		return $c;
+	}
+	
+	private function compileConstExpr(Node &$node)
+	{
+		$n = tmp();
+		$c = array();
+		$c[] = 'int '.$n.' = '.$node->value->text;
+		$c[] = $n;
+		return $c;
 	}
 	
 	private function compileBlock(Node &$node)
 	{
-		$c = "";
-		foreach ($node->nodes as $n) {
-			$c .= "\n".$this->compileNode($n).';';
+		$s = "{";
+		$cn = $this->compileNodes($node->nodes);
+		foreach ($cn as $n) {
+			$s .= "\n\t$n;";
 		}
-		return "{".str_replace("\n", "\n\t", $c)."\n}";
+		$s .= "\n}";
+		return $s;
 	}
 }

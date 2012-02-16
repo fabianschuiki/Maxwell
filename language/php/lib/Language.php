@@ -5,7 +5,7 @@ class Language
 	static public $symbols;
 	
 	static public $symbolCombinations = array(
-		'==', '!=', "=>", ":="
+		'==', '!=', "=>", ":=", "->"
 	);
 	
 	static public $identifierSymbols = array("~");

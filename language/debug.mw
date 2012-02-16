@@ -1,13 +1,9 @@
 /** Debugging some stuff. */
 
-func test (A a) {}
-func test (B b) {}
-
 func main
 {
-	A x;
-	B y;
-	
-	test(x);
-	test(y);
+	int a = 1;
+	int b = 19;
+	int x = a + b;
+	show(3 == 2);
 }

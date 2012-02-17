@@ -44,6 +44,8 @@ class Compiler
 			case 'expr.var':  return $this->compileVarExpr($node); break;
 			case 'expr.const.numeric': return $this->compileConstExpr($node); break;
 			case 'expr.ident': return array('v'.$node->name); break;
+			case 'stmt.if': return $this->compileIfStmt($node); break;
+			case 'stmt.for': return $this->compileForStmt($node); break;
 		}
 		return array("/*{$node->kind}*/");
 	}
@@ -82,12 +84,14 @@ class Compiler
 	{
 		$c = array();
 		$node->c_name = 'v'.$node->name->text;
-		$c[] = $node->type->text.' '.$node->c_name;
+		$s = $node->type->text.' '.$node->c_name;
 		if (isset($node->initial)) {
 			$cn = $this->compileNode($node->initial);
 			$n = array_pop($cn);
-			$c = array_merge($c, $cn, array($node->c_name.' = '.$n));
+			$c = array_merge($c, $cn);
+			$s .= ' = '.$n;
 		}
+		$c[] = $s;
 		$c[] = $node->c_name;
 		return $c;
 	}
@@ -106,9 +110,37 @@ class Compiler
 		$s = "{";
 		$cn = $this->compileNodes($node->nodes);
 		foreach ($cn as $n) {
+			$n = str_replace("\n", "\n\t", $n);
 			$s .= "\n\t$n;";
 		}
 		$s .= "\n}";
 		return $s;
+	}
+	
+	private function compileIfStmt(Node &$node)
+	{
+		$c = $this->compileNode($node->condition);
+		$s  = 'if ('.array_pop($c).') ';
+		$s .= $this->compileBlock($node->body);
+		if (isset($node->else)) {
+			$s .= ' else '.$this->compileBlock($node->else->body);
+		}
+		$c[] = $s;
+		return $c;
+	}
+	
+	private function compileForStmt(Node &$node)
+	{
+		$c = $this->compileNode($node->initial);
+		$s  = "do {\n\t";
+		$ccn = $this->compileNode($node->condition);
+		$cc = array_pop($ccn);
+		$s .= implode(";\n\t", $ccn).";\n\t";
+		$s .= "if (!$cc)\n\t\tbreak;\n\t";
+		$s .= str_replace("\n", "\n\t", $this->compileBlock($node->body))."\n\t";
+		$s .= implode(";\n\t", $this->compileNode($node->step)).";\n";
+		$s .= "} while(1)";
+		$c[] = $s;
+		return $c;
 	}
 }

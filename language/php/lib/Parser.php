@@ -196,16 +196,45 @@ class Parser
 			$i->condition = $this->parseExpr($condition->tokens);
 			$i->body      = $block;
 			$i->else      = $else;
-			$i->nodes     = array($i->condition, $i->body);
-			if ($i->else) $i->nodes[] = $i->else;
 			return $i;
 		}
 		if ($keyword->text == 'else') {
 			$e = new Node;
 			$e->kind  = 'stmt.else';
 			$e->body  = $this->parseBlockOrStmt($ts);
-			$e->nodes = array($e->body);
 			return $e;
+		}
+		if ($keyword->text == 'for') {
+			if (!$ts[0]->is('group', '()')) {
+				$this->issues[] = "{$ts[0]->range}: for loop requires initial statement, condition and step statement in paranthesis, {$ts[0]} found";
+				return null;
+			}
+			$grp = array_shift($ts);
+			
+			$initial   = null;
+			$condition = null;
+			$step      = null;
+			$sts = $grp->tokens;
+			for ($i = 0; i < 3 && count($sts); $i++) {
+				$sub = array();
+				while (count($sts)) {
+					$t = array_shift($sts);
+					if ($t->is('symbol', ';'))
+						break;
+					$sub[] = $t;
+				}
+				if ($i == 0) $initial   = $this->parseStmt($sub);
+				if ($i == 1) $condition = $this->parseExpr($sub);
+				if ($i == 2) $step      = $this->parseStmt($sub);
+			}
+			
+			$f = new Node;
+			$f->kind      = 'stmt.for';
+			$f->initial   = $initial;
+			$f->condition = $condition;
+			$f->step      = $step;
+			$f->body      = $this->parseBlockOrStmt($ts);
+			return $f;
 		}
 		if ($keyword->text == 'return') {
 			$sub = array();
@@ -228,6 +257,10 @@ class Parser
 	
 	private function parseExpr(array $ts)
 	{
+		if (count($ts) == 1 && $ts[0]->is('group', '()')) {
+			return $this->parseExpr($ts[0]->tokens);
+		}
+		
 		foreach (Language::$operators as $operators) {
 			for ($i = 0; $i < count($ts); $i++) {
 				if ($ts[$i]->is('symbol') && in_array($ts[$i]->text, $operators)) {
@@ -236,7 +269,7 @@ class Parser
 			}
 		}
 		
-		if (count($ts) > 0 && $ts[count($ts)-1]->is('group', '()')) return $this->parseCallExpr($ts);
+		if (count($ts) > 1 && $ts[count($ts)-1]->is('group', '()')) return $this->parseCallExpr($ts);
 		if (count($ts) > 2 && $ts[count($ts)-2]->is('symbol', '.') && $ts[count($ts)-1]->is('identifier')) return $this->parseMemberExpr($ts);
 				
 		$e = null;

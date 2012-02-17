@@ -154,19 +154,20 @@ Disassembly of section .text:
   40056a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
 
 0000000000400570 <operator_3D3D>:
-  400570:	8b 0e                	mov    (%rsi),%ecx
-  400572:	b8 01 00 00 00       	mov    $0x1,%eax
-  400577:	85 c9                	test   %ecx,%ecx
-  400579:	7e 0f                	jle    40058a <operator_3D3D+0x1a>
-  40057b:	8b 37                	mov    (%rdi),%esi
-  40057d:	31 d2                	xor    %edx,%edx
-  40057f:	90                   	nop
-  400580:	83 c2 01             	add    $0x1,%edx
-  400583:	0f af c6             	imul   %esi,%eax
-  400586:	39 ca                	cmp    %ecx,%edx
-  400588:	75 f6                	jne    400580 <operator_3D3D+0x10>
-  40058a:	f3 c3                	repz retq 
-  40058c:	0f 1f 40 00          	nopl   0x0(%rax)
+  400570:	8b 06                	mov    (%rsi),%eax
+  400572:	39 07                	cmp    %eax,(%rdi)
+  400574:	0f 94 c0             	sete   %al
+  400577:	0f b6 c0             	movzbl %al,%eax
+  40057a:	c3                   	retq   
+  40057b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+
+0000000000400580 <operator_3C>:
+  400580:	8b 06                	mov    (%rsi),%eax
+  400582:	39 07                	cmp    %eax,(%rdi)
+  400584:	0f 9c c0             	setl   %al
+  400587:	0f b6 c0             	movzbl %al,%eax
+  40058a:	c3                   	retq   
+  40058b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
 
 0000000000400590 <show>:
   400590:	48 83 ec 08          	sub    $0x8,%rsp
@@ -181,7 +182,7 @@ Disassembly of section .text:
   4005ae:	66 90                	xchg   %ax,%ax
 
 00000000004005b0 <func_main>:
-  4005b0:	ba 05 00 00 00       	mov    $0x5,%edx
+  4005b0:	ba 03 00 00 00       	mov    $0x3,%edx
   4005b5:	be bc 06 40 00       	mov    $0x4006bc,%esi
   4005ba:	bf 01 00 00 00       	mov    $0x1,%edi
   4005bf:	31 c0                	xor    %eax,%eax

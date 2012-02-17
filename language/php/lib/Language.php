@@ -11,12 +11,12 @@ class Language
 	static public $identifierSymbols = array("~");
 	
 	static public $keywords = array(
-		'func', 'type', 'if', 'else', 'return'
+		'func', 'type', 'if', 'else', 'for', 'return'
 	);
 	
 	static public $operators = array(
 		array('=', ':='),
-		array('==', '!='),
+		array('==', '!=', '<', '>', '<=', '>='),
 		array('+', '-'),
 		array('*', '/'),
 	);

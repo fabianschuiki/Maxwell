@@ -28,6 +28,22 @@ class Analyzer
 	
 	private function reduceNode(Node &$node)
 	{
+		if ($node->is('expr.op.unary')) {
+			$f = new Node;
+			$f->kind = 'expr.call';
+			$f->callee = new Node;
+			$f->callee->kind = 'expr.ident';
+			$f->callee->name = 'unary_';
+			for ($i = 0; $i < strlen($node->op->text); $i++)
+				$f->callee->name .= sprintf('%02X', ord($node->op->text[$i]));
+		
+			$arg = new Node;
+			$arg->kind  = 'expr.call.arg';
+			$arg->expr  = $node->expr;
+		
+			$f->args = array($arg);
+			return $f;
+		}
 		if ($node->is('expr.op.binary')) {
 			if ($node->op->text == '=' && $node->lhs->is('expr.var')) {
 				$node->lhs->initial = $node->rhs;
@@ -44,12 +60,10 @@ class Analyzer
 				$lhs = new Node;
 				$lhs->kind  = 'expr.call.arg';
 				$lhs->expr  = $node->lhs;
-				$lhs->nodes = array($lhs->expr);
 			
 				$rhs = new Node;
 				$rhs->kind  = 'expr.call.arg';
 				$rhs->expr  = $node->rhs;
-				$rhs->nodes = array($rhs->expr);
 			
 				$f->args = array($lhs, $rhs);
 				return $f;

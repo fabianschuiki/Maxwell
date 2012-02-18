@@ -17,6 +17,7 @@ class Node
 			case 'stmt.else':  return array(&$this->body); break;
 			case 'stmt.for':   return array(&$this->initial, &$this->condition, &$this->step, &$this->body); break;
 			
+			case 'expr.op.unary':  return array(&$this->expr); break;
 			case 'expr.op.binary': return array(&$this->lhs, &$this->rhs); break;
 			case 'expr.call':      return array_merge(array(&$this->callee), $this->args); break;
 			case 'expr.call.arg':  return array(&$this->expr); break;

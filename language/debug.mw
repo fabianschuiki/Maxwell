@@ -2,7 +2,7 @@
 
 func main
 {
-	int a = 0;
+	int a = -1;
 	for (int i = 0; i < 3; i = i + 1) {
 		int tx = a + i;
 		a = tx;

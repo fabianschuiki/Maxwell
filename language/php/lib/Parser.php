@@ -261,7 +261,15 @@ class Parser
 			return $this->parseExpr($ts[0]->tokens);
 		}
 		
-		foreach (Language::$operators as $operators) {
+		if (count($ts) > 1) {
+			foreach (Language::$unaryOperators as $ops) {
+				if (in_array($ts[0]->text, $ops)) {
+					return $this->parseUnOpExpr(array_shift($ts), $ts);
+				}
+			}
+		}
+		
+		foreach (Language::$binaryOperators as $operators) {
 			for ($i = 0; $i < count($ts); $i++) {
 				if ($ts[$i]->is('symbol') && in_array($ts[$i]->text, $operators)) {
 					return $this->parseBinOpExpr($ts[$i], array_slice($ts, 0, $i), array_slice($ts, $i+1));
@@ -290,16 +298,26 @@ class Parser
 		return $e;
 	}
 	
+	private function parseUnOpExpr($operator, array &$ts)
+	{
+		$operator->context = 'expr.op.unary';
+		
+		$o = new Node;
+		$o->kind = 'expr.op.unary';
+		$o->op   = $operator;
+		$o->expr = $this->parseExpr($ts);
+		return $o;
+	}
+	
 	private function parseBinOpExpr($operator, array &$lts, array &$rts)
 	{
 		$operator->context = 'expr.op.binary';
 		
 		$o = new Node;
-		$o->kind  = 'expr.op.binary';
-		$o->op    = $operator;
-		$o->lhs   = $this->parseExpr($lts);
-		$o->rhs   = $this->parseExpr($rts);
-		$o->nodes = array($o->lhs, $o->rhs);
+		$o->kind = 'expr.op.binary';
+		$o->op   = $operator;
+		$o->lhs  = $this->parseExpr($lts);
+		$o->rhs  = $this->parseExpr($rts);
 		return $o;
 	}
 	

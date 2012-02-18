@@ -14,7 +14,11 @@ class Language
 		'func', 'type', 'if', 'else', 'for', 'return'
 	);
 	
-	static public $operators = array(
+	static public $unaryOperators = array(
+		array('-'),
+	);
+	
+	static public $binaryOperators = array(
 		array('=', ':='),
 		array('==', '!=', '<', '>', '<=', '>='),
 		array('+', '-'),

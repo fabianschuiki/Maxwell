@@ -47,16 +47,22 @@
 							echo '<span class="value type">'.implode(', ',$value->types).'</span>';
 						}
 						if ($value instanceof Scope) {
-							/*echo '<div class="scope">';
-							foreach ($value->names as $name => $sn) {
+							echo '<div class="scope">';
+							$scp = $value;
+							$names = array();
+							while ($scp) {
+								$names = array_merge($names, $scp->names);
+								$scp = $scp->parent;
+							}
+							foreach ($names as $name => $sn) {
 								echo '<div class="scope-entry">';
 								echo '<span class="scope-name">'.$name.'</span>';
 								echo ' = ';
 								echo '<span class="scope-kind">'.$sn->kind.'</span>';
 								echo '</div>';
 							}
-							echo '</div>';*/
-							echo '…';
+							echo '</div>';
+							//echo '…';
 						}
 						if (is_string($value)) {
 							echo '<span class="value string">'.$value.'</span>';
@@ -70,8 +76,8 @@
 						if ($key == 'nodes') continue;
 						if ($value instanceof Node || is_array($value)) {
 							echo '<span class="name">'.$key.'</span>: ';
-							if ($key == 'target') {
-								echo '<span style="color: #4e9a06;">bound</span>';
+							if ($key == 'a_target') {
+								echo '<span style="color: #4e9a06;">bound to '.$value->kind.'</span>';
 							} else {
 								dumpNodes(is_array($value) ? $value : array($value));
 							}

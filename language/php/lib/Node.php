@@ -21,6 +21,12 @@ class Node
 			case 'expr.op.binary': return array(&$this->lhs, &$this->rhs); break;
 			case 'expr.call':      return array_merge(array(&$this->callee), $this->args); break;
 			case 'expr.call.arg':  return array(&$this->expr); break;
+			case 'expr.var': {
+				$n = array();
+				if (isset($this->initial))
+					$n[] = &$this->initial;
+				return $n;
+			} break;
 		}
 		if (isset($this->nodes)) {
 			echo $this->kind.' uses old nodes var'."\n";

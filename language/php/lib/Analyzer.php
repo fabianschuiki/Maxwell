@@ -9,10 +9,20 @@ class Analyzer
 	{
 		$this->issues = array();
 		$this->eachNode('reduceNode', $this->nodes);
+		
+		$scope = new Scope;
+		foreach ($this->nodes as $n) $this->populateScope($scope, $n);
+		if (count($this->issues)) goto issues;
+		
+		foreach ($this->nodes as $n) $this->analyzeType($n);
+		if (count($this->issues)) goto issues;
+		
 		/*$rootScope = new Scope;
 		foreach ($this->nodes as $n) { $this->analyzeScopes($n, $rootScope); }
 		foreach ($this->nodes as $n) { $this->analyzeTypes($n); }
 		foreach ($this->nodes as $n) { $this->matchFunctions($n); }*/
+		
+	issues:
 		foreach ($this->issues as $i) {
 			echo "$i\n";
 		}
@@ -72,40 +82,41 @@ class Analyzer
 		return $node;
 	}
 	
-	public function analyzeScopes(Node &$node, Scope &$parent)
+	private function populateScope(Scope &$parent, Node &$node)
 	{
-		if ($node->is('expr')) {
-			$node->scope = $parent;
-			switch ($node->kind) {
-				case 'expr.var':   $node->scope->names[$node->name->text] = $node; break;
-				case 'expr.ident': {
-					$node->target = $node->scope->find($node->name->text);
-					if (!$node->target) {
-						$this->issues[] = "{$node->name->range}: unable to resolve identifier {$node->name->text}";
-					}
-				}
-			}
+		if ($node->is('def') || $node->is('stmt')) {
+			$node->a_scope = new Scope($parent);
 		} else {
-			$node->scope = new Scope($parent);
-			switch ($node->kind) {
-				case 'def.func': {
-					$fn = $node->name->text;
-					if (!isset($parent->names[$fn])) {
-						$parent->names[$fn] = $node;
-					} else {
-						$parent->names[$fn]->nodes += $node->nodes;
-					}
-				} break;
-			}
+			$node->a_scope = $parent;
 		}
-		if (isset($node->nodes)) {
-			foreach ($node->nodes as $n) {
-				$this->analyzeScopes($n, $node->scope);
-			}
+		switch ($node->kind) {
+			case 'def.func':   $parent->names[$node->name->text] = $node; break;
+			case 'expr.var':   $parent->names[$node->name->text] = $node; break;
+			case 'expr.ident': $node->a_target = $node->a_scope->find($node->name); break;
+		}
+		foreach ($node->nodes() as $n) {
+			$this->populateScope($node->a_scope, $n);
 		}
 	}
 	
-	public function analyzeTypes(Node &$node)
+	public function analyzeType(Node &$node)
+	{
+		foreach ($node->nodes() as $n) {
+			$this->analyzeType($n);
+		}
+		switch ($node->kind) {
+			case 'expr.var': {
+				$node->a_type = new Type($node->type->text);
+				if ($node->initial) {
+					$node->initial->a_reqType = $node->a_type;
+				}
+			} break;
+			case 'expr.const.numeric': $node->a_type = new Type('int', 'float'); break;
+			case 'expr.ident': $node->a_type = ($node->a_target ? $node->a_target->a_type : null); break;
+		}
+	}
+	
+	public function analyzeTypes_old(Node &$node)
 	{
 		if ($node->is('expr')) {
 			if (!isset($node->a_requiredType)) {

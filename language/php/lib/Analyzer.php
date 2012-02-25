@@ -8,7 +8,8 @@ class Analyzer
 	public function run()
 	{
 		$this->issues = array();
-		$this->eachNode('reduceNode', $this->nodes);
+		//$this->eachNode('reduceNode', &$this->nodes);
+		foreach ($this->nodes as $n) $this->reduce($n);
 		
 		$scope = new Scope;
 		$this->addBuiltIn($scope);
@@ -32,16 +33,45 @@ class Analyzer
 	
 	private function addBuiltIn(Scope &$scope)
 	{
-		$n = new Node;
-		$n->kind = 'def.type';
-		$n->name = 'Type';
-		$n->builtin = true;
-		$scope->names['Type'] = $n;
+		$this->addBuiltInType($scope, 'Type');
+		$this->addBuiltInType($scope, 'int');
 		
 		$n = new Node;
 		$n->kind = 'def.func';
 		$n->name = 'showType';
 		$scope->names['showType'] = $n;
+		
+		$n = clone $n;
+		$n->name = 'show';
+		$scope->names['show'] = $n;
+		
+		$n = new Node;
+		$n->kind = 'def.func';
+		$n->name = 'binary_equal';
+		$scope->names['operator=='] = $n;
+		
+		$this->addBuiltInFunc($scope, 'binary=');
+	}
+	
+	private function addBuiltInType(Scope &$scope, $name)
+	{
+		$n = new Node;
+		$n->kind = 'def.type';
+		$n->name = $name;
+		$n->builtin = true;
+		$scope->names[$name] = $n;
+	}
+	
+	private function addBuiltInFunc(Scope &$scope, $name)
+	{
+		$n = new Node;
+		$n->kind = 'def.func';
+		$n->name = str_replace(array(
+			'='
+		), array(
+			'_equal'
+		), $name);
+		$scope->names[$name] = $n;
 	}
 	
 	private function eachNode($func, array &$nodes)
@@ -52,50 +82,48 @@ class Analyzer
 		}
 	}
 	
-	private function reduceNode(Node &$node)
+	private function reduce(Node &$node)
 	{
+		foreach ($node->nodes() as $n) {
+			$this->reduce($n);
+		}
 		if ($node->is('expr.op.unary')) {
-			$f = new Node;
-			$f->kind = 'expr.call';
-			$f->callee = new Node;
-			$f->callee->kind = 'expr.ident';
-			$f->callee->name = 'unary_';
-			for ($i = 0; $i < strlen($node->op->text); $i++)
-				$f->callee->name .= sprintf('%02X', ord($node->op->text[$i]));
+			$node->kind = 'expr.call';
+			$node->callee = new Node;
+			$node->callee->kind = 'expr.ident';
+			$node->callee->name = 'unary'.$node->op->text;
 		
 			$arg = new Node;
 			$arg->kind  = 'expr.call.arg';
 			$arg->expr  = $node->expr;
 		
-			$f->args = array($arg);
-			return $f;
+			$node->args = array($arg);
 		}
 		if ($node->is('expr.op.binary')) {
 			if ($node->op->text == '=' && $node->lhs->is('expr.var')) {
 				$node->lhs->initial = $node->rhs;
 				return $node->lhs;
 			} else {
-				$f = new Node;
-				$f->kind = 'expr.call';
-				$f->callee = new Node;
-				$f->callee->kind = 'expr.ident';
-				$f->callee->name = 'operator_';
-				for ($i = 0; $i < strlen($node->op->text); $i++)
-					$f->callee->name .= sprintf('%02X', ord($node->op->text[$i]));
+				$node->kind = 'expr.call';
+				$node->callee = new Node;
+				$node->callee->kind = 'expr.ident';
+				$node->callee->name = 'binary'.$node->op->text;
+				$node->callee->range = clone $node->op->range;
+				unset($node->op);
 			
 				$lhs = new Node;
 				$lhs->kind  = 'expr.call.arg';
 				$lhs->expr  = $node->lhs;
+				unset($node->lhs);
 			
 				$rhs = new Node;
 				$rhs->kind  = 'expr.call.arg';
 				$rhs->expr  = $node->rhs;
-			
-				$f->args = array($lhs, $rhs);
-				return $f;
+				unset($node->rhs);
+				
+				$node->args = array($lhs, $rhs);
 			}
 		}
-		return $node;
 	}
 	
 	private function populateScope(Scope &$parent, Node &$node)

@@ -10,24 +10,23 @@ class Node
 	}
 	
 	public function & nodes() {
+		$n = null;
 		switch ($this->kind) {
-			case 'def.func':   return array_merge($this->in, $this->out, array(&$this->body)); break;
-			case 'stmt.block': return $this->nodes; break;
+			case 'def.func':   $n = array_merge($this->in, $this->out, array(&$this->body)); break;
+			case 'stmt.block': $n = $this->nodes; break;
 			
-			case 'stmt.if':    return array(&$this->condition, &$this->body, &$this->else); break;
-			case 'stmt.else':  return array(&$this->body); break;
-			case 'stmt.for':   return array(&$this->initial, &$this->condition, &$this->step, &$this->body); break;
+			case 'stmt.if':    $n = array(&$this->condition, &$this->body, &$this->else); break;
+			case 'stmt.else':  $n = array(&$this->body); break;
+			case 'stmt.for':   $n = array(&$this->initial, &$this->condition, &$this->step, &$this->body); break;
 			
-			case 'expr.op.unary':  return array(&$this->expr); break;
-			case 'expr.op.binary': return array(&$this->lhs, &$this->rhs); break;
-			case 'expr.call':      return array_merge(array(&$this->callee), $this->args); break;
-			case 'expr.call.arg':  return array(&$this->expr); break;
-			case 'expr.var': {
-				$n = array();
-				if (isset($this->initial))
-					$n[] = &$this->initial;
-				return $n;
-			} break;
+			case 'expr.op.unary':  $n = array(&$this->expr); break;
+			case 'expr.op.binary': $n = array(&$this->lhs, &$this->rhs); break;
+			case 'expr.call':      $n = array_merge(array(&$this->callee), $this->args); break;
+			case 'expr.call.arg':  $n = array(&$this->expr); break;
+			case 'expr.var':       $n = array(&$this->initial); break;
+		}
+		if (isset($n)) {
+			return array_filter($n, function($a){ return $a != NULL; });
 		}
 		if (isset($this->nodes)) {
 			echo $this->kind.' uses old nodes var'."\n";

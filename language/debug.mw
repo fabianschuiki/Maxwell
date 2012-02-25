@@ -8,13 +8,10 @@ type Vector
 	Int y;
 }
 
-func showClass() {}
-
 func main
 {
-	Type t;
-	Int a;
-	showType(t);
-	showType(a);
+	int a;
+	a = 5;
+	show(a);
 }
 

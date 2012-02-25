@@ -47,13 +47,15 @@
 							echo '<span class="value type">'.implode(', ',$value->types).'</span>';
 						}
 						if ($value instanceof Scope) {
-							echo '<div class="scope">';
 							$scp = $value;
 							$names = array();
 							while ($scp) {
 								$names = array_merge($names, $scp->names);
 								$scp = $scp->parent;
 							}
+							$jsscope = "\$('#scope{$value->index}')";
+							echo '<a onmouseover="'.$jsscope.'.show()" onmouseout="'.$jsscope.'.hide()">'.count($names).' names</a>';
+							echo '<div id="scope'.$value->index.'" class="scope" style="display: none;">';
 							foreach ($names as $name => $sn) {
 								echo '<div class="scope-entry">';
 								echo '<span class="scope-name">'.$name.'</span>';

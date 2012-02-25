@@ -1,4 +1,4 @@
-/* automatically compiled on 2012-02-25T16:05:32+01:00 */
+/* automatically compiled on 2012-02-25T17:35:46+01:00 */
 
 #include <assert.h>
 #include <stdio.h>
@@ -25,9 +25,21 @@ inline int operator_2F (int * a, int * b) { return *a / *b; }
 inline int operator_3D3D (int * a, int * b) { return (*a == *b); }
 inline int operator_3C (int * a, int * b) { return *a < *b; }
 
+
 inline int unary_2D (int * a) { return -*a; }
 
-int show(int * a) { printf("%i\n", *a); return 0; }
+//int show(int * a) { printf("%i\n", *a); return 0; }
+
+//int
+typedef struct {
+	Type_t * isa;
+	int v;
+} int_t;
+Type_t type_int = type_make("int");
+
+inline int binary_equal(int_t * v, int * a) { v->v = *a; return 0; }
+
+int show(int_t * i) { printf("%i\n", i->v); return 0; }
 
 // --- runtime end ---
 
@@ -47,27 +59,19 @@ typedef struct {
 } Vector_t;
 
 //def.func
-void func_showClass()
-{
-}
-
-//def.func
 void func_main()
 {
 	//expr.var;
-	Type_t s6_t;
-	s6_t.isa = &type_Type;
-	s6_t;
-	//expr.var;
-	Int_t s6_a;
-	s6_a.isa = &type_Int;
-	s6_a;
+	int_t s4_a;
+	s4_a.isa = &type_int;
+	s4_a;
 	//expr.call;
-	int _tmp0 = showType(&s6_t);
-	_tmp0;
-	//expr.call;
-	int _tmp1 = showType(&s6_a);
+	int _tmp0 = 5;
+	int _tmp1 = binary_equal(&s4_a, &_tmp0);
 	_tmp1;
+	//expr.call;
+	int _tmp2 = show(&s4_a);
+	_tmp2;
 }
 
 // --- debugging code ---

@@ -52,5 +52,13 @@ div.nodes span.kind {
 div.nodes div.attr span.value.token { color: #3465a4; }
 div.nodes div.attr span.value.type  { color: #f57900; }
 
-div.node div.scope div.scope-entry { margin-left: 2em; }
+div.scope {
+	position: fixed;
+	left: 1em;
+	top: 1em;
+	padding: 1em;
+	background-color: white;
+	border: 1px solid #ccc;
+}
+div.node div.scope div.scope-entry { /*margin-left: 2em;*/ }
 div.node div.scope span.scope-kind { color: #75507b; }

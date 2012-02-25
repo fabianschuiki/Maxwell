@@ -86,7 +86,7 @@ class Compiler
 		}
 		
 		$tmp = tmp();
-		$call  = 'int '.$tmp.' = '.$node->callee->name.'(';
+		$call  = 'int '.$tmp.' = '.$node->callee->a_target->name.'(';
 		$call .= implode(', ', $args);
 		$call .= ')';
 		$c[] = $call;

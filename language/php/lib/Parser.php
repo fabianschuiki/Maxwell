@@ -184,6 +184,7 @@ class Parser
 		$b = new Node;
 		$b->kind  = 'stmt.block';
 		$b->group = $grp;
+		$b->range = $grp->range;
 		$b->nodes = array();
 		$ts = $grp->tokens;
 		while (count($ts)) {
@@ -234,7 +235,7 @@ class Parser
 			
 			$block = $this->parseBlockOrStmt($ts);
 			
-			if ($ts[0]->is('keyword', 'else')) {
+			if (count($ts) > 0 && $ts[0]->is('keyword', 'else')) {
 				$else = $this->parseKeywordStmt(array_shift($ts), $ts);
 			} else {
 				$else = null;
@@ -245,6 +246,9 @@ class Parser
 			$i->condition = $this->parseExpr($condition->tokens);
 			$i->body      = $block;
 			$i->else      = $else;
+			$i->range     = clone $keyword->range;
+			$i->range->combine($block->range);
+			if ($else) $i->range->combine($block->else->range);
 			return $i;
 		}
 		if ($keyword->text == 'else') {

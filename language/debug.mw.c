@@ -1,18 +1,20 @@
-/* automatically compiled on 2012-02-25T15:13:03+01:00 */
+/* automatically compiled on 2012-02-25T16:05:32+01:00 */
 
 #include <assert.h>
 #include <stdio.h>
 
 //Class Hierarchy
-typedef struct {
+typedef struct Type_t {
+	struct Type_t * isa;
 	const char * name;
-} class_t;
-class_t class_class = (class_t){"class"};
+} Type_t;
+#define type_make(t) (Type_t){&type_Type, t}
+Type_t type_Type = type_make("Type");
 
-int showClass(void * obj)
+int showType(void * obj)
 {
-	assert(obj != NULL && "trying to showClass on NULL");
-	printf("class %s\n", (*(class_t **)obj)->name);
+	assert(obj != NULL && "trying to showType on NULL");
+	printf("@%s\n", (*(Type_t **)obj)->name);
 	return 0;
 }
 
@@ -31,29 +33,41 @@ int show(int * a) { printf("%i\n", *a); return 0; }
 
 
 //def.type
-class_t class_Int = (class_t){"Int"};
+Type_t type_Int = type_make("Int");
 typedef struct {
-	class_t * isa; /* = &class_Int */
+	Type_t * isa; /* = &type_Int */
 	int x, y;
 } Int_t;
 
 //def.type
-class_t class_Vector = (class_t){"Vector"};
+Type_t type_Vector = type_make("Vector");
 typedef struct {
-	class_t * isa; /* = &class_Vector */
+	Type_t * isa; /* = &type_Vector */
 	int x, y;
 } Vector_t;
+
+//def.func
+void func_showClass()
+{
+}
 
 //def.func
 void func_main()
 {
 	//expr.var;
-	Int_t s4_a;
-	s4_a.isa = &class_Int;
-	s4_a;
+	Type_t s6_t;
+	s6_t.isa = &type_Type;
+	s6_t;
+	//expr.var;
+	Int_t s6_a;
+	s6_a.isa = &type_Int;
+	s6_a;
 	//expr.call;
-	int _tmp0 = showClass(&);
+	int _tmp0 = showType(&s6_t);
 	_tmp0;
+	//expr.call;
+	int _tmp1 = showType(&s6_a);
+	_tmp1;
 }
 
 // --- debugging code ---

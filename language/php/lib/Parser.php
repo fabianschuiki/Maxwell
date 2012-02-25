@@ -300,7 +300,14 @@ class Parser
 			$r->nodes = array($r->expr);
 			return $r;
 		}
-		$this->issues[] = "{$keyword->range}: $keyword is meaningless here";
+		
+		//Keyword meaningless.
+		while (count($ts) && !array_shift($ts)->is('symbol', ';'));
+		$this->issues[] = new Issue(
+			'error',
+			"keyword '{$keyword->text}' has no meaning in a statement",
+			$keyword->range
+		);
 		return null;
 	}
 	

@@ -11,6 +11,8 @@ class Analyzer
 		$this->eachNode('reduceNode', $this->nodes);
 		
 		$scope = new Scope;
+		$this->addBuiltIn($scope);
+		
 		foreach ($this->nodes as $n) $this->populateScope($scope, $n);
 		if (count($this->issues)) goto issues;
 		
@@ -26,6 +28,20 @@ class Analyzer
 		foreach ($this->issues as $i) {
 			echo "$i\n";
 		}
+	}
+	
+	private function addBuiltIn(Scope &$scope)
+	{
+		$n = new Node;
+		$n->kind = 'def.type';
+		$n->name = 'Type';
+		$n->builtin = true;
+		$scope->names['Type'] = $n;
+		
+		$n = new Node;
+		$n->kind = 'def.func';
+		$n->name = 'showType';
+		$scope->names['showType'] = $n;
 	}
 	
 	private function eachNode($func, array &$nodes)
@@ -92,7 +108,18 @@ class Analyzer
 		switch ($node->kind) {
 			case 'def.func':   $parent->names[$node->name->text] = $node; break;
 			case 'def.type':   $parent->names[$node->name->text] = $node; break;
-			case 'expr.var':   $parent->names[$node->name->text] = $node; break;
+			case 'expr.var': {
+				$parent->names[$node->name->text] = $node;
+				$node->a_target = $node->a_scope->find($node->type->text);
+				if (!$node->a_target) {
+					$this->issues[] = new Issue(
+						'error',
+						"type '{$node->type->text}' of variable '{$node->name->text}' is unknown",
+						$node->type->range,
+						array($node->name->range)
+					);
+				}
+			} break;
 			case 'expr.ident': {
 				$node->a_target = $node->a_scope->find($node->name);
 				if (!$node->a_target) {

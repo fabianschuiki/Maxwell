@@ -8,8 +8,13 @@ type Vector
 	Int y;
 }
 
+func showClass() {}
+
 func main
 {
+	Type t;
 	Int a;
-	showClass(b);
+	showType(t);
+	showType(a);
 }
+

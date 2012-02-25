@@ -66,10 +66,10 @@ class Compiler
 	
 	private function compileTypeDef(Node &$node)
 	{
-		$cls = "class_{$node->name->text}";
-		$t  = "class_t $cls = (class_t){\"{$node->name->text}\"};\n";
+		$n = "type_{$node->name->text}";
+		$t  = "Type_t $n = type_make(\"{$node->name->text}\");\n";
 		$t .= "typedef struct {\n";
-		$t .= "\tclass_t * isa; /* = &$cls */\n";
+		$t .= "\tType_t * isa; /* = &$n */\n";
 		$t .= "\tint x, y;\n";
 		$t .= "} {$node->name->text}_t;";
 		return array($t);
@@ -106,7 +106,7 @@ class Compiler
 			$s .= ' = '.$n;
 		}
 		$c[] = $s;
-		$c[] = "{$node->c_name}.isa = &class_{$node->type->text}";
+		$c[] = "{$node->c_name}.isa = &type_{$node->type->text}";
 		$c[] = $node->c_name;
 		return $c;
 	}

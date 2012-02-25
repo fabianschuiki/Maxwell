@@ -47,7 +47,7 @@ class Issue
 				$o .= "...\n";
 			}
 			$pl = $l;
-			$line = $ls[$l-1];
+			$line = str_replace("\t", " ", $ls[$l-1]);
 			$marks = '';
 			for ($i = 0; $i < strlen($line); $i++) {
 				$mark = ($line[$i] == "\t" ? "\t" : " ");
@@ -64,8 +64,11 @@ class Issue
 				$marks .= $mark;
 			}
 			
-			$o .= "\n".$line."\n";
-			$o .= "\033[0;36m".$marks."\033[0m";
+			$prefix = sprintf('%4d: ', $l);
+			$pad = str_repeat(' ', strlen($prefix));
+			$o .= "\n";
+			$o .= "$prefix$line\n";
+			$o .= "$pad\033[0;36m".$marks."\033[0m";
 		}
 		
 		return $o;

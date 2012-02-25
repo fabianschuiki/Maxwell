@@ -3,6 +3,7 @@
 class Node
 {
 	public $kind;
+	public $builtin = false;
 	
 	public function is($k) {
 		return strpos($this->kind, $k) === 0;

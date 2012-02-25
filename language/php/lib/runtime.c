@@ -2,15 +2,17 @@
 #include <stdio.h>
 
 //Class Hierarchy
-typedef struct {
+typedef struct Type_t {
+	struct Type_t * isa;
 	const char * name;
-} class_t;
-class_t class_class = (class_t){"class"};
+} Type_t;
+#define type_make(t) (Type_t){&type_Type, t}
+Type_t type_Type = type_make("Type");
 
-int showClass(void * obj)
+int showType(void * obj)
 {
-	assert(obj != NULL && "trying to showClass on NULL");
-	printf("class %s\n", (*(class_t **)obj)->name);
+	assert(obj != NULL && "trying to showType on NULL");
+	printf("@%s\n", (*(Type_t **)obj)->name);
 	return 0;
 }
 

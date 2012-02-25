@@ -24,23 +24,36 @@ class Parser
 	{
 		if ($ts[0]->is('keyword')) return $this->parseKeywordDef(array_shift($ts), $ts);
 		$t = array_shift($ts);
-		$this->issues[] = "{$t->range}: garbage $t";
+		$this->issues[] = new Issue(
+			'warning',
+			"definition should start with a keyword",
+			$t->range
+		);
 		return null;
 	}
 	
 	private function parseKeywordDef(Token &$keyword, array &$ts)
 	{
-		if ($keyword->text == 'func') return $this->parseFuncDef($ts);
-		if ($keyword->text == 'type') return $this->parseTypeDef($ts);
-		$this->issues[] = "{$keyword->range}: keyword {$keyword->text} has no meaning here";
+		if ($keyword->text == 'func') return $this->parseFuncDef($keyword, $ts);
+		if ($keyword->text == 'type') return $this->parseTypeDef($keyword, $ts);
+		$this->issues[] = new Issue(
+			'error',
+			"keyword '{$keyword->text}' has no meaning here",
+			$keyword->range
+		);
 		return null;
 	}
 	
-	private function parseFuncDef(array &$ts)
+	private function parseFuncDef(Token &$keyword, array &$ts)
 	{
 		$name = array_shift($ts);
 		if (!$name->is('identifier')) {
-			$this->issues[] = "{$name->range}: function requires a name, $name found";
+			$this->issues[] = new Issue(
+				'error',
+				"function requires a name",
+				$name->range,
+				array($keyword->range)
+			);
 			return null;
 		}
 		
@@ -61,7 +74,12 @@ class Parser
 		
 		$body = array_shift($ts);
 		if (!$body->is('group', '{}')) {
-			$this->issues[] = "{$body->range}: function requires a body, $body found";
+			$this->issues[] = new Issue(
+				'error',
+				"function requires a body",
+				$body->range,
+				array($keyword->range, $name->range)
+			);
 			return null;
 		}
 		
@@ -121,20 +139,19 @@ class Parser
 		return $a;
 	}
 	
-	private function parseTypeDef(array &$ts)
+	private function parseTypeDef(Token &$keyword, array &$ts)
 	{
 		$name = array_shift($ts);
 		if (!$name->is('identifier')) {
-			$this->issues[] = "{$name->range}: type requires a name, $name found";
+			$this->issues[] = new Issue(
+				'error',
+				"type requires a name",
+				$name->range,
+				array($keyword->range)
+			);
 			return null;
 		}
 		$grp = array_shift($ts);
-		$this->issues[] = new Issue(
-			'error',
-			"type name '{$name->text}' already exists",
-			$name->range,
-			array($grp->range)
-		);
 	}
 	
 	private function parseBlock(TokenGroup &$grp)
@@ -293,14 +310,25 @@ class Parser
 			$e = new Node;
 			$e->kind  = 'expr.const.numeric';
 			$e->value = array_shift($ts);
+			$e->range = $e->value->range;
 		}
 		else if ($ts[0]->is('string')) {
 			$e = new Node;
 			$e->kind  = 'expr.const.string';
 			$e->value = array_shift($ts);
+			$e->range = $e->value->range;
 		}
-		foreach ($ts as $t) {
-			$this->issues[] = "{$t->range}: garbage $t in expression";
+		if (count($ts) > 0) {
+			$range = $ts[0]->range;
+			foreach ($ts as $t) {
+				$range->combine($t->range);
+			}
+			$this->issues[] = new Issue(
+				'warning',
+				"garbage in expression",
+				$range,
+				(isset($e->range) ? array($e->range) : null)
+			);
 		}
 		return $e;
 	}
@@ -310,9 +338,11 @@ class Parser
 		$operator->context = 'expr.op.unary';
 		
 		$o = new Node;
-		$o->kind = 'expr.op.unary';
-		$o->op   = $operator;
-		$o->expr = $this->parseExpr($ts);
+		$o->kind  = 'expr.op.unary';
+		$o->op    = $operator;
+		$o->expr  = $this->parseExpr($ts);
+		$o->range = $operator->range;
+		$o->range->combine($o->expr->range);
 		return $o;
 	}
 	
@@ -321,10 +351,19 @@ class Parser
 		$operator->context = 'expr.op.binary';
 		
 		$o = new Node;
-		$o->kind = 'expr.op.binary';
-		$o->op   = $operator;
-		$o->lhs  = $this->parseExpr($lts);
-		$o->rhs  = $this->parseExpr($rts);
+		$o->kind  = 'expr.op.binary';
+		$o->op    = $operator;
+		$o->lhs   = $this->parseExpr($lts);
+		$o->rhs   = $this->parseExpr($rts);
+		$o->range = clone $operator->range;
+		$o->range->combine($o->lhs->range);
+		$o->range->combine($o->rhs->range);
+		$this->issues[] = new Issue(
+			'warning',
+			"debug: there is a binary {$o->op->text} operator",
+			$o->op->range,
+			array($o->lhs->range, $o->rhs->range)
+		);
 		return $o;
 	}
 	
@@ -387,6 +426,7 @@ class Parser
 			$i->kind  = 'expr.ident';
 			$i->name  = $ident->text;
 			$i->token = $ident;
+			$i->range = $ident->range;
 			return $i;
 		}
 		if ($ts[0]->is('identifier')) {
@@ -397,9 +437,11 @@ class Parser
 			$type->context = 'expr.var.type';
 			
 			$v = new Node;
-			$v->kind = 'expr.var';
-			$v->name = $name;
-			$v->type = $type;
+			$v->kind  = 'expr.var';
+			$v->name  = $name;
+			$v->type  = $type;
+			$v->range = $name->range;
+			$v->range->combine($type->range);
 			return $v;
 		}
 		return null;

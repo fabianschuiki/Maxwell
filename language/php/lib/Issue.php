@@ -17,6 +17,10 @@ class Issue
 	
 	public function __toString()
 	{
+		if (!is_array($this->marked)) {
+			$this->marked = array();
+		}
+		
 		$sfr  = basename($this->range->source->path);
 		$sfr .= ':';
 		$sfr .= $this->range->start->line.':'.$this->range->start->column;

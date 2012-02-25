@@ -1,11 +1,16 @@
 /** Debugging some stuff. */
 
+//Dummy type.
+type Int {}
+
+/*type Vector
+{
+	Int x;
+	Int y;
+}*/
+
 func main
 {
-	int a = -1;
-	for (int i = 0; i < 3; i = i + 1) {
-		int tx = a + i;
-		a = tx;
-	}
-	show(a);
+	int x t = 25;
+	show(x);
 }

@@ -1,4 +1,4 @@
-/* automatically compiled on 2012-02-25T01:38:35+01:00 */
+/* automatically compiled on 2012-02-23T22:03:28+01:00 */
 
 #include <stdio.h>
 
@@ -15,18 +15,5 @@ int show(int * a) { printf("%i\n", *a); return 0; }
 
 // --- runtime end ---
 
-//def.func
-
-void func_main()
-{
-	//expr.var;
-	int _tmp0 = 25;
-	int vx = _tmp0;
-	vx;
-	//expr.call;
-	int _tmp1 = show(&vx);
-	_tmp1;
-}
-
 // --- debugging code ---
-int main() { func_main(); return 0; }
+void main() { func_main(); }

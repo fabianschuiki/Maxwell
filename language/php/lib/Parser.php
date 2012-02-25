@@ -128,6 +128,13 @@ class Parser
 			$this->issues[] = "{$name->range}: type requires a name, $name found";
 			return null;
 		}
+		$grp = array_shift($ts);
+		$this->issues[] = new Issue(
+			'error',
+			"type name '{$name->text}' already exists",
+			$name->range,
+			array($grp->range)
+		);
 	}
 	
 	private function parseBlock(TokenGroup &$grp)

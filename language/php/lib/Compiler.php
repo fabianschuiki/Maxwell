@@ -23,7 +23,7 @@ class Compiler
 			$o .= "$n\n\n";
 		}
 		$o .= "// --- debugging code ---\n";
-		$o .= "void main() { func_main(); }\n";
+		$o .= "int main() { func_main(); return 0; }\n";
 		$this->output = $o;
 	}
 	

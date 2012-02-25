@@ -91,8 +91,18 @@ class Analyzer
 		}
 		switch ($node->kind) {
 			case 'def.func':   $parent->names[$node->name->text] = $node; break;
+			case 'def.type':   $parent->names[$node->name->text] = $node; break;
 			case 'expr.var':   $parent->names[$node->name->text] = $node; break;
-			case 'expr.ident': $node->a_target = $node->a_scope->find($node->name); break;
+			case 'expr.ident': {
+				$node->a_target = $node->a_scope->find($node->name);
+				if (!$node->a_target) {
+					$this->issues[] = new Issue(
+						'error',
+						"identifier '{$node->name}' unknown",
+						$node->range
+					);
+				}
+			} break;
 		}
 		foreach ($node->nodes() as $n) {
 			$this->populateScope($node->a_scope, $n);

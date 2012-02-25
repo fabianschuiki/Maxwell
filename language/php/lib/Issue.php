@@ -64,8 +64,8 @@ class Issue
 				$marks .= $mark;
 			}
 			
-			$o .= "\n\033[0;37m".$line. "\033[0m\n";
-			$o .=   "\033[0;36m".$marks."\033[0m";
+			$o .= "\n".$line."\n";
+			$o .= "\033[0;36m".$marks."\033[0m";
 		}
 		
 		return $o;

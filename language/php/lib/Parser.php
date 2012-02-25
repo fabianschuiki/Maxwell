@@ -141,6 +141,7 @@ class Parser
 	
 	private function parseTypeDef(Token &$keyword, array &$ts)
 	{
+		//Type Name
 		$name = array_shift($ts);
 		if (!$name->is('identifier')) {
 			$this->issues[] = new Issue(
@@ -151,7 +152,31 @@ class Parser
 			);
 			return null;
 		}
-		$grp = array_shift($ts);
+		$name->context = 'type.name';
+		
+		//Type Definition
+		$defs = array_shift($ts);
+		if (!$defs->is('group', '{}')) {
+			$this->issues[] = new Issue(
+				'error',
+				"type requires a definition block",
+				$defs->range,
+				array($keyword->range, $name->range)
+			);
+			return null;
+		}
+		$defs->context = 'type.defs';
+		
+		//Create the node.
+		$t = new Node;
+		$t->kind  = 'def.type';
+		$t->name  = $name;
+		/*$dts = $defs->tokens;
+		while (count($dts)) {
+			$d = $this->parseDef($dts);
+			if ($d) $t->nodes[] = $d;
+		}*/
+		return $t;
 	}
 	
 	private function parseBlock(TokenGroup &$grp)
@@ -358,12 +383,6 @@ class Parser
 		$o->range = clone $operator->range;
 		$o->range->combine($o->lhs->range);
 		$o->range->combine($o->rhs->range);
-		$this->issues[] = new Issue(
-			'warning',
-			"debug: there is a binary {$o->op->text} operator",
-			$o->op->range,
-			array($o->lhs->range, $o->rhs->range)
-		);
 		return $o;
 	}
 	
@@ -426,7 +445,7 @@ class Parser
 			$i->kind  = 'expr.ident';
 			$i->name  = $ident->text;
 			$i->token = $ident;
-			$i->range = $ident->range;
+			$i->range = clone $ident->range;
 			return $i;
 		}
 		if ($ts[0]->is('identifier')) {
@@ -440,7 +459,7 @@ class Parser
 			$v->kind  = 'expr.var';
 			$v->name  = $name;
 			$v->type  = $type;
-			$v->range = $name->range;
+			$v->range = clone $name->range;
 			$v->range->combine($type->range);
 			return $v;
 		}

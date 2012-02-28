@@ -25,7 +25,7 @@ class Compiler
 			$o .= "$n\n";
 		}
 		$o .= "\n// --- debugging code ---\n";
-		$o .= "int main() { func_main(); return 0; }\n";
+		$o .= "int main() { func_main__(); return 0; }\n";
 		$this->output = $o;
 	}
 	
@@ -57,11 +57,40 @@ class Compiler
 	{
 		/*$c  = 'typedef struct {} func_'.$node->name->text.'_ret;';
 		$c .= "\n";*/
-		$f  = 'void func_';
-		$f .= $node->name->text;
-		$f .= "()\n";
+		$c = array();
+		
+		$name = 'func_';
+		$name .= $node->name->text;
+		$name .= '_';
+		foreach ($node->in as $i) {
+			$name .= '_'.$i->type->text;
+		}
+		$name .= '_';
+		foreach ($node->out as $o) {
+			$name .= '_'.$o->type->text;
+		}
+		$node->c_name = $name;
+		
+		if (count($node->out)) {
+			$node->c_retname = "{$name}_t";
+			$type  = "typedef struct {\n";
+			foreach ($node->out as $o) {
+				$type .= "\t{$o->type->text}_t* {$o->name->text};\n";
+			}
+			$type .= "} {$node->c_retname};";
+			$c[] = $type;
+		} else {
+			$node->c_retname = "void";
+		}
+		
+		$ins = array();
+		foreach ($node->in as $i) {
+			$ins[] = "{$i->type->text}_t* {$i->name->text}";
+		}
+		$f  = "{$node->c_retname} {$node->c_name} (".implode(", ", $ins).")\n";
 		$f .= $this->compileBlock($node->body);
-		return array($f);
+		$c[] = $f;
+		return $c;
 	}
 	
 	private function compileTypeDef(Node &$node)

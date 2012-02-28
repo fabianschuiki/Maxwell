@@ -8,9 +8,12 @@ type Vector
 	Int y;
 }
 
+func test (Int a) {}
+func test (Vector a) {}
+
 func main
 {
-	int a;
+	Int a;
 	a = 5;
 	show(a);
 }

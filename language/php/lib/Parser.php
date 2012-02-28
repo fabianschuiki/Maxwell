@@ -129,11 +129,11 @@ class Parser
 				$this->issues[] = "{$type->range}: function argument type should be an identifier, $type found";
 				return null;
 			}
-			$type->context = 'func.arg.type';
+			$type->context = 'def.func.arg.type';
 		}
 		
 		$a = new Node;
-		$a->kind  = 'func.arg';
+		$a->kind  = 'def.func.arg';
 		$a->name  = $name;
 		$a->type  = $type;
 		return $a;

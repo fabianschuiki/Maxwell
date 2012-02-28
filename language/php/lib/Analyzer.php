@@ -8,8 +8,9 @@ class Analyzer
 	public function run()
 	{
 		$this->issues = array();
-		//$this->eachNode('reduceNode', &$this->nodes);
+		
 		foreach ($this->nodes as $n) $this->reduce($n);
+		if (count($this->issues)) goto issues;
 		
 		$scope = new Scope;
 		$this->addBuiltIn($scope);
@@ -72,14 +73,6 @@ class Analyzer
 			'_equal'
 		), $name);
 		$scope->names[$name] = $n;
-	}
-	
-	private function eachNode($func, array &$nodes)
-	{
-		foreach ($nodes as &$node) {
-			$this->eachNode($func, $node->nodes());
-			$node = call_user_func(array($this, $func), $node);
-		}
 	}
 	
 	private function reduce(Node &$node)
@@ -170,6 +163,16 @@ class Analyzer
 			$this->analyzeType($n);
 		}
 		switch ($node->kind) {
+			case 'def.func': {
+				$in  = array();
+				$out = array();
+				foreach ($node->in as $a)  $in[]  = $a->a_type;
+				foreach ($node->out as $a) $out[] = $a->a_type;
+				$node->a_type = new Type('('.implode(',', $in).') -> ('.implode(',', $out).')');
+			} break;
+			case 'def.func.arg': {
+				$node->a_type = new Type($node->type->text);
+			} break;
 			case 'expr.var': {
 				$node->a_type = new Type($node->type->text);
 				if ($node->initial) {

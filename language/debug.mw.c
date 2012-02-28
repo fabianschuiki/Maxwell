@@ -1,4 +1,4 @@
-/* automatically compiled on 2012-02-25T17:35:46+01:00 */
+/* automatically compiled on 2012-02-28T22:36:06+01:00 */
 
 #include <assert.h>
 #include <stdio.h>
@@ -24,7 +24,6 @@ inline int operator_2A (int * a, int * b) { return *a * *b; }
 inline int operator_2F (int * a, int * b) { return *a / *b; }
 inline int operator_3D3D (int * a, int * b) { return (*a == *b); }
 inline int operator_3C (int * a, int * b) { return *a < *b; }
-
 
 inline int unary_2D (int * a) { return -*a; }
 
@@ -59,20 +58,30 @@ typedef struct {
 } Vector_t;
 
 //def.func
-void func_main()
+void func_test__Int_ (Int_t* a)
+{
+}
+
+//def.func
+void func_test__Vector_ (Vector_t* a)
+{
+}
+
+//def.func
+void func_main__ ()
 {
 	//expr.var;
-	int_t s4_a;
-	s4_a.isa = &type_int;
-	s4_a;
+	Int_t s10_a;
+	s10_a.isa = &type_Int;
+	s10_a;
 	//expr.call;
 	int _tmp0 = 5;
-	int _tmp1 = binary_equal(&s4_a, &_tmp0);
+	int _tmp1 = binary_equal(&s10_a, &_tmp0);
 	_tmp1;
 	//expr.call;
-	int _tmp2 = show(&s4_a);
+	int _tmp2 = show(&s10_a);
 	_tmp2;
 }
 
 // --- debugging code ---
-int main() { func_main(); return 0; }
+int main() { func_main__(); return 0; }

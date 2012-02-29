@@ -127,7 +127,12 @@ class Analyzer
 			$node->a_scope = $parent;
 		}
 		switch ($node->kind) {
-			case 'def.func':   $parent->names[$node->name->text] = $node; break;
+			case 'def.func': {
+				if (!isset($parent->names[$node->name->text])) {
+					$parent->names[$node->name->text] = array();
+				}
+				$parent->names[$node->name->text][] = $node;
+			} break;
 			case 'def.type':   $parent->names[$node->name->text] = $node; break;
 			case 'expr.var': {
 				$parent->names[$node->name->text] = $node;
@@ -181,6 +186,43 @@ class Analyzer
 			} break;
 			case 'expr.const.numeric': $node->a_type = new Type('int', 'float'); break;
 			case 'expr.ident': $node->a_type = ($node->a_target ? $node->a_target->a_type : null); break;
+			case 'expr.call': {
+				$funcs = $node->callee->a_target;
+				if (!is_array($funcs)) {
+					$this->issues[] = new Issue(
+						'error',
+						"called function '{$node->callee->name}' is unknown",
+						$node->callee->range
+					);
+				} else {
+					$matches = array();
+					foreach ($funcs as $f) {
+						if (count($f->in) != count($node->args)) {
+							continue;
+						}
+						$match = true;
+						for ($i = 0; $i < count($f->in) && $match; $i++) {
+							$t = $f->in[$i]->a_type->intersection($node->args[$i]->a_type);
+							if (!count($t->types)) {
+								$match = false;
+							}
+						}
+						if ($match) {
+							$matches[] = $f;
+						}
+					}
+					if (!count($matches)) {
+						$this->issues[] = new Issue(
+							'error',
+							"called function '{$node->callee->name}' has no type matching the call",
+							$node->callee->range
+						);
+					} else {
+						$node->a_target = array_pop($matches);
+					}
+				}
+			} break;
+			case 'expr.call.arg': $node->a_type = $node->expr->a_type; break;
 		}
 	}
 	

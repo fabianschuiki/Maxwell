@@ -55,8 +55,6 @@ class Compiler
 	
 	private function compileFuncDef(Node &$node)
 	{
-		/*$c  = 'typedef struct {} func_'.$node->name->text.'_ret;';
-		$c .= "\n";*/
 		$c = array();
 		
 		$name = 'func_';
@@ -114,8 +112,14 @@ class Compiler
 			$c = array_merge($c, $cn);
 		}
 		
-		$tmp = tmp();
-		$call  = 'int '.$tmp.' = '.$node->callee->a_target->name.'(';
+		if ($node->a_target->c_retname != 'void') {
+			$tmp = tmp();
+			$call = "{$node->a_target->c_retname} $tmp = ";
+		} else {
+			$tmp = '';
+			$call = "";
+		}
+		$call .= $node->a_target->c_name.'(';
 		$call .= implode(', ', $args);
 		$call .= ')';
 		$c[] = $call;

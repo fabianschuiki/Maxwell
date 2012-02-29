@@ -1,4 +1,4 @@
-/* automatically compiled on 2012-02-28T22:36:06+01:00 */
+/* automatically compiled on 2012-02-29T09:38:48+01:00 */
 
 #include <assert.h>
 #include <stdio.h>
@@ -74,13 +74,16 @@ void func_main__ ()
 	Int_t s10_a;
 	s10_a.isa = &type_Int;
 	s10_a;
+	//expr.var;
+	Vector_t s10_b;
+	s10_b.isa = &type_Vector;
+	s10_b;
 	//expr.call;
-	int _tmp0 = 5;
-	int _tmp1 = binary_equal(&s10_a, &_tmp0);
-	_tmp1;
+	func_test__Int_(&s10_a);
+	;
 	//expr.call;
-	int _tmp2 = show(&s10_a);
-	_tmp2;
+	func_test__Vector_(&s10_b);
+	;
 }
 
 // --- debugging code ---

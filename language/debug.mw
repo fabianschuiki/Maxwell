@@ -14,7 +14,7 @@ func test (Vector a) {}
 func main
 {
 	Int a;
-	a = 5;
-	show(a);
+	Vector b;
+	test(a);
+	test(b);
 }
-

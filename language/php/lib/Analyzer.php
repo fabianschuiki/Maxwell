@@ -9,6 +9,7 @@ class Analyzer
 	{
 		$this->issues = array();
 		
+		//$this->nodes = array_map(array($this, 'reduce'), $this->nodes);
 		foreach ($this->nodes as $n) $this->reduce($n);
 		if (count($this->issues)) goto issues;
 		
@@ -52,6 +53,7 @@ class Analyzer
 		$scope->names['operator=='] = $n;
 		
 		$this->addBuiltInFunc($scope, 'binary=');
+		$this->addBuiltInFunc($scope, 'binary+');
 	}
 	
 	private function addBuiltInType(Scope &$scope, $name)
@@ -67,12 +69,8 @@ class Analyzer
 	{
 		$n = new Node;
 		$n->kind = 'def.func';
-		$n->name = str_replace(array(
-			'='
-		), array(
-			'_equal'
-		), $name);
-		$scope->names[$name] = $n;
+		$n->name = $name;
+		$scope->names[$name][] = $n;
 	}
 	
 	private function reduce(Node &$node)
@@ -95,7 +93,12 @@ class Analyzer
 		if ($node->is('expr.op.binary')) {
 			if ($node->op->text == '=' && $node->lhs->is('expr.var')) {
 				$node->lhs->initial = $node->rhs;
-				return $node->lhs;
+				foreach ($node->lhs as $key => $value) {
+					$node->$key = $value;
+				}
+				unset($node->rhs);
+				unset($node->lhs);
+				unset($node->op);
 			} else {
 				$node->kind = 'expr.call';
 				$node->callee = new Node;

@@ -1,4 +1,4 @@
-/* automatically compiled on 2012-02-29T09:38:48+01:00 */
+/* automatically compiled on 2012-03-02T09:28:10+01:00 */
 
 #include <assert.h>
 #include <stdio.h>
@@ -84,6 +84,19 @@ void func_main__ ()
 	//expr.call;
 	func_test__Vector_(&s10_b);
 	;
+	//expr.var;
+	int_t s10_x;
+	s10_x.isa = &type_int;
+	s10_x;
+	//expr.var;
+	int_t s10_y;
+	s10_y.isa = &type_int;
+	s10_y;
+	//expr.var;
+	 _tmp0 = (&s10_x, &s10_y);
+	int_t s10_z = _tmp0;
+	s10_z.isa = &type_int;
+	s10_z;
 }
 
 // --- debugging code ---

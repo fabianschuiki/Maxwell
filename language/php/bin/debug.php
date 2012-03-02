@@ -20,6 +20,12 @@ $analyzer = new Analyzer;
 $analyzer->nodes = $parser->nodes;
 $analyzer->run();
 
+$compiler = new Compiler;
+$compiler->nodes = $analyzer->nodes;
+$compiler->run();
+$compiledPath = $file->path.'.c';
+file_put_contents($compiledPath, $compiler->output);
+
 ob_start();
 $tokens = $lexer->flatTokens;
 $nodes  = $parser->nodes;
@@ -27,12 +33,6 @@ require __DIR__.'/../lib/dump.html.php';
 $html = ob_get_contents();
 ob_end_clean();
 file_put_contents($file->path.'.html', $html);
-
-$compiler = new Compiler;
-$compiler->nodes = $parser->nodes;
-$compiler->run();
-$compiledPath = $file->path.'.c';
-file_put_contents($compiledPath, $compiler->output);
 
 $executablePath = $file->path.'.out';
 passthru('gcc -O3 -o '.escapeshellarg($executablePath).' '.escapeshellarg($compiledPath));

@@ -203,7 +203,7 @@ class Parser
 			$b = new Node;
 			$b->kind = 'stmt.block';
 			$b->nodes = array();
-			if ($s) $b->nodes[] = $s;
+			if ($s) $b->nodes[] = &$s;
 			return $b;
 		}
 	}

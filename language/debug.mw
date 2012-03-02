@@ -17,4 +17,8 @@ func main
 	Vector b;
 	test(a);
 	test(b);
+	
+	int x;
+	int y;
+	int z = x + y;
 }

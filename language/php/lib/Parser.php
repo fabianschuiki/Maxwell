@@ -38,7 +38,7 @@ class Parser
 		if ($keyword->text == 'type') return $this->parseTypeDef($keyword, $ts);
 		$this->issues[] = new Issue(
 			'error',
-			"keyword '{$keyword->text}' has no meaning here",
+			"Keyword '{$keyword->text}' has no meaning here.",
 			$keyword->range
 		);
 		return null;
@@ -47,10 +47,31 @@ class Parser
 	private function parseFuncDef(Token &$keyword, array &$ts)
 	{
 		$name = array_shift($ts);
-		if (!$name->is('identifier')) {
+		if ($name->is('group', '()')) {
+			$tokens = $name->tokens;
+			if (count($tokens) < 1) {
+				$this->issues[] = new Issue(
+					'error',
+					"Function requires operator symbol inside paranthesis.",
+					$name->range,
+					array($keyword->range)
+				);
+				return null;
+			}
+			$name = array_shift($tokens);
+			if (count($tokens)) {
+				$this->issues[] = new Issue(
+					'warning',
+					"Function definition should have only one operator symbol in paranthesis. Ignoring additional tokens.",
+					array_reduce(array_map(function($t){ return $t->range; }, $tokens), function($a,$b) { if (!$a) return $b; $r = clone $a; $r->combine($b); return $r; }),
+					array($name->range)
+				);
+			}
+		}
+		if (!$name->is('identifier') && !$name->is('symbol')) {
 			$this->issues[] = new Issue(
 				'error',
-				"function requires a name",
+				"function requires a name or operator symbol in paranthesis",
 				$name->range,
 				array($keyword->range)
 			);

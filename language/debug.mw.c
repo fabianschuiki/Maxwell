@@ -1,4 +1,4 @@
-/* automatically compiled on 2012-03-02T09:28:10+01:00 */
+/* automatically compiled on 2012-03-02T18:12:18+01:00 */
 
 #include <assert.h>
 #include <stdio.h>
@@ -11,92 +11,40 @@ typedef struct Type_t {
 #define type_make(t) (Type_t){&type_Type, t}
 Type_t type_Type = type_make("Type");
 
-int showType(void * obj)
-{
-	assert(obj != NULL && "trying to showType on NULL");
-	printf("@%s\n", (*(Type_t **)obj)->name);
-	return 0;
-}
-
-inline int operator_3D (int * a, int * b) { *a = *b; return *a; }
-inline int operator_2B (int * a, int * b) { return *a + *b; }
-inline int operator_2A (int * a, int * b) { return *a * *b; }
-inline int operator_2F (int * a, int * b) { return *a / *b; }
-inline int operator_3D3D (int * a, int * b) { return (*a == *b); }
-inline int operator_3C (int * a, int * b) { return *a < *b; }
-
-inline int unary_2D (int * a) { return -*a; }
-
-//int show(int * a) { printf("%i\n", *a); return 0; }
-
-//int
-typedef struct {
-	Type_t * isa;
-	int v;
-} int_t;
-Type_t type_int = type_make("int");
-
-inline int binary_equal(int_t * v, int * a) { v->v = *a; return 0; }
-
-int show(int_t * i) { printf("%i\n", i->v); return 0; }
-
 // --- runtime end ---
 
 
 //def.type
-Type_t type_Int = type_make("Int");
+Type_t type_int = type_make("int");
 typedef struct {
-	Type_t * isa; /* = &type_Int */
+	Type_t * isa; /* = &type_int */
 	int x, y;
-} Int_t;
-
-//def.type
-Type_t type_Vector = type_make("Vector");
-typedef struct {
-	Type_t * isa; /* = &type_Vector */
-	int x, y;
-} Vector_t;
+} int_t;
 
 //def.func
-void func_test__Int_ (Int_t* a)
+typedef struct {
+	int_t* r;
+} func_2b_t;
+func_2b_t func_2b (int_t* a, int_t* b)
 {
 }
 
 //def.func
-void func_test__Vector_ (Vector_t* a)
-{
-}
-
-//def.func
-void func_main__ ()
+void func_main ()
 {
 	//expr.var;
-	Int_t s10_a;
-	s10_a.isa = &type_Int;
-	s10_a;
+	int_t s8_x;
+	s8_x.isa = &type_int;
+	s8_x;
 	//expr.var;
-	Vector_t s10_b;
-	s10_b.isa = &type_Vector;
-	s10_b;
-	//expr.call;
-	func_test__Int_(&s10_a);
-	;
-	//expr.call;
-	func_test__Vector_(&s10_b);
-	;
+	int_t s8_y;
+	s8_y.isa = &type_int;
+	s8_y;
 	//expr.var;
-	int_t s10_x;
-	s10_x.isa = &type_int;
-	s10_x;
-	//expr.var;
-	int_t s10_y;
-	s10_y.isa = &type_int;
-	s10_y;
-	//expr.var;
-	 _tmp0 = (&s10_x, &s10_y);
-	int_t s10_z = _tmp0;
-	s10_z.isa = &type_int;
-	s10_z;
+	func_2b_t _tmp0 = func_2b(&s8_x, &s8_y);
+	int_t s8_z = _tmp0;
+	s8_z.isa = &type_int;
+	s8_z;
 }
 
 // --- debugging code ---

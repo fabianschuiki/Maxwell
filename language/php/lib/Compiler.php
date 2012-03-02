@@ -53,19 +53,25 @@ class Compiler
 		return array("/*{$node->kind}*/");
 	}
 	
+	private $funcDefIndices = array();
 	private function compileFuncDef(Node &$node)
 	{
 		$c = array();
 		
 		$name = 'func_';
-		$name .= $node->name->text;
-		$name .= '_';
+		$name .= $this->makeCIdent($node->name->text);
+		/*$name .= '_';
 		foreach ($node->in as $i) {
 			$name .= '_'.$i->type->text;
 		}
 		$name .= '_';
 		foreach ($node->out as $o) {
 			$name .= '_'.$o->type->text;
+		}*/
+		if (isset($this->funcDefIndices[$name])) {
+			$name .= '_'.$this->funcDefIndices[$name]++;
+		} else {
+			$this->funcDefIndices[$name] = 1;
 		}
 		$node->c_name = $name;
 		
@@ -190,5 +196,18 @@ class Compiler
 		$s .= "} while(1)";
 		$c[] = $s;
 		return $c;
+	}
+	
+	private function makeCIdent($text)
+	{
+		$r = '';
+		for ($i = 0; $i < strlen($text); $i++) {
+			$c = $text[$i];
+			if (strpos("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_", $c) === false) {
+				$c = sprintf('%02x', ord($c));
+			}
+			$r .= $c;
+		}
+		return $r;
 	}
 }

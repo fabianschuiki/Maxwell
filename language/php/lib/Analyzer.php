@@ -46,8 +46,8 @@ class Analyzer
 		$n->name = 'binary_equal';
 		$scope->names['operator=='] = $n;
 		
-		$this->addBuiltInFunc($scope, 'binary=');
-		$this->addBuiltInFunc($scope, 'binary+');
+ 		//$this->addBuiltInFunc($scope, '(=)');
+		//$this->addBuiltInFunc($scope, '(+)');
 	}
 	
 	private function addBuiltInType(Scope &$scope, $name)
@@ -65,6 +65,7 @@ class Analyzer
 		$n->kind = 'def.func';
 		$n->name = $name;
 		$scope->names[$name][] = $n;
+		//$this->analyzeType($n);
 	}
 	
 	private function reduce(Node &$node)
@@ -76,7 +77,7 @@ class Analyzer
 			$node->kind = 'expr.call';
 			$node->callee = new Node;
 			$node->callee->kind = 'expr.ident';
-			$node->callee->name = 'unary'.$node->op->text;
+			$node->callee->name = $node->op->text;
 		
 			$arg = new Node;
 			$arg->kind  = 'expr.call.arg';
@@ -97,7 +98,7 @@ class Analyzer
 				$node->kind = 'expr.call';
 				$node->callee = new Node;
 				$node->callee->kind = 'expr.ident';
-				$node->callee->name = 'binary'.$node->op->text;
+				$node->callee->name = $node->op->text;
 				$node->callee->range = clone $node->op->range;
 				unset($node->op);
 			
@@ -211,7 +212,9 @@ class Analyzer
 					if (!count($matches)) {
 						$this->issues[] = new Issue(
 							'error',
-							"called function '{$node->callee->name}' has no type matching the call",
+							"Called function '{$node->callee->name}' has no type matching the call. Candidates are:\n- ".implode("\n- ", array_map(function($f){
+								return $f->a_type;
+							}, $funcs)),
 							$node->callee->range
 						);
 					} else {

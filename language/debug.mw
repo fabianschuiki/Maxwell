@@ -1,23 +1,10 @@
 /** Debugging some stuff. */
 
-type Int {}
-
-type Vector
-{
-	Int x;
-	Int y;
-}
-
-func test (Int a) {}
-func test (Vector a) {}
+type int {}
+func (+) (int a, int b) -> (int r) {}
 
 func main
 {
-	Int a;
-	Vector b;
-	test(a);
-	test(b);
-	
 	int x;
 	int y;
 	int z = x + y;

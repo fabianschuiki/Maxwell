@@ -6,25 +6,27 @@ class Range
 	public $start;
 	public $end;
 	
+	static public function builtin()
+	{
+		$r = new Range;
+		$r->source = 'builtin';
+		return $r;
+	}
+	
 	public function combine(Range $r) {
-		$this->start = ($this->start->offset < $r->start->offset ? $this->start : $r->start);
-		$this->end   = ($this->end  ->offset > $r->end  ->offset ? $this->end   : $r->end);
+		/*if ($this->start instanceof Location && $this->end instanceof Location && $r->start instanceof Location && $r->end instanceof Location) {*/
+			$this->start = ($this->start->offset < $r->start->offset ? $this->start : $r->start);
+			$this->end   = ($this->end  ->offset > $r->end  ->offset ? $this->end   : $r->end);
+		//}
 	}
 	
 	public function contains($line, $column) {
+		if ($this->builtin || $r->builtin)
+			return false;
 		if ($line <  $this->start->line) return false;
 		if ($line >  $this->end->line)   return false;
 		if ($line == $this->start->line && $column < $this->start->column)  return false;
 		if ($line == $this->end->line   && $column >= $this->end->column)   return false;
 		return true;
-	}
-	
-	public function __toString() {
-		$s  = $this->start->line.'.'.$this->start->column;
-		$s .= '-';
-		if ($this->start->line != $this->end->line)
-			$s .= $this->end->line.'.';
-		$s .= $this->end->column;
-		return $s;
 	}
 }

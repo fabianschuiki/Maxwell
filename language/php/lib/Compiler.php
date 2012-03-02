@@ -16,16 +16,22 @@ class Compiler
 	public function run()
 	{
 		$o  = "/* automatically compiled on ".date('c')." */\n\n";
-		$o .= file_get_contents(__DIR__.'/runtime.c');
+		$o .= rtrim(file_get_contents(__DIR__.'/runtime.c'));
 		$o .= "\n// --- runtime end ---\n\n";
-		$cn = $this->compileNodes($this->nodes);
-		foreach ($cn as $n) {
-			if (strpos(trim($n), '/') === 0)
-				$o .= "\n";
-			$o .= "$n\n";
+		
+		//Compile each node.
+		foreach ($this->nodes as $n) {
+			$seg = $this->compileNode($n);
+			if (is_array($seg->stmts)) {
+				if ($seg->comment) {
+					$o .= "//{$seg->comment}\n";
+				}
+				$o .= implode("\n", $seg->stmts)."\n\n";
+			}
 		}
-		$o .= "\n// --- debugging code ---\n";
-		$o .= "int main() { func_main__(); return 0; }\n";
+		
+		$o .= "// --- debugging code ---\n";
+		$o .= "int main() { func_main(); return 0; }\n";
 		$this->output = $o;
 	}
 	
@@ -40,34 +46,34 @@ class Compiler
 	
 	private function compileNode(Node &$node)
 	{
+		$fn = 'compile'.str_replace(' ', '', ucwords(str_replace('.', ' ', $node->kind)));
+		if (method_exists($this, $fn)) {
+			return call_user_func(array($this, $fn), $node);
+		}
+		
 		switch ($node->kind) {
-			case 'def.func':  return $this->compileFuncDef($node); break;
-			case 'def.type':  return $this->compileTypeDef($node); break;
+			case 'def.func':  return $this->compileFuncDef($node);  break;
+			case 'def.type':  return $this->compileTypeDef($node);  break;
 			case 'expr.call': return $this->compileCallExpr($node); break;
-			case 'expr.var':  return $this->compileVarExpr($node); break;
-			case 'expr.const.numeric': return $this->compileConstExpr($node); break;
+			case 'expr.var':  return $this->compileVarExpr($node);  break;
+			/*case 'expr.const.numeric': return $this->compileConstExpr($node); break;
 			case 'expr.ident': return array($node->a_target->c_name); break;
 			case 'stmt.if': return $this->compileIfStmt($node); break;
-			case 'stmt.for': return $this->compileForStmt($node); break;
+			case 'stmt.for': return $this->compileForStmt($node); break;*/
 		}
-		return array("/*{$node->kind}*/");
+		//return array("/*{$node->kind}*/");
+		trigger_error("compileNode not implemented for {$node->kind}");
+		return null;
 	}
 	
 	private $funcDefIndices = array();
 	private function compileFuncDef(Node &$node)
 	{
-		$c = array();
+		$seg = new CSegment;
+		$seg->comment = "Definition of function {$node->name->text}";
 		
-		$name = 'func_';
-		$name .= $this->makeCIdent($node->name->text);
-		/*$name .= '_';
-		foreach ($node->in as $i) {
-			$name .= '_'.$i->type->text;
-		}
-		$name .= '_';
-		foreach ($node->out as $o) {
-			$name .= '_'.$o->type->text;
-		}*/
+		//Assemble the function name, potentially appending indices to create unique names.
+		$name = 'func_'.$this->makeCIdent($node->name->text);
 		if (isset($this->funcDefIndices[$name])) {
 			$name .= '_'.$this->funcDefIndices[$name]++;
 		} else {
@@ -75,100 +81,156 @@ class Compiler
 		}
 		$node->c_name = $name;
 		
+		//Synthesize the return type.
 		if (count($node->out)) {
-			$node->c_retname = "{$name}_t";
-			$type  = "typedef struct {\n";
+			$retname = "{$name}_t";
+			$node->c_retname = $retname;
+			$type = "typedef struct {\n";
 			foreach ($node->out as $o) {
-				$type .= "\t{$o->type->text}_t* {$o->name->text};\n";
+				$type .= "\t{$o->type->a_target->c_ref} {$o->name->text};\n";
 			}
-			$type .= "} {$node->c_retname};";
-			$c[] = $type;
+			$type .= "} $retname;";
+			$seg->stmts[] = $type;
 		} else {
-			$node->c_retname = "void";
+			$retname = "void";
 		}
 		
+		//Synthesize the function defintion.
 		$ins = array();
 		foreach ($node->in as $i) {
-			$ins[] = "{$i->type->text}_t* {$i->name->text}";
+			$ins[] = "{$i->type->a_target->c_ref} {$i->name->text}";
 		}
-		$f  = "{$node->c_retname} {$node->c_name} (".implode(", ", $ins).")\n";
-		$f .= $this->compileBlock($node->body);
-		$c[] = $f;
-		return $c;
+		$def  = "$retname {$node->c_name} (".implode(", ", $ins).")\n";
+		$def .= $this->compileBlock($node->body);
+		$seg->stmts[] = $def;
+		return $seg;
 	}
 	
 	private function compileTypeDef(Node &$node)
 	{
-		$n = "type_{$node->name->text}";
-		$t  = "Type_t $n = type_make(\"{$node->name->text}\");\n";
-		$t .= "typedef struct {\n";
-		$t .= "\tType_t * isa; /* = &$n */\n";
-		$t .= "\tint x, y;\n";
-		$t .= "} {$node->name->text}_t;";
-		return array($t);
+		$name = $this->makeCIdent($node->name->text);
+		$node->c_name = "{$name}_t";
+		$node->c_ref = $node->c_name;
+		if (!$node->primitive) {
+			$node->c_ref .= '*';
+		}
+		
+		$typedef  = "typedef struct {\n";
+		$typedef .= "\tType_t * isa /* = &type_$name*/;\n";
+		$typedef .= "} {$node->c_name};";
+		
+		$seg = new CSegment;
+		$seg->comment = "definition of type {$node->name->text}";
+		$seg->stmts[] = "Type_t type_$name = type_make(\"{$node->name->text}\");";
+		$seg->stmts[] = $typedef;
+		return $seg;
 	}
 	
 	private function compileCallExpr(Node &$node)
 	{
-		$c = array();
+		$seg = new CSegment;
+		$f = $node->a_target;
+		
+		//Assemble the list of arguments and the statements required to calculate them.
 		$args = array();
-		foreach ($node->args as $arg) {
-			$cn = $this->compileNode($arg->expr);
-			$args[] = '&'.array_pop($cn);
-			$c = array_merge($c, $cn);
+		foreach ($node->args as $a) {
+			$s = $this->compileNode($a->expr);
+			$seg->addStmts($s->stmts);
+			assert($s->expr != null);
+			$args[] = $s->expr;
 		}
 		
-		if ($node->a_target->c_retname != 'void') {
-			$tmp = tmp();
-			$call = "{$node->a_target->c_retname} $tmp = ";
-		} else {
-			$tmp = '';
-			$call = "";
+		//Shortcut for builtin operators.
+		if ($f->builtin) {
+			$seg->expr = "($args[0] {$f->name->text} $args[1])";
+			return $seg;
 		}
-		$call .= $node->a_target->c_name.'(';
-		$call .= implode(', ', $args);
-		$call .= ')';
-		$c[] = $call;
-		$c[] = $tmp;
-		return $c;
+		
+		//Assemble the function call.
+		$call = $f->c_name.'('.implode(', ', $args).')';
+		
+		//Depending on whether we have a return value or not the function call acts as an expression or a simple statement.
+		if (isset($node->a_target->c_retname)) {
+			$seg->expr = $call;
+			if (count($f->out) == 1) {
+				$seg->expr .= '.'.$f->out[0]->name->text;
+			}
+			if (count($f->out) > 1) {
+				$this->issues[] = new Issue(
+					'error',
+					"Multiple return values not yet implemented.",
+					$node->range
+				);
+				return null;
+			}
+		} else {
+			$seg->stmts[] = "$call;";
+		}
+		return $seg;
 	}
 	
 	private function compileVarExpr(Node &$node)
 	{
-		$c = array();
-		$node->c_name = "s{$node->a_scope->index}_{$node->name->text}";
-		$s = "{$node->type->text}_t {$node->c_name}";
-		if (isset($node->initial)) {
-			$cn = $this->compileNode($node->initial);
-			$n = array_pop($cn);
-			$c = array_merge($c, $cn);
-			$s .= ' = '.$n;
+		$typeNode = $node->type->a_target;
+		
+		$name = "s{$node->a_scope->index}_{$node->name->text}";
+		$node->c_name  = $name;
+		$node->c_ref   = ($node->a_local && !$typeNode->primitive ? '&'.$name : $name);
+		
+		$type = $node->type->a_target->c_name;
+		if (!$node->a_local && !$typeNode->primitive) {
+			$type .= '*';
 		}
-		$c[] = $s;
-		$c[] = "{$node->c_name}.isa = &type_{$node->type->text}";
-		$c[] = $node->c_name;
-		return $c;
+		
+		$seg = new CSegment;
+		$def = "$type $name";
+		if (isset($node->initial)) {
+			$i = $this->compileNode($node->initial);
+			if (is_array($i->stmts)) {
+				$seg->addStmts($i->stmts);
+			}
+			if ($i->expr) {
+				$def .= ' = ';
+				if ($node->a_local && !$typeNode->primitive) {
+					$def .= '*';
+				}
+				$def .= $i->expr;
+			}
+		}
+		
+		$seg->stmts[] = "$def;";
+		$seg->expr = $node->c_ref;
+		return $seg;
 	}
 	
-	private function compileConstExpr(Node &$node)
+	private function compileExprConstNumeric(Node &$node)
 	{
-		$n = tmp();
+		$seg = new CSegment;
+		$seg->expr = $node->value->text;
+		/*$n = tmp();
 		$c = array();
 		$c[] = 'int '.$n.' = '.$node->value->text;
-		$c[] = $n;
-		return $c;
+		$c[] = $n;*/
+		return $seg;
+	}
+	
+	private function compileExprIdent(Node &$node)
+	{
+		$seg = new CSegment;
+		$seg->expr = $node->a_target->c_ref;
+		return $seg;
 	}
 	
 	private function compileBlock(Node &$node)
 	{
-		$s = "{";
-		$cn = $this->compileNodes($node->nodes);
-		foreach ($cn as $n) {
-			$n = str_replace("\n", "\n\t", $n);
-			$s .= "\n\t$n;";
+		$stmts = array();
+		foreach ($node->nodes as $n) {
+			$seg = $this->compileNode($n);
+			if (is_array($seg->stmts)) {
+				$stmts[] = str_replace("\n", "\n\t", implode("\n", $seg->stmts));
+			}
 		}
-		$s .= "\n}";
-		return $s;
+		return "{\n\t".implode("\n\t", $stmts)."\n}";
 	}
 	
 	private function compileIfStmt(Node &$node)

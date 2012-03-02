@@ -139,7 +139,11 @@ class Parser
 	{
 		$name = array_pop($ts);
 		if (!$name->is('identifier')) {
-			$this->issues[] = "{$name->range}: function argument name required, $name found";
+			$this->issues[] = new Issue(
+				'error',
+				"Function argument requires a name.",
+				$name->range
+			);
 			return null;
 		}
 		
@@ -147,7 +151,11 @@ class Parser
 		if (count($ts) > 0) {
 			$type = array_pop($ts);
 			if (!$type->is('identifier')) {
-				$this->issues[] = "{$type->range}: function argument type should be an identifier, $type found";
+				$this->issues[] = new Issue(
+					'error',
+					"Function argument requires a type.",
+					$type->range
+				);
 				return null;
 			}
 			$type->context = 'def.func.arg.type';
@@ -175,6 +183,23 @@ class Parser
 		}
 		$name->context = 'type.name';
 		
+		//Potential type attributes.
+		$primitive = false;
+		while (count($ts) && $ts[0]->is('keyword')) {
+			$attr = array_shift($ts);
+			switch ($attr->text) {
+				case 'primitive': $primitive = true; break;
+				default: {
+					$this->issues[] = new Issue(
+						'warning',
+						"'{$attr->text}' has no meaning as type attribute.",
+						$attr->range,
+						array($name->range)
+					);
+				} break;
+			}
+		}
+		
 		//Type Definition
 		$defs = array_shift($ts);
 		if (!$defs->is('group', '{}')) {
@@ -190,8 +215,9 @@ class Parser
 		
 		//Create the node.
 		$t = new Node;
-		$t->kind  = 'def.type';
-		$t->name  = $name;
+		$t->kind      = 'def.type';
+		$t->name      = $name;
+		$t->primitive = $primitive;
 		/*$dts = $defs->tokens;
 		while (count($dts)) {
 			$d = $this->parseDef($dts);

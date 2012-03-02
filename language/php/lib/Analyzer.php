@@ -27,45 +27,44 @@ class Analyzer
 		}
 	}
 	
+	private $builtinNumericTypes = array();
 	private function addBuiltIn(Scope &$scope)
 	{
-		$this->addBuiltInType($scope, 'Type');
-		$this->addBuiltInType($scope, 'int');
-		
-		$n = new Node;
-		$n->kind = 'def.func';
-		$n->name = 'showType';
-		$scope->names['showType'] = $n;
-		
-		$n = clone $n;
-		$n->name = 'show';
-		$scope->names['show'] = $n;
-		
-		$n = new Node;
-		$n->kind = 'def.func';
-		$n->name = 'binary_equal';
-		$scope->names['operator=='] = $n;
-		
- 		//$this->addBuiltInFunc($scope, '(=)');
-		//$this->addBuiltInFunc($scope, '(+)');
-	}
-	
-	private function addBuiltInType(Scope &$scope, $name)
-	{
-		$n = new Node;
-		$n->kind = 'def.type';
-		$n->name = $name;
-		$n->builtin = true;
-		$scope->names[$name] = $n;
-	}
-	
-	private function addBuiltInFunc(Scope &$scope, $name)
-	{
-		$n = new Node;
-		$n->kind = 'def.func';
-		$n->name = $name;
-		$scope->names[$name][] = $n;
-		//$this->analyzeType($n);
+		$types = array('int', 'uint', 'float');
+		for ($i = 8; $i <= 64; $i *= 2) {
+			$types[] = 'int'.$i;
+			$types[] = 'uint'.$i;
+		}
+		$types[] = "float32";
+		$types[] = "float64";
+		foreach ($types as $type) {
+			$n = new Node;
+			$n->builtin = true;
+			$n->kind = 'def.type';
+			$n->name = Token::builtin('identifier', $type);
+			$n->c_name = $n->name->text.'_t';
+			$n->primitive = true;
+			$scope->names[$n->name->text] = $n;
+			$this->builtinNumericTypes[] = $n;
+			
+			$operators = array('+', '-', '*', '/');
+			foreach ($operators as $op) {
+				$n = new Node;
+				$n->builtin = true;
+				$n->kind = 'def.func';
+				$n->name = Token::builtin('identifier', $op);
+				
+				$a = new Node;
+				$a->kind = 'def.func.arg';
+				$a->type = Token::builtin('identifier', $type);
+				
+				$n->in = array(clone $a, clone $a);
+				$n->out = array(clone $a);
+				
+				$scope->names[$n->name->text][] = $n;
+				$this->analyzeType($n);
+			}
+		}
 	}
 	
 	private function reduce(Node &$node)
@@ -131,11 +130,23 @@ class Analyzer
 				}
 				$parent->names[$node->name->text][] = $node;
 			} break;
+			case 'def.func.arg': {
+				//$parent->names[$node->name->text] = $node;
+				$node->type->a_target = $node->a_scope->find($node->type->text);
+				if (!$node->type->a_target) {
+					$this->issues[] = new Issue(
+						'error',
+						"type '{$node->type->text}' of function argument '{$node->name->text}' is unknown",
+						$node->type->range,
+						array($node->name->range)
+					);
+				}
+			} break;
 			case 'def.type':   $parent->names[$node->name->text] = $node; break;
 			case 'expr.var': {
 				$parent->names[$node->name->text] = $node;
-				$node->a_target = $node->a_scope->find($node->type->text);
-				if (!$node->a_target) {
+				$node->type->a_target = $node->a_scope->find($node->type->text);
+				if (!$node->type->a_target) {
 					$this->issues[] = new Issue(
 						'error',
 						"type '{$node->type->text}' of variable '{$node->name->text}' is unknown",
@@ -178,6 +189,7 @@ class Analyzer
 			} break;
 			case 'expr.var': {
 				$node->a_type = new Type($node->type->text);
+				$node->a_local = ($node->type->text == 'scalar');
 				if ($node->initial) {
 					$node->initial->a_reqType = $node->a_type;
 				}
@@ -223,62 +235,6 @@ class Analyzer
 				}
 			} break;
 			case 'expr.call.arg': $node->a_type = $node->expr->a_type; break;
-		}
-	}
-	
-	public function analyzeTypes_old(Node &$node)
-	{
-		if ($node->is('expr')) {
-			if (!isset($node->a_requiredType)) {
-				$node->a_requiredType = new Type;
-			}
-			if (!isset($node->a_possibleType)) {
-				$node->a_possibleType = new Type;
-			}
-			switch ($node->kind) {
-				case 'expr.const.numeric': $node->a_possibleType = new Type('int', 'float'); break;
-				case 'expr.const.string':  $node->a_possibleType = new Type('string'); break;
-				case 'expr.var':           $node->a_possibleType = new Type($node->type->text); break;
-				case 'expr.op.binary': {
-					$this->analyzeTypes($node->lhs);
-					$this->analyzeTypes($node->rhs);
-					
-					$node->a_possibleType = $node->lhs->a_type->intersection($node->rhs->a_type);
-					$node->lhs->a_requiredType = $node->a_possibleType;
-					$node->rhs->a_requiredType = $node->a_possibleType;
-					
-					$this->analyzeTypes($node->lhs);
-					$this->analyzeTypes($node->rhs);
-					
-					if (!count($node->a_possibleType->a_types)) {
-						$this->issues[] = "{$node->op->range}: binary operator requires both sides to be of equal type, which is impossible for {$node->lhs->a_possibleType} and {$node->rhs->a_possibleType}";
-					}
-				} break;
-				case 'expr.ident': {
-					if ($node->target) {
-						$node->a_possibleType = $node->target->a_type;
-					}
-				} break;
-				case 'expr.call': {
-					foreach ($node->args as $a) {
-						$this->analyzeTypes($a);
-					}
-					$node->a_possibleType = new Type;
-				} break;
-				case 'expr.call.arg': {
-					$this->analyzeTypes($node->expr);
-					$node->a_possibleType = $node->expr->a_possibleType;
-				} break;
-			}
-			if (isset($node->a_possibleType)) {
-				$node->a_type = $node->a_possibleType->intersection($node->a_requiredType);
-			}
-		} else {
-			if (isset($node->nodes)) {
-				foreach ($node->nodes as $n) {
-					$this->analyzeTypes($n);
-				}
-			}
 		}
 	}
 }

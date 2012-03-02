@@ -1,5 +1,19 @@
 #include <assert.h>
 #include <stdio.h>
+#include <sys/types.h>
+
+//Builtin Types
+typedef u_int8_t  uint8_t;
+typedef u_int16_t uint16_t;
+typedef u_int32_t uint32_t;
+typedef u_int64_t uint64_t;
+typedef float     float32_t;
+typedef double    float64_t;
+
+//Native Types (depends on machine bus width)
+typedef int64_t   int_t;
+typedef uint64_t  uint_t;
+typedef float64_t double_t;
 
 //Class Hierarchy
 typedef struct Type_t {

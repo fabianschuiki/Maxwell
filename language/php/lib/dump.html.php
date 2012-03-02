@@ -69,6 +69,9 @@
 						if (is_string($value)) {
 							echo '<span class="value string">'.$value.'</span>';
 						}
+						if (is_bool($value)) {
+							echo '<span class="value bool">'.($value ? 'yes' : 'no').'</span>';
+						}
 						echo '</div>';
 					}
 					echo '</div>';

@@ -14,6 +14,7 @@ class Node
 		switch ($this->kind) {
 			case 'def.func':   $n = array_merge($this->in, $this->out, array(&$this->body)); break;
 			case 'stmt.block': $n = $this->nodes; break;
+			case 'stmt.expr':  $n = array(&$this->expr); break;
 			
 			case 'stmt.if':    $n = array(&$this->condition, &$this->body, &$this->else); break;
 			case 'stmt.else':  $n = array(&$this->body); break;

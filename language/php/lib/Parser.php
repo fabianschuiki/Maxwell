@@ -268,7 +268,15 @@ class Parser
 		if (count($sub) == 0) {
 			return null;
 		}
-		return $this->parseExpr($sub);
+		$expr = $this->parseExpr($sub);
+		if ($expr) {
+			$e = new Node;
+			$e->kind = 'stmt.expr';
+			$e->range = $expr->range;
+			$e->expr = $expr;
+			return $e;
+		}
+		return null;
 	}
 	
 	private function parseKeywordStmt($keyword, array &$ts)

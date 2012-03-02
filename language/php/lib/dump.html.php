@@ -46,6 +46,9 @@
 						if ($value instanceof Type) {
 							echo '<span class="value type">'.implode(', ',$value->types).'</span>';
 						}
+						if ($value instanceof TypeSet) {
+							echo '<span class="value type">'.$value.'</span>';
+						}
 						if ($value instanceof Scope) {
 							$scp = $value;
 							$names = array();

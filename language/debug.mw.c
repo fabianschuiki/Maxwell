@@ -1,4 +1,4 @@
-/* automatically compiled on 2012-03-02T23:04:48+01:00 */
+/* automatically compiled on 2012-03-03T00:35:53+01:00 */
 
 #include <assert.h>
 #include <stdio.h>
@@ -26,47 +26,29 @@ typedef struct Type_t {
 Type_t type_Type = type_make("Type");
 // --- runtime end ---
 
-//definition of type object
-Type_t type_object = type_make("object");
+//definition of type A
+Type_t type_A = type_make("A");
 typedef struct {
-	Type_t * isa /* = &type_object*/;
-} object_t;
+	Type_t * isa /* = &type_A*/;
+} A_t;
 
-//definition of type scalar
-Type_t type_scalar = type_make("scalar");
+//definition of type B
+Type_t type_B = type_make("B");
 typedef struct {
-	Type_t * isa /* = &type_scalar*/;
-} scalar_t;
+	Type_t * isa /* = &type_B*/;
+} B_t;
 
-//definition of type primit
-Type_t type_primit = type_make("primit");
-typedef struct {
-	Type_t * isa /* = &type_primit*/;
-} primit_t;
-
-//Definition of function +
-typedef struct {
-	object_t* r;
-} func_2b_t;
-func_2b_t func_2b (object_t* a, object_t* b)
+//Definition of function test
+void func_test (A_t* x)
 {
 	
 }
 
-//Definition of function +
+//Definition of function cast
 typedef struct {
-	scalar_t* r;
-} func_2b_1_t;
-func_2b_1_t func_2b_1 (scalar_t* a, scalar_t* b)
-{
-	
-}
-
-//Definition of function +
-typedef struct {
-	primit_t r;
-} func_2b_2_t;
-func_2b_2_t func_2b_2 (primit_t a, primit_t b)
+	A_t* r;
+} func_cast_t;
+func_cast_t func_cast (B_t* x)
 {
 	
 }
@@ -74,18 +56,13 @@ func_2b_2_t func_2b_2 (primit_t a, primit_t b)
 //Definition of function main
 void func_main ()
 {
-	object_t* s20_ox;
-	object_t* s20_oy;
-	object_t* s20_oz = func_2b(s20_ox, s20_oy).r;
-	scalar_t s20_sx;
-	scalar_t s20_sy;
-	scalar_t s20_sz = *func_2b_1(&s20_sx, &s20_sy).r;
-	primit_t s20_px;
-	primit_t s20_py;
-	primit_t s20_pz = func_2b_2(s20_px, s20_py).r;
-	int_t s20_ix = 1;
-	int_t s20_iy = 2;
-	int_t s20_iz = (s20_ix + s20_iy);
+	A_t* s11_a;
+	B_t* s11_b;
+	func_test(s11_a);
+	func_test(func_cast(s11_b).r);
+	int_t s11_ix = 1;
+	int_t s11_iy = 2;
+	int_t s11_iz = (s11_ix + s11_iy);
 }
 
 // --- debugging code ---

@@ -1,26 +1,18 @@
 /** Debugging some stuff. */
 
-type object {}
-type scalar {}
-type primit primitive {}
+type A {}
+type B {}
 
-func (+) (object a, object b) -> (object r) {}
-func (+) (scalar a, scalar b) -> (scalar r) {}
-func (+) (primit a, primit b) -> (primit r) {}
+func test (A x) {}
+func cast (B x) -> (A r) {}
 
 func main
 {
-	object ox;
-	object oy;
-	object oz = ox + oy;
+	A a;
+	B b;
 	
-	scalar sx;
-	scalar sy;
-	scalar sz = sx + sy;
-	
-	primit px;
-	primit py;
-	primit pz = px + py;
+	test(a);
+	test(b);
 	
 	int ix = 1;
 	int iy = 2;

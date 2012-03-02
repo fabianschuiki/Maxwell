@@ -66,6 +66,17 @@ class Compiler
 		return null;
 	}
 	
+	private function compileStmtExpr(Node &$node)
+	{
+		$seg = new CSegment;
+		$e = $this->compileNode($node->expr);
+		$seg->stmts = $e->stmts;
+		if ($e->expr && !$e->exprIsRef) {
+			$seg->stmts[] = $e->expr.';';
+		}
+		return $seg;
+	}
+	
 	private $funcDefIndices = array();
 	private function compileFuncDef(Node &$node)
 	{
@@ -200,6 +211,7 @@ class Compiler
 		
 		$seg->stmts[] = "$def;";
 		$seg->expr = $node->c_ref;
+		$seg->exprIsRef = true;
 		return $seg;
 	}
 	

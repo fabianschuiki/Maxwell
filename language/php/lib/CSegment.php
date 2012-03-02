@@ -5,6 +5,7 @@ class CSegment
 	public $comment = null;
 	public $stmts = array();
 	public $expr = null;
+	public $exprIsRef = false;
 	
 	public function addStmts($s)
 	{

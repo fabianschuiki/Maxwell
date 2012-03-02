@@ -118,7 +118,7 @@ class Analyzer
 	
 	private function populateScope(Scope &$parent, Node &$node)
 	{
-		if ($node->is('def') || $node->is('stmt')) {
+		if ($node->is('def') || ($node->is('stmt') && $node->kind != 'stmt.expr')) {
 			$node->a_scope = new Scope($parent);
 		} else {
 			$node->a_scope = $parent;
@@ -211,14 +211,30 @@ class Analyzer
 							continue;
 						}
 						$match = true;
+						$implicitCasts = 0;
+						$casts = array();
 						for ($i = 0; $i < count($f->in) && $match; $i++) {
-							$t = $f->in[$i]->a_type->intersection($node->args[$i]->a_type);
-							if (!count($t->types)) {
+							$arg = $f->in[$i];
+							$cast = $this->getCastSequence($node->a_scope, $node->args[$i]->a_type, $arg->a_type);
+							if ($cast === null) {
 								$match = false;
+							} else {
+								$implicitCasts += count($cast);
+								$casts[$i] = $cast;
+								/*$t = $f->in[$i]->a_type->intersection($node->args[$i]->a_type);
+								if (!count($t->types)) {
+									$match = false;
+								}*/
 							}
 						}
 						if ($match) {
-							$matches[] = $f;
+							$matches[] = array(
+								'func' => $f,
+								'cast' => $casts
+							);
+							if ($implicitCasts == 0) {
+								break;
+							}
 						}
 					}
 					if (!count($matches)) {
@@ -230,11 +246,53 @@ class Analyzer
 							$node->callee->range
 						);
 					} else {
-						$node->a_target = array_pop($matches);
+						$node->a_target = $matches[0]['func'];
+						foreach ($matches[0]['cast'] as $arg => $casts) {
+							$orig = $node->args[$arg];
+							$wrap = $node->args[$arg]->expr;
+							foreach ($casts as $cast) {
+								$n = new Node;
+								$n->kind = 'expr.call';
+								$n->callee = new Node;
+								$n->callee->kind = 'expr.ident';
+								$n->callee->name = $cast->name->text;
+								$n->callee->range = clone $orig->expr->range;
+								$n->a_target = $cast;
+								$na = new Node;
+								$na->kind = 'expr.call.arg';
+								$na->expr = $wrap;
+								$n->args = array($na);
+								//$this->analyzeType($n);
+								$wrap = $n;
+								//echo "applying cast {$c->a_type}\n";
+							}
+							$node->args[$arg]->expr = $wrap;
+						}
 					}
 				}
 			} break;
 			case 'expr.call.arg': $node->a_type = $node->expr->a_type; break;
 		}
+	}
+	
+	private function getCastSequence(Scope &$scope, Type &$from, Type &$to)
+	{
+		if (count($from->intersection($to)->types)) {
+			return array();
+		}
+		echo "trying to find cast from $from to $to\n";
+		$casts = $scope->find('cast');
+		if (!is_array($casts)) {
+			return null;
+		}
+		foreach ($casts as $f) {
+			if (count($f->in) != 1 || count($f->out) != 1) {
+				continue;
+			}
+			if (count($from->intersection($f->in[0]->a_type)) && count($to->intersection($f->out[0]->a_type))) {
+				return array($f);
+			}
+		}
+		return null;
 	}
 }

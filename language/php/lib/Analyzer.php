@@ -9,7 +9,6 @@ class Analyzer
 	{
 		$this->issues = array();
 		
-		//$this->nodes = array_map(array($this, 'reduce'), $this->nodes);
 		foreach ($this->nodes as $n) $this->reduce($n);
 		if (count($this->issues)) goto issues;
 		
@@ -21,11 +20,6 @@ class Analyzer
 		
 		foreach ($this->nodes as $n) $this->analyzeType($n);
 		if (count($this->issues)) goto issues;
-		
-		/*$rootScope = new Scope;
-		foreach ($this->nodes as $n) { $this->analyzeScopes($n, $rootScope); }
-		foreach ($this->nodes as $n) { $this->analyzeTypes($n); }
-		foreach ($this->nodes as $n) { $this->matchFunctions($n); }*/
 		
 	issues:
 		foreach ($this->issues as $i) {
@@ -281,19 +275,6 @@ class Analyzer
 				foreach ($node->nodes as $n) {
 					$this->analyzeTypes($n);
 				}
-			}
-		}
-	}
-	
-	public function matchFunctions(Node &$node)
-	{
-		if ($node->is('expr.ident') && isset($node->target) && $node->target->is('def.func')) {
-			$patterns = $node->target->nodes;
-			//TODO: implement some pattern matching...
-		}
-		if (isset($node->nodes)) {
-			foreach ($node->nodes as $n) {
-				$this->matchFunctions($n);
 			}
 		}
 	}

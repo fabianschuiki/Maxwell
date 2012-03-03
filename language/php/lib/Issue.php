@@ -44,7 +44,7 @@ class Issue
 		$o .= "";
 		foreach ($lines as $l) {
 			if ($l != $pl+1) {
-				$o .= "...\n";
+				$o .= "\n ...";
 			}
 			$pl = $l;
 			$line = str_replace("\t", " ", $ls[$l-1]);

@@ -1,6 +1,7 @@
 body, html {
 	padding: 0;
 	margin: 0;
+	font-family: monospace;
 }
 
 div.col {
@@ -13,6 +14,16 @@ div.col {
 
 div.col.left {
 	left: 0;
+}
+
+div.col.left.top {
+	bottom: inherit;
+	height: 50%;
+}
+
+div.col.left.bottom {
+	top: inherit;
+	height: 50%;
 }
 
 div.col.right {
@@ -37,7 +48,6 @@ pre.code {
 div.nodes {
 	margin: 1em;
 	margin-left: -1em;
-	font-family: monospace;
 }
 
 div.node {
@@ -62,3 +72,22 @@ div.scope {
 }
 div.node div.scope div.scope-entry { /*margin-left: 2em;*/ }
 div.node div.scope span.scope-kind { color: #75507b; }
+
+div.scp {
+	padding: 1em;
+	margin: 0;
+}
+div.scp h1 {
+	font-size: 1em;
+	margin: 0;
+}
+div.scp ul {
+	margin: 0;
+	padding: 0;
+}
+div.scp ul li {
+	list-style: none;
+	margin: 0;
+}
+
+.scp-attr { color: #3465a4; }

@@ -3,28 +3,25 @@
 class Analyzer
 {
 	public $nodes;
+	public $scope;
 	public $issues;
 	
 	public function run()
 	{
-		$this->issues = array();
-		
 		foreach ($this->nodes as $n) $this->reduce($n);
-		if (count($this->issues)) goto issues;
+		if ($this->issues->isFatal()) return;
 		
-		$scope = new Scope;
-		$this->addBuiltIn($scope);
+		$this->scope = new Scope;
+		$this->addBuiltIn($this->scope);
 		
-		foreach ($this->nodes as $n) $this->populateScope($scope, $n);
-		if (count($this->issues)) goto issues;
+		foreach ($this->nodes as $n) $this->populateScope($this->scope, $n);
+		if ($this->issues->isFatal()) return;
+		
+		foreach ($this->nodes as $n) $this->bind($n);
+		if ($this->issues->isFatal()) return;
 		
 		foreach ($this->nodes as $n) $this->analyzeType($n);
-		if (count($this->issues)) goto issues;
-		
-	issues:
-		foreach ($this->issues as $i) {
-			echo "$i\n";
-		}
+		if ($this->issues->isFatal()) return;
 	}
 	
 	private $builtinNumericTypes = array();
@@ -124,54 +121,63 @@ class Analyzer
 			$node->a_scope = $parent;
 		}
 		switch ($node->kind) {
-			case 'def.func': {
-				if (!isset($parent->names[$node->name->text])) {
-					$parent->names[$node->name->text] = array();
-				}
-				$parent->names[$node->name->text][] = $node;
-			} break;
-			case 'def.func.arg': {
-				//$parent->names[$node->name->text] = $node;
-				$node->type->a_target = $node->a_scope->find($node->type->text);
-				if (!$node->type->a_target) {
-					$this->issues[] = new Issue(
-						'error',
-						"type '{$node->type->text}' of function argument '{$node->name->text}' is unknown",
-						$node->type->range,
-						array($node->name->range)
-					);
-				}
-			} break;
-			case 'def.type':   $parent->names[$node->name->text] = $node; break;
-			case 'expr.var': {
-				$parent->names[$node->name->text] = $node;
-				$node->type->a_target = $node->a_scope->find($node->type->text);
-				if (!$node->type->a_target) {
-					$this->issues[] = new Issue(
-						'error',
-						"type '{$node->type->text}' of variable '{$node->name->text}' is unknown",
-						$node->type->range,
-						array($node->name->range)
-					);
-				}
-			} break;
-			case 'expr.ident': {
-				$node->a_target = $node->a_scope->find($node->name);
-				if (!$node->a_target) {
-					$this->issues[] = new Issue(
-						'error',
-						"identifier '{$node->name}' unknown",
-						$node->range
-					);
-				}
-			} break;
+			case 'def.func':     $parent->add($this->issues, $node); break;
+			case 'def.func.arg': $parent->add($this->issues, $node);  break;
+			case 'def.type':     $parent->add($this->issues, $node); break;
+			case 'expr.var':     $parent->add($this->issues, $node);  break;
 		}
 		foreach ($node->nodes() as $n) {
 			$this->populateScope($node->a_scope, $n);
 		}
 	}
 	
-	public function analyzeType(Node &$node)
+	private function bind(Node $node)
+	{
+		foreach ($node->nodes() as $n) {
+			$this->bind($n);
+		}
+		switch ($node->kind) {
+			case 'def.func.arg': {
+				$type = $node->a_scope->find($node->type);
+				if (!$type || $type->kind != 'def.type') {
+					$this->issues[] = new Issue(
+						'error',
+						"Type '{$node->type}' of function argument '{$node->name}' is unknown.",
+						$node->type->range,
+						array($node->name->range)
+					);
+				}
+				$node->type->a_target = $type;
+				$node->a_target = $type;
+			} break;
+			case 'expr.var': {
+				$type = $node->a_scope->find($node->type);
+				if (!$type || $type->kind != 'def.type') {
+					$this->issues[] = new Issue(
+						'error',
+						"Type '{$node->type}' of variable '{$node->name}' is unknown.",
+						$node->type->range,
+						array($node->name->range)
+					);
+				}
+				$node->type->a_target = $type;
+				$node->a_target = $type;
+			} break;
+			case 'expr.ident': {
+				$target = $node->a_scope->find($node->name);
+				if (!$target) {
+					$this->issues[] = new Issue(
+						'error',
+						"Identifier '{$node->name}' is unknown.",
+						$node->range
+					);
+				}
+				$node->a_target = $target;
+			} break;
+		}
+	}
+	
+	private function analyzeType(Node &$node)
 	{
 		foreach ($node->nodes() as $n) {
 			$this->analyzeType($n);
@@ -210,6 +216,7 @@ class Analyzer
 						if (count($f->in) != count($node->args)) {
 							continue;
 						}
+						//echo "trying {$f->name} {$f->a_type}\n";
 						$match = true;
 						$implicitCasts = 0;
 						$casts = array();
@@ -217,14 +224,12 @@ class Analyzer
 							$arg = $f->in[$i];
 							$cast = $this->getCastSequence($node->a_scope, $node->args[$i]->a_type, $arg->a_type);
 							if ($cast === null) {
+								//echo "- no cast available\n";
 								$match = false;
 							} else {
 								$implicitCasts += count($cast);
 								$casts[$i] = $cast;
-								/*$t = $f->in[$i]->a_type->intersection($node->args[$i]->a_type);
-								if (!count($t->types)) {
-									$match = false;
-								}*/
+								//echo "- cast over ".count($cast)." available\n";
 							}
 						}
 						if ($match) {
@@ -246,6 +251,11 @@ class Analyzer
 							$node->callee->range
 						);
 					} else {
+						usort($matches, function($a,$b) {
+							if (count($a['cast']) < count($b['cast'])) return 1;
+							if (count($a['cast']) > count($b['cast'])) return -1;
+							return 0;
+						});
 						$node->a_target = $matches[0]['func'];
 						foreach ($matches[0]['cast'] as $arg => $casts) {
 							$orig = $node->args[$arg];
@@ -280,7 +290,6 @@ class Analyzer
 		if (count($from->intersection($to)->types)) {
 			return array();
 		}
-		echo "trying to find cast from $from to $to\n";
 		$casts = $scope->find('cast');
 		if (!is_array($casts)) {
 			return null;
@@ -289,7 +298,7 @@ class Analyzer
 			if (count($f->in) != 1 || count($f->out) != 1) {
 				continue;
 			}
-			if (count($from->intersection($f->in[0]->a_type)) && count($to->intersection($f->out[0]->a_type))) {
+			if (count($from->intersection($f->in[0]->a_type)->types) && count($to->intersection($f->out[0]->a_type)->types)) {
 				return array($f);
 			}
 		}

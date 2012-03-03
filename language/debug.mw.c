@@ -1,4 +1,4 @@
-/* automatically compiled on 2012-03-03T00:35:53+01:00 */
+/* automatically compiled on 2012-03-03T11:16:22+01:00 */
 
 #include <assert.h>
 #include <stdio.h>
@@ -53,16 +53,23 @@ func_cast_t func_cast (B_t* x)
 	
 }
 
+//definition of type Vector
+Type_t type_Vector = type_make("Vector");
+typedef struct {
+	Type_t * isa /* = &type_Vector*/;
+} Vector_t;
+
 //Definition of function main
 void func_main ()
 {
-	A_t* s11_a;
-	B_t* s11_b;
-	func_test(s11_a);
-	func_test(func_cast(s11_b).r);
-	int_t s11_ix = 1;
-	int_t s11_iy = 2;
-	int_t s11_iz = (s11_ix + s11_iy);
+	A_t* s12_a;
+	B_t* s12_b;
+	func_test(s12_a);
+	func_test(func_cast(s12_b).r);
+	int16_t s12_ix = 1;
+	int16_t s12_iy = 2;
+	int16_t s12_iz = (s12_ix + s12_iy);
+	printf("iz = %i\n", (int)*&s12_iz);
 }
 
 // --- debugging code ---

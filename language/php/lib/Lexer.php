@@ -112,7 +112,7 @@ class Lexer
 					//Check whether we've reached the end of the string in which case we switch
 					//back to code context. We leave new buffer kind invalid so the token gets
 					//wrapped up.
-					if ($ppc != '\\' && $pc != '\\' && $c == '"') {
+					if (($ppc == '\\' || $pc != '\\') && $c == '"') {
 						$context = 'code';
 					}
 					

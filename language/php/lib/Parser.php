@@ -359,6 +359,31 @@ class Parser
 			$r->nodes = array($r->expr);
 			return $r;
 		}
+		if ($keyword->text == 'inline') {
+			if (count($ts) && !$ts[0]->is('group', '{}')) {
+				$this->issues[] = new Issue(
+					'error',
+					"Inline keyword requries C code in brackets.",
+					$ts[0]->range,
+					array($keyword->range)
+				);
+				return null;
+			}
+			$grp = array_shift($ts);
+			$range = $grp->range;
+			$txt = substr($range->source->content, $range->start->offset + 1, $range->end->offset - $range->start->offset - 2);
+			
+			$txt = trim($txt);
+			preg_match('/^(\s+)/m', $txt, $matches);
+			$txt = str_replace("\n$matches[0]", "\n", $txt);
+			
+			$i = new Node;
+			$i->kind = 'stmt.inline';
+			$i->code = $txt;
+			$i->range = clone $keyword->range;
+			$i->range->combine($grp->range);
+			return $i;
+		}
 		
 		//Keyword meaningless.
 		while (count($ts) && !array_shift($ts)->is('symbol', ';'));

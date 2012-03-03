@@ -6,6 +6,12 @@ type B {}
 func test (A x) {}
 func cast (B x) -> (A r) {}
 
+type Vector
+{
+	float x;
+	float y;
+}
+
 func main
 {
 	A a;
@@ -14,7 +20,11 @@ func main
 	test(a);
 	test(b);
 	
-	int ix = 1;
-	int iy = 2;
-	int iz = ix + iy;
+	int16 ix = 1;
+	int16 iy = 2;
+	int16 iz = ix + iy;
+	
+	inline {
+		printf("iz = %i\n", (int)*@iz@);
+	}
 }

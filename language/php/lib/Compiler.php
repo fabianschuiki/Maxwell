@@ -77,6 +77,37 @@ class Compiler
 		return $seg;
 	}
 	
+	private function compileStmtInline(Node &$node)
+	{
+		$seg = new CSegment;
+		preg_match_all('/@(.+?)@/', $node->code, $matches);
+ 		$subs = array();
+ 		foreach ($matches[1] as $n) {
+			$sn = $node->a_scope->find($n);
+			if (!$sn) {
+				$this->issues[] = new Issue(
+					'error',
+					"Name '$n' in inline C code unknown.",
+					$node->range
+				);
+				return null;
+			}
+			$ref = $sn->c_ptr;
+			if (!$ref) {
+				$this->issues[] = new Issue(
+					'error',
+					"Identifier '$n' cannot be referenced in inline C code.",
+					$node->range,
+					array($sn->range)
+				);
+				return null;
+			}
+			$subs["@$n@"] = $ref; 
+		}
+		$seg->stmts[] = str_replace(array_keys($subs), array_values($subs), $node->code);
+		return $seg;
+	}
+	
 	private $funcDefIndices = array();
 	private function compileFuncDef(Node &$node)
 	{
@@ -185,8 +216,9 @@ class Compiler
 		$typeNode = $node->type->a_target;
 		
 		$name = "s{$node->a_scope->index}_{$node->name->text}";
-		$node->c_name  = $name;
-		$node->c_ref   = ($node->a_local && !$typeNode->primitive ? '&'.$name : $name);
+		$node->c_name = $name;
+		$node->c_ref  = ($node->a_local && !$typeNode->primitive ? '&'.$name : $name);
+		$node->c_ptr  = ($node->a_local ||  $typeNode->primitive ? '&'.$name : $name);
 		
 		$type = $node->type->a_target->c_name;
 		if (!$node->a_local && !$typeNode->primitive) {

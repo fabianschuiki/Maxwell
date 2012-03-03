@@ -1,3 +1,30 @@
+<?php
+
+function dumpDefType(Node $type)
+{
+	$out = "<div class=\"scp-type\">\n";
+	$out .= "<span class=\"scp-name\">{$type->name}</span>\n";
+	if ($type->primitive) {
+		$out .= "<span class=\"scp-attr\">primitive</span>\n";
+	}
+	$out .= "</div>\n";
+	return $out;
+}
+
+function dumpScope(Scope $scope)
+{
+	$out = "<div class=\"scp\">\n";
+	if (count($scope->types)) {
+		$out .= "<h1>Types</h1>\n";
+		foreach ($scope->types as $name => $type) {
+			$out .= dumpDefType($type);
+		}
+	}
+	$out .= "</div>\n";
+	return $out;
+}
+
+?>
 <html>
 	<head>
 		<title><?php echo basename($file->path); ?></title>
@@ -6,7 +33,7 @@
 	</head>
 
 	<body>
-		<div class="col left">
+		<div class="col left top">
 			<pre class="code"><?php
 			$s = 0;
 			$i = 0;
@@ -27,6 +54,9 @@
 				$s = $e;
 			}
 			?></pre>
+		</div>
+		<div class="col left bottom">
+			<?php echo dumpScope($scope); ?>
 		</div>
 		<div class="col right">
 			<div class="nodes">

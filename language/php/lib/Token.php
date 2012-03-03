@@ -22,6 +22,6 @@ class Token
 	
 	public function __toString()
 	{
-		return "{$this->type} '{$this->text}'";
+		return $this->text;
 	}
 }

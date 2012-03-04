@@ -32,6 +32,7 @@ pre.code span.token:hover {
 	background-color: #e9b96e;
 }
 pre.code span.token div.hover {
+	white-space: normal;
 	position: absolute;
 	display: none;
 	padding: 0.5em;
@@ -41,6 +42,7 @@ pre.code span.token div.hover {
 	border-radius: 4px;
 	color: black;
 	z-index: 1;
+	min-width: 15em;
 }
 pre.code span.token div.hover span.key {
 	font-weight: bold;

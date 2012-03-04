@@ -129,7 +129,7 @@ class Compiler
 			$node->c_retname = $retname;
 			$type = "typedef struct {\n";
 			foreach ($node->out as $o) {
-				$type .= "\t{$o->type->a_target->c_ref} {$o->name->text};\n";
+				$type .= "\t{$o->a_target->c_ref} {$o->name->text};\n";
 			}
 			$type .= "} $retname;";
 			$seg->stmts[] = $type;
@@ -140,7 +140,7 @@ class Compiler
 		//Synthesize the function defintion.
 		$ins = array();
 		foreach ($node->in as $i) {
-			$ins[] = "{$i->type->a_target->c_ref} {$i->name->text}";
+			$ins[] = "{$i->a_target->c_ref} {$i->name->text}";
 		}
 		$def  = "$retname {$node->c_name} (".implode(", ", $ins).")\n";
 		$def .= $this->compileBlock($node->body);
@@ -213,14 +213,14 @@ class Compiler
 	
 	private function compileVarExpr(Node &$node)
 	{
-		$typeNode = $node->type->a_target;
+		$typeNode = $node->a_target;
 		
 		$name = "s{$node->a_scope->index}_{$node->name->text}";
 		$node->c_name = $name;
 		$node->c_ref  = ($node->a_local && !$typeNode->primitive ? '&'.$name : $name);
 		$node->c_ptr  = ($node->a_local ||  $typeNode->primitive ? '&'.$name : $name);
 		
-		$type = $node->type->a_target->c_name;
+		$type = $node->a_target->c_name;
 		if (!$node->a_local && !$typeNode->primitive) {
 			$type .= '*';
 		}

@@ -18,3 +18,5 @@
   - Add type search
 
 - Implement some better version of late binding, where for each function call the Analyzer compiles a list of possible function patterns (including required implicit casts). The Analyzer should insert cast function calls as required.
+
+- Implement the type operator (probably '@') which should return the `Type` instance for the given object. For primitive types this has to be done statically at compile time.

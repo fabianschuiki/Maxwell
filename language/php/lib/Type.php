@@ -2,25 +2,22 @@
 
 class Type
 {
-	public $types = array('*');
-	
-	public function __construct()
-	{
-		$args = func_get_args();
-		if (count($args)) {
-			$this->types = (is_array($args[0]) ? $args[0] : $args);
-		}
-	}
-	
-	public function intersection(Type &$t)
-	{
-		if (in_array('*', $this->types)) return clone $t;
-		if (in_array('*', $t->types)) return clone $this;
-		return new Type(array_intersect($this->types, $t->types));
-	}
+	public $name;
+	public $cast = null;
 	
 	public function __toString()
 	{
-		return '{'.implode(', ', $this->types).'}';
+		$s = $this->name;
+		if ($this->cast) {
+			$s .= '['.count($this->cast).']';
+		}
+		return $s;
+	}
+	
+	public function cost()
+	{
+		if ($this->cast)
+			return count($this->cast);
+		return 0;
 	}
 }

@@ -427,12 +427,14 @@ class Parser
 			$e->kind  = 'expr.const.numeric';
 			$e->value = array_shift($ts);
 			$e->range = $e->value->range;
+			$e->value->node = $e;
 		}
 		else if ($ts[0]->is('string')) {
 			$e = new Node;
 			$e->kind  = 'expr.const.string';
 			$e->value = array_shift($ts);
 			$e->range = $e->value->range;
+			$e->value->node = $e;
 		}
 		if (count($ts) > 0) {
 			$range = $ts[0]->range;
@@ -537,6 +539,7 @@ class Parser
 			$i->name  = $ident->text;
 			$i->token = $ident;
 			$i->range = clone $ident->range;
+			$ident->node = $i;
 			return $i;
 		}
 		if ($ts[0]->is('identifier')) {
@@ -552,6 +555,7 @@ class Parser
 			$v->type  = $type;
 			$v->range = clone $name->range;
 			$v->range->combine($type->range);
+			$name->node = $v;
 			return $v;
 		}
 		return null;

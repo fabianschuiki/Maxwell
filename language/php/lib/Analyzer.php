@@ -42,7 +42,7 @@ class Analyzer
 			$n->c_name = $n->name->text.'_t';
 			$n->primitive = true;
 			$scope->names[$n->name->text] = $n;
-			$this->builtinNumericTypes[] = $n;
+			$this->builtinNumericTypes[] = $type;
 			
 			$operators = array('+', '-', '*', '/');
 			foreach ($operators as $op) {
@@ -62,6 +62,13 @@ class Analyzer
 				$this->analyzeType($n);
 			}
 		}
+		
+		$n = new Node;
+		$n->builtin = true;
+		$n->kind = 'def.type';
+		$n->name = Token::builtin('identifier', 'any');
+		$n->c_name = 'unresolved_any';
+		$scope->add($this->issues, $n);
 	}
 	
 	private function reduce(Node &$node)
@@ -87,6 +94,7 @@ class Analyzer
 				foreach ($node->lhs as $key => $value) {
 					$node->$key = $value;
 				}
+				$node->name->node = $node;
 				unset($node->rhs);
 				unset($node->lhs);
 				unset($node->op);
@@ -160,7 +168,6 @@ class Analyzer
 						array($node->name->range)
 					);
 				}
-				$node->type->a_target = $type;
 				$node->a_target = $type;
 			} break;
 			case 'expr.ident': {
@@ -179,109 +186,73 @@ class Analyzer
 	
 	private function analyzeType(Node &$node)
 	{
+		switch ($node->kind) {
+			case 'expr.var': {
+				$types = new TypeSet;
+				$types->addNativeType($node->type);
+				$node->a_types = $types;
+				if (isset($node->initial)) {
+					$node->initial->a_requiredTypes = clone $node->a_types;
+				}
+			} break;
+		}
 		foreach ($node->nodes() as $n) {
 			$this->analyzeType($n);
 		}
 		switch ($node->kind) {
-			case 'def.func': {
-				$in  = array();
-				$out = array();
-				foreach ($node->in as $a)  $in[]  = $a->a_type;
-				foreach ($node->out as $a) $out[] = $a->a_type;
-				$node->a_type = new Type('('.implode(',', $in).') -> ('.implode(',', $out).')');
-			} break;
-			case 'def.func.arg': {
-				$node->a_type = new Type($node->type->text);
-			} break;
 			case 'expr.var': {
-				$node->a_type = new Type($node->type->text);
-				$node->a_local = ($node->type->text == 'scalar');
-				if ($node->initial) {
-					$node->initial->a_reqType = $node->a_type;
+				if (isset($node->initial->a_types)) {
+					$node->a_types->intersect($node->initial->a_types);
 				}
-			} break;
-			case 'expr.const.numeric': $node->a_type = new Type('int', 'float'); break;
-			case 'expr.ident': $node->a_type = ($node->a_target ? $node->a_target->a_type : null); break;
-			case 'expr.call': {
-				$funcs = $node->callee->a_target;
-				if (!is_array($funcs)) {
-					$this->issues[] = new Issue(
-						'error',
-						"called function '{$node->callee->name}' is unknown",
-						$node->callee->range
-					);
-				} else {
-					$matches = array();
-					foreach ($funcs as $f) {
-						if (count($f->in) != count($node->args)) {
-							continue;
-						}
-						//echo "trying {$f->name} {$f->a_type}\n";
-						$match = true;
-						$implicitCasts = 0;
-						$casts = array();
-						for ($i = 0; $i < count($f->in) && $match; $i++) {
-							$arg = $f->in[$i];
-							$cast = $this->getCastSequence($node->a_scope, $node->args[$i]->a_type, $arg->a_type);
-							if ($cast === null) {
-								//echo "- no cast available\n";
-								$match = false;
-							} else {
-								$implicitCasts += count($cast);
-								$casts[$i] = $cast;
-								//echo "- cast over ".count($cast)." available\n";
-							}
-						}
-						if ($match) {
-							$matches[] = array(
-								'func' => $f,
-								'cast' => $casts
-							);
-							if ($implicitCasts == 0) {
-								break;
-							}
-						}
-					}
-					if (!count($matches)) {
+				//TODO: move this code to late binding as this will be similar for functions.
+				if ($node->type->text == 'any') {
+					if (!$node->a_types->unique()) {
 						$this->issues[] = new Issue(
 							'error',
-							"Called function '{$node->callee->name}' has no type matching the call. Candidates are:\n- ".implode("\n- ", array_map(function($f){
-								return $f->a_type;
-							}, $funcs)),
-							$node->callee->range
+							"Type of variable '{$node->name}' could not be inferred unambiguously. Possible types are '{$node->a_types}'.",
+							$node->name->range
 						);
 					} else {
-						usort($matches, function($a,$b) {
-							if (count($a['cast']) < count($b['cast'])) return 1;
-							if (count($a['cast']) > count($b['cast'])) return -1;
-							return 0;
-						});
-						$node->a_target = $matches[0]['func'];
-						foreach ($matches[0]['cast'] as $arg => $casts) {
-							$orig = $node->args[$arg];
-							$wrap = $node->args[$arg]->expr;
-							foreach ($casts as $cast) {
-								$n = new Node;
-								$n->kind = 'expr.call';
-								$n->callee = new Node;
-								$n->callee->kind = 'expr.ident';
-								$n->callee->name = $cast->name->text;
-								$n->callee->range = clone $orig->expr->range;
-								$n->a_target = $cast;
-								$na = new Node;
-								$na->kind = 'expr.call.arg';
-								$na->expr = $wrap;
-								$n->args = array($na);
-								//$this->analyzeType($n);
-								$wrap = $n;
-								//echo "applying cast {$c->a_type}\n";
-							}
-							$node->args[$arg]->expr = $wrap;
+						$type = $node->a_types->unique();
+						$node->a_target = $node->a_scope->find($type);
+						//TODO: it is possible that this never happens as inexistent types should get caught way earlier than late binding. But just in case...
+						if (!$node->a_target) {
+							$this->issues[] = new Issue(
+								'error',
+								"Type of variable '{$node->name}' was inferred to be '$type', which is an unknown type.",
+								$node->name->range
+							);
 						}
 					}
 				}
 			} break;
-			case 'expr.call.arg': $node->a_type = $node->expr->a_type; break;
+			case 'expr.ident': {
+				//TODO: No idea whether this works or not. This should help infer the type for variables with generic 'any' type, based on the variable's usage.
+				if (isset($node->a_requiredTypes) && isset($node->a_target->a_types)) {
+					$node->a_target->a_types->intersect($node->a_requiredTypes);
+				}
+				
+				$node->a_types = clone $node->a_target->a_types;
+			} break;
+			case 'expr.const.numeric': {
+				$types = new TypeSet;
+				$types->addNativeTypes($this->builtinNumericTypes);
+				$node->a_types = $types;
+			} break;
+		}
+		
+		//Types post processing.
+		if (isset($node->a_types)) {
+			//Find possible cast types.
+			//NOTE: This is kind of ugly, but the cast discovery should be left up to the referencing nodes, such as expr.ident and the like. This way, defining nodes such as expr.var keep a clean and exact type.
+			if ($node->kind != 'expr.var') {
+				$node->a_types->findCastTypes($node->a_scope);
+			}
+			
+			//If there is a type requirement, apply it to the types we inferred.
+			if (isset($node->a_requiredTypes)) {
+				$node->a_types->intersect($node->a_requiredTypes);
+			}
 		}
 	}
 	

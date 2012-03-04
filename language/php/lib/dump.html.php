@@ -4,6 +4,12 @@ function tokenHover(Token &$t)
 {
 	$pairs = array();
 	$pairs['Type'] = $t->type;
+	if (isset($t->node)) {
+		$pairs['Node'] = $t->node->kind;
+		if (isset($t->node->a_types)) {
+			$pairs['Types'] = $t->node->a_types;
+		}
+	}
 	
 	$lines = array();
 	foreach ($pairs as $key => $value) {
@@ -12,7 +18,7 @@ function tokenHover(Token &$t)
 		$l .= "</div>";
 		$lines[] = $l;
 	}
-	return implode("\n", $lines);
+	return implode('', $lines);
 }
 
 ?>

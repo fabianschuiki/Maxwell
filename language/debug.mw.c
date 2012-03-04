@@ -1,4 +1,4 @@
-/* automatically compiled on 2012-03-03T11:16:22+01:00 */
+/* automatically compiled on 2012-03-04T20:41:41+01:00 */
 
 #include <assert.h>
 #include <stdio.h>
@@ -32,44 +32,19 @@ typedef struct {
 	Type_t * isa /* = &type_A*/;
 } A_t;
 
-//definition of type B
-Type_t type_B = type_make("B");
-typedef struct {
-	Type_t * isa /* = &type_B*/;
-} B_t;
-
-//Definition of function test
-void func_test (A_t* x)
-{
-	
-}
-
 //Definition of function cast
 typedef struct {
-	A_t* r;
+	A_t* a;
 } func_cast_t;
-func_cast_t func_cast (B_t* x)
+func_cast_t func_cast ( i)
 {
 	
 }
-
-//definition of type Vector
-Type_t type_Vector = type_make("Vector");
-typedef struct {
-	Type_t * isa /* = &type_Vector*/;
-} Vector_t;
 
 //Definition of function main
 void func_main ()
 {
-	A_t* s12_a;
-	B_t* s12_b;
-	func_test(s12_a);
-	func_test(func_cast(s12_b).r);
-	int16_t s12_ix = 1;
-	int16_t s12_iy = 2;
-	int16_t s12_iz = (s12_ix + s12_iy);
-	printf("iz = %i\n", (int)*&s12_iz);
+	25;
 }
 
 // --- debugging code ---

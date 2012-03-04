@@ -1,30 +1,10 @@
 /** Debugging some stuff. */
 
 type A {}
-type B {}
 
-func test (A x) {}
-func cast (B x) -> (A r) {}
-
-type Vector
-{
-	float x;
-	float y;
-}
+func cast (int i) -> (A a) {}
 
 func main
 {
-	A a;
-	B b;
-	
-	test(a);
-	test(b);
-	
-	int16 ix = 1;
-	int16 iy = 2;
-	int16 iz = ix + iy;
-	
-	inline {
-		printf("iz = %i\n", (int)*@iz@);
-	}
+	25;
 }

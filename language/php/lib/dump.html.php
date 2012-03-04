@@ -1,27 +1,18 @@
 <?php
 
-function dumpDefType(Node $type)
+function tokenHover(Token &$t)
 {
-	$out = "<div class=\"scp-type\">\n";
-	$out .= "<span class=\"scp-name\">{$type->name}</span>\n";
-	if ($type->primitive) {
-		$out .= "<span class=\"scp-attr\">primitive</span>\n";
+	$pairs = array();
+	$pairs['Type'] = $t->type;
+	
+	$lines = array();
+	foreach ($pairs as $key => $value) {
+		$l  = "<div class=\"token-hover-line\">";
+		$l .= "<span class=\"key\">$key: </span><span class=\"value\">$value</span>";
+		$l .= "</div>";
+		$lines[] = $l;
 	}
-	$out .= "</div>\n";
-	return $out;
-}
-
-function dumpScope(Scope $scope)
-{
-	$out = "<div class=\"scp\">\n";
-	if (count($scope->types)) {
-		$out .= "<h1>Types</h1>\n";
-		foreach ($scope->types as $name => $type) {
-			$out .= dumpDefType($type);
-		}
-	}
-	$out .= "</div>\n";
-	return $out;
+	return implode("\n", $lines);
 }
 
 ?>
@@ -30,10 +21,25 @@ function dumpScope(Scope $scope)
 		<title><?php echo basename($file->path); ?></title>
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 		<style><?php include __DIR__.'/dump.css'; ?></style>
+		
+		<script type="text/javascript">
+		$(document).ready(function(){
+			console.log("starting shizzle");
+			$("span.token").each(function(_, e){
+				$(e).mouseover(function(){
+					console.log(this);
+					$(this).children("div.hover").first().show();
+				});
+				$(e).mouseout(function(){
+					$(this).children("div.hover").first().hide();
+				});
+			});
+		});
+		</script>
 	</head>
 
 	<body>
-		<div class="col left top">
+		<div class="col left">
 			<pre class="code"><?php
 			$s = 0;
 			$i = 0;
@@ -46,17 +52,17 @@ function dumpScope(Scope $scope)
 			
 				$e = $t->range->end->offset;
 				$t->index = $i++;
-				echo '<span id="token-'.($t->index).'" class="'.$t->type.' '.str_replace('.', '-', $context).'"';
-				echo ' data-context="'.$context.'"';
-				echo '>';
+				echo "<span id=\"token-{$t->index}\" class=\"token\">";
+				echo "<span class=\"{$t->type} ".str_replace('.', '-', $context)."\" data-context=\"$context\">";
 				echo substr($file->content, $s, $e-$s);
-				echo '</span>';
+				echo "</span>";
+				echo "<div class=\"hover\">";
+				echo tokenHover($t);
+				echo "</div>";
+				echo "</span>";
 				$s = $e;
 			}
 			?></pre>
-		</div>
-		<div class="col left bottom">
-			<?php echo dumpScope($scope); ?>
 		</div>
 		<div class="col right">
 			<div class="nodes">

@@ -16,16 +16,6 @@ div.col.left {
 	left: 0;
 }
 
-div.col.left.top {
-	bottom: inherit;
-	height: 50%;
-}
-
-div.col.left.bottom {
-	top: inherit;
-	height: 50%;
-}
-
 div.col.right {
 	right: 0;
 }
@@ -33,6 +23,27 @@ div.col.right {
 pre.code {
 	color: #aaa;
 	margin: 1em;
+}
+
+pre.code span.token {
+	position: relative;
+}
+pre.code span.token:hover {
+	background-color: #e9b96e;
+}
+pre.code span.token div.hover {
+	position: absolute;
+	display: none;
+	padding: 0.5em;
+	background-color: hsl(0, 0%, 100%);
+	border: 1px solid hsl(0, 0%, 80%);
+	box-shadow: 0 1px 10px hsla(0, 0%, 0%, 0.05);
+	border-radius: 4px;
+	color: black;
+	z-index: 1;
+}
+pre.code span.token div.hover span.key {
+	font-weight: bold;
 }
 
 .identifier, .symbol, .keyword { color: #000000; }

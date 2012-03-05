@@ -213,7 +213,7 @@ class Analyzer
 				foreach ($node->out as $a) {
 					$type->addOutput($a->a_types, $a->name->text);
 				}
-				$node->a_type = $type;
+				$node->a_types = new TypeSet($type);
 			} break;
 			case 'expr.var': {
 				if (isset($node->initial->a_types)) {
@@ -262,7 +262,7 @@ class Analyzer
 					$type->addInput($a->a_types, $a->name->text);
 				}
 				//TODO: Add the output variables. Requires the further specification of how return values are handled and assigned.
-				$node->a_type = $type;
+				$node->a_types = new TypeSet($type);
 			} break;
 			case 'expr.call.arg': {
 				$node->a_types = clone $node->expr->a_types;

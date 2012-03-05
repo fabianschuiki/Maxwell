@@ -13,6 +13,13 @@ class TypeSet
 		return '{'.implode(', ', $this->types).'}';
 	}
 	
+	public function __construct($type = null)
+	{
+		if ($type) {
+			$this->addType($type);
+		}
+	}
+	
 	public function addType($type)
 	{
 		$this->any = false;
@@ -40,7 +47,7 @@ class TypeSet
 			$this->types = array();
 			return;
 		}
-		$t = new Type;
+		$t = new NamedType;
 		$t->name = strval($type);
 		$this->addType($t);
 	}

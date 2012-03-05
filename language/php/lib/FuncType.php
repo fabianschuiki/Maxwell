@@ -1,6 +1,6 @@
 <?php
 
-class FuncType
+class FuncType extends Type
 {
 	public $in;
 	public $out;
@@ -24,5 +24,13 @@ class FuncType
 	public function addOutput(TypeSet $type, $name = null)
 	{
 		$this->out->addField($type, $name);
+	}
+	
+	public function matches(Type $type)
+	{
+		if (!$type instanceof FuncType) {
+			return false;
+		}
+		return $this->in->matches($type->in) && $this->out->matches($type->out);
 	}
 }

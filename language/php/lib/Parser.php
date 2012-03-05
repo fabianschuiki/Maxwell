@@ -116,6 +116,7 @@ class Parser
 		$f->nodes = array($f->body);
 		$f->nodes += $f->in;
 		$f->nodes += $f->out;
+		$name->node = $f;
 		return $f;
 	}
 	
@@ -487,6 +488,7 @@ class Parser
 		$f->args   = $this->parseCallArgs(array_pop($ts)->tokens);
 		$f->callee = $this->parseExpr($ts);
 		$f->nodes  = array_merge(array($f->callee), $f->args);
+		$f->callee->token->node = $f;
 		return $f;
 	}
 	

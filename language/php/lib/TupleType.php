@@ -9,7 +9,7 @@ class TupleType
 		return '('.implode(', ', $this->fields).')';
 	}
 	
-	public function addField($type, $name = null)
+	public function addField(TypeSet $type, $name = null)
 	{
 		$f = new TupleTypeField;
 		$f->name = $name;

@@ -16,12 +16,12 @@ class FuncType
 		return $this->in."->".$this->out;
 	}
 	
-	public function addInput($type, $name = null)
+	public function addInput(TypeSet $type, $name = null)
 	{
 		$this->in->addField($type, $name);
 	}
 	
-	public function addOutput($type, $name = null)
+	public function addOutput(TypeSet $type, $name = null)
 	{
 		$this->out->addField($type, $name);
 	}

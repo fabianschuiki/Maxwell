@@ -195,11 +195,26 @@ class Analyzer
 					$node->initial->a_requiredTypes = clone $node->a_types;
 				}
 			} break;
+			case 'def.func.arg': {
+				$types = new TypeSet;
+				$types->addNativeType($node->type);
+				$node->a_types = $types;
+			} break;
 		}
 		foreach ($node->nodes() as $n) {
 			$this->analyzeType($n);
 		}
 		switch ($node->kind) {
+			case 'def.func': {
+				$type = new FuncType;
+				foreach ($node->in as $a) {
+					$type->addInput($a->a_types, $a->name->text);
+				}
+				foreach ($node->out as $a) {
+					$type->addOutput($a->a_types, $a->name->text);
+				}
+				$node->a_type = $type;
+			} break;
 			case 'expr.var': {
 				if (isset($node->initial->a_types)) {
 					$node->a_types->intersect($node->initial->a_types);
@@ -232,22 +247,25 @@ class Analyzer
 					$node->a_target->a_types->intersect($node->a_requiredTypes);
 				}
 				
-				$node->a_types = clone $node->a_target->a_types;
+				if (isset($node->a_target->a_types)) {
+					$node->a_types = clone $node->a_target->a_types;
+				}
 			} break;
 			case 'expr.const.numeric': {
 				$types = new TypeSet;
 				$types->addNativeTypes($this->builtinNumericTypes);
 				$node->a_types = $types;
 			} break;
-			case 'def.func': {
+			case 'expr.call': {
 				$type = new FuncType;
-				foreach ($node->in as $a) {
-					$type->addInput($a->type->text, $a->name->text);
+				foreach ($node->args as $a) {
+					$type->addInput($a->a_types, $a->name->text);
 				}
-				foreach ($node->out as $a) {
-					$type->addOutput($a->type->text, $a->name->text);
-				}
+				//TODO: Add the output variables. Requires the further specification of how return values are handled and assigned.
 				$node->a_type = $type;
+			} break;
+			case 'expr.call.arg': {
+				$node->a_types = clone $node->expr->a_types;
 			} break;
 		}
 		
@@ -255,9 +273,9 @@ class Analyzer
 		if (isset($node->a_types)) {
 			//Find possible cast types.
 			//NOTE: This is kind of ugly, but the cast discovery should be left up to the referencing nodes, such as expr.ident and the like. This way, defining nodes such as expr.var keep a clean and exact type.
-			if ($node->kind != 'expr.var') {
+			/*if ($node->kind != 'expr.var') {
 				$node->a_types->findCastTypes($node->a_scope);
-			}
+			}*/
 			
 			//If there is a type requirement, apply it to the types we inferred.
 			if (isset($node->a_requiredTypes)) {

@@ -17,7 +17,8 @@ func main
 {
 	A z;
 	int x = 35;
+	int y = 98;
 	any a = x;
 	A b = a;
-	inline { printf("a = %i\n", (int)*@a@); }
+	show(x, y);
 }

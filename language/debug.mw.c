@@ -1,4 +1,4 @@
-/* automatically compiled on 2012-03-05T10:53:50+01:00 */
+/* automatically compiled on 2012-03-05T11:39:57+01:00 */
 
 #include <assert.h>
 #include <stdio.h>
@@ -85,9 +85,10 @@ void func_main ()
 {
 	A_t* s25_z;
 	int_t s25_x = 35;
+	int_t s25_y = 98;
 	int_t s25_a = s25_x;
 	A_t* s25_b = s25_a;
-	printf("a = %i\n", (int)*&s25_a);
+	(s25_x, s25_y);
 }
 
 // --- debugging code ---

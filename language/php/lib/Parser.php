@@ -165,6 +165,7 @@ class Parser
 		$a->kind  = 'def.func.arg';
 		$a->name  = $name;
 		$a->type  = $type;
+		$name->node = $a;
 		return $a;
 	}
 	

@@ -1,4 +1,4 @@
-/* automatically compiled on 2012-03-04T23:44:56+01:00 */
+/* automatically compiled on 2012-03-05T10:53:50+01:00 */
 
 #include <assert.h>
 #include <stdio.h>
@@ -74,14 +74,20 @@ func_cast_3_t func_cast_3 (B_t* b)
 	
 }
 
+//Definition of function show
+void func_show ( a,  b)
+{
+	
+}
+
 //Definition of function main
 void func_main ()
 {
-	A_t* s20_z;
-	int_t s20_x = 35;
-	int_t s20_a = s20_x;
-	A_t* s20_b = s20_a;
-	printf("a = %i\n", (int)*&s20_a);
+	A_t* s25_z;
+	int_t s25_x = 35;
+	int_t s25_a = s25_x;
+	A_t* s25_b = s25_a;
+	printf("a = %i\n", (int)*&s25_a);
 }
 
 // --- debugging code ---

@@ -8,6 +8,11 @@ func cast (A a) -> (int i) {}
 func cast (A a) -> (B b) {}
 func cast (B b) -> (A a) {}
 
+func show (int a, int b)
+{
+	inline { printf("a = %i, b = %b", (int)*@a@, (int)*@b@); }
+}
+
 func main
 {
 	A z;

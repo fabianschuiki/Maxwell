@@ -30,7 +30,6 @@ function tokenHover(Token &$t)
 		
 		<script type="text/javascript">
 		$(document).ready(function(){
-			console.log("starting shizzle");
 			$("span.token").each(function(_, e){
 				$(e).mouseover(function(){
 					console.log(this);
@@ -88,7 +87,7 @@ function tokenHover(Token &$t)
 						if ($value instanceof Type) {
 							echo '<span class="value type">'.implode(', ',$value->types).'</span>';
 						}
-						if ($value instanceof TypeSet) {
+						if ($value instanceof TypeSet || $value instanceof FuncType || $value instanceof TupleType) {
 							echo '<span class="value type">'.$value.'</span>';
 						}
 						if ($value instanceof Scope) {

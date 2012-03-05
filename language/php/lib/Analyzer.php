@@ -239,6 +239,16 @@ class Analyzer
 				$types->addNativeTypes($this->builtinNumericTypes);
 				$node->a_types = $types;
 			} break;
+			case 'def.func': {
+				$type = new FuncType;
+				foreach ($node->in as $a) {
+					$type->addInput($a->type->text, $a->name->text);
+				}
+				foreach ($node->out as $a) {
+					$type->addOutput($a->type->text, $a->name->text);
+				}
+				$node->a_type = $type;
+			} break;
 		}
 		
 		//Types post processing.

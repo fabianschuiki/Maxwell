@@ -11,3 +11,8 @@ autogen/*
 .*
 *~
 *.kdev4
+
+# ignore temporary build stuff
+*.mw.asm
+*.mw.c
+*.mw.html

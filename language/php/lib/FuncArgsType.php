@@ -1,6 +1,6 @@
 <?php
 
-class TupleType extends Type
+class FuncArgsType extends Type
 {
 	public $fields = array();
 	
@@ -11,7 +11,7 @@ class TupleType extends Type
 	
 	public function addField(TypeSet $type, $name = null)
 	{
-		$f = new TupleTypeField;
+		$f = new FuncArgsTypeField;
 		$f->name = $name;
 		$f->type = $type;
 		$this->fields[] = $f;
@@ -19,7 +19,7 @@ class TupleType extends Type
 	
 	public function matches(Type $type)
 	{
-		if (!$type instanceof TubleType) {
+		if (!$type instanceof FuncArgsType) {
 			return false;
 		}
 		$i = 0;
@@ -40,7 +40,7 @@ class TupleType extends Type
 	}
 }
 
-class TupleTypeField
+class FuncArgsTypeField
 {
 	public $name;
 	public $type;

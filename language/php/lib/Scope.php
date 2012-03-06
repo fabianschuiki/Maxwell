@@ -36,6 +36,9 @@ class Scope
 	
 	public function add(IssueList $issues, Node $n)
 	{
+		if (!$n->name) {
+			return;
+		}
 		$name = strval($n->name);
 		
 		//Check whether there's an existing entry with this name.

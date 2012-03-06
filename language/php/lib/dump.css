@@ -34,6 +34,8 @@ pre.code span.token:hover {
 pre.code span.token div.hover {
 	white-space: normal;
 	position: absolute;
+	left: -10px;
+	top: 25px;
 	display: none;
 	padding: 0.5em;
 	background-color: hsl(0, 0%, 100%);
@@ -47,6 +49,11 @@ pre.code span.token div.hover {
 pre.code span.token div.hover span.key {
 	font-weight: bold;
 }
+
+span.value-typeset {
+	color: #f57900;
+}
+
 
 .identifier, .symbol, .keyword { color: #000000; }
 .numeric { color: #3465a4; }

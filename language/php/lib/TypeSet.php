@@ -94,7 +94,7 @@ class TypeSet
 						});
 						
 						//Create the new type.
-						$t = new Type;
+						$t = new NamedType;
 						$t->name = $new->name;
 						$t->cast = $new->used;
 						$this->addType($t);

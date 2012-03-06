@@ -7,8 +7,8 @@ class FuncType extends Type
 	
 	public function __construct()
 	{
-		$this->in  = new TupleType;
-		$this->out = new TupleType;
+		$this->in  = new FuncArgsType;
+		$this->out = new FuncArgsType;
 	}
 	
 	public function __toString()

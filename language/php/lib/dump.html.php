@@ -3,18 +3,32 @@
 function tokenHover(Token &$t)
 {
 	$pairs = array();
-	$pairs['Type'] = $t->type;
+	$pairs['Token'] = $t->type;
 	if (isset($t->node)) {
 		$pairs['Node'] = $t->node->kind;
 		if (isset($t->node->a_types)) {
 			$pairs['Types'] = $t->node->a_types;
 		}
+		if (isset($t->node->a_target)) {
+			$ts = $t->node->a_target;
+			if (is_array($ts)) {
+				$targets = array();
+				foreach ($ts as $t) {
+					$targets[] = "{$t->kind} {$t->name} {$t->a_types}";
+				}
+				$target = "[".implode(",\n", $targets)."]";
+			} else {
+				$target = "{$ts->kind} {$ts->name} {$ts->a_types}";
+			}
+			$pairs['Bound To'] = $target;
+		}
 	}
 	
 	$lines = array();
 	foreach ($pairs as $key => $value) {
+		$class = strtolower(is_object($value) ? get_class($value) : 'string');
 		$l  = "<div class=\"token-hover-line\">";
-		$l .= "<span class=\"key\">$key: </span><span class=\"value\">$value</span>";
+		$l .= "<span class=\"key\">$key: </span><span class=\"value value-$class\">$value</span>";
 		$l .= "</div>";
 		$lines[] = $l;
 	}

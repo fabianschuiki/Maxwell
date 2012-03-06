@@ -10,7 +10,12 @@ func cast (B b) -> (A a) {}
 
 func show (int a, int b)
 {
-	inline { printf("a = %i, b = %b", (int)*@a@, (int)*@b@); }
+	inline { printf("a = %i, b = %b\n", (int)*@a@, (int)*@b@); }
+}
+
+func show (A a)
+{
+	inline { printf("A of size %i\n", (int)sizeof(*@a@)); }
 }
 
 func main

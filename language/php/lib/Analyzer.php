@@ -22,6 +22,9 @@ class Analyzer
 		
 		foreach ($this->nodes as $n) $this->analyzeType($n);
 		if ($this->issues->isFatal()) return;
+		
+		foreach ($this->nodes as $n) $this->lateBind($n);
+		if ($this->issues->isFatal()) return;
 	}
 	
 	private $builtinNumericTypes = array();
@@ -41,7 +44,8 @@ class Analyzer
 			$n->name = Token::builtin('identifier', $type);
 			$n->c_name = $n->name->text.'_t';
 			$n->primitive = true;
-			$scope->names[$n->name->text] = $n;
+			//$scope->names[$n->name->text] = $n;
+			$this->populateScope($scope, $n);
 			$this->builtinNumericTypes[] = $type;
 			
 			$operators = array('+', '-', '*', '/');
@@ -54,11 +58,13 @@ class Analyzer
 				$a = new Node;
 				$a->kind = 'def.func.arg';
 				$a->type = Token::builtin('identifier', $type);
+				$a->func = $n;
 				
 				$n->in = array(clone $a, clone $a);
 				$n->out = array(clone $a);
 				
-				$scope->names[$n->name->text][] = $n;
+				$this->populateScope($scope, $n);
+				//$scope->names[$n->name->text][] = $n;
 				$this->analyzeType($n);
 			}
 		}
@@ -68,7 +74,8 @@ class Analyzer
 		$n->kind = 'def.type';
 		$n->name = Token::builtin('identifier', 'any');
 		$n->c_name = 'unresolved_any';
-		$scope->add($this->issues, $n);
+		$this->populateScope($scope, $n);
+		//$scope->add($this->issues, $n);
 	}
 	
 	private function reduce(Node &$node)
@@ -119,6 +126,10 @@ class Analyzer
 				$node->args = array($lhs, $rhs);
 			}
 		}
+		if ($node->kind == 'def.func') {
+			array_walk($node->in,  function(&$a) use ($f) { $a->func = $node; });
+			array_walk($node->out, function(&$a) use ($f) { $a->func = $node; });
+		}
 	}
 	
 	private function populateScope(Scope &$parent, Node &$node)
@@ -130,9 +141,9 @@ class Analyzer
 		}
 		switch ($node->kind) {
 			case 'def.func':     $parent->add($this->issues, $node); break;
-			case 'def.func.arg': $parent->add($this->issues, $node);  break;
+			case 'def.func.arg': $parent->add($this->issues, $node); break;
 			case 'def.type':     $parent->add($this->issues, $node); break;
-			case 'expr.var':     $parent->add($this->issues, $node);  break;
+			case 'expr.var':     $parent->add($this->issues, $node); break;
 		}
 		foreach ($node->nodes() as $n) {
 			$this->populateScope($node->a_scope, $n);
@@ -180,6 +191,9 @@ class Analyzer
 					);
 				}
 				$node->a_target = $target;
+			} break;
+			case 'expr.call': {
+				$node->a_target = $node->callee->a_target;
 			} break;
 		}
 	}
@@ -273,14 +287,21 @@ class Analyzer
 		if (isset($node->a_types)) {
 			//Find possible cast types.
 			//NOTE: This is kind of ugly, but the cast discovery should be left up to the referencing nodes, such as expr.ident and the like. This way, defining nodes such as expr.var keep a clean and exact type.
-			/*if ($node->kind != 'expr.var') {
+			if (!in_array($node->kind, array('expr.var', 'def.func.arg'))) {
 				$node->a_types->findCastTypes($node->a_scope);
-			}*/
+			}
 			
 			//If there is a type requirement, apply it to the types we inferred.
 			if (isset($node->a_requiredTypes)) {
 				$node->a_types->intersect($node->a_requiredTypes);
 			}
+		}
+	}
+	
+	private function lateBind(Node &$node)
+	{
+		foreach ($node->nodes() as $n) {
+			$this->lateBind($n);
 		}
 	}
 	

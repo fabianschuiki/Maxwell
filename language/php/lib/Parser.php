@@ -488,7 +488,7 @@ class Parser
 		$f->args   = $this->parseCallArgs(array_pop($ts)->tokens);
 		$f->callee = $this->parseExpr($ts);
 		$f->nodes  = array_merge(array($f->callee), $f->args);
-		$f->callee->token->node = $f;
+		$f->callee->name->node = $f;
 		return $f;
 	}
 	
@@ -539,8 +539,7 @@ class Parser
 			
 			$i = new Node;
 			$i->kind  = 'expr.ident';
-			$i->name  = $ident->text;
-			$i->token = $ident;
+			$i->name  = $ident;
 			$i->range = clone $ident->range;
 			$ident->node = $i;
 			return $i;

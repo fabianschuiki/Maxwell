@@ -227,7 +227,7 @@ class Analyzer
 				foreach ($node->out as $a) {
 					$type->addOutput($a->a_types, $a->name->text);
 				}
-				$node->a_types = new TypeSet($type);
+				$node->a_types = $type;
 			} break;
 			case 'expr.var': {
 				if (isset($node->initial->a_types)) {
@@ -243,12 +243,12 @@ class Analyzer
 						);
 					} else {
 						$type = $node->a_types->unique();
-						$node->a_target = $node->a_scope->find($type);
+						$node->a_target = $node->a_scope->find($type->name);
 						//TODO: it is possible that this never happens as inexistent types should get caught way earlier than late binding. But just in case...
 						if (!$node->a_target) {
 							$this->issues[] = new Issue(
 								'error',
-								"Type of variable '{$node->name}' was inferred to be '$type', which is an unknown type.",
+								"Type of variable '{$node->name}' was inferred to be '{$type->name}', which is an unknown type.",
 								$node->name->range
 							);
 						}
@@ -263,11 +263,13 @@ class Analyzer
 				
 				if (isset($node->a_target->a_types)) {
 					$node->a_types = clone $node->a_target->a_types;
+					$node->a_types->findCastTypes($node->a_scope);
 				}
 			} break;
 			case 'expr.const.numeric': {
 				$types = new TypeSet;
 				$types->addNativeTypes($this->builtinNumericTypes);
+				$types->findCastTypes($node->a_scope);
 				$node->a_types = $types;
 			} break;
 			case 'expr.call': {
@@ -276,7 +278,7 @@ class Analyzer
 					$type->addInput($a->a_types, $a->name->text);
 				}
 				//TODO: Add the output variables. Requires the further specification of how return values are handled and assigned.
-				$node->a_types = new TypeSet($type);
+				$node->a_types = $type;
 			} break;
 			case 'expr.call.arg': {
 				$node->a_types = clone $node->expr->a_types;
@@ -284,17 +286,8 @@ class Analyzer
 		}
 		
 		//Types post processing.
-		if (isset($node->a_types)) {
-			//Find possible cast types.
-			//NOTE: This is kind of ugly, but the cast discovery should be left up to the referencing nodes, such as expr.ident and the like. This way, defining nodes such as expr.var keep a clean and exact type.
-			if (!in_array($node->kind, array('expr.var', 'def.func.arg'))) {
-				$node->a_types->findCastTypes($node->a_scope);
-			}
-			
-			//If there is a type requirement, apply it to the types we inferred.
-			if (isset($node->a_requiredTypes)) {
-				$node->a_types->intersect($node->a_requiredTypes);
-			}
+		if (isset($node->a_types) && isset($node->a_requiredTypes)) {
+			$node->a_types->intersect($node->a_requiredTypes);
 		}
 	}
 	
@@ -302,6 +295,47 @@ class Analyzer
 	{
 		foreach ($node->nodes() as $n) {
 			$this->lateBind($n);
+		}
+		switch ($node->kind) {
+			case 'expr.call': {
+				$matches = array();
+				foreach ($node->a_target as $func) {
+					$sec = $node->a_types->intersection($func->a_types);
+					if ($sec) {
+						$match = new stdClass;
+						$match->type = $sec;
+						$match->func = $func;
+						$matches[] = $match;
+					}
+				}
+				if (count($matches) < 1) {
+					$this->issues[] = new Issue(
+						'error',
+						"Call to function '{$node->callee->name}' requires a function of type '{$node->a_types}', which does not exist.",
+						$node->callee->name->range
+					);
+					return;
+				}
+				$lowestCost = null;
+				foreach ($matches as $match) {
+					$c = $match->type->cost();
+					if ($lowestCost === null || $c < $lowestCost) {
+						$lowestCost = $c;
+					}
+				}
+				$matches = array_filter($matches, function($m) use ($lowestCost){
+					return ($m->type->cost() <= $lowestCost);
+				});
+				if (count($matches) > 1) {
+					$cs = implode("\n", array_map(function($m){ return strval($m->func->a_types); }, $matches));
+					$this->issues[] = new Issue(
+						'warning',
+						"Call to function '{$node->callee->name}' with type '{$node->a_types}' is ambiguous. Candidates are:\n$cs",
+						$node->callee->name->range
+					);
+				}
+				$node->a_target = $matches[0]->func;
+			} break;
 		}
 	}
 	

@@ -14,11 +14,11 @@ function tokenHover(Token &$t)
 			if (is_array($ts)) {
 				$targets = array();
 				foreach ($ts as $t) {
-					$targets[] = "{$t->kind} {$t->name} {$t->a_types}";
+					$targets[] = "{$t->kind} {$t->name} <span class=\"type\">{$t->a_types}</span>";
 				}
 				$target = "[".implode(",\n", $targets)."]";
 			} else {
-				$target = "{$ts->kind} {$ts->name} {$ts->a_types}";
+				$target = "{$ts->kind} {$ts->name} <span class=\"type\">{$ts->a_types}</span>";
 			}
 			$pairs['Bound To'] = $target;
 		}
@@ -26,9 +26,10 @@ function tokenHover(Token &$t)
 	
 	$lines = array();
 	foreach ($pairs as $key => $value) {
-		$class = strtolower(is_object($value) ? get_class($value) : 'string');
+		$class = '';
+		if ($value instanceof Type) $class = 'type';
 		$l  = "<div class=\"token-hover-line\">";
-		$l .= "<span class=\"key\">$key: </span><span class=\"value value-$class\">$value</span>";
+		$l .= "<span class=\"key\">$key: </span><span class=\"value $class\">$value</span>";
 		$l .= "</div>";
 		$lines[] = $l;
 	}
@@ -99,9 +100,6 @@ function tokenHover(Token &$t)
 							echo '<span class="value token">'.$value->text.'</span>';
 						}
 						if ($value instanceof Type) {
-							echo '<span class="value type">'.implode(', ',$value->types).'</span>';
-						}
-						if ($value instanceof TypeSet || $value instanceof FuncType || $value instanceof TupleType) {
 							echo '<span class="value type">'.$value.'</span>';
 						}
 						if ($value instanceof Scope) {

@@ -17,6 +17,46 @@ class FuncArgsType extends Type
 		$this->fields[] = $f;
 	}
 	
+	public function intersection(FuncArgsType $type)
+	{
+		$t = clone $this;
+		if (!$t->intersect($type)) {
+			return null;
+		}
+		return $t;
+	}
+	
+	public function intersect(FuncArgsType $type)
+	{
+		$i = 0;
+		for ($n = 0; $n < count($this->fields); $n++) {
+			$field = $this->fields[$n];
+			if ($field->name) {
+				foreach ($type->fields as $tf) {
+					if ($tf->name == $field->name) {
+						$f = clone $field;
+						$f->type = $field->type->intersection($tf->type);
+						if (!$f) {
+							return false;
+						}
+						$this->fields[$n] = $f;
+					}
+				}
+			} else {
+				if ($i >= count($type->fields)) {
+					return false;
+				}
+				$f = clone $field;
+				$f->type = $field->type->intersection($type->fields[$i++]->type);
+				if (!$f->type) {
+					return false;
+				}
+				$this->fields[$n] = $f;
+			}
+		}
+		return true;
+	}
+	
 	public function matches(Type $type)
 	{
 		if (!$type instanceof FuncArgsType) {
@@ -37,6 +77,15 @@ class FuncArgsType extends Type
 			}
 		}
 		return true;
+	}
+	
+	public function cost()
+	{
+		$cost = 0;
+		foreach ($this->fields as $f) {
+			$cost += $f->type->cost();
+		}
+		return $cost;
 	}
 }
 

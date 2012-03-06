@@ -7,22 +7,16 @@ class NamedType extends Type
 	
 	public function __toString()
 	{
-		$s = $this->name;
-		if ($this->cast) {
-			$s .= '['.count($this->cast).']';
-		}
-		return $s;
-	}
-	
-	public function cost()
-	{
-		if ($this->cast)
-			return count($this->cast);
-		return 0;
+		return $this->name.'['.$this->cost().']';
 	}
 	
 	public function matches(Type $type)
 	{
 		return ($this->name == $type->name);
+	}
+	
+	public function cost()
+	{
+		return ($this->cast ? count($this->cast) : 0);
 	}
 }

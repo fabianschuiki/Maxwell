@@ -1,6 +1,6 @@
 <?php
 
-class TypeSet
+class TypeSet extends Type
 {
 	public $any = true;
 	public $types = array();
@@ -110,28 +110,39 @@ class TypeSet
 		}
 	}
 	
+	public function intersection(TypeSet $types)
+	{
+		$t = clone $this;
+		if (!$t->intersect($types)) {
+			return null;
+		}
+		return $t;
+	}
+	
 	public function intersect(TypeSet $types)
 	{
 		if ($types->any) {
-			return;
+			return true;
 		}
 		if ($this->any) {
 			$this->any = false;
 			$this->types = $types->types;
+			return true;
 		}
 		$this->types = array_filter($this->types, function($t) use($types) {
 			foreach ($types->types as $st) {
-				if ($t->name == $st->name) {
+				if ($t->matches($st)) {
 					return true;
 				}
 			}
 			return false;
 		});
+		return count($this->types) > 0;
 	}
 	
 	public function types()
 	{
-		return array_filter($this->types, function($t){ return ($t->cast == null); });
+		return array_filter($this->types, function($t){ return ($t->cost() == 0); });
 	}
 	
 	public function unique()
@@ -141,5 +152,41 @@ class TypeSet
 			return $types[0];
 		}
 		return null;
+	}
+	
+	public function matches(Type $type)
+	{
+		if ($type instanceof TypeSet) {
+			if ($this->any) {
+				return true;
+			}
+			foreach ($type->types as $t) {
+				if ($this->matches($t)) {
+					return true;
+				}
+			}
+		} else {
+			if ($this->any) {
+				return true;
+			}
+			foreach ($this->types as $t) {
+				if ($t->matches($type)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public function cost()
+	{
+		$min = null;
+		foreach ($this->types as $t) {
+			$c = $t->cost();
+			if ($min === null || $c < $min) {
+				$min = $c;
+			}
+		}
+		return $min;
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 
-class FuncArgsType extends Type
+class TupleType extends Type
 {
 	public $fields = array();
 	
@@ -17,7 +17,7 @@ class FuncArgsType extends Type
 		$this->fields[] = $f;
 	}
 	
-	public function intersection(FuncArgsType $type)
+	public function intersection(TupleType $type)
 	{
 		$t = clone $this;
 		if (!$t->intersect($type)) {
@@ -26,7 +26,7 @@ class FuncArgsType extends Type
 		return $t;
 	}
 	
-	public function intersect(FuncArgsType $type)
+	public function intersect(TupleType $type)
 	{
 		$i = 0;
 		for ($n = 0; $n < count($this->fields); $n++) {
@@ -59,7 +59,7 @@ class FuncArgsType extends Type
 	
 	public function matches(Type $type)
 	{
-		if (!$type instanceof FuncArgsType) {
+		if (!$type instanceof TupleType) {
 			return false;
 		}
 		$i = 0;

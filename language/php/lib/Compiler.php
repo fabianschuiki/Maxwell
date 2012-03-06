@@ -251,10 +251,6 @@ class Compiler
 	{
 		$seg = new CSegment;
 		$seg->expr = $node->value->text;
-		/*$n = tmp();
-		$c = array();
-		$c[] = 'int '.$n.' = '.$node->value->text;
-		$c[] = $n;*/
 		return $seg;
 	}
 	

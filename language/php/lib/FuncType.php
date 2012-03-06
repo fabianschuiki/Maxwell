@@ -7,8 +7,8 @@ class FuncType extends Type
 	
 	public function __construct()
 	{
-		$this->in  = new FuncArgsType;
-		$this->out = new FuncArgsType;
+		$this->in  = new TupleType;
+		$this->out = new TupleType;
 	}
 	
 	public function __toString()
@@ -37,7 +37,7 @@ class FuncType extends Type
 	
 	public function intersect(FuncType $type)
 	{
-		$this->in = $this->in->intersection($type->in);
+		$this->in  = $this->in ->intersection($type->in);
 		$this->out = $this->out->intersection($type->out);
 		return ($this->in && $this->out);
 	}

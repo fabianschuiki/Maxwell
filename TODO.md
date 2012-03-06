@@ -20,3 +20,7 @@
 - Implement the type operator (probably '@') which should return the `Type` instance for the given object. For primitive types this has to be done statically at compile time.
 
 - Write a late binding function which tries to resolve the types of generic variables ('any') and function calls. Basically everything that depends on type inference having taken place.
+
+- Add specializations where functions that accept `any` as a parameter are listed with their generic parameters replaced by specific incarnations.
+
+- Add type variables where functions may be defined that allow generic parameters, but only in specific combinations. E.g.: the builtin `+`, `-`, `*`, `/` and `=` operators would be defined as functions `(a, a) -> (a)`. Of course once a function is finally bound, additional type deduction may take place.

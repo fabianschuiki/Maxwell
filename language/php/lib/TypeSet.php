@@ -8,7 +8,7 @@ class TypeSet extends Type
 	public function __toString()
 	{
 		if ($this->any) {
-			return 'any';
+			return '*any*';
 		}
 		$ts = implode(', ', $this->types);
 		if (count($this->types) > 1) {

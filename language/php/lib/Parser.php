@@ -400,7 +400,7 @@ class Parser
 	private function parseExpr(array $ts)
 	{
 		if (count($ts) == 1 && $ts[0]->is('group', '()')) {
-			return $this->parseExpr($ts[0]->tokens);
+			return $this->parseTupleExpr($ts[0], $ts[0]->tokens);
 		}
 		
 		if (count($ts) > 1) {
@@ -419,11 +419,22 @@ class Parser
 			}
 		}
 		
-		if (count($ts) > 1 && $ts[count($ts)-1]->is('group', '()')) return $this->parseCallExpr($ts);
-		if (count($ts) > 2 && $ts[count($ts)-2]->is('symbol', '.') && $ts[count($ts)-1]->is('identifier')) return $this->parseMemberExpr($ts);
+		if (count($ts) > 1 && $ts[count($ts)-1]->is('group', '()')) {
+			return $this->parseCallExpr($ts);
+		}
+		if (count($ts) > 2 && $ts[count($ts)-2]->is('symbol', '.') && $ts[count($ts)-1]->is('identifier')) {
+			return $this->parseMemberExpr($ts);
+		}
 				
 		$e = null;
-		if ($ts[0]->is('identifier')) $e = $this->parseIdentExpr(array_shift($ts), $ts);
+		$range = clone $ts[0]->range;
+		foreach ($ts as $t) {
+			$range->combine($t->range);
+		}
+		
+		if ($ts[0]->is('identifier')) {
+			$e = $this->parseIdentExpr(array_shift($ts), $ts);
+		}
 		else if ($ts[0]->is('numeric')) {
 			$e = new Node;
 			$e->kind  = 'expr.const.numeric';
@@ -438,8 +449,9 @@ class Parser
 			$e->range = $e->value->range;
 			$e->value->node = $e;
 		}
-		if (count($ts) > 0) {
-			$range = $ts[0]->range;
+		
+		if ($e && count($ts) > 0) {
+			$range = clone $ts[0]->range;
 			foreach ($ts as $t) {
 				$range->combine($t->range);
 			}
@@ -451,6 +463,31 @@ class Parser
 			);
 		}
 		return $e;
+	}
+	
+	private function parseTupleExpr(Token &$grp, array $ts)
+	{
+		$exprs = array();
+		while (count($ts)) {
+			$sub = array();
+			while (count($ts)) {
+				$t = array_shift($ts);
+				if ($t->is('symbol', ','))
+					break;
+				$sub[] = $t;
+			}
+			$exprs[] = $this->parseExpr($sub);
+		}
+		
+		if (count($exprs) == 1) {
+			return $exprs[0];
+		}
+		
+		$t = new Node;
+		$t->kind  = 'expr.tuple';
+		$t->exprs = $exprs;
+		$t->range = clone $grp->range;
+		return $t;
 	}
 	
 	private function parseUnOpExpr($operator, array &$ts)
@@ -476,19 +513,22 @@ class Parser
 		$o->lhs   = $this->parseExpr($lts);
 		$o->rhs   = $this->parseExpr($rts);
 		$o->range = clone $operator->range;
-		$o->range->combine($o->lhs->range);
-		$o->range->combine($o->rhs->range);
+		if ($o->lhs) $o->range->combine($o->lhs->range);
+		if ($o->rhs) $o->range->combine($o->rhs->range);
 		return $o;
 	}
 	
 	private function parseCallExpr(array &$ts)
 	{
+		$arggrp = array_pop($ts);
+		
 		$f = new Node;
 		$f->kind   = 'expr.call';
-		$f->args   = $this->parseCallArgs(array_pop($ts)->tokens);
+		$f->args   = $this->parseCallArgs($arggrp->tokens);
 		$f->callee = $this->parseExpr($ts);
-		$f->nodes  = array_merge(array($f->callee), $f->args);
 		$f->callee->name->node = $f;
+		$f->range  = clone $f->callee->range;
+		$f->range->combine($arggrp->range);
 		return $f;
 	}
 	
@@ -513,7 +553,7 @@ class Parser
 		$a = new Node;
 		$a->kind  = 'expr.call.arg';
 		$a->expr  = $this->parseExpr($ts);
-		$a->nodes = array($a->expr);
+		$a->range = clone $a->expr->range;
 		return $a; 
 	}
 	
@@ -560,6 +600,15 @@ class Parser
 			$name->node = $v;
 			return $v;
 		}
+		$range = clone $ident->range;
+		foreach ($ts as $t) {
+			$range->combine($t->range);
+		}
+		$this->issues[] = new Issue(
+			'error',
+			"Unable to parse expression starting with identifier '{$ident}'. Expected a variable name after '{$ident}'.",
+			$range
+		);
 		return null;
 	}
 }

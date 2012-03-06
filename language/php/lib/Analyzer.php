@@ -49,25 +49,15 @@ class Analyzer
 			$this->populateScope($scope, $n);
 			$this->builtinNumericTypes[] = $type;
 			
-			$operators = array('+', '-', '*', '/', '=');
+			/*$operators = array('+', '-', '*', '/', '=');
 			foreach ($operators as $op) {
-				$n = new Node;
-				$n->builtin = true;
-				$n->kind = 'def.func';
-				$n->name = Token::builtin('identifier', $op);
-				
-				$a = new Node;
-				$a->kind = 'def.func.arg';
-				$a->type = Token::builtin('identifier', $type);
-				$a->func = $n;
-				
-				$n->in = array(clone $a, clone $a);
-				$n->out = array(clone $a);
-				
-				$this->populateScope($scope, $n);
-				//$scope->names[$n->name->text][] = $n;
-				$this->analyzeType($n);
-			}
+				$this->addBuiltInBinOp($scope, $op, $type);
+			}*/
+		}
+		
+		$operators = array('+', '-', '*', '/', '=');
+		foreach ($operators as $op) {
+			 $this->addBuiltInBinOp($scope, $op, 'any');
 		}
 		
 		$n = new Node;
@@ -77,6 +67,25 @@ class Analyzer
 		$n->c_name = 'unresolved_any';
 		$this->populateScope($scope, $n);
 		//$scope->add($this->issues, $n);
+	}
+	
+	private function addBuiltInBinOp(Scope &$scope, $op, $type)
+	{
+		$n = new Node;
+		$n->builtin = true;
+		$n->kind = 'def.func';
+		$n->name = Token::builtin('identifier', $op);
+		
+		$a = new Node;
+		$a->kind = 'def.func.arg';
+		$a->type = Token::builtin('identifier', $type);
+		$a->func = $n;
+		
+		$n->in = array(clone $a, clone $a);
+		$n->out = array(clone $a);
+		
+		$this->populateScope($scope, $n);
+		$this->analyzeType($n);
 	}
 	
 	private function reduce(Node &$node)
@@ -112,17 +121,22 @@ class Analyzer
 				$node->callee->kind = 'expr.ident';
 				$node->callee->name = $node->op;
 				$node->callee->range = clone $node->op->range;
+				$node->range = clone $node->callee->range;
 				$node->op->node = $node;
 				unset($node->op);
 			
 				$lhs = new Node;
 				$lhs->kind  = 'expr.call.arg';
 				$lhs->expr  = $node->lhs;
+				$lhs->range = $node->lhs->range;
+				$node->range->combine($lhs->range);
 				unset($node->lhs);
 			
 				$rhs = new Node;
 				$rhs->kind  = 'expr.call.arg';
 				$rhs->expr  = $node->rhs;
+				$rhs->range = $node->rhs->range;
+				$node->range->combine($rhs->range);
 				unset($node->rhs);
 				
 				$node->args = array($lhs, $rhs);
@@ -197,6 +211,7 @@ class Analyzer
 				$node->a_target = $target;
 			} break;
 			case 'expr.call': {
+				$node->callee->a_late = true;
 				$node->a_target = $node->callee->a_target;
 			} break;
 		}
@@ -221,6 +236,9 @@ class Analyzer
 		}
 		foreach ($node->nodes() as $n) {
 			$this->analyzeType($n);
+		}
+		if ($this->issues->isFatal()) {
+			return;
 		}
 		switch ($node->kind) {
 			case 'def.func': {
@@ -282,16 +300,32 @@ class Analyzer
 					$type->addInput($a->a_types, $a->name->text);
 				}
 				//TODO: Add the output variables. Requires the further specification of how return values are handled and assigned.
-				$node->a_types = $type;
+				$node->a_functype = $type;
+				$node->a_types = new TypeSet;
 			} break;
 			case 'expr.call.arg': {
 				$node->a_types = clone $node->expr->a_types;
 			} break;
+			case 'expr.tuple': {
+				$types = new TupleType;
+				foreach ($node->exprs as $e) {
+					$types->addField($e->a_types);
+				}
+				$node->a_types = new TypeSet($types);
+			} break;
 		}
 		
 		//Types post processing.
-		if (isset($node->a_types) && isset($node->a_requiredTypes)) {
-			$node->a_types->intersect($node->a_requiredTypes);
+		if (isset($node->a_types)) {
+			if (isset($node->a_requiredTypes)) {
+				$node->a_types->intersect($node->a_requiredTypes);
+			}
+		} else if ($node->is('expr') && !$node->a_late) {
+			$this->issues[] = new Issue(
+				'error',
+				"Unable to infer type of '{$node->kind}'.",
+				$node->range
+			);
 		}
 	}
 	
@@ -304,7 +338,7 @@ class Analyzer
 			case 'expr.call': {
 				$matches = array();
 				foreach ($node->a_target as $func) {
-					$sec = $node->a_types->intersection($func->a_types);
+					$sec = $node->a_functype->intersection($func->a_types);
 					if ($sec) {
 						$match = new stdClass;
 						$match->type = $sec;
@@ -315,7 +349,7 @@ class Analyzer
 				if (count($matches) < 1) {
 					$this->issues[] = new Issue(
 						'error',
-						"Call to function '{$node->callee->name}' requires a function of type '{$node->a_types}', which does not exist.",
+						"Call to function '{$node->callee->name}' requires a function of type '{$node->a_functype}', which does not exist.",
 						$node->callee->name->range
 					);
 					return;
@@ -339,6 +373,7 @@ class Analyzer
 					);
 				}
 				$node->a_target = $matches[0]->func;
+				$node->a_types = new TypeSet($node->a_target->a_types->out);
 			} break;
 		}
 	}

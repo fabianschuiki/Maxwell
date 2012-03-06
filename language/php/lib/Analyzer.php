@@ -49,7 +49,7 @@ class Analyzer
 			$this->populateScope($scope, $n);
 			$this->builtinNumericTypes[] = $type;
 			
-			$operators = array('+', '-', '*', '/');
+			$operators = array('+', '-', '*', '/', '=');
 			foreach ($operators as $op) {
 				$n = new Node;
 				$n->builtin = true;
@@ -110,8 +110,9 @@ class Analyzer
 				$node->kind = 'expr.call';
 				$node->callee = new Node;
 				$node->callee->kind = 'expr.ident';
-				$node->callee->name = $node->op->text;
+				$node->callee->name = $node->op;
 				$node->callee->range = clone $node->op->range;
+				$node->op->node = $node;
 				unset($node->op);
 			
 				$lhs = new Node;

@@ -135,7 +135,7 @@ class Analyzer
 	
 	private function populateScope(Scope &$parent, Node &$node)
 	{
-		if ($node->is('def') || ($node->is('stmt') && $node->kind != 'stmt.expr')) {
+		if (($node->is('def') && !$node->builtin) || ($node->is('stmt') && $node->kind != 'stmt.expr')) {
 			$node->a_scope = new Scope($parent);
 		} else {
 			$node->a_scope = $parent;
@@ -146,8 +146,10 @@ class Analyzer
 			case 'def.type':     $parent->add($this->issues, $node); break;
 			case 'expr.var':     $parent->add($this->issues, $node); break;
 		}
-		foreach ($node->nodes() as $n) {
-			$this->populateScope($node->a_scope, $n);
+		if (!$node->builtin) {
+			foreach ($node->nodes() as $n) {
+				$this->populateScope($node->a_scope, $n);
+			}
 		}
 	}
 	

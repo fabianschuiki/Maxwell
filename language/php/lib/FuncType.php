@@ -13,7 +13,7 @@ class FuncType extends Type
 	
 	public function __toString()
 	{
-		return $this->in."->".$this->out;
+		return $this->in." -> ".$this->out;
 	}
 	
 	public function addInput(TypeSet $type, $name = null)

@@ -96,6 +96,6 @@ class FuncArgsTypeField
 	
 	public function __toString()
 	{
-		return ($this->name ? $this->name.': ' : '').$this->type;
+		return ($this->name ? $this->name.':' : '').$this->type;
 	}
 }

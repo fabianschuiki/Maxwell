@@ -7,7 +7,12 @@ class NamedType extends Type
 	
 	public function __toString()
 	{
-		return $this->name.'['.$this->cost().']';
+		$s = $this->name;
+		$c = $this->cost();
+		if ($c > 0) {
+			$s .= "°$c";
+		}
+		return $s;
 	}
 	
 	public function matches(Type $type)

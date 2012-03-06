@@ -43,6 +43,7 @@ class Analyzer
 			$n->kind = 'def.type';
 			$n->name = Token::builtin('identifier', $type);
 			$n->c_name = $n->name->text.'_t';
+			$n->c_ref = $n->c_name;
 			$n->primitive = true;
 			//$scope->names[$n->name->text] = $n;
 			$this->populateScope($scope, $n);
@@ -337,25 +338,5 @@ class Analyzer
 				$node->a_target = $matches[0]->func;
 			} break;
 		}
-	}
-	
-	private function getCastSequence(Scope &$scope, Type &$from, Type &$to)
-	{
-		if (count($from->intersection($to)->types)) {
-			return array();
-		}
-		$casts = $scope->find('cast');
-		if (!is_array($casts)) {
-			return null;
-		}
-		foreach ($casts as $f) {
-			if (count($f->in) != 1 || count($f->out) != 1) {
-				continue;
-			}
-			if (count($from->intersection($f->in[0]->a_type)->types) && count($to->intersection($f->out[0]->a_type)->types)) {
-				return array($f);
-			}
-		}
-		return null;
 	}
 }

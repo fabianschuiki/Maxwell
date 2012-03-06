@@ -10,7 +10,11 @@ class TypeSet extends Type
 		if ($this->any) {
 			return 'any';
 		}
-		return '{'.implode(', ', $this->types).'}';
+		$ts = implode(', ', $this->types);
+		if (count($this->types) > 1) {
+			$ts = '{'.$ts.'}';
+		}
+		return $ts;
 	}
 	
 	public function __construct($type = null)

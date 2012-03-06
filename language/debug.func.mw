@@ -1,0 +1,26 @@
+/** Debugging some stuff. */
+
+type A {}
+type B {}
+
+func cast (int i) -> (A a) {}
+func cast (A a) -> (int i) {}
+func cast (A a) -> (B b) {}
+func cast (B b) -> (A a) {}
+
+func show (int a, int b) {}
+func show (A a, A b) {}
+func show (A a) {}
+
+func square (int a) -> (int r)
+{
+	//r = a*a;
+}
+
+func main
+{
+	int x = 35;
+	int y = 98;
+	show(x, y);
+	square(9);
+}

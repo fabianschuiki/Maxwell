@@ -1,8 +1,10 @@
 /** Debugging some stuff. */
 
+func test (@a x, @a y) -> (@a r) {}
+
 func main
 {
 	int x;
 	int y;
-	(x, y) = (1, 2) + (2, 3);
+	//(x, y) = (1, 2) + (2, 3);
 }

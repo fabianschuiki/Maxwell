@@ -5,6 +5,11 @@ class NamedType extends Type
 	public $name;
 	public $cast = null;
 	
+	public function __construct($name = null)
+	{
+		$this->name = $name;
+	}
+	
 	public function __toString()
 	{
 		$s = $this->name;

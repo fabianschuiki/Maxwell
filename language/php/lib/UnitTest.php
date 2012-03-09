@@ -4,6 +4,8 @@ class UnitTest
 {
 	static public function test($result, $desired)
 	{
+		$result  = strval($result);
+		$desired = strval($desired);
 		if ($result != $desired) {
 			$trace = debug_backtrace();
 			$entry = array_shift($trace);

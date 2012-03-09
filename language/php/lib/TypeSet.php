@@ -8,13 +8,9 @@ class TypeSet extends Type
 	public function __toString()
 	{
 		if ($this->any) {
-			return '*any*';
+			return 'any';
 		}
-		$ts = implode(', ', $this->types);
-		if (count($this->types) > 1) {
-			$ts = '{'.$ts.'}';
-		}
-		return $ts;
+		return '{'.implode(', ', $this->types).'}';
 	}
 	
 	public function __construct($type = null)
@@ -118,7 +114,7 @@ class TypeSet extends Type
 	{
 		$t = clone $this;
 		if (!$t->intersect($types)) {
-			return null;
+			//return null;
 		}
 		return $t;
 	}

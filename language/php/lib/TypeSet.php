@@ -13,10 +13,10 @@ class TypeSet extends Type
 		return '{'.implode(', ', $this->types).'}';
 	}
 	
-	public function __construct($type = null)
+	public function __construct()
 	{
-		if ($type) {
-			$this->addType($type);
+		foreach (func_get_args() as $t) {
+			$this->addType($t);
 		}
 	}
 	
@@ -110,36 +110,6 @@ class TypeSet extends Type
 		}
 	}
 	
-	public function intersection(TypeSet $types)
-	{
-		$t = clone $this;
-		if (!$t->intersect($types)) {
-			//return null;
-		}
-		return $t;
-	}
-	
-	public function intersect(TypeSet $types)
-	{
-		if ($types->any) {
-			return true;
-		}
-		if ($this->any) {
-			$this->any = false;
-			$this->types = $types->types;
-			return true;
-		}
-		$this->types = array_filter($this->types, function($t) use($types) {
-			foreach ($types->types as $st) {
-				if ($t->matches($st)) {
-					return true;
-				}
-			}
-			return false;
-		});
-		return count($this->types) > 0;
-	}
-	
 	public function types()
 	{
 		return array_filter($this->types, function($t){ return ($t->cost() == 0); });
@@ -154,28 +124,48 @@ class TypeSet extends Type
 		return null;
 	}
 	
-	public function matches(Type $type)
+	public function match(Type $type, &$vars = array(), $initial = true)
 	{
-		if ($type instanceof TypeSet) {
-			if ($this->any) {
-				return true;
-			}
-			foreach ($type->types as $t) {
-				if ($this->matches($t)) {
-					return true;
-				}
-			}
-		} else {
-			if ($this->any) {
-				return true;
-			}
-			foreach ($this->types as $t) {
-				if ($t->matches($type)) {
-					return true;
+		if ($this->any) {
+			return $type;
+		}
+		
+		$match = new TypeSet;
+		foreach ($this->types as $at) {
+			$m = $at->match($type, $vars, false);
+			if ($m) {
+				if ($m instanceof TypeSet) {
+					foreach ($m->types as $bt) {
+						$match->addType($bt);
+					}
+				} else {
+					$match->addType($m);
 				}
 			}
 		}
-		return false;
+		
+		if ($initial) {
+			$match->resolveVars();
+		}
+		
+		if (count($match->types) > 1) {
+			return $match;
+		} else if (count($match->types) == 1) {
+			return $match->types[0];
+		}
+		return null;
+	}
+	
+	public function resolveVars()
+	{
+		for ($i = 0; $i < count($this->types); $i++) {
+			$t = $this->types[$i];
+			if ($t instanceof TypeVar) {
+				$this->types[$i] = $t->type;
+			} else {
+				$t->resolveVars();
+			}
+		}
 	}
 	
 	public function cost()

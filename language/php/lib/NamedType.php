@@ -20,9 +20,32 @@ class NamedType extends Type
 		return $s;
 	}
 	
-	public function matches(Type $type)
+	public function match(Type $type, &$vars = array(), $initial = true)
 	{
-		return ($this->name == $type->name);
+		if ($type instanceof TypeSet || $type instanceof TypeVar) {
+			return $type->match($this, $vars, $initial);
+		}
+		if (!$type instanceof NamedType) {
+			return null;
+		}
+		
+		/*if ($this->name[0] == '@') {
+			if (!isset($vars[$this->name])) {
+				echo "{$this->name} := $type\n";
+				$vars[$this->name] = clone $type;
+				return $vars[$this->name];
+			} else {
+				echo "matching {$this->name} against $type\n";
+				return $vars[$this->name]->match($type, $vars);
+			}
+		} else if ($type->name[0] == '@') {
+			return $type->match($this, $vars);
+		}*/
+		
+		if ($this->name == $type->name) {
+			return $this;
+		}
+		return null;
 	}
 	
 	public function cost()

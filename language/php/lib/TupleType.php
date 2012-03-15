@@ -3,80 +3,82 @@
 class TupleType extends Type
 {
 	public $fields = array();
+// 	
 	
 	public function __toString()
 	{
 		return '('.implode(', ', $this->fields).')';
 	}
 	
-	public function addField(TypeSet $type, $name = null)
+	public function addField(Type $type, $name = null)
 	{
-		$f = new FuncArgsTypeField;
+		$f = new TupleTypeField;
 		$f->name = $name;
 		$f->type = $type;
 		$this->fields[] = $f;
 	}
 	
-	public function intersection(TupleType $type)
+	public function getField($ni)
 	{
-		$t = clone $this;
-		if (!$t->intersect($type)) {
+		if (is_string($ni)) {
+			foreach ($this->fields as $f) {
+				if ($f->name == $ni) {
+					return $f;
+				}
+			}
+		} else {
+			if ($ni >= 0 && $ni < count($this->fields)) {
+				return $this->fields[$ni];
+			}
+		}
+		return null;
+	}
+	
+	public function match(Type $type, &$vars = array(), $initial = true)
+	{
+		if ($type instanceof TypeSet || $type instanceof TypeVar) {
+			return $type->match($this, $vars, $initial);
+		}
+		if (!$type instanceof TupleType) {
 			return null;
 		}
-		return $t;
+		
+		$match = new TupleType;
+		$i = 0;
+		foreach ($this->fields as $af) {
+			if ($af->name) {
+				$bf = $type->getField($af->name);
+			} else {
+				$bf = $type->getField($i++);
+			}
+			if (!$bf) {
+				return null;
+			}
+			
+			$m = $af->type->match($bf->type, $vars, false);
+			if (!$m) {
+				return null;
+			}
+			$match->addField($m, $af->name);
+		}
+		
+		//Resolve type variables.
+		if ($initial) {
+			$match->resolveVars();
+		}
+		
+		return $match;
 	}
 	
-	public function intersect(TupleType $type)
+	public function resolveVars()
 	{
-		$i = 0;
-		for ($n = 0; $n < count($this->fields); $n++) {
-			$field = $this->fields[$n];
-			if ($field->name) {
-				foreach ($type->fields as $tf) {
-					if ($tf->name == $field->name) {
-						$f = clone $field;
-						$f->type = $field->type->intersection($tf->type);
-						if (!$f) {
-							return false;
-						}
-						$this->fields[$n] = $f;
-					}
-				}
+		foreach ($this->fields as $af) {
+			if ($af->type instanceof TypeVar) {
+				$af->type = $af->type->type;
 			} else {
-				if ($i >= count($type->fields)) {
-					return false;
-				}
-				$f = clone $field;
-				$f->type = $field->type->intersection($type->fields[$i++]->type);
-				if (!$f->type) {
-					return false;
-				}
-				$this->fields[$n] = $f;
+				$af->type->resolveVars();
 			}
 		}
-		return true;
-	}
-	
-	public function matches(Type $type)
-	{
-		if (!$type instanceof TupleType) {
-			return false;
-		}
-		$i = 0;
-		foreach ($this->fields as $field) {
-			if ($field->name) {
-				foreach ($type->fields as $tf) {
-					if ($tf->name == $field->name && !$field->type->matches($tf->type)) {
-						return false;
-					}
-				}
-			} else {
-				if ($i >= count($type->fields) || !$field->type->matches($type->fields[$i++]->type)) {
-					return false;
-				}
-			}
-		}
-		return true;
 	}
 	
 	public function cost()
@@ -89,7 +91,7 @@ class TupleType extends Type
 	}
 }
 
-class FuncArgsTypeField
+class TupleTypeField
 {
 	public $name;
 	public $type;

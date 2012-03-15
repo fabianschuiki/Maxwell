@@ -2,7 +2,7 @@
 
 abstract class Type
 {
-	//abstract public function valid();
-	abstract public function matches(Type $type);
-	abstract public function cost();
+	abstract public function match(Type $type, &$vars = array(), $initial = true);
+	public function resolveVars() {}
+	//abstract public function cost();
 }

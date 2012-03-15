@@ -13,41 +13,44 @@ class FuncType extends Type
 	
 	public function __toString()
 	{
-		return $this->in." -> ".$this->out;
+		return $this->in."->".$this->out;
 	}
 	
-	public function addInput(TypeSet $type, $name = null)
+	public function addInput(Type $type, $name = null)
 	{
 		$this->in->addField($type, $name);
 	}
 	
-	public function addOutput(TypeSet $type, $name = null)
+	public function addOutput(Type $type, $name = null)
 	{
 		$this->out->addField($type, $name);
 	}
 	
-	public function intersection(FuncType $type)
-	{
-		$t = clone $this;
-		if (!$t->intersect($type)) {
-			return null;
-		}
-		return $t;
-	}
-	
-	public function intersect(FuncType $type)
-	{
-		$this->in  = $this->in ->intersection($type->in);
-		$this->out = $this->out->intersection($type->out);
-		return ($this->in && $this->out);
-	}
-	
-	public function matches(Type $type)
+	public function match(Type $type, &$vars = array(), $initial = true)
 	{
 		if (!$type instanceof FuncType) {
-			return false;
+			return null;
 		}
-		return $this->in->matches($type->in) && $this->out->matches($type->out);
+		
+		$match = new FuncType;
+		$match->in  = $this->in ->match($type->in,  $vars, false);
+		$match->out = $this->out->match($type->out, $vars, false);
+		
+		if ($initial) {
+			$match->resolveVars();
+		}
+		
+		if ($match->in && $match->out) {
+			return $match;
+		} else {
+			return null;
+		}
+	}
+	
+	public function resolveVars()
+	{
+		if ($this->in)  $this->in ->resolveVars();
+		if ($this->out) $this->out->resolveVars();
 	}
 	
 	public function cost()

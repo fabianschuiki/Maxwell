@@ -137,16 +137,3 @@ match($f1, $f3, 'nil');
 match($f1, $f4, 'nil');
 match($f1, $f5, '(int, int)->(int)');
 match($f1, $f6, '(float, float)->(float)');
-
-
-/*$int    = new NamedType('int');
-$float  = new NamedType('float');
-$string = new NamedType('string');
-
-$is = new TypeSet($int);
-$fs = new TypeSet($float);
-$ss = new TypeSet($string);
-
-$ifs = new TypeSet;
-$ifs->addNativeTypes(array('int', 'float'));*/
-

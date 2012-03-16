@@ -305,13 +305,21 @@ class Analyzer
 			} break;
 			case 'expr.ident': {
 				//TODO: No idea whether this works or not. This should help infer the type for variables with generic 'any' type, based on the variable's usage.
-				if (isset($node->a_requiredTypes) && isset($node->a_target->a_types)) {
+				/*if (isset($node->a_requiredTypes) && isset($node->a_target->a_types)) {
 					$node->a_target->a_types->intersect($node->a_requiredTypes);
-				}
+				}*/
 				
 				if (isset($node->a_target->a_types)) {
 					$node->a_types = clone $node->a_target->a_types;
+					//TODO: Improve this by moving the cast type finding somewhere else. Maybe the scope or the analyzer itself.
+					if (!$node->a_types instanceof TypeSet) {
+						$node->a_types = new TypeSet($node->a_types);
+					}
 					$node->a_types->findCastTypes($node->a_scope);
+					//TODO: Incorporate this chunk into findCastTypes.
+					if (count($node->a_types->types) == 1) {
+						$node->a_types = $node->a_types->types[0];
+					}
 				}
 			} break;
 			case 'expr.const.numeric': {
@@ -319,7 +327,6 @@ class Analyzer
 				$types->addNativeTypes($this->builtinNumericTypes);
 				$types->findCastTypes($node->a_scope);
 				$node->a_types = $types;
-				$node->a_possibleTypes = $node->a_types;
 			} break;
 			case 'expr.call': {
 				$type = new FuncType;
@@ -373,7 +380,7 @@ class Analyzer
 			case 'expr.call': {
 				$matches = array();
 				foreach ($node->a_target as $func) {
-					$sec = $node->a_functype->intersection($func->a_types);
+					$sec = $node->a_functype->match($func->a_types);
 					if ($sec) {
 						$match = new stdClass;
 						$match->type = $sec;

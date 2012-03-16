@@ -44,14 +44,19 @@ class TupleType extends Type
 		}
 		
 		$match = new TupleType;
-		$i = 0;
+		$i  = 0;
+		$fi = 0;
 		foreach ($this->fields as $af) {
 			if ($af->name) {
 				$bf = $type->getField($af->name);
+				if (!$bf) {
+					$bf = $type->getField($fi);
+				}
 			} else {
 				$bf = $type->getField($i++);
 			}
 			if (!$bf) {
+				echo "field {$af->name}/$i not found\n";
 				return null;
 			}
 			
@@ -59,7 +64,8 @@ class TupleType extends Type
 			if (!$m) {
 				return null;
 			}
-			$match->addField($m, $af->name);
+			$match->addField($m, ($af->name ? $af->name : $bf->name));
+			$fi++;
 		}
 		
 		//Resolve type variables.

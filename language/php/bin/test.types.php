@@ -131,9 +131,26 @@ $f6->in->addField(new TypeSet);
 $f6->in->addField(new TypeSet);
 $f6->out->addField($float);
 
+$f7 = new FuncType;
+$tva = new TypeVar('@a');
+$f7->in->addField($tva, 'a');
+$f7->in->addField($tva, 'b');
+$f7->out->addField($tva, 'c');
+
+$f8 = new FuncType;
+$f8->in->addField($int, 'a');
+$f8->in->addField($int, 'b');
+$f8->out->addField($int, 'c');
+
 UnitTest::group("functions");
 match($f1, $f2, '(int, int)->(int)');
 match($f1, $f3, 'nil');
 match($f1, $f4, 'nil');
 match($f1, $f5, '(int, int)->(int)');
 match($f1, $f6, '(float, float)->(float)');
+match($f2, $f8, '(a:int, b:int)->(c:int)');
+match($f8, $f2, '(a:int, b:int)->(c:int)');
+match($f2, $f7, '(a:int, b:int)->(c:int)');
+match($f7, $f2, '(a:int, b:int)->(c:int)');
+match($f6, $f7, '(a:float, b:float)->(c:float)');
+match($f7, $f6, '(a:float, b:float)->(c:float)');

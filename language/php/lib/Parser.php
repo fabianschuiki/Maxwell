@@ -167,6 +167,8 @@ class Parser
 		$a->kind  = 'def.func.arg';
 		$a->name  = $name;
 		$a->type  = $type;
+		$a->range = clone $name->range;
+		$a->range->combine($type->range);
 		$name->node = $a;
 		return $a;
 	}
@@ -426,6 +428,22 @@ class Parser
 		if (count($ts) > 2 && $ts[count($ts)-2]->is('symbol', '.') && $ts[count($ts)-1]->is('identifier')) {
 			return $this->parseMemberExpr($ts);
 		}
+		
+		if (count($ts) == 2 && $ts[1]->is('identifier')) {
+			$name = array_pop($ts);
+			$type = $this->parseType($ts);
+			
+			$name->context = 'expr.var.name';
+			
+			$v = new Node;
+			$v->kind  = 'expr.var';
+			$v->name  = $name;
+			$v->type  = $type;
+			$v->range = clone $name->range;
+			$v->range->combine($type->range);
+			$name->node = $v;
+			return $v;
+		}
 				
 		$e = null;
 		$range = clone $ts[0]->range;
@@ -586,20 +604,6 @@ class Parser
 			return $i;
 		}
 		if ($ts[0]->is('identifier')) {
-			$type = $ident;
-			$name = array_shift($ts);
-			
-			$name->context = 'expr.var.name';
-			$type->context = 'expr.var.type';
-			
-			$v = new Node;
-			$v->kind  = 'expr.var';
-			$v->name  = $name;
-			$v->type  = $type;
-			$v->range = clone $name->range;
-			$v->range->combine($type->range);
-			$name->node = $v;
-			return $v;
 		}
 		$range = clone $ident->range;
 		foreach ($ts as $t) {

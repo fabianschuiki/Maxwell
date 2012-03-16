@@ -24,7 +24,7 @@ class Node
 			case 'expr.op.binary': $n = array(&$this->lhs, &$this->rhs); break;
 			case 'expr.call':      $n = array_merge(array(&$this->callee), $this->args); break;
 			case 'expr.call.arg':  $n = array(&$this->expr); break;
-			case 'expr.var':       $n = array(&$this->initial); break;
+			case 'expr.var':       $n = array(&$this->type, &$this->initial); break;
 			case 'expr.tuple': $n = $this->exprs; break;
 		}
 		if (isset($n)) {

@@ -12,7 +12,7 @@ class Analyzer
 		if ($this->issues->isFatal()) return;
 		
 		$this->scope = new Scope;
-		//$this->addBuiltIn($this->scope);
+		$this->addBuiltIn($this->scope);
 		
 		foreach ($this->nodes as $n) $this->populateScope($this->scope, $n);
 		if ($this->issues->isFatal()) return;
@@ -224,7 +224,6 @@ class Analyzer
 			
 			case 'type.var': {
 				$var = $node->a_scope->find($node->name);
-				echo "scope.find({$node->name}) = {$var->name}\n";
 				if (!$var) {
 					$node->a_scope->add($this->issues, $node); break;
 				} else {
@@ -238,20 +237,30 @@ class Analyzer
 	{
 		switch ($node->kind) {
 			case 'expr.var': {
-				$types = new TypeSet;
-				$types->addNativeType($node->type);
-				$node->a_types = $types;
+				$this->analyzeType($node->type);
+				$node->a_types = $node->type->a_types;
 				if (isset($node->initial)) {
 					$node->initial->a_requiredTypes = clone $node->a_types;
 				}
 			} break;
+			case 'type.name': {
+				$node->a_types = new NamedType(strval($node->name));
+			} break;
 		}
-		foreach ($node->nodes() as $n) {
-			$this->analyzeType($n);
+		
+		if ($node->kind == 'expr.var') {
+			if ($node->initial) {
+				$this->analyzeType($node->initial);
+			}
+		} else {
+			foreach ($node->nodes() as $n) {
+				$this->analyzeType($n);
+			}
 		}
 		if ($this->issues->isFatal()) {
 			return;
 		}
+		
 		switch ($node->kind) {
 			case 'def.func': {
 				$type = new FuncType;
@@ -270,9 +279,9 @@ class Analyzer
 			} break;
 			case 'expr.var': {
 				if (isset($node->initial->a_types)) {
-					$node->a_types->intersect($node->initial->a_types);
+					$node->a_types = $node->initial->a_types;
 				}
-				//TODO: move this code to late binding as this will be similar for functions.
+				/*//TODO: move this code to late binding as this will be similar for functions.
 				if ($node->type->text == 'any') {
 					if (!$node->a_types->unique()) {
 						$this->issues[] = new Issue(
@@ -292,7 +301,7 @@ class Analyzer
 							);
 						}
 					}
-				}
+				}*/
 			} break;
 			case 'expr.ident': {
 				//TODO: No idea whether this works or not. This should help infer the type for variables with generic 'any' type, based on the variable's usage.
@@ -310,6 +319,7 @@ class Analyzer
 				$types->addNativeTypes($this->builtinNumericTypes);
 				$types->findCastTypes($node->a_scope);
 				$node->a_types = $types;
+				$node->a_possibleTypes = $node->a_types;
 			} break;
 			case 'expr.call': {
 				$type = new FuncType;
@@ -332,25 +342,18 @@ class Analyzer
 			} break;
 			
 			case 'type.var': {
-				/*$tv = $node->a_scope->find($node->name);
-				if (!$tv) {
-					echo "created type.var {$node->name}\n";*/
-					$node->a_types = new TypeVar(strval($node->name));
-					/*$node->a_scope->add($this->issues, $node);
+				if ($node->a_target) {
+					$node->a_types = $node->a_target->a_types;
 				} else {
-					echo "reused type.var {$node->name}\n";
-					$node->a_types = $tv->a_types;
-				}*/
-			} break;
-			case 'type.name': {
-				$node->a_types = new NamedType(strval($node->name));
+					$node->a_types = new TypeVar(strval($node->name));
+				}
 			} break;
 		}
 		
 		//Types post processing.
 		if (isset($node->a_types)) {
 			if (isset($node->a_requiredTypes)) {
-				$node->a_types->intersect($node->a_requiredTypes);
+				$node->a_types = $node->a_types->match($node->a_requiredTypes);
 			}
 		} else if ($node->is('expr') && !$node->a_late) {
 			$this->issues[] = new Issue(

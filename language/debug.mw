@@ -4,7 +4,7 @@ func test (@a x, @a y) -> (@a r) {}
 
 func main
 {
-	int x;
+	int x = 8;
 	int y;
 	//(x, y) = (1, 2) + (2, 3);
 }

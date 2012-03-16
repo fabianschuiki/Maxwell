@@ -22,6 +22,12 @@ class TypeSet extends Type
 	
 	public function addType($type)
 	{
+		if ($type instanceof NamedType && $type->name == 'any') {
+			$this->any = true;
+			$this->types = array();
+			return;
+		}
+		
 		$this->any = false;
 		$found = false;
 		foreach ($this->types as $t) {
@@ -42,14 +48,7 @@ class TypeSet extends Type
 	
 	public function addNativeType($type)
 	{
-		if ($type == 'any') {
-			$this->any = true;
-			$this->types = array();
-			return;
-		}
-		$t = new NamedType;
-		$t->name = strval($type);
-		$this->addType($t);
+		$this->addType(new NamedType(strval($type)));
 	}
 	
 	public function addNativeTypes(array $types)

@@ -148,6 +148,7 @@ class Analyzer
 		if ($node->kind == 'def.func') {
 			array_walk($node->in,  function(&$a) use ($f) { $a->func = $node; });
 			array_walk($node->out, function(&$a) use ($f) { $a->func = $node; });
+			$node->a_incarnations = array();
 		}
 	}
 	
@@ -392,7 +393,6 @@ class Analyzer
 				$matches = array();
 				foreach ($node->a_target as $func) {
 					$sec = $node->a_functype->match($func->a_types);
-					echo "matched $sec\n";
 					if ($sec) {
 						$match = new stdClass;
 						$match->type = $sec;
@@ -426,8 +426,14 @@ class Analyzer
 						$node->callee->name->range
 					);
 				}
-				$node->a_target = $matches[0]->func;
-				$node->a_types = $node->a_target->a_types->out;
+				
+				$match = $matches[0];
+				if (!in_array($match->type, $match->func->a_incarnations)) {
+					$match->func->a_incarnations[] = $match->type;
+				}
+				
+				$node->a_target = $match->func;
+				$node->a_types = $match->type->out;
 			} break;
 		}
 	}

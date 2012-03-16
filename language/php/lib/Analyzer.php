@@ -23,8 +23,8 @@ class Analyzer
 		foreach ($this->nodes as $n) $this->analyzeType($n);
 		if ($this->issues->isFatal()) return;
 		
-		/*foreach ($this->nodes as $n) $this->lateBind($n);
-		if ($this->issues->isFatal()) return;*/
+		foreach ($this->nodes as $n) $this->lateBind($n);
+		if ($this->issues->isFatal()) return;
 	}
 	
 	private $builtinNumericTypes = array();
@@ -230,6 +230,17 @@ class Analyzer
 					$node->a_target = $var;
 				}
 			} break;
+			case 'type.name': {
+				$type = $node->a_scope->find($node->name);
+				if (!$type || $type->kind != 'def.type') {
+					$this->issues[] = new Issue(
+						'error',
+						"Type '{$node->name}' is unknown.",
+						$node->range
+					);
+				}
+				$node->a_target = $type;
+			} break;
 		}
 	}
 	
@@ -381,6 +392,7 @@ class Analyzer
 				$matches = array();
 				foreach ($node->a_target as $func) {
 					$sec = $node->a_functype->match($func->a_types);
+					echo "matched $sec\n";
 					if ($sec) {
 						$match = new stdClass;
 						$match->type = $sec;
@@ -415,7 +427,7 @@ class Analyzer
 					);
 				}
 				$node->a_target = $matches[0]->func;
-				$node->a_types = new TypeSet($node->a_target->a_types->out);
+				$node->a_types = $node->a_target->a_types->out;
 			} break;
 		}
 	}

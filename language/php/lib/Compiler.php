@@ -129,7 +129,7 @@ class Compiler
 			$node->c_retname = $retname;
 			$type = "typedef struct {\n";
 			foreach ($node->out as $o) {
-				$type .= "\t{$o->a_target->c_ref} {$o->name->text};\n";
+				$type .= "\t{$o->type->a_target->c_ref} {$o->name->text};\n";
 			}
 			$type .= "} $retname;";
 			$seg->stmts[] = $type;

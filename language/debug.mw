@@ -1,6 +1,7 @@
 /** Debugging some stuff. */
 
 func test (@a x, @a y) -> (@a r) {}
+func test (@a x, float y) -> (@a r) {}
 
 func main
 {

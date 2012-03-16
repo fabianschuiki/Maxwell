@@ -60,9 +60,7 @@ span.type {
 .keyword { font-weight: bold; }
 .string { color: #3465a4; }
 
-.expr-var-type, .type-var, .type-name,
-.def-func-arg-type { font-weight: bold; color: #4e9a06; }
-.expr-ident { font-style: italic; }
+.type-var, .type-name { font-weight: bold; color: #4e9a06; }
 .expr-member { color: #75507b; }
 
 div.nodes {

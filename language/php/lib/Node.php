@@ -3,7 +3,6 @@
 class Node
 {
 	public $kind;
-	public $builtin = false;
 	
 	public function is($k) {
 		return strpos($this->kind, $k) === 0;
@@ -12,9 +11,10 @@ class Node
 	public function & nodes() {
 		$n = null;
 		switch ($this->kind) {
-			case 'def.func':   $n = array_merge($this->in, $this->out, array(&$this->body)); break;
-			case 'stmt.block': $n = $this->nodes; break;
-			case 'stmt.expr':  $n = array(&$this->expr); break;
+			case 'def.func':     $n = array_merge($this->in, $this->out, array(&$this->body)); break;
+			case 'def.func.arg': $n = array(&$this->type); break;
+			case 'stmt.block':   $n = $this->nodes; break;
+			case 'stmt.expr':    $n = array(&$this->expr); break;
 			
 			case 'stmt.if':    $n = array(&$this->condition, &$this->body, &$this->else); break;
 			case 'stmt.else':  $n = array(&$this->body); break;

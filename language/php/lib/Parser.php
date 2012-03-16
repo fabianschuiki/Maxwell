@@ -150,7 +150,7 @@ class Parser
 		
 		$type = null;
 		if (count($ts) > 0) {
-			$type = array_pop($ts);
+			/*$type = array_pop($ts);
 			if (!$type->is('identifier')) {
 				$this->issues[] = new Issue(
 					'error',
@@ -159,7 +159,8 @@ class Parser
 				);
 				return null;
 			}
-			$type->context = 'def.func.arg.type';
+			$type->context = 'def.func.arg.type';*/
+			$type = $this->parseType($ts);
 		}
 		
 		$a = new Node;
@@ -607,6 +608,33 @@ class Parser
 		$this->issues[] = new Issue(
 			'error',
 			"Unable to parse expression starting with identifier '{$ident}'. Expected a variable name after '{$ident}'.",
+			$range
+		);
+		return null;
+	}
+	
+	private function parseType(array $ts)
+	{
+		if (count($ts) == 1) {
+			if ($ts[0]->is('identifier')) {
+				$ident = array_shift($ts);
+				$n = new Node;
+				$n->kind = ($ident->text[0] == '@' ? 'type.var' : 'type.name');
+				$n->name = $ident;
+				$n->range = clone $ident->range;
+				$ident->node = $n;
+				$ident->context = $n->kind;
+				return $n;
+			}
+		}
+		
+		$range = clone $ts[0]->range;
+		foreach ($ts as $t) {
+			$range->combine($t->range);
+		}
+		$this->issues[] = new Issue(
+			'error',
+			"Unable to parse type.",
 			$range
 		);
 		return null;

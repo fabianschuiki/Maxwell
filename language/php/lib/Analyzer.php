@@ -12,7 +12,7 @@ class Analyzer
 		if ($this->issues->isFatal()) return;
 		
 		$this->scope = new Scope;
-		$this->addBuiltIn($this->scope);
+		//$this->addBuiltIn($this->scope);
 		
 		foreach ($this->nodes as $n) $this->populateScope($this->scope, $n);
 		if ($this->issues->isFatal()) return;
@@ -23,8 +23,8 @@ class Analyzer
 		foreach ($this->nodes as $n) $this->analyzeType($n);
 		if ($this->issues->isFatal()) return;
 		
-		foreach ($this->nodes as $n) $this->lateBind($n);
-		if ($this->issues->isFatal()) return;
+		/*foreach ($this->nodes as $n) $this->lateBind($n);
+		if ($this->issues->isFatal()) return;*/
 	}
 	
 	private $builtinNumericTypes = array();
@@ -78,7 +78,10 @@ class Analyzer
 		
 		$a = new Node;
 		$a->kind = 'def.func.arg';
-		$a->type = Token::builtin('identifier', $type);
+		$a->type = new Node;
+		$a->type->kind = 'type.name';
+		$a->type->name = Token::builtin('identifier', $type);
+		$a->type->range = clone $a->type->name->range;
 		$a->func = $n;
 		
 		$n->in = array(clone $a, clone $a);
@@ -150,7 +153,11 @@ class Analyzer
 	
 	private function populateScope(Scope &$parent, Node &$node)
 	{
-		if (($node->is('def') && !$node->builtin) || ($node->is('stmt') && $node->kind != 'stmt.expr')) {
+		$individuallyScoped = array(
+			'def.func', 'def.type'
+		);
+		//if (($node->is('def') && !$node->builtin) || ($node->is('stmt') && $node->kind != 'stmt.expr')) {
+		if (in_array($node->kind, $individuallyScoped)) {
 			$node->a_scope = new Scope($parent);
 		} else {
 			$node->a_scope = $parent;
@@ -174,7 +181,7 @@ class Analyzer
 			$this->bind($n);
 		}
 		switch ($node->kind) {
-			case 'def.func.arg': {
+			/*case 'def.func.arg': {
 				$type = $node->a_scope->find($node->type);
 				if (!$type || $type->kind != 'def.type') {
 					$this->issues[] = new Issue(
@@ -186,8 +193,8 @@ class Analyzer
 				}
 				$node->type->a_target = $type;
 				$node->a_target = $type;
-			} break;
-			case 'expr.var': {
+			} break;*/
+			/*case 'expr.var': {
 				$type = $node->a_scope->find($node->type);
 				if (!$type || $type->kind != 'def.type') {
 					$this->issues[] = new Issue(
@@ -198,7 +205,7 @@ class Analyzer
 					);
 				}
 				$node->a_target = $type;
-			} break;
+			} break;*/
 			case 'expr.ident': {
 				$target = $node->a_scope->find($node->name);
 				if (!$target) {
@@ -214,6 +221,16 @@ class Analyzer
 				$node->callee->a_late = true;
 				$node->a_target = $node->callee->a_target;
 			} break;
+			
+			case 'type.var': {
+				$var = $node->a_scope->find($node->name);
+				echo "scope.find({$node->name}) = {$var->name}\n";
+				if (!$var) {
+					$node->a_scope->add($this->issues, $node); break;
+				} else {
+					$node->a_target = $var;
+				}
+			} break;
 		}
 	}
 	
@@ -227,11 +244,6 @@ class Analyzer
 				if (isset($node->initial)) {
 					$node->initial->a_requiredTypes = clone $node->a_types;
 				}
-			} break;
-			case 'def.func.arg': {
-				$types = new TypeSet;
-				$types->addNativeType($node->type);
-				$node->a_types = $types;
 			} break;
 		}
 		foreach ($node->nodes() as $n) {
@@ -250,6 +262,11 @@ class Analyzer
 					$type->addOutput($a->a_types, $a->name->text);
 				}
 				$node->a_types = $type;
+			} break;
+			case 'def.func.arg': {
+				/*$types = new TypeSet;
+				 $types-*>addNativeType($node->type);*/
+				$node->a_types = $node->type->a_types;
 			} break;
 			case 'expr.var': {
 				if (isset($node->initial->a_types)) {
@@ -312,6 +329,21 @@ class Analyzer
 					$types->addField($e->a_types);
 				}
 				$node->a_types = new TypeSet($types);
+			} break;
+			
+			case 'type.var': {
+				/*$tv = $node->a_scope->find($node->name);
+				if (!$tv) {
+					echo "created type.var {$node->name}\n";*/
+					$node->a_types = new TypeVar(strval($node->name));
+					/*$node->a_scope->add($this->issues, $node);
+				} else {
+					echo "reused type.var {$node->name}\n";
+					$node->a_types = $tv->a_types;
+				}*/
+			} break;
+			case 'type.name': {
+				$node->a_types = new NamedType(strval($node->name));
 			} break;
 		}
 		

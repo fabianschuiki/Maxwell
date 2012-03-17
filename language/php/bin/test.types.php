@@ -13,6 +13,7 @@ $float = new NamedType('float');
 
 //Type sets.
 $int_or_float = new TypeSet($int, $float);
+$any          = new TypeSet;
 
 
 /**
@@ -142,6 +143,15 @@ $f8->in->addField($int, 'a');
 $f8->in->addField($int, 'b');
 $f8->out->addField($int, 'c');
 
+$t1 = new TupleType;
+$t1->addField($int);
+$t1->addField($int);
+
+$f9 = new FuncType;
+$f9->in->addField($t1);
+$f9->in->addField($any);
+$f9->out->addField($any);
+
 UnitTest::group("functions");
 match($f1, $f2, '(int, int)->(int)');
 match($f1, $f3, 'nil');
@@ -154,3 +164,5 @@ match($f2, $f7, '(a:int, b:int)->(c:int)');
 match($f7, $f2, '(a:int, b:int)->(c:int)');
 match($f6, $f7, '(a:float, b:float)->(c:float)');
 match($f7, $f6, '(a:float, b:float)->(c:float)');
+match($f9, $f1, '((int, int), (int, int))->((int, int))');
+match($f1, $f9, '((int, int), (int, int))->((int, int))');

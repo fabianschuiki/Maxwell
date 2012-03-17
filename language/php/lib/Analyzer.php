@@ -29,6 +29,9 @@ class Analyzer
 		foreach ($this->nodes as $n) $this->incarnate($n);
 		if ($this->issues->isFatal()) return;
 		
+		foreach ($this->nodes as $n) $this->expandTupleOps($n);
+		if ($this->issues->isFatal()) return;
+		
 		foreach ($this->nodes as $n) $this->lateBind($n);
 		if ($this->issues->isFatal()) return;
 	}
@@ -365,8 +368,9 @@ class Analyzer
 					$type->addInput($a->a_types, $a->name->text);
 				}
 				//TODO: Add the output variables. Requires the further specification of how return values are handled and assigned.
+				$type->addOutput(new TypeSet);
 				$node->a_functype = $type;
-				$node->a_types = new TypeSet;
+				$node->a_types = /*$type->out*/new TypeSet;
 			} break;
 			case 'expr.call.arg': {
 				$node->a_types = clone $node->expr->a_types;
@@ -376,7 +380,7 @@ class Analyzer
 				foreach ($node->exprs as $e) {
 					$types->addField($e->a_types);
 				}
-				$node->a_types = new TypeSet($types);
+				$node->a_types = $types;
 			} break;
 			
 			case 'type.var': {
@@ -453,6 +457,9 @@ class Analyzer
 					if ($match->func->builtin) {
 						$node->a_target = $match->func;
 						$node->a_types  = $match->type->out;
+						if (count($node->a_types->fields) == 1) {
+							$node->a_types = $node->a_types->fields[0]->type;
+						}
 					} else {
 						$inc = null;
 						foreach ($match->func->a_incarnations as $i) {
@@ -510,12 +517,6 @@ class Analyzer
 			
 			$this->populateScope($node->func->a_scope->parent, $func);
 			$this->bind($func);
-			/*foreach ($func->in as $n) {
-				$this->analyzeType($n, true);
-			}
-			foreach ($func->out as $n) {
-				$this->analyzeType($n, true);
-			}*/
 			$this->analyzeType($func);
 			$func->a_types->match($node->type);
 			$this->resolveTypeVars($func);
@@ -534,6 +535,61 @@ class Analyzer
 		if ($node->a_types && $node->a_types instanceof TypeVar) {
 			if (!$node->a_types->type instanceof TypeSet) {
 				$node->a_types = $node->a_types->type;
+			}
+		}
+	}
+	
+	private function expandTupleOps(Node &$node)
+	{
+		foreach ($node->nodes() as $n) {
+			$this->expandTupleOps($n);
+		}
+		if ($node->is('expr.call') && $node->a_target->builtin && count($node->args) == 2) {
+			$this->analyzeType($node);
+			if ($node->args[0]->a_types instanceof TupleType && $node->args[1]->a_types instanceof TupleType) {
+				echo "expanding {$node->callee->name}\n";
+				$a = $node->args[0]->expr;
+				$b = $node->args[1]->expr;
+				
+				$pairs = array();
+				for ($i = 0; $i < count($a->exprs) && $i < count($b->exprs); $i++) {
+					$pairs[] = array($a->exprs[$i], $b->exprs[$i]);
+				}
+				
+				$node->exprs = array();
+				foreach ($pairs as $pair) {
+					$a = $pair[0];
+					$b = $pair[1];
+					
+					$op = new Node;
+					$op->kind = $node->kind;
+					$op->callee = clone $node->callee;
+					$op->range = clone $node->range;
+					//$op->a_requiredTypes = clone $a->a_types;
+					
+					$aa = new Node;
+					$aa->kind = 'expr.call.arg';
+					$aa->expr = $a;
+					$aa->range = clone $aa->expr->range;
+					
+					$ab = new Node;
+					$ab->kind = 'expr.call.arg';
+					$ab->expr = $b;
+					$ab->range = clone $ab->expr->range;
+					
+					$op->args = array($aa, $ab);
+					$node->exprs[] = $op;
+				}
+				
+				unset($node->args);
+				unset($node->callee);
+				unset($node->a_functype);
+				$node->kind = 'expr.tuple';
+				
+				$this->populateScope($node->a_scope, $node);
+				$this->bind($node);
+				$this->analyzeType($node);
+				$this->lateBind($node);
 			}
 		}
 	}

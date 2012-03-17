@@ -278,6 +278,20 @@ class Compiler
 		return $seg;
 	}
 	
+	private function compileExprTuple(Node &$node)
+	{
+		$seg = new CSegment;
+		$exprs = array();
+		foreach ($node->exprs as $expr) {
+			$es = $this->compileNode($expr);
+			$seg->addStmts($es->stmts);
+			$seg->stmts[] = $es->expr.";";
+			$exprs[] = $es->expr;
+		}
+		$seg->expr = "/* tuple (".implode(', ', $exprs).") */";
+		return $seg;
+	}
+	
 	private function compileBlock(Node &$node)
 	{
 		$stmts = array();

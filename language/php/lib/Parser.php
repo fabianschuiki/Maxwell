@@ -26,7 +26,7 @@ class Parser
 		$t = array_shift($ts);
 		$this->issues[] = new Issue(
 			'warning',
-			"definition should start with a keyword",
+			"Definition should start with a keyword.",
 			$t->range
 		);
 		return null;

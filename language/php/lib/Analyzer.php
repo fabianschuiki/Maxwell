@@ -428,12 +428,23 @@ class Analyzer
 				}
 				
 				$match = $matches[0];
-				if (!in_array($match->type, $match->func->a_incarnations)) {
-					$match->func->a_incarnations[] = $match->type;
+				$inc = null;
+				foreach ($match->func->a_incarnations as $i) {
+					if ($i->type == $match->type) {
+						$inc = $i;
+						break;
+					}
+				}
+				if (!$inc) {
+					$inc = new Node;
+					$inc->kind = 'def.func.incarnation';
+					$inc->func = $match->func;
+					$inc->type = $match->type;
+					$match->func->a_incarnations[] = $inc;
 				}
 				
-				$node->a_target = $match->func;
-				$node->a_types = $match->type->out;
+				$node->a_target = $inc;
+				$node->a_types = $inc->type->out;
 			} break;
 		}
 	}

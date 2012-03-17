@@ -87,8 +87,13 @@ function tokenHover(Token &$t)
 		<div class="col right">
 			<div class="nodes">
 			<?php
-			function dumpNodes($nodes) {
+			function dumpNodes($nodes, $parents = array()) {
 				foreach ($nodes as $n) {
+					if (in_array($n, $parents)) {
+						continue;
+					}
+					$p = $parents;
+					$p[] = $n;
 					echo '<div class="node">';
 					echo '<span class="kind">'.$n->kind.'</span>';
 					echo '<div class="attrs">';
@@ -140,7 +145,7 @@ function tokenHover(Token &$t)
 							if ($key == 'a_target') {
 								echo '<span style="color: #4e9a06;">bound to '.$value->kind.'</span>';
 							} else {
-								dumpNodes(is_array($value) ? $value : array($value));
+								dumpNodes(is_array($value) ? $value : array($value), $p);
 							}
 							$printed = true;
 						}

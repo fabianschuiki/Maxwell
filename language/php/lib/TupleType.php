@@ -86,6 +86,16 @@ class TupleType extends Type
 		}
 	}
 	
+	public function isGeneric()
+	{
+		foreach ($this->fields as $f) {
+			if ($f->type->isGeneric()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public function cost()
 	{
 		$cost = 0;

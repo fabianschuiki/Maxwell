@@ -47,4 +47,9 @@ class TypeVar extends Type
 			return $this->type;
 		}
 	}
+	
+	public function isGeneric()
+	{
+		return true;
+	}
 }

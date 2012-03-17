@@ -53,6 +53,13 @@ class FuncType extends Type
 		if ($this->out) $this->out->resolveVars();
 	}
 	
+	public function isGeneric()
+	{
+		if ($this->in->isGeneric())  return true;
+		if ($this->out->isGeneric()) return true;
+		return false;
+	}
+	
 	public function cost()
 	{
 		return $this->in->cost() + $this->out->cost();

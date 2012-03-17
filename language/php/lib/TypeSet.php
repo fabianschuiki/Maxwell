@@ -167,6 +167,16 @@ class TypeSet extends Type
 		}
 	}
 	
+	public function isGeneric()
+	{
+		foreach ($this->types as $t) {
+			if ($t->isGeneric()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public function cost()
 	{
 		$min = null;

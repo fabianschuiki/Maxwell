@@ -290,6 +290,7 @@ class Analyzer
 					$type->addOutput($a->a_types, $a->name->text);
 				}
 				$node->a_types = $type;
+				$node->a_generic = $type->isGeneric();
 			} break;
 			case 'def.func.arg': {
 				/*$types = new TypeSet;

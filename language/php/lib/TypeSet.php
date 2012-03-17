@@ -169,6 +169,9 @@ class TypeSet extends Type
 	
 	public function isGeneric()
 	{
+		if ($this->any) {
+			return true;
+		}
 		foreach ($this->types as $t) {
 			if ($t->isGeneric()) {
 				return true;

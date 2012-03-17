@@ -440,6 +440,7 @@ class Analyzer
 					$inc->kind = 'def.func.incarnation';
 					$inc->func = $match->func;
 					$inc->type = $match->type;
+					$inc->a_types = $inc->type;
 					$match->func->a_incarnations[] = $inc;
 				}
 				

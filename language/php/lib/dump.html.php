@@ -14,11 +14,11 @@ function tokenHover(Token &$t)
 			if (is_array($ts)) {
 				$targets = array();
 				foreach ($ts as $t) {
-					$targets[] = "{$t->kind} {$t->name} <span class=\"type\">{$t->a_types}</span>";
+					$targets[] = "{$t->kind} {$t->name}{$ts->func->name} <span class=\"type\">{$t->a_types}</span>";
 				}
 				$target = "[".implode(",\n", $targets)."]";
 			} else {
-				$target = "{$ts->kind} {$ts->name} <span class=\"type\">{$ts->a_types}</span>";
+				$target = "{$ts->kind} {$ts->name}{$ts->func->name} <span class=\"type\">{$ts->a_types}</span>";
 			}
 			$pairs['Bound To'] = $target;
 		}

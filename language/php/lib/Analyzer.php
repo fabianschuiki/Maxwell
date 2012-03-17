@@ -418,6 +418,7 @@ class Analyzer
 				if (is_array($node->a_target)) {
 					$matches = array();
 					foreach ($node->a_target as $func) {
+						assert($node->a_functype);
 						$sec = $node->a_functype->match($func->a_types);
 						if ($sec) {
 							$match = new stdClass;
@@ -547,7 +548,6 @@ class Analyzer
 		if ($node->is('expr.call') && $node->a_target->builtin && count($node->args) == 2) {
 			$this->analyzeType($node);
 			if ($node->args[0]->a_types instanceof TupleType && $node->args[1]->a_types instanceof TupleType) {
-				echo "expanding {$node->callee->name}\n";
 				$a = $node->args[0]->expr;
 				$b = $node->args[1]->expr;
 				
@@ -584,9 +584,10 @@ class Analyzer
 				unset($node->args);
 				unset($node->callee);
 				unset($node->a_functype);
+				unset($node->a_target);
 				$node->kind = 'expr.tuple';
 				
-				$this->populateScope($node->a_scope, $node);
+				//$this->populateScope($node->a_scope, $node);
 				$this->bind($node);
 				$this->analyzeType($node);
 				$this->lateBind($node);

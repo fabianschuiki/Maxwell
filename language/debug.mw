@@ -6,7 +6,7 @@ func main
 	int b = 2;
 	int x = 1;
 	int y = 2;
-	int i;
-	int j;
-	(i, j) = (a, b) + (x, y);
+	(int i, int j) = (a, b) + (x, y);
+	
+	inline { printf("%i, %i\n", *(int *)@i@, *(int *)@j@); }
 }

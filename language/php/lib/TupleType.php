@@ -3,7 +3,7 @@
 class TupleType extends Type
 {
 	public $fields = array();
-// 	
+	public $strict = true;
 	
 	public function __toString()
 	{
@@ -46,6 +46,7 @@ class TupleType extends Type
 		$match = new TupleType;
 		$i  = 0;
 		$fi = 0;
+		$bfused = array();
 		foreach ($this->fields as $af) {
 			if ($af->name) {
 				$bf = $type->getField($af->name);
@@ -56,15 +57,26 @@ class TupleType extends Type
 				$bf = $type->getField($i++);
 			}
 			if (!$bf) {
-				return null;
+				//if ($this->strict) {
+					return null;
+				/*} else {
+					$match->addField($af->type, $af->name);
+				}*/
+			} else {
+				$bfused[] = $bf->name;
+				$m = $af->type->match($bf->type, $vars, false);
+				if (!$m) {
+					return null;
+				}
+				$match->addField($m, ($af->name ? $af->name : $bf->name));
+				$fi++;
 			}
-			
-			$m = $af->type->match($bf->type, $vars, false);
-			if (!$m) {
-				return null;
+		}
+		foreach ($type->fields as $bf) {
+			if (in_array($bf->name, $bfused)) {
+				continue;
 			}
-			$match->addField($m, ($af->name ? $af->name : $bf->name));
-			$fi++;
+			$match->addField($bf->type, $bf->name);
 		}
 		
 		//Resolve type variables.

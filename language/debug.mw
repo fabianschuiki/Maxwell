@@ -1,12 +1,46 @@
 /** Debugging some stuff. */
 
+func length(String s) -> (int l)
+{
+	inline {
+		int i;
+		for (i = 0; @s@->v[i] != 0; i++);
+		*(int*)@l@ = i;
+	}
+}
+
+func concat(String a, String b) -> (String r)
+{
+	int l = length(a) + length(b);
+	inline {
+		@r@ = malloc(sizeof(String_t));
+		int l = *(int*)@l@;
+		char * temp = malloc(l+1);
+		temp[l] = 0;
+		const char * ptr;
+		char * dst = temp;
+		for (ptr = @a@->v; *ptr != 0; dst++, ptr++) *dst = *ptr;
+		for (ptr = @b@->v; *ptr != 0; dst++, ptr++) *dst = *ptr;
+		@r@->v = temp;
+	}
+}
+
+func show(String s)
+{
+	inline { printf("%s\n", @s@->v); }
+}
+func show(int i)
+{
+	inline { printf("%i\n", *(int*)@i@); }
+}
+
 func main
 {
-	int a = 1;
-	int b = 2;
-	int x = 1;
-	int y = 2;
-	(int i, int j) = (a, b) + (x, y);
+	String name = "Hello";
+	show(name);
 	
-	inline { printf("%i, %i\n", *(int *)@i@, *(int *)@j@); }
+	int l = length(name);
+	inline { printf("length = %i\n", *(int*)@l@); }
+	
+	show(concat(name, " World!"));
 }

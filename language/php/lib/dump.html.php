@@ -65,7 +65,7 @@ function tokenHover(Token &$t)
 			$i = 0;
 			foreach ($tokens as $t) {
 				$e = $t->range->start->offset;
-				echo substr($file->content, $s, $e-$s);
+				echo str_replace("\t", "    ", substr($file->content, $s, $e-$s));
 				$s = $e;
 			
 				$context = (isset($t->context) ? $t->context : '');
@@ -74,7 +74,7 @@ function tokenHover(Token &$t)
 				$t->index = $i++;
 				echo "<span id=\"token-{$t->index}\" class=\"token\">";
 				echo "<span class=\"{$t->type} ".str_replace('.', '-', $context)."\" data-context=\"$context\">";
-				echo substr($file->content, $s, $e-$s);
+				echo str_replace("\t", "    ", substr($file->content, $s, $e-$s));
 				echo "</span>";
 				echo "<div class=\"hover\">";
 				echo tokenHover($t);

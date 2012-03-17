@@ -186,7 +186,7 @@ class Parser
 			);
 			return null;
 		}
-		$name->context = 'type.name';
+		$name->context = 'def.type.name';
 		
 		//Potential type attributes.
 		$primitive = false;
@@ -216,7 +216,7 @@ class Parser
 			);
 			return null;
 		}
-		$defs->context = 'type.defs';
+		$defs->context = 'def.type.body';
 		
 		//Create the node.
 		$t = new Node;

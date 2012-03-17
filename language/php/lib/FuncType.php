@@ -9,6 +9,7 @@ class FuncType extends Type
 	{
 		$this->in  = new TupleType;
 		$this->out = new TupleType;
+		$this->out->strict = false;
 	}
 	
 	public function __toString()

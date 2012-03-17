@@ -25,6 +25,9 @@ class Analyzer
 		
 		foreach ($this->nodes as $n) $this->lateBind($n);
 		if ($this->issues->isFatal()) return;
+		
+		foreach ($this->nodes as $n) $this->incarnate($n);
+		if ($this->issues->isFatal()) return;
 	}
 	
 	private $builtinNumericTypes = array();
@@ -245,11 +248,13 @@ class Analyzer
 		}
 	}
 	
-	private function analyzeType(Node &$node)
+	private function analyzeType(Node &$node, $deep = true)
 	{
 		switch ($node->kind) {
 			case 'expr.var': {
-				$this->analyzeType($node->type);
+				if ($deep) {
+					$this->analyzeType($node->type);
+				}
 				$node->a_types = $node->type->a_types;
 				if (isset($node->initial)) {
 					$node->initial->a_requiredTypes = clone $node->a_types;
@@ -260,17 +265,19 @@ class Analyzer
 			} break;
 		}
 		
-		if ($node->kind == 'expr.var') {
-			if ($node->initial) {
-				$this->analyzeType($node->initial);
+		if ($deep) {
+			if ($node->kind == 'expr.var') {
+				if ($node->initial) {
+					$this->analyzeType($node->initial);
+				}
+			} else {
+				foreach ($node->nodes() as $n) {
+					$this->analyzeType($n);
+				}
 			}
-		} else {
-			foreach ($node->nodes() as $n) {
-				$this->analyzeType($n);
+			if ($this->issues->isFatal()) {
+				return;
 			}
-		}
-		if ($this->issues->isFatal()) {
-			return;
 		}
 		
 		switch ($node->kind) {
@@ -447,6 +454,37 @@ class Analyzer
 				$node->a_target = $inc;
 				$node->a_types = $inc->type->out;
 			} break;
+		}
+	}
+	
+	private function incarnate(Node &$node)
+	{
+		foreach ($node->nodes() as $n) {
+			$this->incarnate($n);
+		}
+		if ($node->kind == 'def.func.incarnation') {
+			$func = $node->func->makeClone();
+			
+			$this->populateScope($node->func->a_scope->parent, $func);
+			$this->bind($func);
+			$this->analyzeType($func);
+			$func->a_types->match($node->type);
+			$this->resolveTypeVars($func);
+			$this->analyzeType($func, false);
+			
+			$node->inc_func = $func;
+		}
+	}
+	
+	private function resolveTypeVars(Node &$node)
+	{
+		foreach ($node->nodes() as $n) {
+			$this->resolveTypeVars($n);
+		}
+		if ($node->a_types && $node->a_types instanceof TypeVar) {
+			if (!$node->a_types->type instanceof TypeSet) {
+				$node->a_types = $node->a_types->type;
+			}
 		}
 	}
 }

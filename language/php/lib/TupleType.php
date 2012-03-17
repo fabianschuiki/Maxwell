@@ -56,7 +56,6 @@ class TupleType extends Type
 				$bf = $type->getField($i++);
 			}
 			if (!$bf) {
-				echo "field {$af->name}/$i not found\n";
 				return null;
 			}
 			

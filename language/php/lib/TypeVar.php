@@ -15,7 +15,7 @@ class TypeVar extends Type
 	
 	public function __toString()
 	{
-		$t = $this->name;
+		$t = $this->name.$this->id;
 		if ($this->type) {
 			$t .= "[{$this->type}]";
 		} else {

@@ -11,7 +11,12 @@ class Node
 	public function & nodes() {
 		$n = null;
 		switch ($this->kind) {
-			case 'def.func':     $n = array_merge($this->in, $this->out, array(&$this->body)); break;
+			case 'def.func': {
+				$n = array_merge($this->in, $this->out, array(&$this->body));
+				if (isset($this->a_incarnations)) {
+					$n = array_merge($n, $this->a_incarnations);
+				}
+			} break;
 			case 'def.func.arg': $n = array(&$this->type); break;
 			case 'stmt.block':   $n = $this->nodes; break;
 			case 'stmt.expr':    $n = array(&$this->expr); break;
@@ -35,5 +40,38 @@ class Node
 			return $this->nodes;
 		}
 		return array();
+	}
+	
+	public function makeClone()
+	{
+		$n = new Node;
+		foreach ($this as $key => $value) {
+			if (strpos($key, 'a_') !== 0) {
+				$n->$key = $this->smartClone($value);
+			}
+		}
+		return $n;
+	}
+	
+	private function smartClone($value)
+	{
+		if ($value instanceof Node) {
+			return $value->makeClone();
+		} else if (is_object($value)) {
+			return clone $value;
+		} else if (is_array($value)) {
+			return $this->cloneArray($value);
+		} else {
+			return $value;
+		}
+	}
+	
+	private function cloneArray($a)
+	{
+		$b = array();
+		foreach ($a as $k => $v) {
+			$b[$k] = $this->smartClone($v);
+		}
+		return $b;
 	}
 }

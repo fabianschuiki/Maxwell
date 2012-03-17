@@ -141,7 +141,9 @@ class Compiler
 			$node->c_retname = $retname;
 			$type = "typedef struct {\n";
 			foreach ($node->out as $o) {
-				$type .= "\t{$o->a_target->c_ref} {$o->name};\n";
+				$o->c_ref = $o->name->text;
+				$type .= "\t{$o->a_target->c_ref} {$o->c_ref};\n";
+				$o->c_ref = '_ret.'.$o->c_ref;
 			}
 			$type .= "} $retname;";
 			$seg->stmts[] = $type;
@@ -152,10 +154,13 @@ class Compiler
 		//Synthesize the function defintion.
 		$ins = array();
 		foreach ($node->in as $i) {
-			$ins[] = "{$i->a_target->c_ref} {$i->name->text}";
+			$i->c_ref = $i->name->text;
+			$ins[] = "{$i->a_target->c_ref} {$i->c_ref}";
 		}
 		$def  = "$retname {$node->c_name} (".implode(", ", $ins).")\n";
+		if ($retname != 'void')	$def .= "{\n\t$retname _ret;\n";
 		$def .= $this->compileBlock($node->body);
+		if ($retname != 'void') $def .= "\n\treturn _ret;\n}";
 		$seg->stmts[] = $def;
 		return $seg;
 	}
@@ -184,9 +189,6 @@ class Compiler
 	{
 		$seg = new CSegment;
 		$f = $node->a_target;
-		if ($f->kind == 'def.func.incarnation') {
-			$f = $f->inc_func;
-		}
 		
 		//Assemble the list of arguments and the statements required to calculate them.
 		$args = array();

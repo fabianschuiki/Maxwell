@@ -28,6 +28,9 @@ class Analyzer
 		
 		foreach ($this->nodes as $n) $this->incarnate($n);
 		if ($this->issues->isFatal()) return;
+		
+		foreach ($this->nodes as $n) $this->lateBind($n);
+		if ($this->issues->isFatal()) return;
 	}
 	
 	private $builtinNumericTypes = array();
@@ -60,7 +63,7 @@ class Analyzer
 		
 		$operators = array('+', '-', '*', '/', '=');
 		foreach ($operators as $op) {
-			 $this->addBuiltInBinOp($scope, $op, 'any');
+			 $this->addBuiltInBinOp($scope, $op);
 		}
 		
 		$n = new Node;
@@ -72,7 +75,7 @@ class Analyzer
 		//$scope->add($this->issues, $n);
 	}
 	
-	private function addBuiltInBinOp(Scope &$scope, $op, $type)
+	private function addBuiltInBinOp(Scope &$scope, $op)
 	{
 		$n = new Node;
 		$n->builtin = true;
@@ -82,15 +85,23 @@ class Analyzer
 		$a = new Node;
 		$a->kind = 'def.func.arg';
 		$a->type = new Node;
-		$a->type->kind = 'type.name';
-		$a->type->name = Token::builtin('identifier', $type);
+		$a->type->kind = 'type.var';
+		$a->type->name = Token::builtin('identifier', '@a');
 		$a->type->range = clone $a->type->name->range;
-		$a->func = $n;
 		
-		$n->in = array(clone $a, clone $a);
-		$n->out = array(clone $a);
+		$b = clone $a;
+		$c = clone $a;
+		
+		$t = new TypeVar('@a');
+		$a->type->a_types = $t;
+		$b->type->a_types = $t;
+		$c->type->a_types = $t;
+		
+		$n->in = array($a, $b);
+		$n->out = array($c);
 		
 		$this->populateScope($scope, $n);
+		//$this->bind($n);
 		$this->analyzeType($n);
 	}
 	
@@ -369,10 +380,12 @@ class Analyzer
 			} break;
 			
 			case 'type.var': {
-				if ($node->a_target) {
-					$node->a_types = $node->a_target->a_types;
-				} else {
-					$node->a_types = new TypeVar(strval($node->name));
+				if (!$node->a_types) {
+					if ($node->a_target) {
+						$node->a_types = $node->a_target->a_types;
+					} else {
+						$node->a_types = new TypeVar(strval($node->name));
+					}
 				}
 			} break;
 		}
@@ -398,62 +411,71 @@ class Analyzer
 		}
 		switch ($node->kind) {
 			case 'expr.call': {
-				$matches = array();
-				foreach ($node->a_target as $func) {
-					$sec = $node->a_functype->match($func->a_types);
-					if ($sec) {
-						$match = new stdClass;
-						$match->type = $sec;
-						$match->func = $func;
-						$matches[] = $match;
+				if (is_array($node->a_target)) {
+					$matches = array();
+					foreach ($node->a_target as $func) {
+						$sec = $node->a_functype->match($func->a_types);
+						if ($sec) {
+							$match = new stdClass;
+							$match->type = $sec;
+							$match->func = $func;
+							$matches[] = $match;
+						}
 					}
-				}
-				if (count($matches) < 1) {
-					$this->issues[] = new Issue(
-						'error',
-						"Call to function '{$node->callee->name}' requires a function of type '{$node->a_functype}', which does not exist.",
-						$node->callee->name->range
-					);
-					return;
-				}
-				$lowestCost = null;
-				foreach ($matches as $match) {
-					$c = $match->type->cost();
-					if ($lowestCost === null || $c < $lowestCost) {
-						$lowestCost = $c;
+					if (count($matches) < 1) {
+						$this->issues[] = new Issue(
+							'error',
+							"Call to function '{$node->callee->name}' requires a function of type '{$node->a_functype}', which does not exist.",
+							$node->callee->name->range
+						);
+						return;
 					}
-				}
-				$matches = array_filter($matches, function($m) use ($lowestCost){
-					return ($m->type->cost() <= $lowestCost);
-				});
-				if (count($matches) > 1) {
-					$cs = implode("\n", array_map(function($m){ return strval($m->func->a_types); }, $matches));
-					$this->issues[] = new Issue(
-						'warning',
-						"Call to function '{$node->callee->name}' with type '{$node->a_types}' is ambiguous. Candidates are:\n$cs",
-						$node->callee->name->range
-					);
-				}
-				
-				$match = $matches[0];
-				$inc = null;
-				foreach ($match->func->a_incarnations as $i) {
-					if ($i->type == $match->type) {
-						$inc = $i;
-						break;
+					$lowestCost = null;
+					foreach ($matches as $match) {
+						$c = $match->type->cost();
+						if ($lowestCost === null || $c < $lowestCost) {
+							$lowestCost = $c;
+						}
 					}
+					$matches = array_filter($matches, function($m) use ($lowestCost){
+						return ($m->type->cost() <= $lowestCost);
+					});
+					if (count($matches) > 1) {
+						$cs = implode("\n", array_map(function($m){ return strval($m->func->a_types); }, $matches));
+						$this->issues[] = new Issue(
+							'warning',
+							"Call to function '{$node->callee->name}' with type '{$node->a_types}' is ambiguous. Candidates are:\n$cs",
+							$node->callee->name->range
+						);
+					}
+					
+					$match = $matches[0];
+					if ($match->func->builtin) {
+						$node->a_target = $match->func;
+						$node->a_types  = $match->type->out;
+					} else {
+						$inc = null;
+						foreach ($match->func->a_incarnations as $i) {
+							if ($i->type == $match->type) {
+								$inc = $i;
+								break;
+							}
+						}
+						if (!$inc) {
+							$inc = new Node;
+							$inc->kind = 'def.func.incarnation';
+							$inc->func = $match->func;
+							$inc->type = $match->type;
+							$inc->a_types = $inc->type;
+							$match->func->a_incarnations[] = $inc;
+							
+							$node->a_target = $inc;
+							$node->a_types  = $inc->type->out;
+						}
+					}
+				} else if ($node->a_target->kind == 'def.func.incarnation') {
+					$node->a_target = $node->a_target->inc_func;
 				}
-				if (!$inc) {
-					$inc = new Node;
-					$inc->kind = 'def.func.incarnation';
-					$inc->func = $match->func;
-					$inc->type = $match->type;
-					$inc->a_types = $inc->type;
-					$match->func->a_incarnations[] = $inc;
-				}
-				
-				$node->a_target = $inc;
-				$node->a_types = $inc->type->out;
 			} break;
 			
 			case 'expr.var':
@@ -488,11 +510,17 @@ class Analyzer
 			
 			$this->populateScope($node->func->a_scope->parent, $func);
 			$this->bind($func);
+			/*foreach ($func->in as $n) {
+				$this->analyzeType($n, true);
+			}
+			foreach ($func->out as $n) {
+				$this->analyzeType($n, true);
+			}*/
 			$this->analyzeType($func);
 			$func->a_types->match($node->type);
 			$this->resolveTypeVars($func);
-			$this->analyzeType($func, false);
-			$this->lateBind($func);
+			$this->analyzeType($func);
+			//$this->lateBind($func);
 			
 			$node->inc_func = $func;
 		}

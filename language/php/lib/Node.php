@@ -17,6 +17,7 @@ class Node
 					$n = array_merge($n, $this->a_incarnations);
 				}
 			} break;
+			case 'def.func.incarnation': $n = array(&$this->inc_func); break;
 			case 'def.func.arg': $n = array(&$this->type); break;
 			case 'stmt.block':   $n = $this->nodes; break;
 			case 'stmt.expr':    $n = array(&$this->expr); break;

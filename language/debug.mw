@@ -1,6 +1,10 @@
 /** Debugging some stuff. */
 
-func test (@a x, @a y) -> (@a r) {}
+func test (@a x, @a y) -> (@a r)
+{
+	inline { printf("%i, %i\n", @x@, @y@); }
+	r = x + y;
+}
 
 func main
 {
@@ -11,5 +15,9 @@ func main
 	float a;
 	float b;
 	test(a, b);
+	
+	int i1 = 1;
+	int i2 = 2;
+	i1 + i2;
 	//(x, y) = (1, 2) + (2, 3);
 }

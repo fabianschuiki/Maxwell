@@ -52,4 +52,9 @@ class TypeVar extends Type
 	{
 		return true;
 	}
+	
+	public function cost()
+	{
+		return 0;
+	}
 }

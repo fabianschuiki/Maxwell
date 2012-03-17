@@ -100,7 +100,9 @@ class TupleType extends Type
 	{
 		$cost = 0;
 		foreach ($this->fields as $f) {
-			$cost += $f->type->cost();
+			if ($f->type) {
+				$cost += $f->type->cost();
+			}
 		}
 		return $cost;
 	}

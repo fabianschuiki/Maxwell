@@ -455,6 +455,26 @@ class Analyzer
 				$node->a_target = $inc;
 				$node->a_types = $inc->type->out;
 			} break;
+			
+			case 'expr.var':
+			case 'def.func.arg': {
+				if (isset($node->a_types) && $node->a_types instanceof NamedType) {
+					$t = $node->a_scope->find($node->a_types->name);
+					if (!$t) {
+						if ($node->kind == 'expr.var') {
+							$msg = "Type '{$node->a_types->name}' of variable '{$node->name}' is unknown.";
+						} else {
+							$msg = "Type '{$node->a_types->name}' of argument '{$node->name}' of function '{$node->func->name}' is unknown.";
+						}
+						$this->issues[] = new Issue(
+							'error',
+							$msg,
+							$node->range
+						);
+					}
+					$node->a_target = $t;
+				}
+			} break;
 		}
 	}
 	
@@ -472,6 +492,7 @@ class Analyzer
 			$func->a_types->match($node->type);
 			$this->resolveTypeVars($func);
 			$this->analyzeType($func, false);
+			$this->lateBind($func);
 			
 			$node->inc_func = $func;
 		}

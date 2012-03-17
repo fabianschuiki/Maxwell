@@ -111,6 +111,18 @@ class Compiler
 	private $funcDefIndices = array();
 	private function compileFuncDef(Node &$node)
 	{
+		//If the function is generic, compile its incarnations instead.
+		if ($node->a_generic) {
+			$seg = new CSegment;
+			$seg->comment = "Incarnations of generic function {$node->name->text}";
+			foreach ($node->a_incarnations as $inc) {
+				assert($inc->inc_func);
+				$c = $this->compileFuncDef($inc->inc_func);
+				$seg->addStmts($c->stmts);
+			}
+			return $seg;
+		}
+		
 		$seg = new CSegment;
 		$seg->comment = "Definition of function {$node->name->text}";
 		
@@ -129,7 +141,7 @@ class Compiler
 			$node->c_retname = $retname;
 			$type = "typedef struct {\n";
 			foreach ($node->out as $o) {
-				$type .= "\t{$o->type->a_target->c_ref} {$o->name->text};\n";
+				$type .= "\t{$o->a_target->c_ref} {$o->name};\n";
 			}
 			$type .= "} $retname;";
 			$seg->stmts[] = $type;
@@ -172,6 +184,9 @@ class Compiler
 	{
 		$seg = new CSegment;
 		$f = $node->a_target;
+		if ($f->kind == 'def.func.incarnation') {
+			$f = $f->inc_func;
+		}
 		
 		//Assemble the list of arguments and the statements required to calculate them.
 		$args = array();

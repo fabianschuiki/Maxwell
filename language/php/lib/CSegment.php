@@ -11,7 +11,7 @@ class CSegment
 	{
 		if (is_array($s)) {
 			foreach ($s as $t) {
-				$this->stmts[] = $s;
+				$this->stmts[] = $t;
 			}
 		}
 	}

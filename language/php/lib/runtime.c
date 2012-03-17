@@ -13,7 +13,7 @@ typedef double    float64_t;
 //Native Types (depends on machine bus width)
 typedef int64_t   int_t;
 typedef uint64_t  uint_t;
-typedef float64_t double_t;
+typedef float64_t float_t;
 
 //Class Hierarchy
 typedef struct Type_t {

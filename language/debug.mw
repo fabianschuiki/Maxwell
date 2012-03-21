@@ -1,12 +1,17 @@
 /** Debugging some stuff. */
 
+type Point
+{
+	int x;
+	int y;
+}
+
 func main
 {
-	int a = 1;
-	int b = 2;
-	int x = 1;
-	int y = 2;
-	(int i, int j) = (a, b) + (x, y);
+	Point p;
+	/*p.x = 10;
+	p.y = 20;*/
 	
-	inline { printf("%i, %i\n", *(int *)@i@, *(int *)@j@); }
+	//Dump the point.
+	inline { printf("point: %i x %i\n", @p@->x, @p@->y); }
 }

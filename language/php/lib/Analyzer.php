@@ -271,6 +271,18 @@ class Analyzer
 				}
 				$node->a_target = $type;
 			} break;
+			/*case 'expr.member': {
+				$node->expr
+				$target = $node->a_scope->find(strval($node->member));
+				if (!$target) {
+					$this->issues[] = new Issue(
+						'error',
+						"Member '{$node->member}' is not known",
+						$node->range
+					);
+				}
+				$node->a_target = $target;
+			} break;*/
 		}
 	}
 	

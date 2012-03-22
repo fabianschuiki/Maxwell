@@ -10,8 +10,8 @@ func main
 {
 	Point p;
 	inline { @p@ = malloc(sizeof(Point_t)); }
-	/*p.x = 10;
-	p.y = 20;*/
+	p.x = 10;
+	p.y = 20;
 	
 	//Dump the point.
 	inline { printf("point: %i x %i\n", (int)@p@->x, (int)@p@->y); }

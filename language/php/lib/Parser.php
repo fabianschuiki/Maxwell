@@ -623,7 +623,9 @@ class Parser
 		$m->kind   = 'expr.member';
 		$m->member = $member;
 		$m->expr   = $this->parseExpr($ts);
-		$m->nodes  = array($m->expr);
+		$m->range  = clone $member->range;
+		$m->range->combine($m->expr->range);
+		$member->node = $m;
 		return $m;
 	}
 	

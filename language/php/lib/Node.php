@@ -32,7 +32,8 @@ class Node
 			case 'expr.call':      $n = array_merge(array(&$this->callee), $this->args); break;
 			case 'expr.call.arg':  $n = array(&$this->expr); break;
 			case 'expr.var':       $n = array(&$this->type, &$this->initial); break;
-			case 'expr.tuple': $n = $this->exprs; break;
+			case 'expr.tuple':     $n = $this->exprs; break;
+			case 'expr.member':    $n = array(&$this->expr); break;
 		}
 		if (isset($n)) {
 			return array_filter($n, function($a){ return $a != NULL; });

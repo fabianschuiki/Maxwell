@@ -176,6 +176,17 @@ class Compiler
 		
 		$typedef  = "typedef struct {\n";
 		$typedef .= "\tType_t * isa /* = &type_$name*/;\n";
+		
+		foreach ($node->nodes as $n) {
+			$typeNode = $n->a_target;
+			$type = $typeNode->c_name;
+			if (!$typeNode->primitive) {
+				$type .= '*';
+			}
+			$name = $this->makeCIdent(strval($n->name));
+			$typedef .= "\t$type $name;\n";
+		}
+		
 		$typedef .= "} {$node->c_name};";
 		
 		$seg = new CSegment;

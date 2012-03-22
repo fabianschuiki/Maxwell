@@ -53,6 +53,15 @@ class TypeVar extends Type
 		return true;
 	}
 	
+	public function getAbstractionLevel()
+	{
+		$l = 1;
+		if ($this->type) {
+			$l += $this->type->getAbstractionLevel();
+		}
+		return $l;
+	}
+	
 	public function cost()
 	{
 		return 0;

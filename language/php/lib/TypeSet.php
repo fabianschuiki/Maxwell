@@ -180,6 +180,15 @@ class TypeSet extends Type
 		return false;
 	}
 	
+	public function getAbstractionLevel()
+	{
+		$l = 1;
+		foreach ($this->types as $t) {
+			$l += $t->getAbstractionLevel();
+		}
+		return $l;
+	}
+	
 	public function cost()
 	{
 		$min = null;

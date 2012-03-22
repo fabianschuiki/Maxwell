@@ -81,7 +81,7 @@ class Analyzer
 		
 		$operators = array('+', '-', '*', '/', '=');
 		foreach ($operators as $op) {
-			 $this->addBuiltInBinOp($scope, $op);
+			$this->addBuiltInBinOp($scope, $op);
 		}
 		
 		$n = new Node;
@@ -551,25 +551,33 @@ class Analyzer
 						return;
 					}
 					$lowestCost = null;
+					$lowestAbstraction = null;
 					foreach ($matches as $match) {
 						$c = $match->type->cost();
+						$a = $match->func->a_types->getAbstractionLevel();
 						if ($lowestCost === null || $c < $lowestCost) {
 							$lowestCost = $c;
 						}
+						if ($lowestAbstraction === null || $a < $lowestAbstraction) {
+							$lowestAbstraction = $a;
+						}
 					}
-					$matches = array_filter($matches, function($m) use ($lowestCost){
-						return ($m->type->cost() <= $lowestCost);
+					$matches = array_filter($matches, function($m) use ($lowestCost, $lowestAbstraction){
+						return ($m->type->cost() <= $lowestCost && $m->func->a_types->getAbstractionLevel() <= $lowestAbstraction);
 					});
 					if (count($matches) > 1) {
-						$cs = implode("\n", array_map(function($m){ return strval($m->func->a_types); }, $matches));
+						//echo "lowest abstraction: $lowestAbstraction\n";
+						$cs = implode("\n", array_map(function($m){
+							return strval($m->func->a_types).' ('.$m->func->a_types->getAbstractionLevel().')';
+						}, $matches));
 						$this->issues[] = new Issue(
 							'warning',
 							"Call to function '{$node->callee->name}' with type '{$node->a_types}' is ambiguous. Candidates are:\n$cs",
 							$node->callee->name->range
 						);
 					}
-					
-					$match = $matches[0];
+					//var_dump($matches);
+					$match = array_shift($matches);
 					if ($match->func->builtin || !$match->func->a_generic) {
 						$node->a_target = $match->func;
 						$node->a_types  = $match->type->out;

@@ -220,6 +220,7 @@ class Compiler
 		}
 		
 		//Assemble the function call.
+		assert($f->c_name);
 		$call = $f->c_name.'('.implode(', ', $args).')';
 		
 		//Depending on whether we have a return value or not the function call acts as an expression or a simple statement.

@@ -108,6 +108,17 @@ class TupleType extends Type
 		return false;
 	}
 	
+	public function getAbstractionLevel()
+	{
+		$l = 0;
+		foreach ($this->fields as $f) {
+			if ($f->type) {
+				$l += $f->type->getAbstractionLevel();
+			}
+		}
+		return $l;
+	}
+	
 	public function cost()
 	{
 		$cost = 0;

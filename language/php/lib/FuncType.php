@@ -61,6 +61,14 @@ class FuncType extends Type
 		return false;
 	}
 	
+	public function getAbstractionLevel()
+	{
+		$l = 0;
+		if ($this->in)  $l += $this->in ->getAbstractionLevel();
+		if ($this->out) $l += $this->out->getAbstractionLevel();
+		return $l;
+	}
+	
 	public function cost()
 	{
 		return $this->in->cost() + $this->out->cost();

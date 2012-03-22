@@ -19,6 +19,7 @@ class Node
 			} break;
 			case 'def.func.incarnation': $n = array(&$this->inc_func); break;
 			case 'def.func.arg': $n = array(&$this->type); break;
+			case 'def.type':     $n = $this->nodes; break;
 			case 'stmt.block':   $n = $this->nodes; break;
 			case 'stmt.expr':    $n = array(&$this->expr); break;
 			

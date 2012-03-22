@@ -223,12 +223,43 @@ class Parser
 		$t->kind      = 'def.type';
 		$t->name      = $name;
 		$t->primitive = $primitive;
-		/*$dts = $defs->tokens;
+		$dts = $defs->tokens;
 		while (count($dts)) {
-			$d = $this->parseDef($dts);
-			if ($d) $t->nodes[] = $d;
-		}*/
+			$s = $this->parseTypeStmt($dts);
+			if ($s) $t->nodes[] = $s;
+		}
 		return $t;
+	}
+	
+	private function parseTypeStmt(array &$ts)
+	{
+		$sub = array();
+		while (count($ts)) {
+			$t = array_shift($ts);
+			if ($t->is('symbol', ';'))
+				break;
+			$sub[] = $t;
+		}
+		if (count($sub) == 0) {
+			return null;
+		}
+		if (count($sub) == 2 && $sub[1]->is('identifier')) {
+			return $this->parseVarExpr($sub);
+		}
+		$range = null;
+		foreach ($sub as $s) {
+			if ($range) {
+				$range->combine($s->range);
+			} else {
+				$range = clone $s->range;
+			}
+		}
+		$this->issues[] = new Issue(
+			'error',
+			"Unknown statement in type definition.",
+			$range
+		);
+		return null;
 	}
 	
 	private function parseBlock(TokenGroup &$grp)
@@ -430,19 +461,7 @@ class Parser
 		}
 		
 		if (count($ts) == 2 && $ts[1]->is('identifier')) {
-			$name = array_pop($ts);
-			$type = $this->parseType($ts);
-			
-			$name->context = 'expr.var.name';
-			
-			$v = new Node;
-			$v->kind  = 'expr.var';
-			$v->name  = $name;
-			$v->type  = $type;
-			$v->range = clone $name->range;
-			$v->range->combine($type->range);
-			$name->node = $v;
-			return $v;
+			return $this->parseVarExpr($ts);
 		}
 				
 		$e = null;
@@ -482,6 +501,23 @@ class Parser
 			);
 		}
 		return $e;
+	}
+	
+	private function parseVarExpr(array $ts)
+	{
+		$name = array_pop($ts);
+		$type = $this->parseType($ts);
+		
+		$name->context = 'expr.var.name';
+		
+		$v = new Node;
+		$v->kind  = 'expr.var';
+		$v->name  = $name;
+		$v->type  = $type;
+		$v->range = clone $name->range;
+		$v->range->combine($type->range);
+		$name->node = $v;
+		return $v;
 	}
 	
 	private function parseTupleExpr(Token &$grp, array $ts)

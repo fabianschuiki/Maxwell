@@ -23,6 +23,9 @@ class Analyzer
 		foreach ($this->nodes as $n) $this->analyzeType($n);
 		if ($this->issues->isFatal()) return;
 		
+		foreach ($this->nodes as $n) $this->resolveMember($n);
+		if ($this->issues->isFatal()) return;
+		
 		foreach ($this->nodes as $n) $this->lateBind($n);
 		if ($this->issues->isFatal()) return;
 		
@@ -271,18 +274,6 @@ class Analyzer
 				}
 				$node->a_target = $type;
 			} break;
-			/*case 'expr.member': {
-				$node->expr
-				$target = $node->a_scope->find(strval($node->member));
-				if (!$target) {
-					$this->issues[] = new Issue(
-						'error',
-						"Member '{$node->member}' is not known",
-						$node->range
-					);
-				}
-				$node->a_target = $target;
-			} break;*/
 		}
 	}
 	
@@ -413,7 +404,9 @@ class Analyzer
 				$node->a_types = /*$type->out*/new TypeSet;
 			} break;
 			case 'expr.call.arg': {
-				$node->a_types = clone $node->expr->a_types;
+				if ($node->expr->a_types) {
+					$node->a_types = clone $node->expr->a_types;
+				}
 			} break;
 			case 'expr.tuple': {
 				$types = new TupleType;
@@ -422,7 +415,6 @@ class Analyzer
 				}
 				$node->a_types = $types;
 			} break;
-			
 			case 'type.var': {
 				if (!$node->a_types) {
 					if ($node->a_target) {
@@ -432,6 +424,53 @@ class Analyzer
 					}
 				}
 			} break;
+			case 'expr.member': {
+				$types = $node->expr->a_types;
+				//echo "resolving member '{$node->member}'\n";
+				//echo " -> @expr: '{$types}'\n";
+				if (!$types instanceof TypeSet) {
+					$types = new TypeSet($types);
+				}
+				$possibleMembers = array();
+				foreach ($types->types as $type) {
+					if (!$type instanceof NamedType) {
+						$this->issues[] = new Issue(
+							'warning',
+							"Member access to tuples is not yet supported.",
+							$node->range
+						);
+						continue;
+					}
+					//echo "- {$type}\n";
+					$typedef = $node->a_scope->find($type->name);
+					if ($typedef) {
+						//echo "- > {$typedef->name}\n";
+						$member = $typedef->a_scope->find(strval($node->member));
+						if ($member) {
+							$possibleMembers[$type->name] = $member;
+						}
+					}
+				}
+				//TODO: Impose type restrictions here based on field access.
+				if (count($possibleMembers) == 0) {
+					$this->issues[] = new Issue(
+						'error',
+						"Member '{$node->member}' unknown for expression of type '{$type}'.",
+						$node->range
+					);
+				} else {
+					foreach ($possibleMembers as $type => $member) break;
+					if (count($possibleMembers) > 1) {
+						$this->issues[] = new Issue(
+							'warning',
+							"Accessing member '{$node->member}' of expression of type '{$types}' is ambiguous. Assuming type '{$type}'.",
+							$node->range
+						);
+					}
+					$node->a_target = $member;
+					$node->a_types = $member->a_types;
+				}
+			} break;
 		}
 		
 		//Types post processing.
@@ -439,12 +478,36 @@ class Analyzer
 			if (isset($node->a_requiredTypes)) {
 				$node->a_types = $node->a_types->match($node->a_requiredTypes);
 			}
-		} else if ($node->is('expr') && !$node->a_late) {
+		} else if ($node->is('expr') && !$node->a_late && $node->kind != 'expr.member') {
 			$this->issues[] = new Issue(
 				'error',
 				"Unable to infer type of '{$node->kind}'.",
 				$node->range
 			);
+		}
+	}
+	
+	private function resolveMember(Node &$node)
+	{
+		foreach ($node->nodes() as $n) {
+			$this->resolveMember($n);
+		}
+		if ($this->issues->isFatal()) {
+			return;
+		}
+		
+		if ($node->kind == 'expr.member') {
+			//echo "resolving member '{$node->member}'\n";
+			//echo " -> expr: '{$node->expr->a_types}'\n";
+			/*$target = $node->a_scope->find(strval($node->member));
+			if (!$target) {
+				$this->issues[] = new Issue(
+					'error',
+					"Member '{$node->member}' is not known",
+					$node->range
+				);
+			}
+			$node->a_target = $target;*/
 		}
 	}
 	

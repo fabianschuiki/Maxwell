@@ -185,8 +185,9 @@ class Compiler
 			if (!$typeNode->primitive) {
 				$type .= '*';
 			}
-			$name = $this->makeCIdent(strval($n->name));
-			$typedef .= "\t$type $name;\n";
+			$n->c_name = $this->makeCIdent(strval($n->name));
+			$n->c_ref  = $n->c_name;
+			$typedef .= "\t$type {$n->c_name};\n";
 		}
 		
 		$typedef .= "} {$node->c_name};";
@@ -312,6 +313,15 @@ class Compiler
 			$exprs[] = $es->expr;
 		}
 		$seg->expr = "/* tuple (".implode(', ', $exprs).") */";
+		return $seg;
+	}
+	
+	private function compileExprMember(Node &$node)
+	{
+		$seg = new CSegment;
+		$expr = $this->compileNode($node->expr);
+		$seg->addStmts($expr->stmts);
+		$seg->expr = "{$expr->expr}->{$node->a_target->c_ref}";
 		return $seg;
 	}
 	

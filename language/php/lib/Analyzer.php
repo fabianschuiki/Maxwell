@@ -64,6 +64,18 @@ class Analyzer
 			}*/
 		}
 		
+		$types = array('String');
+		foreach ($types as $type) {
+			$n = new Node;
+			$n->builtin = true;
+			$n->kind = 'def.type';
+			$n->name = Token::builtin('identifier', $type);
+			$n->c_name = $n->name.'_t';
+			$n->c_ref = $n->c_name.'*';
+			$this->populateScope($scope, $n);
+		}
+		
+		
 		$operators = array('+', '-', '*', '/', '=');
 		foreach ($operators as $op) {
 			 $this->addBuiltInBinOp($scope, $op);
@@ -362,13 +374,29 @@ class Analyzer
 				$types->findCastTypes($node->a_scope);
 				$node->a_types = $types;
 			} break;
+			case 'expr.const.string': {
+				$types = new TypeSet;
+				$types->addNativeType('String');
+				$types->findCastTypes($node->a_scope);
+				$node->a_types = $types;
+			} break;
 			case 'expr.call': {
 				$type = new FuncType;
 				foreach ($node->args as $a) {
 					$type->addInput($a->a_types, $a->name->text);
 				}
+				if ($node->a_requiredTypes) {
+					$req = $node->a_requiredTypes;
+					if ($req instanceof TupleType) {
+						foreach ($req->fields as $f) {
+							$type->addOutput($f->type, $f->name);
+						}
+					} else {
+						$type->addOutput($req);
+					}
+				}
 				//TODO: Add the output variables. Requires the further specification of how return values are handled and assigned.
-				$type->addOutput(new TypeSet);
+				//$type->addOutput(new TypeSet);
 				$node->a_functype = $type;
 				$node->a_types = /*$type->out*/new TypeSet;
 			} break;
@@ -410,9 +438,20 @@ class Analyzer
 	
 	private function lateBind(Node &$node)
 	{
+		$changed = false;
 		foreach ($node->nodes() as $n) {
+			$types = $n->a_types;
 			$this->lateBind($n);
+			if ($types != $n->a_types) {
+				$changed = true;
+			}
 		}
+		
+		//In case the late binding changed the inferred type of any of our subnodes we have to re-evaluate.
+		if (changed) {
+			$this->analyzeType($node, false);
+		}
+		
 		switch ($node->kind) {
 			case 'expr.call': {
 				if (is_array($node->a_target)) {
@@ -420,6 +459,7 @@ class Analyzer
 					foreach ($node->a_target as $func) {
 						assert($node->a_functype);
 						$sec = $node->a_functype->match($func->a_types);
+						//$sec = $func->a_types->match($node->a_functype);
 						if ($sec) {
 							$match = new stdClass;
 							$match->type = $sec;
@@ -455,7 +495,7 @@ class Analyzer
 					}
 					
 					$match = $matches[0];
-					if ($match->func->builtin) {
+					if ($match->func->builtin || !$match->func->a_generic) {
 						$node->a_target = $match->func;
 						$node->a_types  = $match->type->out;
 						if (count($node->a_types->fields) == 1) {

@@ -27,6 +27,7 @@ if ($issues->isFatal()) {
 }
 
 $compiler = new Compiler;
+$compiler->issues = $issues;
 $compiler->nodes = $analyzer->nodes;
 $compiler->run();
 $compiledPath = $file->path.'.c';

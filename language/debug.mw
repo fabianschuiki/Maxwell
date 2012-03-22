@@ -9,6 +9,7 @@ type Point
 func main
 {
 	Point p;
+	inline { @p@ = malloc(sizeof(Point_t)); }
 	/*p.x = 10;
 	p.y = 20;*/
 	

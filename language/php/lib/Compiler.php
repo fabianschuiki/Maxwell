@@ -144,6 +144,7 @@ class Compiler
 				$o->c_ref = $o->name->text;
 				$type .= "\t{$o->a_target->c_ref} {$o->c_ref};\n";
 				$o->c_ref = '_ret.'.$o->c_ref;
+				$o->c_ptr = ($o->a_target->primitive ? '&'.$o->c_ref : $o->c_ref);
 			}
 			$type .= "} $retname;";
 			$seg->stmts[] = $type;
@@ -155,6 +156,7 @@ class Compiler
 		$ins = array();
 		foreach ($node->in as $i) {
 			$i->c_ref = $i->name->text;
+			$i->c_ptr = ($i->a_target->primitive ? '&'.$i->c_ref : $i->c_ref);
 			$ins[] = "{$i->a_target->c_ref} {$i->c_ref}";
 		}
 		$def  = "$retname {$node->c_name} (".implode(", ", $ins).")\n";
@@ -279,6 +281,16 @@ class Compiler
 	{
 		$seg = new CSegment;
 		$seg->expr = $node->value->text;
+		return $seg;
+	}
+	
+	private function compileExprConstString(Node &$node)
+	{
+		$seg = new CSegment;
+		$tmp = tmp();
+		$seg->stmts[] = "String_t* $tmp = malloc(sizeof(String_t));";
+		$seg->stmts[] = "{$tmp}->v = \"{$node->value}\";";
+		$seg->expr = $tmp;
 		return $seg;
 	}
 	

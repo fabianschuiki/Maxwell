@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include <stdlib.h>
 
 //Builtin Types
 typedef u_int8_t  uint8_t;
@@ -22,3 +23,10 @@ typedef struct Type_t {
 } Type_t;
 #define type_make(t) (Type_t){&type_Type, t}
 Type_t type_Type = type_make("Type");
+
+//Strings
+Type_t type_String = type_make("String");
+typedef struct {
+	Type_t * isa;
+	const char * v;
+} String_t;

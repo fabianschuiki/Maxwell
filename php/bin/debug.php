@@ -6,10 +6,13 @@ error_reporting(E_ALL ^ E_NOTICE);
 
 $args = array();
 $opt_link = true;
-foreach ($argv as $arg) {
+$opt_outname = null;
+while (count($argv)) {
+	$arg = array_shift($argv);
 	if ($arg[0] == '-') {
 		switch ($arg) {
 			case '-c': $opt_link = false; break;
+			case '-o': $opt_outname = array_shift($argv); break;
 		}
 	} else {
 		$args[] = $arg;
@@ -166,5 +169,8 @@ if ($opt_link) {
 			closedir($dir);
 		}
 	}
-	passthru("gcc -o ".escapeshellarg($out)." ".implode(' ', $files));
+	if (!$opt_outname) {
+		$opt_outname = $out;
+	}
+	passthru("gcc -o ".escapeshellarg($opt_outname)." ".implode(' ', $files));
 }

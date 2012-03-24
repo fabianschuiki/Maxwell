@@ -1,0 +1,7 @@
+/** This is the main driver file for the Maxwell compiler. */
+import String;
+
+func main
+{
+	show("Welcome to the Maxwell compiler. Not doing that much yet.");
+}

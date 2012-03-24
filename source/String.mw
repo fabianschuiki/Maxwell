@@ -1,0 +1,7 @@
+/** String */
+
+//Dumps a string to standard output.
+func show (String s)
+{
+	inline { printf("%s\n", @s@->v); }
+}

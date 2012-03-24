@@ -1,17 +1,8 @@
 /build/*
+/debug/build/*
 
-autogen/*
-/projects/xcode
-
-# Xcode stuff
-*.pbxuser
-*.mode1v3
-
-# better ignores
 .*
 *~
 *.kdev4
 *.anjuta
 
-# ignore temporary build stuff
-*.mw.*

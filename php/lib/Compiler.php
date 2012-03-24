@@ -43,7 +43,7 @@ class Compiler
 		
 		if ($this->mainRef) {
 			$c .= "// --- main function call ---\n";
-			$c .= "int main() { {$this->mainRef}(); return 0; }\n";
+			$c .= "int main(int argc, char * argv[]) { {$this->mainRef}(); return 0; }\n";
 		}
 		
 		$this->output = $c;

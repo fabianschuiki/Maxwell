@@ -7,7 +7,7 @@ class Issue
 	public $range;
 	public $marked;
 	
-	public function __construct($type, $message, Range $range, $marked = null)
+	public function __construct($type, $message, $range = null, $marked = null)
 	{
 		$this->type    = $type;
 		$this->message = $message;
@@ -21,15 +21,22 @@ class Issue
 			$this->marked = array();
 		}
 		
-		$sfr  = basename($this->range->source->path);
-		$sfr .= ':';
-		$sfr .= $this->range->start->line.':'.$this->range->start->column;
+		if ($this->range) {
+			$sfr  = basename($this->range->source->path);
+			$sfr .= ':';
+			$sfr .= $this->range->start->line.':'.$this->range->start->column;
+		}
 		
 		$t = $this->type.':';
 		if ($this->type == 'error')   $t = "\033[1;31m$t\033[0m";
 		if ($this->type == 'warning') $t = "\033[1;33m$t\033[0m";
 		
-		$ml = "$sfr: $t {$this->message}";
+		$ml = "$t {$this->message}";
+		if ($sfr) {
+			$ml = "$sfr: $ml";
+		} else {
+			return $ml;
+		}
 		$o  = $ml;
 		
 		$lines = range($this->range->start->line, $this->range->end->line);

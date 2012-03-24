@@ -68,6 +68,8 @@ class Parser
 		$i->c_ignore = true;
 		$i->kind  = 'def.import';
 		$i->name  = $name;
+		$i->range = clone $keyword->range;
+		$i->range->combine($name->range);
 		$name->node = $i;
 		return $i;
 	}

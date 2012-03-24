@@ -21,6 +21,14 @@ $issues = new IssueList;
 
 $file = new SourceFile;
 $file->path = $argv[1];
+if (!file_exists($file->path)) {
+	$i = new Issue(
+		'error',
+		"Source file '{$file->path}' does not exist."
+	);
+	echo "$i\n";
+	exit(1);
+}
 $file->load();
 
 if (count($argv) >= 3) {
@@ -48,6 +56,15 @@ foreach ($parser->nodes as $node)
 {
 	if ($node->kind != 'def.import') continue;
 	$path = dirname($file->path)."/{$node->name}.mw";
+	if (!file_exists($path)) {
+		$i = new Issue(
+			'error',
+			"No source file named '{$node->name}' found to import.",
+			$node->name->range
+		);
+		echo "$i\n";
+		exit(1);
+	}
 	$outpath = "$outdir/{$node->name}";
 	$scope_path = "$outpath.scope";
 	if (!file_exists($scope_path) || filemtime($scope_path) < filemtime($path)) {
@@ -55,7 +72,7 @@ foreach ($parser->nodes as $node)
 		$result = 0;
 		passthru($cmd, $result);
 		if ($result != 0) {
-			exit;
+			exit($result);
 		}
 	}
 	$scope = Scope::unserialize(file_get_contents($scope_path));

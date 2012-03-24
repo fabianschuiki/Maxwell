@@ -31,4 +31,12 @@ func main
 	add(a, "Entry 1");
 	show("size after insertion:");
 	show(size(a));
+
+	add(a, "Entry 2");
+	add(a, "Entry 3");
+	show("size after two further insertions:");
+	show(size(a));
+
+	show("the array itself:");
+	show(a);
 }

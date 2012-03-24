@@ -84,4 +84,50 @@ class Scope
 			$this->names[$name] = $n;
 		}
 	}
+	
+	public function serialize()
+	{
+		$lines = array();
+		foreach ($this->names as $name => $node) {
+			$lines[] = "$name: ".$this->serializeNode($node);
+		}
+		return implode("\n", $lines);
+	}
+	
+	private function serializeNode(Node $node)
+	{
+		switch ($node->kind) {
+			case 'a.funcgrp': {
+				$funcs = array();
+				foreach ($node->funcs as $func) {
+					$funcs[] = $this->serializeType($func->a_types);
+				}
+				return 'f'.count($funcs).':'.implode('', $funcs);
+			} break;
+		}
+		return null;
+	}
+	
+	private function serializeType(Type $type)
+	{
+		switch (get_class($type)) {
+			case 'FuncType': {
+				return '@f'.$this->serializeType($type->in).$this->serializeType($type->out);
+			} break;
+			case 'TupleType': {
+				$fields = array();
+				foreach ($type->fields as $field) {
+					$fields[] = $field->name.':'.$this->serializeType($field->type);
+				}
+				return '@t'.count($fields).':'.implode('', $fields);
+			} break;
+			case 'NamedType': {
+				return '@n'.strlen($type->name).':'.$type->name;
+			} break;
+			case 'TypeVar': {
+				return '@v'.strlen($type->name).':'.$type->name;
+			} break;
+		}
+		return null;
+	}
 }

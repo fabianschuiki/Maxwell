@@ -26,6 +26,9 @@ if ($issues->isFatal()) {
 	goto compiled;
 }
 
+//Dump the scope.
+file_put_contents($file->path.'.scope', $analyzer->scope->serialize());
+
 $compiler = new Compiler;
 $compiler->issues = $issues;
 $compiler->nodes = $analyzer->nodes;
@@ -48,8 +51,8 @@ ob_end_clean();
 file_put_contents($file->path.'.html', $html);
 
 if (!$issues->isFatal()) {
-	$executablePath = $file->path.'.out';
-	passthru('gcc -O3 -o '.escapeshellarg($executablePath).' '.escapeshellarg($compiledPath));
+	$executablePath = $file->path.'.o';
+	passthru('gcc -c -O3 -o '.escapeshellarg($executablePath).' '.escapeshellarg($compiledPath));
 	passthru('objdump -d '.escapeshellarg($executablePath).' > '.escapeshellarg($file->path.'.asm'));
-	passthru(escapeshellarg($executablePath));
+	//passthru(escapeshellarg($executablePath));
 }

@@ -11,8 +11,9 @@ class Analyzer
 		foreach ($this->nodes as $n) $this->reduce($n);
 		if ($this->issues->isFatal()) return;
 		
-		$this->scope = new Scope;
-		$this->addBuiltIn($this->scope);
+		$builtinScope = new Scope;
+		$this->addBuiltIn($builtinScope);
+		$this->scope = new Scope($builtinScope);
 		
 		foreach ($this->nodes as $n) $this->populateScope($this->scope, $n);
 		if ($this->issues->isFatal()) return;

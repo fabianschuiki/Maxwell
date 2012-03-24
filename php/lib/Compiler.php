@@ -12,6 +12,7 @@ class Compiler
 {
 	public $nodes;
 	public $output;
+	private $hasMain = false;
 	
 	public function run()
 	{
@@ -30,8 +31,10 @@ class Compiler
 			}
 		}
 		
-		$o .= "// --- debugging code ---\n";
-		$o .= "int main() { func_main(); return 0; }\n";
+		if ($this->hasMain) {
+			$o .= "// --- debugging code ---\n";
+			$o .= "int main() { func_main(); return 0; }\n";
+		}
 		$this->output = $o;
 	}
 	
@@ -134,6 +137,9 @@ class Compiler
 			$this->funcDefIndices[$name] = 1;
 		}
 		$node->c_name = $name;
+		if ($node->name->text == 'main') {
+			$this->hasMain = true;
+		}
 		
 		//Synthesize the return type.
 		if (count($node->out)) {

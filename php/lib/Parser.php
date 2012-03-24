@@ -6,6 +6,8 @@ class Parser
 	public $nodes;
 	public $issues;
 	
+	public $imports;
+	
 	public function run()
 	{
 		$this->nodes = array();
@@ -34,14 +36,39 @@ class Parser
 	
 	private function parseKeywordDef(Token &$keyword, array &$ts)
 	{
-		if ($keyword->text == 'func') return $this->parseFuncDef($keyword, $ts);
-		if ($keyword->text == 'type') return $this->parseTypeDef($keyword, $ts);
+		if ($keyword->text == 'import') return $this->parseImportDef($keyword, $ts);
+		if ($keyword->text == 'func')   return $this->parseFuncDef($keyword, $ts);
+		if ($keyword->text == 'type')   return $this->parseTypeDef($keyword, $ts);
 		$this->issues[] = new Issue(
 			'error',
 			"Keyword '{$keyword->text}' has no meaning here.",
 			$keyword->range
 		);
 		return null;
+	}
+	
+	private function parseImportDef(Token &$keyword, array &$ts)
+	{
+		$name = array_shift($ts);
+		if (!$name->is('identifier')) {
+			$this->issues[] = new Issue(
+				'error',
+				"Import requires a name.",
+				$name->range,
+				array($keyword->range)
+			);
+			return null;
+		}
+		if (count($ts) > 0 && $ts[0]->is('symbol', ';')) {
+			array_shift($ts);
+		}
+		$name->context = 'import.name';
+		
+		$i = new Node;
+		$i->kind  = 'def.import';
+		$i->name  = $name;
+		$name->node = $i;
+		return $i;
 	}
 	
 	private function parseFuncDef(Token &$keyword, array &$ts)

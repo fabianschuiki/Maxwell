@@ -1,3 +1,7 @@
+//Use the functions defined in the String.mw file.
+import String;
+
+//Dump something to the standard output.
 func main
 {
 	String s = "Hello World";

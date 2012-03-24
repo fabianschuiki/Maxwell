@@ -13,18 +13,23 @@ class Compiler
 	public $nodes;
 	public $output;
 	public $header;
+	
 	private $mainRef = null;
+	private $preheader;
+	private $postheader;
 	
 	public function run()
 	{
-		$c  = "/* automatically compiled on ".date('c')." */\n";
-		$h  = $c;
+		$h  = "/* automatically compiled on ".date('c')." */\n";
+		$c  = $h."\n";
 		$h .= "#pragma once\n";
-		$h .= "#include \"".__DIR__.'/runtime.h'."\"\n";
-		$c .= "\n";
-		$h .= "\n";
+		$h .= "#include \"".__DIR__.'/runtime.h'."\"\n\n";
+		
+		$this->preheader  = array();
+		$this->postheader = array();
 		
 		//Compile each node.
+		$hm = "";
 		foreach ($this->nodes as $n) {
 			$seg = $this->compileNode($n);
 			if ($seg->stmts) {
@@ -35,11 +40,17 @@ class Compiler
 			}
 			if ($seg->hstmts) {
 				if ($seg->comment) {
-					$h .= "//{$seg->comment}\n";
+					$hm .= "//{$seg->comment}\n";
 				}
-				$h .= implode("\n", $seg->hstmts)."\n\n";
+				$hm .= implode("\n", $seg->hstmts)."\n\n";
 			}
-		}
+		} 
+		
+		$hparts = array();
+		if (count($this->preheader))  $hparts[] = implode("\n", $this->preheader);
+		$hparts[] = rtrim(trim($hm));
+		if (count($this->postheader)) $hparts[] = implode("\n", $this->postheader);
+		$h .= implode("\n\n", $hparts)."\n";
 		
 		if ($this->mainRef) {
 			$c .= "// --- main function call ---\n";
@@ -73,7 +84,7 @@ class Compiler
 			case 'def.func':  return $this->compileFuncDef($node);  break;
 			case 'def.type':  return $this->compileTypeDef($node);  break;
 			case 'expr.call': return $this->compileCallExpr($node); break;
-			case 'expr.var':  return $this->compileVarExpr($node);  break;
+			//case 'expr.var':  return $this->compileVarExpr($node);  break;
 			/*case 'expr.const.numeric': return $this->compileConstExpr($node); break;
 			case 'expr.ident': return array($node->a_target->c_name); break;
 			case 'stmt.if': return $this->compileIfStmt($node); break;
@@ -169,7 +180,7 @@ class Compiler
 				$o->c_ptr = ($o->a_target->primitive ? '&'.$o->c_ref : $o->c_ref);
 			}
 			$type .= "} $retname;";
-			$seg->stmts[] = $type;
+			$seg->hstmts[] = $type;
 		} else {
 			$retname = "void";
 		}
@@ -181,7 +192,9 @@ class Compiler
 			$i->c_ptr = ($i->a_target->primitive ? '&'.$i->c_ref : $i->c_ref);
 			$ins[] = "{$i->a_target->c_ref} {$i->c_ref}";
 		}
-		$def  = "$retname {$node->c_name} (".implode(", ", $ins).")\n";
+		$def  = "$retname {$node->c_name} (".implode(", ", $ins).")";
+		$this->postheader[] = $def.';';
+		$def .= "\n";
 		if ($retname != 'void')	$def .= "{\n\t$retname _ret;\n";
 		$def .= $this->compileBlock($node->body);
 		if ($retname != 'void') $def .= "\n\treturn _ret;\n}";
@@ -198,14 +211,16 @@ class Compiler
 			$node->c_ref .= '*';
 		}
 		
-		$typedef  = "typedef struct {\n";
+		$struct = "struct {$node->c_name}";
+		$this->preheader[] = $struct.';';
+		$typedef  = "typedef $struct {\n";
 		$typedef .= "\tType_t * isa /* = &type_$name*/;\n";
 		
 		foreach ($node->nodes as $n) {
 			$typeNode = $n->a_target;
 			$type = $typeNode->c_name;
 			if (!$typeNode->primitive) {
-				$type .= '*';
+				$type = "struct $type*";
 			}
 			$n->c_name = static::makeCIdent(strval($n->name));
 			$n->c_ref  = $n->c_name;
@@ -248,8 +263,9 @@ class Compiler
 		//Depending on whether we have a return value or not the function call acts as an expression or a simple statement.
 		if (isset($node->a_target->c_retname)) {
 			$seg->expr = $call;
-			if (count($f->out) == 1) {
-				$seg->expr .= '.'.$f->out[0]->name->text;
+			$out = $f->a_types->out;
+			if (count($out->fields) == 1) {
+				$seg->expr .= '.'.$out->fields[0]->name;
 			}
 			if (count($f->out) > 1) {
 				$this->issues[] = new Issue(
@@ -265,11 +281,11 @@ class Compiler
 		return $seg;
 	}
 	
-	private function compileVarExpr(Node &$node)
+	private function compileExprVar(Node &$node)
 	{
 		$typeNode = $node->a_target;
 		
-		$name = "s{$node->a_scope->index}_{$node->name->text}";
+		$name = "{$node->name->text}_{$node->a_scope->index}";
 		$node->c_name = $name;
 		$node->c_ref  = ($node->a_local && !$typeNode->primitive ? '&'.$name : $name);
 		$node->c_ptr  = ($node->a_local ||  $typeNode->primitive ? '&'.$name : $name);
@@ -358,21 +374,52 @@ class Compiler
 		return "{\n\t".implode("\n\t", $stmts)."\n}";
 	}
 	
-	private function compileIfStmt(Node &$node)
+	private function compileStmtIf(Node &$node)
 	{
-		$c = $this->compileNode($node->condition);
+		$seg = new CSegment;
+		$condition = $this->compileNode($node->condition);
+		$seg->add($condition);
+		$stmt = "if ({$condition->expr}) ".$this->compileBlock($node->body);
+		if (isset($node->else)) {
+			$stmt .= ' else '.$this->compileBlock($node->else->body);
+		}
+		$seg->stmts[] = $stmt;
+		return $seg;
+		/*$c = $this->compileNode($node->condition);
 		$s  = 'if ('.array_pop($c).') ';
 		$s .= $this->compileBlock($node->body);
 		if (isset($node->else)) {
 			$s .= ' else '.$this->compileBlock($node->else->body);
 		}
 		$c[] = $s;
-		return $c;
+		return $c;*/
 	}
 	
-	private function compileForStmt(Node &$node)
+	private function compileStmtFor(Node &$node)
 	{
-		$c = $this->compileNode($node->initial);
+		$seg = new CSegment;
+		$initial   = $this->compileNode($node->initial);
+		$condition = $this->compileNode($node->condition);
+		$step      = $this->compileNode($node->step);
+		$body      = $this->compileBlock($node->body);
+		
+		$seg->add($initial);
+		$stmts   = array();
+		$stmts   = array_merge($stmts, $condition->stmts);
+		$stmts[] = "if (!{$condition->expr}) break;";
+		$stmts[] .= trim(rtrim($body, "}\n\t "), "{\n\t ");
+		$stmts   = array_merge($stmts, $step->stmts);
+		
+		$stmt = "do {";
+		foreach ($stmts as $s) {
+			$stmt .= "\n\t$s";
+		}
+		$stmt .= "\n} while(1);";
+		$seg->stmts[] = $stmt;
+		
+		return $seg;
+		
+		/*$c = $this->compileNode($node->initial);
 		$s  = "do {\n\t";
 		$ccn = $this->compileNode($node->condition);
 		$cc = array_pop($ccn);
@@ -382,7 +429,7 @@ class Compiler
 		$s .= implode(";\n\t", $this->compileNode($node->step)).";\n";
 		$s .= "} while(1)";
 		$c[] = $s;
-		return $c;
+		return $c;*/
 	}
 	
 	static public function makeCIdent($text)

@@ -13,7 +13,8 @@ class Range
 		return $r;
 	}
 	
-	public function combine(Range $r) {
+	public function combine($r) {
+		if (!$r instanceof Range) return;
 		/*if ($this->start instanceof Location && $this->end instanceof Location && $r->start instanceof Location && $r->end instanceof Location) {*/
 			$this->start = ($this->start->offset < $r->start->offset ? $this->start : $r->start);
 			$this->end   = ($this->end  ->offset > $r->end  ->offset ? $this->end   : $r->end);

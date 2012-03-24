@@ -178,6 +178,11 @@ class Scope
 					$func->name = $name;
 					$func->c_name = $c_name;
 					$func->a_types = static::unserializeType($str, $i);
+					if (count($func->a_types->out->fields)) {
+						$func->c_retname = "{$func->c_name}_t";
+					} else {
+						$func->c_retname = null;
+					}
 					$grp->funcs[] = $func;
 				}
 				return $grp;

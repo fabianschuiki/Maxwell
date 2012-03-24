@@ -1,0 +1,49 @@
+/**
+ * Array container
+ */
+import String;
+
+//Specialization for Strings.
+type StringArray
+{
+	StringArrayElement first;
+	StringArrayElement last;
+}
+
+type StringArrayElement
+{
+	StringArrayElement next;
+	StringArrayElement prev;
+	String value;
+}
+
+//Initializes a new string array.
+func construct (StringArray a)
+{
+	a.first = 0;
+	a.last  = 0;
+}
+
+//Adds a string to the array.
+func add (StringArray a, String v)
+{
+	StringArrayElement e;
+	inline { @e@ = malloc(sizeof(*@e@)); }
+	e.value = v;
+	e.prev = a.last;
+	if (a.last) {
+		a.last.next = e;
+	}
+	a.last = e;
+	if (a.first == 0) {
+		a.first = a.last;
+	}
+}
+
+func size(StringArray a) -> (int s)
+{
+	s = 0;
+	for (StringArrayElement e = a.first; e != 0; e = e.next) {
+		s = s + 1;
+	}
+}

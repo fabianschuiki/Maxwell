@@ -15,7 +15,7 @@ class Language
 	);
 	
 	static public $unaryOperators = array(
-		array('-'),
+		array('-', '!'),
 	);
 	
 	static public $binaryOperators = array(

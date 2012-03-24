@@ -1,5 +1,12 @@
 import String;
 import Point;
+import Array;
+
+//Some helper to dump an integer to the console.
+func show (int i)
+{
+	inline { printf("%i\n", *(int*)@i@); }
+}
 
 //Dump something to the standard output.
 func main
@@ -12,4 +19,16 @@ func main
 	
 	String s = "Hello World";
 	show(s);
+
+	//Create a string array for debugging purposes.
+	StringArray a;
+	inline { @a@ = malloc(sizeof(*@a@)); }
+	construct(a);
+
+	show("initial size:");
+	show(size(a));
+
+	add(a, "Entry 1");
+	show("size after insertion:");
+	show(size(a));
 }

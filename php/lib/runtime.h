@@ -29,7 +29,7 @@ typedef struct Type_t {
 #define type_make(t) (Type_t){&type_Type, t}
 
 //Strings
-typedef struct {
+typedef struct String_t {
 	Type_t * isa;
 	const char * v;
 } String_t;

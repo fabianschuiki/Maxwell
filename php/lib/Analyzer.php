@@ -89,7 +89,7 @@ class Analyzer
 		}
 		
 		
-		$operators = array('+', '-', '*', '/', '=');
+		$operators = array('+', '-', '*', '/', '=', '==', '!=', '<', '>', '<=', '>=');
 		foreach ($operators as $op) {
 			$this->addBuiltInBinOp($scope, $op);
 		}

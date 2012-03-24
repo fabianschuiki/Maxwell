@@ -253,6 +253,7 @@ class Parser
 		$t->kind      = 'def.type';
 		$t->name      = $name;
 		$t->primitive = $primitive;
+		$t->nodes     = array();
 		$dts = $defs->tokens;
 		while (count($dts)) {
 			$s = $this->parseTypeStmt($dts);

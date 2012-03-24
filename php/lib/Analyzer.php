@@ -24,9 +24,6 @@ class Analyzer
 		foreach ($this->nodes as $n) $this->populateScope($this->scope, $n);
 		if ($this->issues->isFatal()) return;
 		
-		foreach ($this->nodes as $n) $this->generateCName($n);
-		if ($this->issues->isFatal()) return;
-		
 		foreach ($this->nodes as $n) $this->bind($n);
 		if ($this->issues->isFatal()) return;
 		
@@ -46,6 +43,9 @@ class Analyzer
 		if ($this->issues->isFatal()) return;
 		
 		foreach ($this->nodes as $n) $this->lateBind($n);
+		if ($this->issues->isFatal()) return;
+		
+		foreach ($this->nodes as $n) $this->generateCName($n);
 		if ($this->issues->isFatal()) return;
 	}
 	
@@ -228,7 +228,7 @@ class Analyzer
 				$funcs = $node->a_scope->find(strval($node->name));
 				$i = 0;
 				do {
-					$node->c_name = 'func_'.$node->name;
+					$node->c_name = 'func_'.Compiler::makeCIdent($node->name.'_'.strval($node->a_types));
 					if ($i > 0) $node->c_name .= $i;
 					$collides = false;
 					foreach ($funcs as $func) {
@@ -239,7 +239,10 @@ class Analyzer
 					}
 					$i++;
 				} while ($collides == true);
-			}
+			} break;
+			case 'def.type': {
+				$node->c_name = Compiler::makeCIdent(strval($node->name))."_t";
+			} break;
 		}
 	}
 	

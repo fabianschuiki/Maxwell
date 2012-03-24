@@ -43,12 +43,14 @@ $parser->run();
 
 //Resolve the imports.
 $importScope = new Scope;
+$importIncludes = "#include \"".basename($out).".h\"\n";
 foreach ($parser->nodes as $node)
 {
 	if ($node->kind != 'def.import') continue;
 	$path = dirname($file->path)."/{$node->name}.mw";
-	$scope_path = "$outdir/{$node->name}.scope";
-	if (!file_exists($scope_path)) {
+	$outpath = "$outdir/{$node->name}";
+	$scope_path = "$outpath.scope";
+	if (!file_exists($scope_path) || filemtime($scope_path) < filemtime($path)) {
 		$cmd = escapeshellarg($argv[0]).' -c '.escapeshellarg($path).' '.escapeshellarg($outdir);
 		$result = 0;
 		passthru($cmd, $result);
@@ -57,10 +59,15 @@ foreach ($parser->nodes as $node)
 		}
 	}
 	$scope = Scope::unserialize(file_get_contents($scope_path));
-	foreach ($scope->names as $name => $node) {
+	foreach ($scope->names as $name => $n) {
 		echo "imported \033[1m$name\033[0m {$node->kind}\n";
-		$importScope->names[$name] = $node;
+		if (isset($importScope->names[$name]) && $importScope->names[$name]->kind == 'a.funcgrp') {
+			$importScope->names[$name]->funcs = array_merge($importScope->names[$name]->funcs, $n->funcs);
+		} else {
+			$importScope->names[$name] = $n;
+		}
 	}
+	$importIncludes .= "#include \"{$node->name}.h\"\n";
 }
 
 echo "\033[1mcompiling {$file->path}\033[0m...\n";
@@ -81,7 +88,8 @@ $compiler = new Compiler;
 $compiler->issues = $issues;
 $compiler->nodes = $analyzer->nodes;
 $compiler->run();
-file_put_contents("$out.c", $compiler->output);
+file_put_contents("$out.c", $importIncludes.$compiler->output);
+file_put_contents("$out.h", $compiler->header);
 
 compiled:
 foreach ($issues->issues as $i) {

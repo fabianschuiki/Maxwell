@@ -12,31 +12,42 @@ class Compiler
 {
 	public $nodes;
 	public $output;
-	private $hasMain = false;
+	public $header;
+	private $mainRef = null;
 	
 	public function run()
 	{
-		$o  = "/* automatically compiled on ".date('c')." */\n\n";
-		/*$o .= rtrim(file_get_contents(__DIR__.'/runtime.c'));
-		$o .= "\n// --- runtime end ---\n\n";*/
-		$o .= "#include \"".__DIR__.'/runtime.h'."\"\n\n"; 
+		$c  = "/* automatically compiled on ".date('c')." */\n";
+		$h  = $c;
+		$h .= "#pragma once\n";
+		$h .= "#include \"".__DIR__.'/runtime.h'."\"\n";
+		$c .= "\n";
+		$h .= "\n";
 		
 		//Compile each node.
 		foreach ($this->nodes as $n) {
 			$seg = $this->compileNode($n);
-			if (is_array($seg->stmts)) {
+			if ($seg->stmts) {
 				if ($seg->comment) {
-					$o .= "//{$seg->comment}\n";
+					$c .= "//{$seg->comment}\n";
 				}
-				$o .= implode("\n", $seg->stmts)."\n\n";
+				$c .= implode("\n", $seg->stmts)."\n\n";
+			}
+			if ($seg->hstmts) {
+				if ($seg->comment) {
+					$h .= "//{$seg->comment}\n";
+				}
+				$h .= implode("\n", $seg->hstmts)."\n\n";
 			}
 		}
 		
-		if ($this->hasMain) {
-			$o .= "// --- main function call ---\n";
-			$o .= "int main() { func_main(); return 0; }\n";
+		if ($this->mainRef) {
+			$c .= "// --- main function call ---\n";
+			$c .= "int main() { {$this->mainRef}(); return 0; }\n";
 		}
-		$this->output = $o;
+		
+		$this->output = $c;
+		$this->header = $h;
 	}
 	
 	private function compileNodes(array &$nodes)
@@ -125,7 +136,7 @@ class Compiler
 			foreach ($node->a_incarnations as $inc) {
 				assert($inc->inc_func);
 				$c = $this->compileFuncDef($inc->inc_func);
-				$seg->addStmts($c->stmts);
+				$seg->add($c);
 			}
 			return $seg;
 		}
@@ -134,15 +145,16 @@ class Compiler
 		$seg->comment = "Definition of function {$node->name->text}";
 		
 		//Assemble the function name, potentially appending indices to create unique names.
-		$name = 'func_'.$this->makeCIdent($node->name->text);
+		/*$name = 'func_'.static::makeCIdent($node->name->text);
 		if (isset($this->funcDefIndices[$name])) {
 			$name .= '_'.$this->funcDefIndices[$name]++;
 		} else {
 			$this->funcDefIndices[$name] = 1;
 		}
-		$node->c_name = $name;
+		$node->c_name = $name;*/
+		$name = $node->c_name;
 		if ($node->name->text == 'main') {
-			$this->hasMain = true;
+			$this->mainRef = $node->c_name;
 		}
 		
 		//Synthesize the return type.
@@ -179,8 +191,8 @@ class Compiler
 	
 	private function compileTypeDef(Node &$node)
 	{
-		$name = $this->makeCIdent($node->name->text);
-		$node->c_name = "{$name}_t";
+		$name = static::makeCIdent($node->name->text);
+		//$node->c_name = "{$name}_t";
 		$node->c_ref = $node->c_name;
 		if (!$node->primitive) {
 			$node->c_ref .= '*';
@@ -195,7 +207,7 @@ class Compiler
 			if (!$typeNode->primitive) {
 				$type .= '*';
 			}
-			$n->c_name = $this->makeCIdent(strval($n->name));
+			$n->c_name = static::makeCIdent(strval($n->name));
 			$n->c_ref  = $n->c_name;
 			$typedef .= "\t$type {$n->c_name};\n";
 		}
@@ -203,9 +215,9 @@ class Compiler
 		$typedef .= "} {$node->c_name};";
 		
 		$seg = new CSegment;
-		$seg->comment = "definition of type {$node->name->text}";
+		$seg->comment = "Definition of type {$node->name->text}";
 		$seg->stmts[] = "Type_t type_$name = type_make(\"{$node->name->text}\");";
-		$seg->stmts[] = $typedef;
+		$seg->hstmts[] = $typedef;
 		return $seg;
 	}
 	
@@ -218,7 +230,7 @@ class Compiler
 		$args = array();
 		foreach ($node->args as $a) {
 			$s = $this->compileNode($a->expr);
-			$seg->addStmts($s->stmts);
+			$seg->add($s);
 			assert($s->expr != null);
 			$args[] = $s->expr;
 		}
@@ -271,9 +283,7 @@ class Compiler
 		$def = "$type $name";
 		if (isset($node->initial)) {
 			$i = $this->compileNode($node->initial);
-			if (is_array($i->stmts)) {
-				$seg->addStmts($i->stmts);
-			}
+			$seg->add($i);
 			if ($i->expr) {
 				$def .= ' = ';
 				if ($node->a_local && !$typeNode->primitive) {
@@ -319,7 +329,7 @@ class Compiler
 		$exprs = array();
 		foreach ($node->exprs as $expr) {
 			$es = $this->compileNode($expr);
-			$seg->addStmts($es->stmts);
+			$seg->add($es);
 			$seg->stmts[] = $es->expr.";";
 			$exprs[] = $es->expr;
 		}
@@ -331,7 +341,7 @@ class Compiler
 	{
 		$seg = new CSegment;
 		$expr = $this->compileNode($node->expr);
-		$seg->addStmts($expr->stmts);
+		$seg->add($expr);
 		$seg->expr = "{$expr->expr}->{$node->a_target->c_ref}";
 		return $seg;
 	}
@@ -375,7 +385,7 @@ class Compiler
 		return $c;
 	}
 	
-	private function makeCIdent($text)
+	static public function makeCIdent($text)
 	{
 		$r = '';
 		for ($i = 0; $i < strlen($text); $i++) {

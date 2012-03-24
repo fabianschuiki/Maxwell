@@ -1,9 +1,15 @@
-//Use the functions defined in the String.mw file.
 import String;
+import Point;
 
 //Dump something to the standard output.
 func main
 {
+	Point p;
+	inline { @p@ = malloc(sizeof(*@p@)); }
+	p.x = 100;
+	p.y = 200;
+	show(p);
+	
 	String s = "Hello World";
 	show(s);
 }

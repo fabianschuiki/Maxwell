@@ -108,6 +108,17 @@ class Scope
 				}
 				return 'f'.count($funcs).':'.implode('', $funcs);
 			} break;
+			case 'def.type': {
+				$members = array();
+				foreach ($node->nodes as $member) {
+					switch ($member->kind) {
+						case 'expr.var': {
+							$members[] = 'v'.$member->name.':'.$this->serializeType($member->a_types);
+						} break;
+					}
+				}
+				return 't'.$node->c_name.':'.count($members).':'.implode('', $members);
+			} break;
 		}
 		return null;
 	}
@@ -170,6 +181,37 @@ class Scope
 					$grp->funcs[] = $func;
 				}
 				return $grp;
+			} break;
+			case 't': {
+				$col = strpos($str, ':', $i);
+				$c_name = substr($str, $i, $col-$i);
+				$i = $col+1;
+				$col = strpos($str, ':', $i);
+				$count = substr($str, $i, $col-$i);
+				$i = $col+1;
+				$def = new Node;
+				$def->kind = 'def.type';
+				$def->name = $name;
+				$def->c_name = $c_name;
+				$def->a_scope = new Scope;
+				for ($n = 0; $n < $count; $n++) {
+					$member_type = $str[$i++];
+					switch ($member_type) {
+						case 'v': {
+							$col = strpos($str, ':', $i);
+							$member_name = substr($str, $i, $col-$i);
+							$i = $col+1;
+							$member = new Node;
+							$member->kind = 'expr.var';
+							$member->name = $member_name;
+							$member->c_name = Compiler::makeCIdent($member->name);
+							$member->c_ref = $member->c_name;
+							$member->a_types = static::unserializeType($str, $i);
+							$def->a_scope->names[$member_name] = $member;
+						} break;
+					}
+				}
+				return $def;
 			} break;
 		}
 		return null;

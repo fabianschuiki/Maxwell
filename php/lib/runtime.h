@@ -2,6 +2,7 @@
  * Maxwell Runtime Header
  */
 
+#pragma once
 #include <assert.h>
 #include <stdio.h>
 #include <sys/types.h>

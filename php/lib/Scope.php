@@ -20,8 +20,12 @@ class Scope
 		if (isset($this->names[$name])) {
 			$v = $this->names[$name];
 			if ($v->kind == 'a.funcgrp') {
+				$pv = null;
 				if ($this->parent) {
-					$v = array_merge($this->parent->find($name), $v->funcs);
+					$pv = $this->parent->find($name);
+				}
+				if ($pv) {
+					$v = array_merge($pv, $v->funcs);
 				} else {
 					$v = $v->funcs;
 				}
@@ -100,7 +104,7 @@ class Scope
 			case 'a.funcgrp': {
 				$funcs = array();
 				foreach ($node->funcs as $func) {
-					$funcs[] = $this->serializeType($func->a_types);
+					$funcs[] = $func->c_name.':'.$this->serializeType($func->a_types);
 				}
 				return 'f'.count($funcs).':'.implode('', $funcs);
 			} break;
@@ -122,10 +126,92 @@ class Scope
 				return '@t'.count($fields).':'.implode('', $fields);
 			} break;
 			case 'NamedType': {
-				return '@n'.strlen($type->name).':'.$type->name;
+				return '@n'.$type->name.';';
 			} break;
 			case 'TypeVar': {
-				return '@v'.strlen($type->name).':'.$type->name;
+				return '@v'.$type->name.';';
+			} break;
+		}
+		return null;
+	}
+	
+	static public function unserialize($str)
+	{
+		$scope = new Scope;
+		$lines = explode("\n", str_replace(array("\t", ' '), '', $str));
+		foreach ($lines as $line) {
+			list($name, $obj) = explode(':', $line, 2);
+			$scope->names[$name] = static::unserializeNode($name, $obj);
+		}
+		return $scope;
+	}
+	
+	static private function unserializeNode($name, $str, &$i = 0)
+	{
+		echo "unserialize node: ".substr($str, $i)."\n";
+		$type = $str[$i++];
+		switch ($type) {
+			case 'f': {
+				$col = strpos($str, ':', $i);
+				$count = substr($str, $i, $col-$i);
+				$i = $col+1;
+				$grp = new Node;
+				$grp->kind = 'a.funcgrp';
+				$grp->funcs = array();
+				for ($n = 0; $n < $count; $n++) {
+					$col = strpos($str, ':', $i);
+					$c_name = substr($str, $i, $col-$i);
+					$i = $col+1;
+					$func = new Node;
+					$func->kind = 'def.func';
+					$func->name = $name;
+					$func->c_name = $c_name;
+					$func->a_types = static::unserializeType($str, $i);
+					$grp->funcs[] = $func;
+				}
+				return $grp;
+			} break;
+		}
+		return null;
+	}
+	
+	static private function unserializeType($str, &$i = 0)
+	{
+		echo "unserialize type: ".substr($str, $i)."\n";
+		assert($str[$i++] == '@');
+		$type = $str[$i++];
+		switch ($type) {
+			case 'f': {
+				$t = new FuncType;
+				$t->in  = static::unserializeType($str, $i);
+				$t->out = static::unserializeType($str, $i);
+				$t->out->strict = false;
+				return $t;
+			} break;
+			case 't': {
+				$col = strpos($str, ':', $i);
+				$count = substr($str, $i, $col-$i);
+				$i = $col+1;
+				$t = new TupleType;
+				for ($n = 0; $n < $count; $n++) {
+					$col = strpos($str, ':', $i);
+					$name = substr($str, $i, $col-$i);
+					$i = $col+1;
+					if (!strlen($name)) {
+						$name = null;
+					}
+					$t->addField(static::unserializeType($str, $i), $name);
+				}
+				return $t;
+			} break;
+			case 'n': {
+				$sem = strpos($str, ';', $i);
+				$name = substr($str, $i, $sem-$i);
+				$i = $sem+1;
+				$t = new NamedType;
+				$t->name = $name;
+				$i += $count;
+				return $t;
 			} break;
 		}
 		return null;

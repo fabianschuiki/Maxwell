@@ -3,6 +3,7 @@
 class Analyzer
 {
 	public $nodes;
+	public $importScope;
 	public $scope;
 	public $issues;
 	
@@ -13,9 +14,17 @@ class Analyzer
 		
 		$builtinScope = new Scope;
 		$this->addBuiltIn($builtinScope);
-		$this->scope = new Scope($builtinScope);
+		if (!$this->importScope) {
+			$this->importScope = new Scope($builtinScope);
+		} else {
+			$this->importScope->parent = $builtinScope;
+		}
+		$this->scope = new Scope($this->importScope);
 		
 		foreach ($this->nodes as $n) $this->populateScope($this->scope, $n);
+		if ($this->issues->isFatal()) return;
+		
+		foreach ($this->nodes as $n) $this->generateCName($n);
 		if ($this->issues->isFatal()) return;
 		
 		foreach ($this->nodes as $n) $this->bind($n);
@@ -205,6 +214,31 @@ class Analyzer
 		if (!$node->builtin) {
 			foreach ($node->nodes() as $n) {
 				$this->populateScope($node->a_scope, $n);
+			}
+		}
+	}
+	
+	private function generateCName(Node $node)
+	{
+		foreach ($node->nodes() as $n) {
+			$this->generateCName($n);
+		}
+		switch ($node->kind) {
+			case 'def.func': {
+				$funcs = $node->a_scope->find(strval($node->name));
+				$i = 0;
+				do {
+					$node->c_name = 'func_'.$node->name;
+					if ($i > 0) $node->c_name .= $i;
+					$collides = false;
+					foreach ($funcs as $func) {
+						if ($func != $node && $func->c_name == $node->c_name) {
+							$collides = true;
+							break;
+						}
+					}
+					$i++;
+				} while ($collides == true);
 			}
 		}
 	}

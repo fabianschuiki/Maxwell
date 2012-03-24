@@ -65,6 +65,7 @@ class Parser
 		$name->context = 'import.name';
 		
 		$i = new Node;
+		$i->c_ignore = true;
 		$i->kind  = 'def.import';
 		$i->name  = $name;
 		$name->node = $i;

@@ -17,8 +17,9 @@ class Compiler
 	public function run()
 	{
 		$o  = "/* automatically compiled on ".date('c')." */\n\n";
-		$o .= rtrim(file_get_contents(__DIR__.'/runtime.c'));
-		$o .= "\n// --- runtime end ---\n\n";
+		/*$o .= rtrim(file_get_contents(__DIR__.'/runtime.c'));
+		$o .= "\n// --- runtime end ---\n\n";*/
+		$o .= "#include \"".__DIR__.'/runtime.h'."\"\n\n"; 
 		
 		//Compile each node.
 		foreach ($this->nodes as $n) {
@@ -32,7 +33,7 @@ class Compiler
 		}
 		
 		if ($this->hasMain) {
-			$o .= "// --- debugging code ---\n";
+			$o .= "// --- main function call ---\n";
 			$o .= "int main() { func_main(); return 0; }\n";
 		}
 		$this->output = $o;
@@ -49,6 +50,9 @@ class Compiler
 	
 	private function compileNode(Node &$node)
 	{
+		if ($node->c_ignore) {
+			return null;
+		}
 		$fn = 'compile'.str_replace(' ', '', ucwords(str_replace('.', ' ', $node->kind)));
 		if (method_exists($this, $fn)) {
 			return call_user_func(array($this, $fn), $node);

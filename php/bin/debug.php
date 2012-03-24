@@ -60,7 +60,7 @@ foreach ($parser->nodes as $node)
 	}
 	$scope = Scope::unserialize(file_get_contents($scope_path));
 	foreach ($scope->names as $name => $n) {
-		echo "imported \033[1m$name\033[0m {$node->kind}\n";
+		//echo "imported \033[1m$name\033[0m {$n->kind}\n";
 		if (isset($importScope->names[$name]) && $importScope->names[$name]->kind == 'a.funcgrp') {
 			$importScope->names[$name]->funcs = array_merge($importScope->names[$name]->funcs, $n->funcs);
 		} else {

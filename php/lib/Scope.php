@@ -159,7 +159,7 @@ class Scope
 	
 	static private function unserializeNode($name, $str, &$i = 0)
 	{
-		echo "unserialize node: ".substr($str, $i)."\n";
+		//echo "unserialize node: ".substr($str, $i)."\n";
 		$type = $str[$i++];
 		switch ($type) {
 			case 'f': {
@@ -219,7 +219,7 @@ class Scope
 	
 	static private function unserializeType($str, &$i = 0)
 	{
-		echo "unserialize type: ".substr($str, $i)."\n";
+		//echo "unserialize type: ".substr($str, $i)."\n";
 		assert($str[$i++] == '@');
 		$type = $str[$i++];
 		switch ($type) {

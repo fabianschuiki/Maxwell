@@ -15,8 +15,10 @@ class Compiler
 	public $header;
 	
 	private $mainRef = null;
+	private $mainTakesArgs = false;
 	private $preheader;
 	private $postheader;
+	private $usedTypes;
 	
 	public function run()
 	{
@@ -27,6 +29,7 @@ class Compiler
 		
 		$this->preheader  = array();
 		$this->postheader = array();
+		$this->usedTypes  = array();
 		
 		//Compile each node.
 		$hm = "";
@@ -44,7 +47,13 @@ class Compiler
 				}
 				$hm .= implode("\n", $seg->hstmts)."\n\n";
 			}
-		} 
+		}
+		
+		$structs = array();
+		foreach ($this->usedTypes as $type) {
+			$structs[] = "struct $type;";
+		}
+		$this->postheader = array_merge($structs, $this->postheader);
 		
 		$hparts = array();
 		if (count($this->preheader))  $hparts[] = implode("\n", $this->preheader);
@@ -54,7 +63,23 @@ class Compiler
 		
 		if ($this->mainRef) {
 			$c .= "// --- main function call ---\n";
-			$c .= "int main(int argc, char * argv[]) { {$this->mainRef}(); return 0; }\n";
+			$c .= "int main(int argc, char * argv[])\n";
+			$c .= "{\n";
+			if ($this->mainTakesArgs) {
+				$c .= "\t".trim("
+	StringArray_t args;
+	int i;
+	for (i = 0; i < argc; i++) {
+		String_t* arg = malloc(sizeof(*arg));
+		arg->v = argv[i];
+		func_add_28a3aStringArray2c20v3aString292d3e2829(&args, arg);
+	}
+				")."\n";
+				$mainArg = "&args";
+			}
+			$c .= "\t{$this->mainRef}($mainArg);\n";
+			$c .= "\treturn 0;\n";
+			$c .= "}\n";
 		}
 		
 		$this->output = $c;
@@ -166,6 +191,9 @@ class Compiler
 		$name = $node->c_name;
 		if ($node->name->text == 'main') {
 			$this->mainRef = $node->c_name;
+			if (count($node->in)) {
+				$this->mainTakesArgs = true;
+			}
 		}
 		
 		//Synthesize the return type.
@@ -190,7 +218,14 @@ class Compiler
 		foreach ($node->in as $i) {
 			$i->c_ref = $i->name->text;
 			$i->c_ptr = ($i->a_target->primitive ? '&'.$i->c_ref : $i->c_ref);
-			$ins[] = "{$i->a_target->c_ref} {$i->c_ref}";
+			$type = $i->a_target->c_name;
+			if (!$i->a_target->builtin && !in_array($type, $this->usedTypes)) {
+				$this->usedTypes[] = $type;
+			}
+			if (!$i->a_target->primitive) {
+				$type = "struct $type*";
+			}
+			$ins[] = "{$type} {$i->c_ref}";
 		}
 		$def  = "$retname {$node->c_name} (".implode(", ", $ins).")";
 		$this->postheader[] = $def.';';

@@ -9,7 +9,7 @@ func show (int i)
 }
 
 //Dump something to the standard output.
-func main
+func main (StringArray args)
 {
 	Point p;
 	inline { @p@ = malloc(sizeof(*@p@)); }
@@ -19,6 +19,9 @@ func main
 	
 	String s = "Hello World";
 	show(s);
+	
+	show("This is what I got as command line arguments:");
+	show(args);
 
 	//Create a string array for debugging purposes.
 	StringArray a;

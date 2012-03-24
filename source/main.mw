@@ -4,4 +4,5 @@ import String;
 func main
 {
 	show("Welcome to the Maxwell compiler. Not doing that much yet.");
+	show("Another line.");
 }

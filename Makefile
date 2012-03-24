@@ -4,7 +4,7 @@ EXEC=${BUILD_DIR}/mwc
 
 all: ${EXEC}
 
-${BUILD_DIR}/mwc: ${BUILD_DIR}
+${EXEC}: ${BUILD_DIR} source/main.mw
 	${MWC} -o ${EXEC} source/main.mw ${BUILD_DIR}
 
 ${BUILD_DIR}:

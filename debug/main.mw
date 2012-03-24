@@ -1,0 +1,5 @@
+func main
+{
+	String s = "Hello World";
+	show(s);
+}

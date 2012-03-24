@@ -1,0 +1,8 @@
+/**
+ * String library.
+ */
+
+func show (String s)
+{
+	inline { printf("%s\n", @s@->v); }
+}

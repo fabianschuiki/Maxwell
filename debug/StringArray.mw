@@ -1,9 +1,5 @@
-/**
- * Array container
- */
 import String;
 
-//Specialization for Strings.
 type StringArray
 {
 	StringArrayElement first;

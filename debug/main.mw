@@ -1,6 +1,6 @@
 import String;
 import Point;
-import Array;
+import StringArray;
 
 //Some helper to dump an integer to the console.
 func show (int i)

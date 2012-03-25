@@ -60,13 +60,16 @@ class TypeSet extends Type
 	
 	public function findCastTypes(Scope &$scope)
 	{
+		return;
+		
 		//Find the cast functions.
 		$casts = $scope->find('cast');
 		if (!is_array($casts))
 			return;
 		$casts = array_filter($casts, function($cast){
-			return (count($cast->in) == 1 && count($cast->out) == 1 && strcmp($cast->in[0]->type, $cast->out[0]->type) != 0);
+			return (count($cast->a_types->in->fields) == 1 && count($cast->a_types->out->fields) == 1 && strcmp($cast->a_types->in->fields[0]->type, $cast->a_types->out->fields[0]->type) != 0);
 		});
+		echo count($casts)." casts found for $this\n";
 		
 		//Iterate through the native types and find available casts.
 		foreach ($this->types as $type) {
@@ -84,9 +87,9 @@ class TypeSet extends Type
 				$newLeads = array();
 				foreach ($leads as $lead) {
 					foreach ($lead->left as $cast) {
-						if (strval($cast->in[0]->type) != $lead->name) continue;
+						if (strval($cast->a_types->in->fields[0]->type) != $lead->name) continue;
 						$new = clone $lead;
-						$new->name = strval($cast->out[0]->type);
+						$new->name = strval($cast->a_types->out->fields[0]->type);
 						$new->used[] = $cast;
 						$new->left = array_filter($new->left, function($c) use ($cast) {
 							return ($c != $cast);

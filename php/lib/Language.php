@@ -23,6 +23,7 @@ class Language
 		array('==', '!=', '<', '>', '<=', '>='),
 		array('+', '-'),
 		array('*', '/'),
+		array('..'),
 	);
 }
 
@@ -32,3 +33,14 @@ Language::$symbols = array_merge(
 	range(0x5B, 0x5E),
 	range(0x7B, 0x7E)
 );
+
+Language::$symbolCombinations = array_unique(array_reduce(array_merge(
+		array(Language::$symbolCombinations),
+		Language::$unaryOperators,
+		Language::$binaryOperators
+	),
+	function($a, $b) {
+		return array_merge($a, $b);
+	},
+	array()
+));

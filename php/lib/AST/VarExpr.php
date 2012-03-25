@@ -11,4 +11,6 @@ class VarExpr extends Expr
 		$this->type = $type;
 		$this->name = $name;
 	}
+	
+	public function nice() { return "Variable Definition"; }
 }

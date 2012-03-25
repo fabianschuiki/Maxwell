@@ -24,4 +24,6 @@ class Token
 	{
 		return $this->text;
 	}
+	
+	public function range() { return $this->range; }
 }

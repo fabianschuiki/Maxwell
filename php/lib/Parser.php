@@ -14,9 +14,6 @@ class Parser
 			$d = $this->parseDef($ts);
 			if ($d) $this->nodes[] = $d;
 		}
-		foreach ($this->issues as $i) {
-			echo "$i\n";
-		}
 	}
 	
 	private function parseDef(array &$ts)
@@ -198,7 +195,7 @@ class Parser
 		return new AST\FuncArg($type, $name);
 	}
 	
-	private function parseTypeDef(Token &$keyword, array &$ts)
+	private function parseTypeDef(Token $keyword, array &$ts)
 	{
 		//Type Name
 		$name = array_shift($ts);
@@ -247,13 +244,13 @@ class Parser
 		$body->context = 'def.type.body';
 		
 		$stmts = array();
-		$dts = $defs->tokens;
+		$dts = $body->tokens;
 		while (count($dts)) {
 			$stmt = $this->parseTypeStmt($dts);
-			if ($stmt) $stmt[] = $stmt;
+			if ($stmt) $stmts[] = $stmt;
 		}
 		
-		return new AST\TypeStmt($name, $stmts);
+		return new AST\TypeStmt($keyword, $name, $stmts);
 		
 		//Create the node.
 		/*$t = new Node;

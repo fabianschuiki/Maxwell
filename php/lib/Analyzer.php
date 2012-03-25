@@ -9,7 +9,13 @@ class Analyzer
 	
 	public function run()
 	{
-		foreach ($this->nodes as $n) $this->reduce($n);
+		//Build the Language Entity Tree.
+		$scope = new LET\Scope;
+		foreach ($this->nodes as $node) {
+			$scope->add($this->buildEntity($node));
+		}
+		
+		/*foreach ($this->nodes as $n) $this->reduce($n);
 		if ($this->issues->isFatal()) return;
 		
 		$builtinScope = new Scope;
@@ -46,7 +52,16 @@ class Analyzer
 		if ($this->issues->isFatal()) return;
 		
 		foreach ($this->nodes as $n) $this->generateCName($n);
-		if ($this->issues->isFatal()) return;
+		if ($this->issues->isFatal()) return;*/
+	}
+	
+	private function buildEntity(AST\Node $node)
+	{
+		switch ($node->type()) {
+			case 'TypeStmt': return new LET\Type($node); break;
+			case 'FuncStmt': return new LET\Func($node); break;
+		}
+		return null;
 	}
 	
 	private $builtinNumericTypes = array();

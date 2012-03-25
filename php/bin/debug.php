@@ -102,9 +102,9 @@ $analyzer->importScope = $importScope;
 $analyzer->issues = $issues;
 $analyzer->nodes = $parser->nodes;
 $analyzer->run();
-if ($issues->isFatal()) {
-	goto compiled;
-}
+$issues->exitIfFatal();
+
+$issues->dump(); exit;
 
 //Dump the scope.
 file_put_contents("$out.scope", $analyzer->scope->serialize());

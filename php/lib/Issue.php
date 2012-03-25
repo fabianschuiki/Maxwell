@@ -11,6 +11,31 @@ class Issue
 	{
 		$this->type    = $type;
 		$this->message = $message;
+		
+		if (is_array($range)) {
+			$total = null;
+			foreach ($range as $r) {
+				if (!$r instanceof Range && method_exists($r, 'range')) $r = $r->range();
+				if (!$total) {
+					$total = $r;
+				} else {
+					$total->combine($r);
+				} 
+			}
+			$range = $total;
+		}
+		if (!$range instanceof Range && method_exists($range, 'range')) {
+			$range = $range->range();
+		}
+		
+		if (!is_array($marked)) {
+			$marked = array($marked);
+		}
+		$marked = array_map(function($r){
+			if (!$r instanceof Range && method_exists($r, 'range')) $r = $r->range();
+			return $r;
+		}, $marked);
+		
 		$this->range   = $range;
 		$this->marked  = $marked;
 	}

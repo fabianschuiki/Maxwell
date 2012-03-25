@@ -27,4 +27,13 @@ class IssueList implements ArrayAccess
 	{
 		return $this->num_errors > 0;
 	}
+	
+	public function exitIfFatal()
+	{
+		if (!$this->isFatal()) return;
+		foreach ($this->issues as $i) {
+			echo "$i\n";
+		}
+		exit(-1);
+	}
 }

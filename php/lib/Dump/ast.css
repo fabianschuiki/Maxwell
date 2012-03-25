@@ -1,0 +1,13 @@
+body {
+	font-family: monospace;
+	white-space: pre;
+	color: #aaa;
+}
+
+.token.identifier,
+.token.symbol,
+.token.keyword { color: #000000; }
+
+.token.numeric { color: #3465a4; }
+.token.keyword { font-weight: bold; }
+.token.string  { color: #3465a4; }

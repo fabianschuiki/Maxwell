@@ -50,7 +50,12 @@ $lexer->run();
 
 $parser = new Parser;
 $parser->tokens = $lexer->tokens;
+$parser->issues = $issues;
 $parser->run();
+$issues->exitIfFatal();
+
+$dump = Dump::ast($file, $lexer, $parser);
+file_put_contents("$out.ast.html", $dump);
 
 //Resolve the imports.
 $importScope = new Scope;

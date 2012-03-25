@@ -1,6 +1,6 @@
 <?php
 namespace AST;
 
-class Node
+class Stmt extends Node
 {
 }

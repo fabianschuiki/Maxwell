@@ -3,10 +3,17 @@ namespace LET;
 
 class Scope
 {
-	public $issues;
+	public $outer;
 	
 	public $types = array();
 	public $funcs = array();
+	public $vars  = array();
+	
+	public function __construct($outer = null)
+	{
+		assert(!$outer || $outer instanceof Scope);
+		$this->outer = $outer;
+	}
 	
 	public function add($node)
 	{
@@ -16,10 +23,12 @@ class Scope
 		
 		//Add to node to the appropriate container.
 		switch ($node->kind()) {
-			case 'Type': $this->types[] = $node; break;
-			case 'Func': $this->funcs[] = $node; break;
+			case 'Type':     $this->types[] = $node; break;
+			case 'Func':     $this->funcs[] = $node; break;
+			case 'FuncArg':  $this->vars[]  = $node; break;
+			case 'Variable': $this->vars[]  = $node; break;
 			default: {
-				trigger_error($node->type()." not allowed in scope.");
+				trigger_error($node->kind()." not allowed in scope.");
 			} break;
 		}
 	}

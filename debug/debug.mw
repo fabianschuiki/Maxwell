@@ -40,6 +40,16 @@ func main
 	var Point p3 = (p1 + p2);
 	var int dot = (p1 * p2);
 	
+	func test
+	{
+	}
+	
+	type Hello
+	{
+		var int x;
+		var int z;
+	}
+	
 	//Dump the point.
 	inline { printf("p1 + p2: %i x %i\n", (int)@p3@->x, (int)@p3@->y); }
 	inline { printf("p1 * p2: %i\n", *(int*)@dot@); }

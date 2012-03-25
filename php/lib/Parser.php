@@ -278,22 +278,15 @@ class Parser
 		if (!$body->is('group', '{}')) {
 			$this->issues[] = new Issue(
 				'error',
-				"type requires a definition block",
-				$body->range,
-				array($keyword->range, $name->range)
+				"Type {$name} requires a body.",
+				$body,
+				array($keyword, $name)
 			);
 			return null;
 		}
-		$body->context = 'def.type.body';
+		$bodyNode = $this->parseBlock($body);
 		
-		$stmts = array();
-		$dts = $body->tokens;
-		while (count($dts)) {
-			$stmt = $this->parseStmt($dts);
-			if ($stmt) $stmts[] = $stmt;
-		}
-		
-		return new AST\TypeStmt($keyword, $name, $stmts);
+		return new AST\TypeStmt($keyword, $name, $bodyNode);
 		
 		//Create the node.
 		/*$t = new Node;

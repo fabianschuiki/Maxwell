@@ -5,16 +5,16 @@ class TypeStmt extends Stmt
 {
 	public $keyword;
 	public $name;
-	public $stmts;
+	public $body;
 	
-	public function __construct(\Token $keyword, \Token $name, array $stmts)
+	public function __construct(\Token $keyword, \Token $name, Block $body)
 	{
 		assert($keyword->is('keyword'));
 		assert($name->is('identifier'));
 		$this->keyword = $keyword;
 		$this->name    = $name;
-		$this->stmts   = $stmts;
+		$this->body    = $body;
 	}
 	
-	public function nice() { return "Type Definition"; }
+	public function nice() { return "Type definition"; }
 }

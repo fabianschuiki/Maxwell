@@ -11,6 +11,7 @@ class Node
 		$c = get_class($this);
 		$s = strlen(__NAMESPACE__)+1;
 		$e = strpos($c, '_');
+		if ($e === false) $e = strlen($c);
 		return substr($c, $s, $e-$s);
 	}
 	

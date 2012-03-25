@@ -14,5 +14,5 @@ class VarStmt extends Stmt
 		$this->name    = $name;
 	}
 	
-	public function nice() { return "Variable Definition"; }
+	public function nice() { return "Variable definition"; }
 }

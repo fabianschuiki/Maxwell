@@ -3,13 +3,16 @@ namespace LET;
 
 class Type_AST extends Type
 {
-	private $asn;
+	public $asn;
 	public $members;
+	public $subscope;
 	
 	public function __construct(Scope $scope, \AST\TypeStmt $node)
 	{
-		$members = array();
-		foreach ($node->stmts as $stmt) {
+		$members  = array();
+		$subscope = new Scope($scope);
+		
+		foreach ($node->body->stmts as $stmt) {
 			switch ($stmt->kind()) {
 				case 'VarStmt': {
 					$members[] = new TypeMember($stmt);
@@ -22,15 +25,18 @@ class Type_AST extends Type
 					$issues[] = new \Issue(
 						'warning',
 						"{$stmt->nice()} is not allowed inside type '{$node->name}'. Ignored.",
-						$stmt,
-						$node->name
+						$stmt
 					);
 				} break;
 			}
 		}
 		
-		$this->asn     = $node;
-		$this->members = $members;
+		$this->asn      = $node;
+		$this->members  = $members;
+		$this->scope    = $scope;
+		$this->subscope = $subscope;
+		
+		$scope->add($this);
 	}
 	
 	public function name()    { return $this->asn->name->text; }

@@ -10,12 +10,33 @@
 	
 		function dumpScope(LET\Scope $scope)
 		{
+			$str = "<div class=\"scope\">";
 			$entities = array();
 			$fields = array('types', 'funcs');
 			foreach ($fields as $field) {
-				$entities = array_merge($entities, array_map(function($entity){ return $entity->desc(); }, $scope->$field));
+				if (!count($scope->$field)) continue;
+				$str .= "<div class=\"$field\">";
+				foreach ($scope->$field as $entity) {
+					$str .= "<pre>".$entity->desc()."</pre>";
+					if ($field == 'funcs') $str .= dumpFunc($entity);
+				}
+				$str .= "</div>";
 			}
-			return implode("\n", $entities);
+			$str .= "</div>";
+			return $str;
+		}
+		
+		function dumpFunc(LET\Func $func)
+		{
+			$str = "<div class=\"func\">";
+			if ($func->subscope) $str .= dumpScope($func->subscope);
+			$str .= "<pre>";
+			foreach ($func->stmts as $stmt) {
+				$str .= $stmt->desc()."\n";
+			}
+			$str .= "</pre>";
+			$str .= "</div>";
+			return $str;
 		}
 	
 	?>

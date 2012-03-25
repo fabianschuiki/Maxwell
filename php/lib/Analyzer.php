@@ -12,7 +12,7 @@ class Analyzer
 		//Build the Language Entity Tree.
 		$scope = new LET\Scope;
 		foreach ($this->nodes as $node) {
-			$scope->add($this->buildEntity($scope, $node));
+			$this->buildEntity($scope, $node);
 		}
 		
 		$this->scope = $scope;
@@ -60,18 +60,17 @@ class Analyzer
 	private function buildEntity(LET\Scope $scope, AST\Node $node)
 	{
 		switch ($node->kind()) {
-			case 'TypeStmt': return new LET\Type_AST($scope, $node); break;
-			case 'FuncStmt': return new LET\Func_AST($scope, $node); break;
+			case 'TypeStmt': new LET\Type_AST($scope, $node); break;
+			case 'FuncStmt': new LET\Func_AST($scope, $node); break;
 			default: {
 				global $issues;
 				$issues[] = new \Issue(
 					'warning',
-					"{$node->nice()} is not allowed on file level. Ignored.",
+					"{$node->nice()} is not allowed at file level. Ignored.",
 					$node
 				);
 			} break;
 		}
-		return null;
 	}
 	
 	private $builtinNumericTypes = array();

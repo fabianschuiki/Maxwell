@@ -1,4 +1,20 @@
 body {
 	font-family: monospace;
-	white-space: pre;
+}
+
+pre {
+	margin: 0;
+}
+
+div.scope > div {
+	margin-bottom: 0.5em;
+}
+
+div.scope > div.funcs > pre { color: #3465a4; }
+div.scope > div.types > pre { color: #75507b; }
+
+div.func {
+	margin-left:  1em;
+	padding-left: 1em;
+	border-left: 2px solid #ccc;
 }

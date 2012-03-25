@@ -41,7 +41,7 @@ func add (StringArray a, String v)
 }
 
 //Returns the number of items in the array.
-func size(StringArray a) -> (int s)
+func size (StringArray a) -> (int s)
 {
 	s = 0;
 	for (StringArrayElement e = a.first; e != 0; e = e.next) {
@@ -50,7 +50,7 @@ func size(StringArray a) -> (int s)
 }
 
 //Dumps the contents of the array to the console.
-func show(StringArray a)
+func show (StringArray a)
 {
 	for (StringArrayElement e = a.first; e != 0; e = e.next) {
 		show(e.value);

@@ -68,6 +68,7 @@ class Compiler
 			if ($this->mainTakesArgs) {
 				$c .= "\t".trim("
 	StringArray_t args;
+	func_construct_28a3aStringArray292d3e2829(&args);
 	int i;
 	for (i = 0; i < argc; i++) {
 		String_t* arg = malloc(sizeof(*arg));

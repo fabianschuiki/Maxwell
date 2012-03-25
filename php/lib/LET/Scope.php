@@ -12,6 +12,7 @@ class Scope
 	{
 		if (!$node) return;
 		assert($node instanceof Node);
+		$node->scope = $this;
 		
 		//Add to node to the appropriate container.
 		switch ($node->kind()) {

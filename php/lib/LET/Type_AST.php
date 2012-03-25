@@ -29,7 +29,6 @@ class Type_AST extends Type
 			}
 		}
 		
-		$this->scope   = $scope;
 		$this->asn     = $node;
 		$this->members = $members;
 	}

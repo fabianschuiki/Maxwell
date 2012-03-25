@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="mw" _name="Maxwell" version="2.0" _section="Sources">
+	<metadata>
+		<property name="mimetypes">text/x-mw;text/x-mwsrc</property>
+		<property name="globs">*.mw</property>
+		<property name="line-comment-start">//</property>
+		<property name="block-comment-start">/*</property>
+		<property name="block-comment-end">*/</property>
+	</metadata>
+	
+	<styles>
+		<style id="comment" _name="Comment" map-to="def:comment"/>
+		<style id="keyword" _name="Keyword" map-to="def:keyword"/>
+		<style id="string" _name="String" map-to="def:string"/>
+	</styles>
+	
+	<definitions>
+		<context id="keywords" style-ref="keyword">
+			<!--keywords-start-->
+			<keyword>func</keyword>
+			<keyword>type</keyword>
+			<keyword>primitive</keyword>
+			<keyword>if</keyword>
+			<keyword>else</keyword>
+			<keyword>for</keyword>
+			<keyword>return</keyword>
+			<keyword>inline</keyword>
+			<keyword>import</keyword>
+			<!--keywords-end-->
+		</context>
+		
+		<context id="string" style-ref="string">
+			<start>"</start>
+			<end>"</end>
+			<include>
+				<context id="escaped-character" style-ref="escaped-character">
+					<match>\\.</match>
+				</context>
+			</include>
+		</context>
+		
+		<!--Main context-->
+		<context id="mw" class="no-spell-check">
+			<include>
+				<context ref="def:c-like-comment"/>
+				<context ref="def:c-like-comment-multiline"/>
+				<context ref="def:c-like-close-comment-outside-comment"/>
+				<context ref="keywords"/>
+				<context ref="string"/>
+			</include>
+		</context>
+	</definitions>
+</language>

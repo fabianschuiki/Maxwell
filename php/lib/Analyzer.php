@@ -62,6 +62,14 @@ class Analyzer
 		switch ($node->kind()) {
 			case 'TypeStmt': return new LET\Type_AST($scope, $node); break;
 			case 'FuncStmt': return new LET\Func_AST($scope, $node); break;
+			default: {
+				global $issues;
+				$issues[] = new \Issue(
+					'warning',
+					"{$node->nice()} is not allowed on file level. Ignored.",
+					$node
+				);
+			} break;
 		}
 		return null;
 	}

@@ -11,7 +11,7 @@ class Language
 	static public $identifierSymbols = array("~");
 	
 	static public $keywords = array(
-		'func', 'type', 'primitive', 'if', 'else', 'for', 'return', 'inline', 'import',
+		'var', 'func', 'type', 'primitive', 'if', 'else', 'for', 'return', 'inline', 'import',
 	);
 	
 	static public $unaryOperators = array(

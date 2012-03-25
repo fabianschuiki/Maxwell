@@ -12,8 +12,10 @@ class Analyzer
 		//Build the Language Entity Tree.
 		$scope = new LET\Scope;
 		foreach ($this->nodes as $node) {
-			$scope->add($this->buildEntity($node));
+			$scope->add($this->buildEntity($scope, $node));
 		}
+		
+		$this->scope = $scope;
 		
 		/*foreach ($this->nodes as $n) $this->reduce($n);
 		if ($this->issues->isFatal()) return;
@@ -55,11 +57,11 @@ class Analyzer
 		if ($this->issues->isFatal()) return;*/
 	}
 	
-	private function buildEntity(AST\Node $node)
+	private function buildEntity(LET\Scope $scope, AST\Node $node)
 	{
-		switch ($node->type()) {
-			case 'TypeStmt': return new LET\Type($node); break;
-			case 'FuncStmt': return new LET\Func($node); break;
+		switch ($node->kind()) {
+			case 'TypeStmt': return new LET\Type_AST($scope, $node); break;
+			case 'FuncStmt': return new LET\Func_AST($scope, $node); break;
 		}
 		return null;
 	}

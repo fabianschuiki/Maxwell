@@ -11,37 +11,80 @@ class Parser
 		$this->nodes = array();
 		$ts = $this->tokens;
 		while (count($ts)) {
-			$d = $this->parseDef($ts);
+			$d = $this->parseStmt($ts);
 			if ($d) $this->nodes[] = $d;
 		}
 	}
 	
-	private function parseDef(array &$ts)
+	static private function upToSymbol($symbol, array &$ts)
 	{
-		if ($ts[0]->is('keyword')) return $this->parseKeywordDef(array_shift($ts), $ts);
-		$t = array_shift($ts);
-		$this->issues[] = new Issue(
-			'warning',
-			"Definition should start with a keyword.",
-			$t->range
-		);
-		return null;
+		$sub = array();
+		while (count($ts)) {
+			$t = array_shift($ts);
+			if ($t->is('symbol', $symbol))
+				break;
+			$sub[] = $t;
+		}
+		return $sub;
 	}
 	
-	private function parseKeywordDef(Token &$keyword, array &$ts)
+	private function parseBlock(TokenGroup &$group)
 	{
-		if ($keyword->text == 'import') return $this->parseImportDef($keyword, $ts);
-		if ($keyword->text == 'func')   return $this->parseFuncDef($keyword, $ts);
-		if ($keyword->text == 'type')   return $this->parseTypeDef($keyword, $ts);
+		$ts = $group->tokens;
+		$stmts = array();
+		while (count($ts)) {
+			$stmt = $this->parseStmt($ts);
+			if ($stmt) $stmts[] = $stmt;
+		}
+		return new AST\Block($group, $stmts);
+	}
+	
+	private function parseBlockOrStmt(array &$ts)
+	{
+		if ($ts[0]->is('group', '{}')) {
+			return $this->parseBlock(array_shift($ts));
+		} else {
+			return new AST\Block($this->parseStmt($ts));
+		}
+	}
+	
+	private function parseStmt(array &$ts)
+	{
+		if ($ts[0]->is('keyword')) return $this->parseKeywordStmt(array_shift($ts), $ts);
+		$sub = array();
+		while (count($ts)) {
+			$t = array_shift($ts);
+			if ($t->is('symbol', ';'))
+				break;
+			$sub[] = $t;
+		}
+		if (count($sub) == 0) {
+			return null;
+		}
+		$expr = $this->parseExpr($sub);
+		
+		if (!$expr) return null;
+		return new AST\ExprStmt($expr);
+	}
+	
+	private function parseKeywordStmt(Token $keyword, array &$ts)
+	{
+		$func = 'parse'.ucwords($keyword->text).'Stmt';
+		if (method_exists($this, $func)) {
+			return $this->$func($keyword, $ts);
+		}
+		
+		//Keyword meaningless.
+		while (count($ts) && !array_shift($ts)->is('symbol', ';'));
 		$this->issues[] = new Issue(
 			'error',
-			"Keyword '{$keyword->text}' has no meaning here.",
+			"Keyword '$keyword' has no meaning in a statement.",
 			$keyword->range
 		);
 		return null;
 	}
 	
-	private function parseImportDef(Token &$keyword, array &$ts)
+	private function parseImportStmt(Token &$keyword, array &$ts)
 	{
 		$name = array_shift($ts);
 		if (!$name->is('identifier')) {
@@ -70,7 +113,7 @@ class Parser
 		return $i;
 	}
 	
-	private function parseFuncDef(Token &$keyword, array &$ts)
+	private function parseFuncStmt(Token &$keyword, array &$ts)
 	{
 		$name = array_shift($ts);
 		if ($name->is('group', '()')) {
@@ -195,7 +238,7 @@ class Parser
 		return new AST\FuncArg($type, $name);
 	}
 	
-	private function parseTypeDef(Token $keyword, array &$ts)
+	private function parseTypeStmt(Token $keyword, array &$ts)
 	{
 		//Type Name
 		$name = array_shift($ts);
@@ -246,7 +289,7 @@ class Parser
 		$stmts = array();
 		$dts = $body->tokens;
 		while (count($dts)) {
-			$stmt = $this->parseTypeStmt($dts);
+			$stmt = $this->parseStmt($dts);
 			if ($stmt) $stmts[] = $stmt;
 		}
 		
@@ -264,110 +307,6 @@ class Parser
 			if ($s) $t->nodes[] = $s;
 		}
 		return $t;*/
-	}
-	
-	private function parseTypeStmt(array &$ts)
-	{
-		$sub = array();
-		while (count($ts)) {
-			$t = array_shift($ts);
-			if ($t->is('symbol', ';'))
-				break;
-			$sub[] = $t;
-		}
-		if (count($sub) == 0) {
-			return null;
-		}
-		if (count($sub) == 2 && $sub[1]->is('identifier')) {
-			return $this->parseVarExpr($sub);
-		}
-		$range = null;
-		foreach ($sub as $s) {
-			if ($range) {
-				$range->combine($s->range);
-			} else {
-				$range = clone $s->range;
-			}
-		}
-		$this->issues[] = new Issue(
-			'error',
-			"Unknown statement in type definition.",
-			$range
-		);
-		return null;
-	}
-	
-	private function parseBlock(TokenGroup &$group)
-	{
-		$ts = $group->tokens;
-		$stmts = array();
-		while (count($ts)) {
-			$stmt = $this->parseStmt($ts);
-			if ($stmt) $stmts[] = $stmt;
-		}
-		return new AST\Block($group, $stmts);
-	}
-	
-	private function parseBlockOrStmt(array &$ts)
-	{
-		if ($ts[0]->is('group', '{}')) {
-			return $this->parseBlock(array_shift($ts));
-		} else {
-			return new AST\Block($this->parseStmt($ts));
-		}
-	}
-	
-	private function parseStmt(array &$ts)
-	{
-		if ($ts[0]->is('keyword')) return $this->parseKeywordStmt(array_shift($ts), $ts);
-		$sub = array();
-		while (count($ts)) {
-			$t = array_shift($ts);
-			if ($t->is('symbol', ';'))
-				break;
-			$sub[] = $t;
-		}
-		if (count($sub) == 0) {
-			return null;
-		}
-		$expr = $this->parseExpr($sub);
-		
-		if (!$expr) return null;
-		return new AST\ExprStmt($expr);
-	}
-	
-	private function parseKeywordStmt(Token $keyword, array &$ts)
-	{
-		switch ($keyword->text) {
-			case 'if':     return $this->parseIfStmt    ($keyword, $ts); break;
-			case 'else':   return $this->parseElseStmt  ($keyword, $ts); break;
-			case 'for':    return $this->parseForStmt   ($keyword, $ts); break;
-			case 'inline': return $this->parseInlineStmt($keyword, $ts); break;
-		}
-		/*if ($keyword->text == 'return') {
-			$sub = array();
-			while (count($ts)) {
-				$t = array_shift($ts);
-				if ($t->is('symbol', ';'))
-					break;
-				$sub[] = $t;
-			}
-			
-			$r = new Node;
-			$r->kind  = 'stmt.return';
-			$r->expr  = $this->parseExpr($sub);
-			$r->nodes = array($r->expr);
-			return $r;
-		}*/
-		
-		//Keyword meaningless.
-		while (count($ts) && !array_shift($ts)->is('symbol', ';'));
-		$this->issues[] = new Issue(
-			'error',
-			"Keyword '$keyword' has no meaning in a statement",
-			$keyword->range
-		);
-		return null;
 	}
 	
 	private function parseIfStmt(Token $keyword, array &$ts)
@@ -517,9 +456,9 @@ class Parser
 			return $this->parseMemberExpr($ts);
 		}
 		
-		if (count($ts) == 2 && $ts[1]->is('identifier')) {
+		/*if (count($ts) == 2 && $ts[1]->is('identifier')) {
 			return $this->parseVarExpr($ts);
-		}
+		}*/
 				
 		$e = null;
 		$range = clone $ts[0]->range;
@@ -562,22 +501,39 @@ class Parser
 		return $e;
 	}
 	
-	private function parseVarExpr(array $ts)
+	private function parseVarStmt(Token $keyword, array &$ts)
 	{
-		$name = array_pop($ts);
-		$type = $this->parseType($ts);
+		$sub = static::upToSymbol(';', $ts);
+		if (count($sub) < 2) {
+			$this->issues[] = new Issue(
+				'error',
+				"Variable Definition requires at least a type and name.",
+				$sub,
+				$keyword
+			);
+			return null;
+		}
 		
-		$name->context = 'expr.var.name';
+		$type = $this->parseType($sub);
+		$name = array_shift($sub);
 		
-		return new AST\VarExpr($type, $name);
-		/*$v = new Node;
-		$v->kind  = 'expr.var';
-		$v->name  = $name;
-		$v->type  = $type;
-		$v->range = clone $name->range;
-		$v->range->combine($type->range);
-		$name->node = $v;
-		return $v;*/
+		$initial = null;
+		if (count($sub) > 0) {
+			$eq = array_shift($sub);
+			if (count($sub) == 0 || !$eq->is('symbol', '=')) {
+				$this->issues[] = new Issue(
+					'error',
+					"Variable Definition with initial value needs to be followed by '=' and an expression.",
+					$sub,
+					array($type, $name)
+				);
+				return null;
+			}
+			$initial = $this->parseExpr($sub);
+		}
+		
+		if (!$name || !$type) return null;
+		return new AST\VarStmt($keyword, $type, $name, $initial);
 	}
 	
 	private function parseTupleExpr(Token &$grp, array $ts)
@@ -729,35 +685,25 @@ class Parser
 		}
 		$this->issues[] = new Issue(
 			'error',
-			"Unable to parse expression starting with identifier '{$ident}'. Expected a variable name after '{$ident}'.",
+			"Unable to parse expression starting with identifier '{$ident}'.",
 			$range
 		);
 		return null;
 	}
 	
-	private function parseType(array $ts)
+	private function parseType(array &$ts)
 	{
-		if (count($ts) == 1) {
-			if ($ts[0]->is('identifier')) {
-				return new AST\IdentExpr(array_shift($ts));
-				/*$n = new Node;
-				$n->kind = ($ident->text[0] == '@' ? 'type.var' : 'type.name');
-				$n->name = $ident;
-				$n->range = clone $ident->range;
-				$ident->node = $n;
-				$ident->context = $n->kind;
-				return $n;*/
-			}
+		if (count($ts) == 0) return null;
+		
+		$token = array_shift($ts);
+		if ($token->is('identifier')) {
+			return new AST\IdentExpr($token);
 		}
 		
-		$range = clone $ts[0]->range;
-		foreach ($ts as $t) {
-			$range->combine($t->range);
-		}
 		$this->issues[] = new Issue(
 			'error',
 			"Unable to parse type.",
-			$range
+			$token
 		);
 		return null;
 	}

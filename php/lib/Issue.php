@@ -35,6 +35,7 @@ class Issue
 			if (!$r instanceof Range && method_exists($r, 'range')) $r = $r->range();
 			return $r;
 		}, $marked);
+		$marked = array_filter($marked, function($r){ return $r instanceof Range; });
 		
 		$this->range   = $range;
 		$this->marked  = $marked;

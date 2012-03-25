@@ -2,8 +2,8 @@
 	<head>
 		<title><?php echo basename($file->path); ?></title>
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-		<style><?php include __DIR__.'/ast.css'; ?></style>
-		<script type="text/javascript"><?php include __DIR__.'/ast.js'; ?></script>
+		<style><?php @include __DIR__.'/ast.css'; ?></style>
+		<script type="text/javascript"><?php @include __DIR__.'/ast.js'; ?></script>
 	</head>
 
 	<body><?php

@@ -54,6 +54,7 @@ $parser->issues = $issues;
 $parser->run();
 $issues->exitIfFatal();
 
+//Dump the AST.
 $dump = Dump::ast($file, $lexer, $parser);
 file_put_contents("$out.ast.html", $dump);
 
@@ -104,6 +105,11 @@ $analyzer->nodes = $parser->nodes;
 $analyzer->run();
 $issues->exitIfFatal();
 
+//Dump the LET.
+$dump = Dump::let($file, $analyzer);
+file_put_contents("$out.let.html", $dump);
+
+/** STOP HERE */
 $issues->dump(); exit;
 
 //Dump the scope.

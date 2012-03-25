@@ -14,14 +14,12 @@ class Scope
 		assert($node instanceof Node);
 		
 		//Add to node to the appropriate container.
-		switch ($node->type()) {
-			case 'Type': $types[] = $node; break;
-			case 'Func': $funcs[] = $node; break;
+		switch ($node->kind()) {
+			case 'Type': $this->types[] = $node; break;
+			case 'Func': $this->funcs[] = $node; break;
 			default: {
 				trigger_error($node->type()." not allowed in scope.");
 			} break;
 		}
-		
-		echo "adding: {$node->desc()}\n";
 	}
 }

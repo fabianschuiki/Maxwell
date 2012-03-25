@@ -3,16 +3,21 @@ namespace LET;
 
 class Node
 {
+	public $scope;
+	
 	///Returns the type of this LET node, which is its class name without the LET namespace.
-	public function type()
+	public function kind()
 	{
-		return preg_replace('/^'.preg_quote(__NAMESPACE__.'\\').'/', '', get_class($this));
+		$c = get_class($this);
+		$s = strlen(__NAMESPACE__)+1;
+		$e = strpos($c, '_');
+		return substr($c, $s, $e-$s);
 	}
 	
 	///Returns a description of this LET node.
 	public function desc()
 	{
-		$str = substr(get_class($this), 4);
+		$str = $this->kind();
 		if (method_exists($this, 'details')) {
 			$str .= " {$this->details()}";
 		}

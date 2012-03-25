@@ -4,7 +4,7 @@ namespace AST;
 class Node
 {
 	///Returns the type of this AST node, which is its class name without the AST namespace.
-	public function type()
+	public function kind()
 	{
 		return preg_replace('/^'.preg_quote(__NAMESPACE__.'\\').'/', '', get_class($this));
 	}
@@ -24,4 +24,6 @@ class Node
 		}
 		return $range;
 	}
+	
+	public function nice() { return $this->kind(); }
 }

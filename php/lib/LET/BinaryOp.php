@@ -19,4 +19,6 @@ class BinaryOp extends Call
 	
 	public function callee() { return $this->op; }
 	public function args()   { return array($this->lhs, $this->rhs); }
+	
+	public function kind() { return 'Call'; }
 }

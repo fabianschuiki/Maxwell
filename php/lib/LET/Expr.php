@@ -5,20 +5,22 @@ class Expr extends Node
 {
 	static public function make(Scope $scope, \AST\Expr $expr)
 	{
-		switch ($expr->kind()) {
-			case 'CallExpr':     return new Call_AST  ($scope, $expr); break;
-			case 'IdentExpr':    return new Ident_AST ($scope, $expr); break;
-			case 'BinaryOpExpr': return new BinaryOp  ($scope, $expr); break;
-			case 'MemberExpr':   return new Member_AST($scope, $expr); break;
-			default: {
-				global $issues;
-				$issues[] = new \Issue(
-					'error',
-					"{$expr->nice()} is not allowed in an expression.",
-					$expr
-				);
-			} break;
+		//Guess the class based on the expression kind.
+		$kind  = preg_replace('/Expr$/', '', $expr->kind());
+		$class = __NAMESPACE__.'\\'.$kind.'_AST';
+		if (class_exists($class)) {
+			return new $class($scope, $expr);
+		} else {
+			echo "class \033[1m$class\033[0m not found\n";
 		}
+		
+		//No class found.
+		global $issues;
+		$issues[] = new \Issue(
+			'error',
+			"{$expr->nice()} is not allowed in an expression.",
+			$expr
+		);
 		return null;
 	}
 }

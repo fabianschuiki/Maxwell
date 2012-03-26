@@ -10,7 +10,7 @@ class Type_AST extends Type
 	public function __construct(Scope $scope, \AST\TypeStmt $node)
 	{
 		$members  = array();
-		$subscope = new Scope($scope);
+		$subscope = new Scope($scope, $this);
 		
 		foreach ($node->body->stmts as $stmt) {
 			switch ($stmt->kind()) {

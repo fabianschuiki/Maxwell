@@ -600,29 +600,14 @@ class Parser
 		$expr = $this->parseExpr($ts);
 		
 		if (!$expr || !$args) return null;
-		return new AST\CallExpr($expr, $arg_group, $args);
-		
-		/*$f = new Node;
-		$f->kind   = 'expr.call';
-		$f->args   = $this->parseCallArgs($arggrp->tokens);
-		$f->callee = $this->parseExpr($ts);
-		$f->callee->name->node = $f;
-		$f->range  = clone $f->callee->range;
-		$f->range->combine($arggrp->range);
-		return $f;*/
+		return new AST\CallExpr($expr, $args);
 	}
 	
 	private function parseCallArgs(array &$ts)
 	{
 		$args = array();
 		while (count($ts)) {
-			$sub = array();
-			while (count($ts)) {
-				$t = array_shift($ts);
-				if ($t->is('symbol', ','))
-					break;
-				$sub[] = $t;
-			}
+			$sub = static::upToSymbol(',', $ts);
 			$args[] = $this->parseCallArg($sub);
 		}
 		return $args;
@@ -630,11 +615,14 @@ class Parser
 	
 	private function parseCallArg(array &$ts)
 	{
-		$a = new Node;
-		$a->kind  = 'expr.call.arg';
-		$a->expr  = $this->parseExpr($ts);
-		$a->range = clone $a->expr->range;
-		return $a; 
+		$name = null;
+		if (count($ts) >= 2 && $ts[1]->is('symbol', ':')) {
+			$name = array_shift($ts);
+		}
+		$expr = $this->parseExpr($ts);
+		
+		if (!$expr) return null;
+		return new AST\CallArg($name, $expr);
 	}
 	
 	private function parseMemberExpr(array &$ts)

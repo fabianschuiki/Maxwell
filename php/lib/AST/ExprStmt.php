@@ -9,4 +9,10 @@ class ExprStmt extends Stmt
 	{
 		$this->expr = $expr;
 	}
+	
+	public function nice()
+	{
+		if ($this->expr) return $this->expr->nice().' statement';
+		return parent::nice();
+	}
 }

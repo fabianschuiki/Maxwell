@@ -52,11 +52,11 @@ $parser = new Parser;
 $parser->tokens = $lexer->tokens;
 $parser->issues = $issues;
 $parser->run();
-$issues->exitIfFatal();
 
 //Dump the AST.
 $dump = Dump::ast($file, $lexer, $parser);
 file_put_contents("$out.ast.html", $dump);
+$issues->exitIfFatal();
 
 //Resolve the imports.
 $importScope = new Scope;
@@ -103,11 +103,11 @@ $analyzer->importScope = $importScope;
 $analyzer->issues = $issues;
 $analyzer->nodes = $parser->nodes;
 $analyzer->run();
-$issues->exitIfFatal();
 
 //Dump the LET.
 $dump = Dump::let($file, $analyzer);
 file_put_contents("$out.let.html", $dump);
+$issues->exitIfFatal();
 
 /** STOP HERE */
 $issues->dump(); exit;

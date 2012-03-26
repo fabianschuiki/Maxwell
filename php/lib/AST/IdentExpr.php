@@ -3,11 +3,11 @@ namespace AST;
 
 class IdentExpr extends Expr
 {
-	public $ident;
+	public $name;
 	
 	public function __construct(\Token $ident)
 	{
 		assert($ident->is('identifier'));
-		$this->ident = $ident;
+		$this->name = $ident;
 	}
 }

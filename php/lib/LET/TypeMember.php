@@ -17,7 +17,7 @@ class TypeMember extends Node
 	
 	public function type()
 	{
-		return $this->asn->type->ident->text;
+		return $this->asn->type->name->text;
 	}
 	
 	public function details()

@@ -13,6 +13,6 @@ class FuncArg_AST extends FuncArg
 		$scope->add($this);
 	}
 	
-	public function type() { return $this->asn->type->ident->text; }
+	public function type() { return $this->asn->type->name->text; }
 	public function name() { return $this->asn->name->text; }
 }

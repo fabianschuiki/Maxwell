@@ -11,7 +11,7 @@ class Func_AST extends Func
 	{
 		$inputs  = array();
 		$outputs = array();
-		$subscope = new Scope($scope);
+		$subscope = new Scope($scope, $this);
 		
 		if ($thisType instanceof Type) {
 			$inputs[] = new FuncArg_Impl($subscope, $thisType, 'this');
@@ -30,6 +30,7 @@ class Func_AST extends Func
 				case 'VarStmt':  $stmts[] = new Variable($subscope, $stmt); break;
 				case 'TypeStmt': new Type_AST($subscope, $stmt); break;
 				case 'FuncStmt': new Func_AST($subscope, $stmt); break;
+				case 'ExprStmt': $stmts[] = Expr::make($subscope, $stmt->expr); break;
 				default: {
 					global $issues;
 					$issues[] = new \Issue(
@@ -40,6 +41,7 @@ class Func_AST extends Func
 				};
 			}
 		}
+		$stmts = array_filter($stmts);
 		
 		$this->asn      = $node;
 		$this->inputs   = $inputs;

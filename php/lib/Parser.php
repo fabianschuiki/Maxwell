@@ -627,13 +627,12 @@ class Parser
 	
 	private function parseMemberExpr(array &$ts)
 	{
-		$member = array_pop($ts);
-		$dot    = array_pop($ts);
-		$expr   = $this->parseExpr($ts);
+		$name = array_pop($ts);
+		$dot  = array_pop($ts);
+		$expr = $this->parseExpr($ts);
 		
-		$member->context = 'expr.member';
-		
-		return new AST\MemberExpr($expr, $dot, $member);
+		if (!$expr) return null;
+		return new AST\MemberExpr($expr, $name);
 		
 		/*$m = new Node;
 		$m->kind   = 'expr.member';

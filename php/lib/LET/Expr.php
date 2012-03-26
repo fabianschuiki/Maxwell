@@ -7,11 +7,10 @@ class Expr extends Node
 	{
 		//Guess the class based on the expression kind.
 		$kind  = preg_replace('/Expr$/', '', $expr->kind());
+		if ($kind == 'Const') $kind = 'Constant';
 		$class = __NAMESPACE__.'\\'.$kind.'_AST';
 		if (class_exists($class)) {
 			return new $class($scope, $expr);
-		} else {
-			echo "class \033[1m$class\033[0m not found\n";
 		}
 		
 		//No class found.

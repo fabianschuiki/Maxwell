@@ -27,10 +27,11 @@ class Func_AST extends Func
 		$stmts = array();
 		foreach ($node->body->stmts as $stmt) {
 			switch ($stmt->kind()) {
-				case 'VarStmt':  $stmts[] = new Variable($subscope, $stmt); break;
-				case 'TypeStmt': new Type_AST($subscope, $stmt); break;
-				case 'FuncStmt': new Func_AST($subscope, $stmt); break;
-				case 'ExprStmt': $stmts[] = Expr::make($subscope, $stmt->expr); break;
+				case 'VarStmt':    $stmts[] = new Variable($subscope, $stmt); break;
+				case 'TypeStmt':   new Type_AST($subscope, $stmt); break;
+				case 'FuncStmt':   new Func_AST($subscope, $stmt); break;
+				case 'ExprStmt':   $stmts[] = Expr::make($subscope, $stmt->expr); break;
+				case 'InlineStmt': $stmts[] = new Inline($subscope, $stmt); break;
 				default: {
 					global $issues;
 					$issues[] = new \Issue(

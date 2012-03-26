@@ -8,6 +8,14 @@ abstract class Call extends Expr
 	
 	public function details()
 	{
-		return "{$this->callee()->details()} (".implode(", ", array_map(function($arg){ return ($arg ? $arg->details() : '?'); }, $this->args())).")";
+		$callee = $this->callee();
+		$callee = ($callee ? $callee->details() : '?');
+		
+		$args = array_map(function($arg){
+			return ($arg ? $arg->details() : '?');
+		}, $this->args());
+		$args = implode(", ", $args);
+		
+		return "'$callee' ($args)";
 	}
 }

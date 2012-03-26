@@ -27,6 +27,10 @@ class Variable extends Node
 	
 	public function details()
 	{
-		return "{$this->type()->details()} {$this->name()}";
+		$str = "{$this->type()->details()} {$this->name()}";
+		if ($this->initial) {
+			$str .= " = {$this->initial->details()}";
+		}
+		return $str;
 	}
 }

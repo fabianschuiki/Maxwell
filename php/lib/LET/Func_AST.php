@@ -54,7 +54,9 @@ class Func_AST extends Func
 		$scope->add($this);
 	}
 	
-	public function name()    { return $this->asn->name->text; }
-	public function inputs()  { return $this->inputs; }
-	public function outputs() { return $this->outputs; }
+	public function name()     { return $this->asn->name->text; }
+	public function inputs()   { return $this->inputs; }
+	public function outputs()  { return $this->outputs; }
+	public function stmts()    { return $this->stmts; }
+	public function subscope() { return $this->subscope; }
 }

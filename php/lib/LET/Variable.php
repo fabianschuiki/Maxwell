@@ -4,11 +4,18 @@ namespace LET;
 class Variable extends Node
 {
 	public $asn;
+	public $initial;
 	
 	public function __construct(Scope $scope, \AST\VarStmt $node)
 	{
-		$this->asn   = $node;
-		$this->scope = $scope;
+		$initial = null;
+		if ($node->initial) {
+			$initial = Expr::make($scope, $node->initial);
+		}
+		
+		$this->asn     = $node;
+		$this->initial = $initial;
+		$this->scope   = $scope;
 		
 		$scope->add($this);
 	}

@@ -35,4 +35,25 @@ class Scope
 			} break;
 		}
 	}
+	
+	public function __call($name, array $args)
+	{
+		foreach ($this->types as $type) call_user_func_array(array($type, $name), $args);
+		foreach ($this->funcs as $func) call_user_func_array(array($func, $name), $args); 
+	}
+	
+	public function find($name)
+	{
+		if (!$name) return array();
+		assert(is_string($name));
+		
+		$filter = function($node) use ($name) { return ($node->name() == $name); };
+		$nodes = array_merge(
+			array_filter($this->types, $filter),
+			array_filter($this->funcs, $filter),
+			array_filter($this->vars,  $filter)
+		);
+		
+		return $nodes;
+	}
 }

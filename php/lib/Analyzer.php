@@ -9,11 +9,14 @@ class Analyzer
 	
 	public function run()
 	{
-		//Build the Language Entity Tree.
+		//Build the initial Language Entity Tree.
 		$scope = new LET\Scope;
 		foreach ($this->nodes as $node) {
 			$this->buildEntity($scope, $node);
 		}
+		
+		//Bind the identifiers where possible.
+		$scope->bind();
 		
 		$this->scope = $scope;
 		

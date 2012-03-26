@@ -9,4 +9,10 @@ abstract class Ident extends Expr
 	{
 		return $this->name();
 	}
+	
+	public function bind()
+	{
+		$nodes = $this->scope->find($this->name());
+		echo "binding identifier {$this->name()} -> ".count($nodes)." nodes\n";
+	}
 }

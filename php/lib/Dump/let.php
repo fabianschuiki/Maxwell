@@ -30,11 +30,21 @@
 		{
 			$str = "<div class=\"func\">";
 			if ($func->subscope) $str .= dumpScope($func->subscope);
-			$str .= "<pre>";
 			foreach ($func->stmts as $stmt) {
-				$str .= $stmt->desc()."\n";
+				$str .= "<div class=\"stmt\">{$stmt->desc()}</div>";
+				$str .= dumpNode($stmt);
 			}
-			$str .= "</pre>";
+			$str .= "</div>";
+			return $str;
+		}
+		
+		function dumpNode(LET\Node $node)
+		{
+			$str = "<div class=\"node\">{$node->details()}";
+			
+			foreach ($node->children() as $child) {
+				$str .= dumpNode($child);
+			}
 			$str .= "</div>";
 			return $str;
 		}

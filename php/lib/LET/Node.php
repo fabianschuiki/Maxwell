@@ -24,4 +24,22 @@ class Node
 		}
 		return $str;
 	}
+	
+	///Returns this node's subnodes.
+	public function children()
+	{
+		$children = array();
+		foreach ($this as $key => $value) {
+			if ($value instanceof Node) $children[] = $value;
+		}
+		return $children;
+	}
+	
+	///Handles generic function calls.
+	public function __call($name, array $args)
+	{
+		foreach ($this->children() as $child) {
+			call_user_func_array(array($child, $name), $args);
+		}
+	}
 }

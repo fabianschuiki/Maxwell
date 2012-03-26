@@ -1,58 +1,12 @@
 /** Debugging some stuff. */
 
-type Point
-{
-	var int x;
-	var int y;
-	
-	func (+) (Point b) -> (Point c)
-	{
-		c.x = (this.x + b.x);
-		c.y = (this.y + b.y);
-	}
-}
-
-func (+) (Point a, Point b) -> (Point c)
-{
-	inline { @c@ = malloc(sizeof(Point_t)); }
-	c.x = (a.x + b.x);
-	c.y = (a.y + b.y);
-}
-
-func (*) (Point a, Point b) -> (int d)
-{
-	d = (a.x * b.x) + (a.y * b.y);
-}
+type int {}
+func (+) (int a, int b) -> (int c) {}
 
 func main
 {
-	var Point p1;
-	var Point p2;
-	inline {
-		@p1@ = malloc(sizeof(Point_t));
-		@p2@ = malloc(sizeof(Point_t));
-	}
-	p1.x = 5;
-	p1.y = 10;
-	p2.x = 5;
-	p2.y = 10;
+	var int x = 5;
+	var int y = 3;
 	
-	test(p1, p2);
-	
-	var Point p3 = (p1 + p2);
-	var int dot = (p1 * p2);
-	
-	func test
-	{
-	}
-	
-	type Hello
-	{
-		var int x;
-		var int z;
-	}
-	
-	//Dump the point.
-	inline { printf("p1 + p2: %i x %i\n", (int)@p3@->x, (int)@p3@->y); }
-	inline { printf("p1 * p2: %i\n", *(int*)@dot@); }
+	var int z = (x + y);
 }

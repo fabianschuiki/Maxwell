@@ -16,5 +16,15 @@ div.scope > div.types > pre { color: #75507b; }
 div.func {
 	margin-left:  1em;
 	padding-left: 1em;
-	border-left: 2px solid #ccc;
+	border-left:  2px solid #ccc;
+}
+div.func > div.stmt {
+	white-space: pre;
+}
+
+div.node {
+	margin-left:  1em;
+	padding-left: 1em;
+	border-left:  1px solid #ccc;
+	color:        #999;
 }

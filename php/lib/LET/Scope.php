@@ -36,22 +36,41 @@ class Scope
 		}
 	}
 	
-	public function __call($name, array $args)
+	public function children()
 	{
-		foreach ($this->types as $type) call_user_func_array(array($type, $name), $args);
-		foreach ($this->funcs as $func) call_user_func_array(array($func, $name), $args); 
+		return array_merge($this->types, $this->funcs);
 	}
 	
-	public function find($name)
+	public function __call($name, array $args)
+	{
+		foreach ($this->children() as $node) {
+			call_user_func_array(array($node, $name), $args);
+		}
+	}
+	
+	///Searches the scope hierarchy (this and its parents) for nodes with the given name.
+	public function find($name, $noVars = false)
 	{
 		if (!$name) return array();
 		assert(is_string($name));
 		
 		$filter = function($node) use ($name) { return ($node->name() == $name); };
+		
+		$vars = array();
+		if (!$noVars) {
+			$vars = array_filter($this->vars, $filter);
+		}
+		
+		$outer = array();
+		if ($this->outer) {
+			$outer = $this->outer->find($name, $noVars || count($vars));
+		}
+		
 		$nodes = array_merge(
 			array_filter($this->types, $filter),
 			array_filter($this->funcs, $filter),
-			array_filter($this->vars,  $filter)
+			$vars,
+			$outer
 		);
 		
 		return $nodes;

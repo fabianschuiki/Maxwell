@@ -1,12 +1,10 @@
 /** Debugging some stuff. */
 
 type int {}
-func (+) (int a, int b) -> (int c) {}
+func test (int a) -> (int b) {}
 
 func main
 {
 	var int x = 5;
-	var int y = 3;
-	
-	var int z = (x + y);
+	test(x);
 }

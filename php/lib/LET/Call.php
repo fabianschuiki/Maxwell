@@ -18,4 +18,14 @@ abstract class Call extends Expr
 		
 		return "'$callee' ($args)";
 	}
+	
+	public function children()
+	{
+		return array_merge(array($this->callee()), $this->args());
+	}
+	
+	/*public function type()
+	{
+		$in = array();
+	}*/
 }

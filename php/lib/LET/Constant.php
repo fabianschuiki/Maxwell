@@ -4,7 +4,7 @@ namespace LET;
 abstract class Constant extends Expr
 {
 	abstract function value();
-	abstract function type();
+	abstract function dataType();
 	
 	public function details()
 	{
@@ -13,5 +13,13 @@ abstract class Constant extends Expr
 			$str = "'$str'";
 		}
 		return $str;
+	}
+	
+	public function type()
+	{
+		switch ($this->dataType()) {
+			case 'numeric': return new InferredType\Named('int'); break;
+		}
+		return null;
 	}
 }

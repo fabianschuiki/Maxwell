@@ -10,4 +10,9 @@ abstract class Type extends Node
 	{
 		return "'{$this->name()}' {".implode(", ", array_map(function($m){ return $m->details(); }, $this->members))."}";
 	}
+	
+	public function children()
+	{
+		return $this->members();
+	}
 }

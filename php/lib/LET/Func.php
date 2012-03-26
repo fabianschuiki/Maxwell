@@ -17,7 +17,11 @@ abstract class Func extends Node
 	
 	public function children()
 	{
-		$children = array_merge($this->inputs(), $this->outputs(), array($this->subscope()), $this->stmts());
-		return $children;
+		return array_merge(
+			$this->inputs(),
+			$this->outputs(),
+			$this->subscope()->children(),
+			$this->stmts()
+		);
 	}
 }

@@ -1,8 +1,9 @@
 <?php
 namespace LET;
 
-class Expr extends Node
+abstract class Expr extends Node
 {
+	///Returns a new subcalss of Expr wrapping the given expression.
 	static public function make(Scope $scope, \AST\Expr $expr)
 	{
 		//Guess the class based on the expression kind.
@@ -22,4 +23,7 @@ class Expr extends Node
 		);
 		return null;
 	}
+	
+	///Returns the inferred type of this node.
+	public function infType() { return null; }
 }

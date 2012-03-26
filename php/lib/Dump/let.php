@@ -41,7 +41,10 @@
 		function dumpNode(LET\Node $node)
 		{
 			$str = "<div class=\"node\">{$node->details()}";
-			
+			if ($node instanceof LET\Expr) {
+				$type = $node->type();
+				$str .= "<div class=\"type\">".($type ? $type->details() : '?')."</div>";
+			}
 			foreach ($node->children() as $child) {
 				$str .= dumpNode($child);
 			}

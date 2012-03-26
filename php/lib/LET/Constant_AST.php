@@ -11,6 +11,6 @@ class Constant_AST extends Constant
 		$this->scope = $scope;
 	}
 	
-	public function value() { return $this->asn->value->text; }
-	public function type()  { return $this->asn->type; }
+	public function value()    { return $this->asn->value->text; }
+	public function dataType() { return $this->asn->type; }
 }

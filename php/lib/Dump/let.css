@@ -28,3 +28,8 @@ div.node {
 	border-left:  1px solid #ccc;
 	color:        #999;
 }
+div.node > div.type {
+	margin-left: 1em;
+	display:     inline-block;
+	color:       #f57900;
+}

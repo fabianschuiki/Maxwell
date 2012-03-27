@@ -11,7 +11,10 @@ class Constant_AST extends Constant
 		$type = null;
 		switch ($node->value->type) {
 			case 'numeric': {
-				$type = new TypeExpr($scope, new Ident_Impl($scope, 'int'));
+				$types = array();
+				$types[] = new TypeExpr($scope, new Ident_Impl($scope, 'int'));
+				$types[] = new TypeExpr($scope, new Ident_Impl($scope, 'float'));
+				$type = new TypeSet($scope, $types);
 			} break;
 			case 'string': {
 			} break;

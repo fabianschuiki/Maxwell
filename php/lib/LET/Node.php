@@ -50,4 +50,7 @@ abstract class Node
 		$this->__call('reduce', func_get_args());
 		return $this;
 	}
+	
+	public function spawnConstraints(array &$cons) { foreach ($this->children() as $node) $node->spawnConstraints($cons); }
+	public function constraintTarget() { return $this; }
 }

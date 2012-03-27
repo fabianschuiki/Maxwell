@@ -33,4 +33,6 @@ abstract class Ident extends Expr
 		}
 		return null;
 	}
+	
+	public function constraintTarget() { return $this->boundTo; }
 }

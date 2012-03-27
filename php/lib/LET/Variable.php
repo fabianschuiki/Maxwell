@@ -13,9 +13,6 @@ class Variable extends Node
 		if ($node->initial) $initial = Expr::make($scope, $node->initial);
 		
 		$type = Type::make($scope, $node->type);
-		/*$type = $node->type;
-		if ($type) $type = Expr::make($scope, $node->type);
-		if ($type) $type = new TypeExpr($scope, $type);*/
 		
 		$this->asn     = $node;
 		$this->type    = $type;
@@ -28,7 +25,7 @@ class Variable extends Node
 	public function type() { return $this->type; }
 	public function name() { return $this->asn->name->text; }
 	
-	public function details()
+	public function details($short = false)
 	{
 		$type = $this->type();
 		if ($type) $type = $type->details();
@@ -37,7 +34,7 @@ class Variable extends Node
 		if ($initial) $initial = $initial->details();
 		
 		$str = "$type {$this->name()}";
-		if ($initial) $str .= " = $initial";
+		if ($initial && !$short) $str .= " = $initial";
 		
 		return $str;
 	}
@@ -47,5 +44,12 @@ class Variable extends Node
 		if ($this->type)    $this->type    = $this->type->reduce();
 		if ($this->initial) $this->initial = $this->initial->reduce();
 		return $this;
+	}
+	
+	public function spawnConstraints(array &$constraints)
+	{
+		if ($this->type() && $this->initial && $this->initial->type()) {
+			$constraints[] = new EqualTypeConstraint($this, $this->initial);
+		}
 	}
 }

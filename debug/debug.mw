@@ -1,7 +1,5 @@
 /** Debugging some stuff. */
 
-//type int {}
-
 type Point
 {
 	var int x;
@@ -17,8 +15,9 @@ func test (int a) -> (int b)
 func main
 {
 	var int x = 5;
+	var int y = x;
 	var (int, int) p = (1, 2);
 	(a: 25, b: 64.97e47);
 	var z = x;
-	test(x);
+	var int res = test(x);
 }

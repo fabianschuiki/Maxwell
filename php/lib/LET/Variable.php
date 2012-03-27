@@ -14,8 +14,13 @@ class Variable extends Node
 			$initial = Expr::make($scope, $node->initial);
 		}
 		
+		$type = Expr::make($scope, $node->type);
+		if ($type) {
+			$type = new TypeExpr($scope, $type);
+		}
+		
 		$this->asn     = $node;
-		$this->type    = Expr::make($scope, $node->type);
+		$this->type    = $type;
 		$this->initial = $initial;
 		$this->scope   = $scope;
 		

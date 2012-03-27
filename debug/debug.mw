@@ -7,5 +7,6 @@ func main
 {
 	var int x = 5;
 	var (int, int) p = (1, 2);
+	(a: 25, b: 64);
 	test(x);
 }

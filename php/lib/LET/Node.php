@@ -1,7 +1,7 @@
 <?php
 namespace LET;
 
-class Node
+abstract class Node
 {
 	public $scope;
 	
@@ -24,6 +24,7 @@ class Node
 		}
 		return $str;
 	}
+	abstract function details();
 	
 	///Returns this node's subnodes.
 	public function children()

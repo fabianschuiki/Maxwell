@@ -24,4 +24,18 @@ abstract class Func extends Node
 			$this->stmts()
 		);
 	}
+	
+	public function type()
+	{
+		return new FuncType($this->scope, $this->argsType($this->inputs()), $this->argsType($this->outputs()));
+	}
+	
+	private function argsType(array $args)
+	{
+		$fields = array();
+		foreach ($args as $arg) {
+			$fields[$arg->name()] = $arg->type();
+		}
+		return new TypeTuple($this->scope, $fields);
+	}
 }

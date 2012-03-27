@@ -18,7 +18,8 @@ abstract class Constant extends Expr
 	public function type()
 	{
 		switch ($this->dataType()) {
-			case 'numeric': return new InferredType\Named('int'); break;
+			//TODO: use the actual built-in types here.
+			case 'numeric': return new TypeExpr($this->scope, new Ident_Impl($this->scope, 'int')); break;
 		}
 		return null;
 	}

@@ -64,7 +64,7 @@ class Analyzer
 	private function buildEntity(LET\Scope $scope, AST\Node $node)
 	{
 		switch ($node->kind()) {
-			case 'TypeStmt': new LET\Type_AST($scope, $node); break;
+			case 'TypeStmt': new LET\ConcreteType_AST($scope, $node); break;
 			case 'FuncStmt': new LET\Func_AST($scope, $node); break;
 			default: {
 				global $issues;

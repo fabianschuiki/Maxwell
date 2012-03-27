@@ -25,7 +25,12 @@ abstract class Ident extends Expr
 	
 	public function type()
 	{
-		if ($this->boundTo) return $this->boundTo->type();
+		if ($this->boundTo instanceof Type) {
+			return $this->boundTo;
+		}
+		if (method_exists($this->boundTo, 'type')) {
+			return $this->boundTo->type();
+		}
 		return null;
 	}
 }

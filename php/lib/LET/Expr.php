@@ -6,9 +6,13 @@ abstract class Expr extends Node
 	///Returns a new subcalss of Expr wrapping the given expression.
 	static public function make(Scope $scope, \AST\Expr $expr)
 	{
+		$classMapping = array(
+			'Const' => 'Constant'
+		);
+		
 		//Guess the class based on the expression kind.
 		$kind  = preg_replace('/Expr$/', '', $expr->kind());
-		if ($kind == 'Const') $kind = 'Constant';
+		if (isset($classMapping[$kind])) $kind = $classMapping[$kind];
 		$class = __NAMESPACE__.'\\'.$kind.'_AST';
 		if (class_exists($class)) {
 			return new $class($scope, $expr);

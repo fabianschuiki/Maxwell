@@ -508,20 +508,37 @@ class Parser
 		$exprs = array();
 		while (count($ts)) {
 			$sub  = static::upToSymbol(',', $ts);
+			
+			$name = null;
+			if (count($sub) > 2 && $sub[1]->is('symbol', ':')) {
+				$name = array_shift($sub);
+				$col  = array_shift($sub);
+				if (!$name->is('identifier')) {
+					$this->issues[] = new Issue(
+						'error',
+						"Tuple field name has to be an identifier.",
+						$name
+					);
+					return null;
+				}
+				$name = $name->text;
+			}
+			
 			$expr = $this->parseExpr($sub);
-			if ($expr) $exprs[] = $expr;
+			
+			if ($expr) {
+				if ($name) {
+					$exprs[$name] = $expr;
+				} else {
+					$exprs[] = $expr;
+				}
+			}
 		}
 		
-		if (count($exprs) == 1) {
-			return $exprs[0];
-		}
+		//Resolve tuples with only one unnamed field immediately.
+		if (count($exprs) == 1 && isset($exprs[0])) return $exprs[0];
 		
 		return new AST\TupleExpr($exprs);
-		/*$t = new Node;
-		$t->kind  = 'expr.tuple';
-		$t->exprs = $exprs;
-		$t->range = clone $grp->range;
-		return $t;*/
 	}
 	
 	private function parseUnOpExpr($operator, array &$ts)

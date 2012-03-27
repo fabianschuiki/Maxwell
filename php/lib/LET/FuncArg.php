@@ -8,6 +8,9 @@ abstract class FuncArg extends Node
 	
 	public function details()
 	{
-		return "{$this->type()} {$this->name()}";
+		$type = $this->type();
+		$type = ($type ? $type->details() : '?');
+		
+		return "$type {$this->name()}";
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 namespace LET;
 
-class Type_AST extends Type
+class ConcreteType_AST extends ConcreteType
 {
 	public $asn;
 	public $members;

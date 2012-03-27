@@ -9,8 +9,8 @@ class Tuple_AST extends Expr
 	public function __construct(Scope $scope, \AST\TupleExpr $node)
 	{
 		$exprs = array();
-		foreach ($node->exprs as $expr) {
-			$exprs[] = Expr::make($scope, $expr);
+		foreach ($node->exprs as $name => $expr) {
+			$exprs[$name] = Expr::make($scope, $expr);
 		}
 		$exprs = array_filter($exprs);
 		
@@ -19,13 +19,27 @@ class Tuple_AST extends Expr
 		$this->scope = $scope;
 	}
 	
-	public function children() { return $this->exprs; }
-	
 	public function details()
 	{
-		$exprs = array_map(function($expr){ return $expr->details(); }, $this->exprs);
+		$exprs = array();
+		foreach ($this->exprs as $name => $expr) {
+			$str = $expr->details();
+			if (is_string($name)) $str = "$name: $str";
+			$exprs[] = $str;
+		}
 		$exprs = implode(', ', $exprs);
 		
 		return "($exprs)";
+	}
+	
+	public function children() { return array_values($this->exprs); }
+	
+	public function type()
+	{
+		$fields = array();
+		foreach ($this->exprs as $name => $expr) {
+			$fields[$name] = $expr->type();
+		}
+		return new TypeTuple($this->scope, $fields);
 	}
 }

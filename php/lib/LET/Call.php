@@ -24,8 +24,15 @@ abstract class Call extends Expr
 		return array_merge(array($this->callee()), $this->args());
 	}
 	
-	/*public function type()
+	public function type()
 	{
-		$in = array();
-	}*/
+		$type = null;
+		$callee = $this->callee();
+		if ($callee) {
+			$func = $callee->type();
+			if ($func instanceof FuncType) $type = $func->out();
+		}
+		
+		return $type;
+	}
 }

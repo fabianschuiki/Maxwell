@@ -26,10 +26,10 @@ class Scope
 		
 		//Add to node to the appropriate container.
 		switch ($node->kind()) {
-			case 'Type':     $this->types[] = $node; break;
-			case 'Func':     $this->funcs[] = $node; break;
-			case 'FuncArg':  $this->vars[]  = $node; break;
-			case 'Variable': $this->vars[]  = $node; break;
+			case 'ConcreteType': $this->types[] = $node; break;
+			case 'Func':         $this->funcs[] = $node; break;
+			case 'FuncArg':      $this->vars[]  = $node; break;
+			case 'Variable':     $this->vars[]  = $node; break;
 			default: {
 				trigger_error($node->kind()." not allowed in scope.");
 			} break;

@@ -27,5 +27,6 @@ class FuncType extends Type
 		return "$in -> $out";
 	}
 	
-	public function children() { return array($this->in, $this->out); }
+	public function children()   { return array($this->in, $this->out); }
+	public function isConcrete() { return $this->in->isConcrete() && $this->out->isConcrete(); }
 }

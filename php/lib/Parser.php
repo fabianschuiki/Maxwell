@@ -16,13 +16,15 @@ class Parser
 		}
 	}
 	
-	static private function upToSymbol($symbol, array &$ts)
+	static private function upToSymbol($symbol, array &$ts, $consumeSymbol = true)
 	{
 		$sub = array();
 		while (count($ts)) {
 			$t = array_shift($ts);
-			if ($t->is('symbol', $symbol))
+			if ($t->is('symbol', $symbol)) {
+				if (!$consumeSymbol) array_unshift($ts, $t);
 				break;
+			}
 			$sub[] = $t;
 		}
 		return $sub;
@@ -426,7 +428,7 @@ class Parser
 			return $this->parseTupleExpr($ts[0], $ts[0]->tokens);
 		}
 		
-		if (count($ts) > 1) {
+		if (count($ts) >= 2) {
 			foreach (Language::$unaryOperators as $ops) {
 				if (in_array($ts[0]->text, $ops)) {
 					return $this->parseUnOpExpr(array_shift($ts), $ts);
@@ -434,10 +436,12 @@ class Parser
 			}
 		}
 		
-		foreach (Language::$binaryOperators as $operators) {
-			for ($i = 0; $i < count($ts); $i++) {
-				if ($ts[$i]->is('symbol') && in_array($ts[$i]->text, $operators)) {
-					return $this->parseBinOpExpr($ts[$i], array_slice($ts, 0, $i), array_slice($ts, $i+1));
+		if (count($ts) >= 3) {
+			foreach (Language::$binaryOperators as $operators) {
+				for ($i = 0; $i < count($ts); $i++) {
+					if ($ts[$i]->is('symbol') && in_array($ts[$i]->text, $operators)) {
+						return $this->parseBinOpExpr($ts[$i], array_slice($ts, 0, $i), array_slice($ts, $i+1));
+					}
 				}
 			}
 		}
@@ -449,49 +453,18 @@ class Parser
 			return $this->parseMemberExpr($ts);
 		}
 		
-		/*if (count($ts) == 2 && $ts[1]->is('identifier')) {
-			return $this->parseVarExpr($ts);
-		}*/
-				
-		$e = null;
-		$range = clone $ts[0]->range;
-		foreach ($ts as $t) {
-			$range->combine($t->range);
+		if (count($ts) == 1) {
+			if ($ts[0]->is('identifier')) return new AST\IdentExpr(array_shift($ts));
+			if ($ts[0]->is('numeric'))    return new AST\ConstExpr('numeric', array_shift($ts));
+			if ($ts[0]->is('string'))     return new AST\ConstExpr('string', array_shift($ts));
 		}
 		
-		if ($ts[0]->is('identifier')) {
-			$e = $this->parseIdentExpr(array_shift($ts), $ts);
-		}
-		else if ($ts[0]->is('numeric')) {
-			$e = new AST\ConstExpr('numeric', array_shift($ts));
-			/*$e = new Node;
-			$e->kind  = 'expr.const.numeric';
-			$e->value = array_shift($ts);
-			$e->range = $e->value->range;
-			$e->value->node = $e;*/
-		}
-		else if ($ts[0]->is('string')) {
-			$e = new AST\ConstExpr('string', array_shift($ts));
-			/*$e = new Node;
-			$e->kind  = 'expr.const.string';
-			$e->value = array_shift($ts);
-			$e->range = $e->value->range;
-			$e->value->node = $e;*/
-		}
-		
-		if ($e && count($ts) > 0) {
-			$range = clone $ts[0]->range;
-			foreach ($ts as $t) {
-				$range->combine($t->range);
-			}
-			$this->issues[] = new Issue(
-				'warning',
-				"garbage in expression",
-				$range,
-				(isset($e->range) ? array($e->range) : null)
-			);
-		}
-		return $e;
+		$this->issues[] = new Issue(
+			'error',
+			"Unable to parse expression.",
+			$ts
+		);
+		return null;
 	}
 	
 	private function parseVarStmt(Token $keyword, array &$ts)
@@ -500,15 +473,16 @@ class Parser
 		if (count($sub) < 2) {
 			$this->issues[] = new Issue(
 				'error',
-				"Variable Definition requires at least a type and name.",
+				"Variable Definition requires at least a type and a name.",
 				$sub,
 				$keyword
 			);
 			return null;
 		}
 		
-		$type = $this->parseType($sub);
-		$name = array_shift($sub);
+		$def = static::upToSymbol('=', $sub, false);
+		$name = array_pop($def);
+		$type = $this->parseExpr($def);
 		
 		$initial = null;
 		if (count($sub) > 0) {
@@ -533,43 +507,29 @@ class Parser
 	{
 		$exprs = array();
 		while (count($ts)) {
-			$sub = array();
-			while (count($ts)) {
-				$t = array_shift($ts);
-				if ($t->is('symbol', ','))
-					break;
-				$sub[] = $t;
-			}
-			$exprs[] = $this->parseExpr($sub);
+			$sub  = static::upToSymbol(',', $ts);
+			$expr = $this->parseExpr($sub);
+			if ($expr) $exprs[] = $expr;
 		}
 		
 		if (count($exprs) == 1) {
 			return $exprs[0];
 		}
 		
-		$t = new Node;
+		return new AST\TupleExpr($exprs);
+		/*$t = new Node;
 		$t->kind  = 'expr.tuple';
 		$t->exprs = $exprs;
 		$t->range = clone $grp->range;
-		return $t;
+		return $t;*/
 	}
 	
 	private function parseUnOpExpr($operator, array &$ts)
 	{
 		$expr = $this->parseExpr($ts);
 		
-		$operator->context = 'expr.op.unary';
-		
 		if (!$expr) return null;
 		return new AST\UnaryOpExpr($operator, $expr);
-		
-		/*$o = new Node;
-		$o->kind  = 'expr.op.unary';
-		$o->op    = $operator;
-		$o->expr  = $this->parseExpr($ts);
-		$o->range = $operator->range;
-		$o->range->combine($o->expr->range);
-		return $o;*/
 	}
 	
 	private function parseBinOpExpr($operator, array &$lts, array &$rts)
@@ -577,20 +537,8 @@ class Parser
 		$lhs = $this->parseExpr($lts);
 		$rhs = $this->parseExpr($rts);
 		
-		$operator->context = 'expr.op.binary';
-		
 		if (!$lhs || !$rhs) return null;
 		return new AST\BinaryOpExpr($operator, $lhs, $rhs);
-		
-		/*$o = new Node;
-		$o->kind  = 'expr.op.binary';
-		$o->op    = $operator;
-		$o->lhs   = $this->parseExpr($lts);
-		$o->rhs   = $this->parseExpr($rts);
-		$o->range = clone $operator->range;
-		if ($o->lhs) $o->range->combine($o->lhs->range);
-		if ($o->rhs) $o->range->combine($o->rhs->range);
-		return $o;*/
 	}
 	
 	private function parseCallExpr(array &$ts)
@@ -633,15 +581,6 @@ class Parser
 		
 		if (!$expr) return null;
 		return new AST\MemberExpr($expr, $name);
-		
-		/*$m = new Node;
-		$m->kind   = 'expr.member';
-		$m->member = $member;
-		$m->expr   = $this->parseExpr($ts);
-		$m->range  = clone $member->range;
-		$m->range->combine($m->expr->range);
-		$member->node = $m;
-		return $m;*/
 	}
 	
 	private function parseIdentExpr($ident, array &$ts)

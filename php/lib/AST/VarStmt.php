@@ -8,7 +8,7 @@ class VarStmt extends Stmt
 	public $name;
 	public $initial;
 	
-	public function __construct(\Token $keyword, IdentExpr $type, \Token $name, $initial = null)
+	public function __construct(\Token $keyword, Expr $type, \Token $name, $initial = null)
 	{
 		assert(!$initial || $initial instanceof Expr);
 		

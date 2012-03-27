@@ -14,11 +14,12 @@ class Analyzer
 		foreach ($this->nodes as $node) {
 			$this->buildEntity($scope, $node);
 		}
+		$this->scope = $scope;
+		if ($this->issues->isFatal()) return;
 		
 		//Bind the identifiers where possible.
 		$scope->bind();
 		
-		$this->scope = $scope;
 		
 		/*foreach ($this->nodes as $n) $this->reduce($n);
 		if ($this->issues->isFatal()) return;

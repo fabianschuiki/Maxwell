@@ -15,7 +15,7 @@ class Variable extends Node
 		}
 		
 		$this->asn     = $node;
-		$this->type    = new InferredType\Named($node->type->name->text);
+		$this->type    = Expr::make($scope, $node->type);
 		$this->initial = $initial;
 		$this->scope   = $scope;
 		
@@ -27,9 +27,15 @@ class Variable extends Node
 	
 	public function details()
 	{
-		$str = "{$this->type()->details()} {$this->name()}";
-		if ($this->initial) {
-			$str .= " = {$this->initial->details()}";
+		$type = $this->type();
+		if ($type) $type = $type->details();
+		
+		$initial = $this->initial;
+		if ($initial) $initial = $initial->details();
+		
+		$str = "$type {$this->name()}";
+		if ($initial) {
+			$str .= " = $initial";
 		}
 		return $str;
 	}

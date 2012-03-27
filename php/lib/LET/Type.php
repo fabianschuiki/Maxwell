@@ -15,4 +15,9 @@ abstract class Type extends Node
 	{
 		return $this->members();
 	}
+	
+	public function type()
+	{
+		return new InferredType\Named($this->name());
+	}
 }

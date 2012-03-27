@@ -6,6 +6,25 @@ class Range
 	public $start;
 	public $end;
 	
+	static public function union($ranges)
+	{
+		$range = null;
+		$args = (is_array($ranges) ? $ranges : func_get_args());
+		foreach ($args as $r) {
+			if (!$r instanceof Range && is_object($r) && method_exists($r, 'range')) {
+				$r = $r->range();
+			}
+			if ($r instanceof Range) {
+				if (!$range) {
+					$range = $r;
+				} else {
+					$range->combine($r);
+				}
+			}
+		}
+		return $range;
+	}
+	
 	static public function builtin()
 	{
 		$r = new Range;

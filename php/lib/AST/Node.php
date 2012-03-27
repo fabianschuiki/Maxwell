@@ -11,7 +11,7 @@ class Node
 	
 	public function range()
 	{
-		$range = null;
+		/*$range = null;
 		foreach ($this as $key => $value) {
 			if (is_object($value) && method_exists($value, 'range')) {
 				$r = $value->range();
@@ -22,7 +22,8 @@ class Node
 				}
 			}
 		}
-		return $range;
+		return $range;*/
+		return \Range::union(get_object_vars($this));
 	}
 	
 	public function nice() { return $this->kind(); }

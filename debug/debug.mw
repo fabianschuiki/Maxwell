@@ -6,5 +6,6 @@ func test (int a) -> (int b) {}
 func main
 {
 	var int x = 5;
+	var (int, int) p = (1, 2);
 	test(x);
 }

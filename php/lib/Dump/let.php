@@ -48,6 +48,7 @@
 				$str .= "<div class=\"type $class\">".($type ? $type->details() : '?')."</div>";
 			}
 			foreach ($node->children() as $child) {
+				if ($child instanceof LET\ConcreteType) continue;
 				$str .= dumpNode($child);
 			}
 			$str .= "</div>";

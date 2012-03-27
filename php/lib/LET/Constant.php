@@ -14,13 +14,4 @@ abstract class Constant extends Expr
 		}
 		return $str;
 	}
-	
-	/*public function type()
-	{
-		switch ($this->dataType()) {
-			//TODO: use the actual built-in types here.
-			case 'numeric': return new TypeExpr($this->scope, new Ident_Impl($this->scope, 'int')); break;
-		}
-		return null;
-	}*/
 }

@@ -19,6 +19,7 @@ class Analyzer
 		
 		//Bind the identifiers where possible.
 		$scope->bind();
+		$scope->reduce();
 		
 		
 		/*foreach ($this->nodes as $n) $this->reduce($n);

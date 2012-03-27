@@ -17,4 +17,13 @@ class TypeExpr extends Type
 	{
 		return ($this->expr ? $this->expr->details() : '?');
 	}
+	
+	public function reduce()
+	{
+		if ($this->expr instanceof Ident) {
+			$type = $this->expr->type();
+			if ($type instanceof ConcreteType) return $type;
+		}
+		return $this;
+	}
 }

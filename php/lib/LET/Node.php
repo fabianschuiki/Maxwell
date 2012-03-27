@@ -43,4 +43,11 @@ abstract class Node
 			call_user_func_array(array($child, $name), $args);
 		}
 	}
+	
+	///The default implementation simply calls reduce() on all children() and returns the node itself. 
+	public function reduce()
+	{
+		$this->__call('reduce', func_get_args());
+		return $this;
+	}
 }

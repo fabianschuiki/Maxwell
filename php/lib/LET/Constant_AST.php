@@ -25,4 +25,10 @@ class Constant_AST extends Constant
 	public function value()    { return $this->asn->value->text; }
 	public function dataType() { return $this->asn->value->type; }
 	public function type()     { return $this->type; }
+	
+	public function reduce()
+	{
+		if ($this->type) $this->type = $this->type->reduce();
+		return $this;
+	}
 }

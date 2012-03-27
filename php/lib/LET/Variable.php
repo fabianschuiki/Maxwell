@@ -44,4 +44,11 @@ class Variable extends Node
 		}
 		return $str;
 	}
+	
+	public function reduce()
+	{
+		if ($this->type) $this->type = $this->type->reduce();
+		$this->initial->reduce();
+		return $this;
+	}
 }

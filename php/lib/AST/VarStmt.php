@@ -8,9 +8,10 @@ class VarStmt extends Stmt
 	public $name;
 	public $initial;
 	
-	public function __construct(\Token $keyword, Expr $type, \Token $name, $initial = null)
+	public function __construct(\Token $keyword, $type, \Token $name, $initial = null)
 	{
 		assert(!$initial || $initial instanceof Expr);
+		assert(!$type    || $type    instanceof Expr);
 		
 		$this->keyword = $keyword;
 		$this->type    = $type;

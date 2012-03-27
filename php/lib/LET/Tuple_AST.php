@@ -38,7 +38,9 @@ class Tuple_AST extends Expr
 	{
 		$fields = array();
 		foreach ($this->exprs as $name => $expr) {
-			$fields[$name] = $expr->type();
+			$type = $expr->type();
+			if (!$type) return null;
+			$fields[$name] = $type;
 		}
 		return new TypeTuple($this->scope, $fields);
 	}

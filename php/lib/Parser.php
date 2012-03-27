@@ -470,10 +470,10 @@ class Parser
 	private function parseVarStmt(Token $keyword, array &$ts)
 	{
 		$sub = static::upToSymbol(';', $ts);
-		if (count($sub) < 2) {
+		if (count($sub) < 1) {
 			$this->issues[] = new Issue(
 				'error',
-				"Variable Definition requires at least a type and a name.",
+				"Variable Definition requires at least a name.",
 				$sub,
 				$keyword
 			);
@@ -482,7 +482,9 @@ class Parser
 		
 		$def = static::upToSymbol('=', $sub, false);
 		$name = array_pop($def);
-		$type = $this->parseExpr($def);
+		
+		$type = null;
+		if (count($def)) $type = $this->parseExpr($def);
 		
 		$initial = null;
 		if (count($sub) > 0) {
@@ -499,7 +501,7 @@ class Parser
 			$initial = $this->parseExpr($sub);
 		}
 		
-		if (!$name || !$type) return null;
+		if (!$name) return null;
 		return new AST\VarStmt($keyword, $type, $name, $initial);
 	}
 	

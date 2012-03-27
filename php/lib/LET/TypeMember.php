@@ -8,8 +8,7 @@ class TypeMember extends Node
 	
 	public function __construct(Scope $scope, \AST\VarStmt $node)
 	{
-		$type = Expr::make($scope, $node->type);
-		if ($type) $type = new TypeExpr($scope, $type);
+		$type = Type::make($scope, $node->type);
 		
 		$this->asn  = $node;
 		$this->type = $type;

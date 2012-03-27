@@ -52,7 +52,7 @@
 			$str .= "<div class=\"kind\">{$node->kind()}</div>";
 			if (method_exists($node, 'type')) {
 				$type = $node->type();
-				$class = ($type->isSpecific() ? 'specific' : ''); 
+				$class = ($type instanceof LET\Type && $type->isSpecific() ? 'specific' : ''); 
 				$str .= "<div class=\"type $class\">".($type ? $type->details() : '?')."</div>";
 			}
 			foreach ($node->children() as $child) {

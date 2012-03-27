@@ -15,9 +15,14 @@ abstract class ConcreteType extends Type
 		return true;
 	}
 	
+	public function desc()
+	{
+		return parent::desc()." {".implode(", ", array_map(function($m){ return $m->details(); }, $this->members))."}";
+	}
+	
 	public function details()
 	{
-		return "'{$this->name()}' {".implode(", ", array_map(function($m){ return $m->details(); }, $this->members))."}";
+		return "'{$this->name()}'";
 	}
 	
 	public function children()

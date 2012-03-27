@@ -12,8 +12,10 @@ class Variable extends Node
 		$initial = null;
 		if ($node->initial) $initial = Expr::make($scope, $node->initial);
 		
-		$type = Expr::make($scope, $node->type);
-		if ($type) $type = new TypeExpr($scope, $type);
+		$type = Type::make($scope, $node->type);
+		/*$type = $node->type;
+		if ($type) $type = Expr::make($scope, $node->type);
+		if ($type) $type = new TypeExpr($scope, $type);*/
 		
 		$this->asn     = $node;
 		$this->type    = $type;
@@ -42,8 +44,8 @@ class Variable extends Node
 	
 	public function reduce()
 	{
-		if ($this->type) $this->type = $this->type->reduce();
-		$this->initial->reduce();
+		if ($this->type)    $this->type    = $this->type->reduce();
+		if ($this->initial) $this->initial = $this->initial->reduce();
 		return $this;
 	}
 }

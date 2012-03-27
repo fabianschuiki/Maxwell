@@ -9,8 +9,11 @@ class Analyzer
 	
 	public function run()
 	{
+		//Prepare the builtin types and functions.
+		$builtin = $this->buildBuiltinScope();
+		
 		//Build the initial Language Entity Tree.
-		$scope = new LET\Scope;
+		$scope = new LET\Scope($builtin);
 		foreach ($this->nodes as $node) {
 			$this->buildEntity($scope, $node);
 		}
@@ -60,6 +63,18 @@ class Analyzer
 		
 		foreach ($this->nodes as $n) $this->generateCName($n);
 		if ($this->issues->isFatal()) return;*/
+	}
+	
+	private function buildBuiltinScope()
+	{
+		$scope = new LET\Scope;
+		
+		$primitives = array('int', 'float');
+		foreach ($primitives as $primitive) {
+			new LET\PrimitiveBuiltinType($scope, $primitive);
+		}
+		
+		return $scope;
 	}
 	
 	private function buildEntity(LET\Scope $scope, AST\Node $node)

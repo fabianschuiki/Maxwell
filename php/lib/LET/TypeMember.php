@@ -6,10 +6,13 @@ class TypeMember extends Node
 	public $asn;
 	public $type;
 	
-	public function __construct(\AST\VarStmt $node)
+	public function __construct(Scope $scope, \AST\VarStmt $node)
 	{
+		$type = Expr::make($scope, $node->type);
+		if ($type) $type = new TypeExpr($scope, $type);
+		
 		$this->asn  = $node;
-		$this->type = new InferredType\Named($node->type->name->text);
+		$this->type = $type;
 	}
 	
 	public function type() { return $this->type; }
@@ -17,6 +20,15 @@ class TypeMember extends Node
 	
 	public function details()
 	{
-		return "{$this->type()->details()} {$this->name()}";
+		$type = $this->type;
+		$type = ($type ? $type->details() : '?');
+		
+		return "$type {$this->name()}";
+	}
+	
+	public function reduce()
+	{
+		if ($this->type) $this->type = $this->type->reduce();
+		return $this;
 	}
 }

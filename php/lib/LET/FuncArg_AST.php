@@ -20,4 +20,10 @@ class FuncArg_AST extends FuncArg
 	
 	public function type() { return $this->type; }
 	public function name() { return $this->asn->name->text; }
+	
+	public function reduce()
+	{
+		if ($this->type) $this->type = $this->type->reduce();
+		return $this;
+	}
 }

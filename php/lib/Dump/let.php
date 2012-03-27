@@ -18,6 +18,7 @@
 				$str .= "<div class=\"$field\">";
 				foreach ($scope->$field as $entity) {
 					$str .= "<pre>".$entity->desc()."</pre>";
+					if ($field == 'types') $str .= dumpType($entity);
 					if ($field == 'funcs') $str .= dumpFunc($entity);
 				}
 				$str .= "</div>";
@@ -26,30 +27,37 @@
 			return $str;
 		}
 		
-		function dumpFunc(LET\Func $func)
+		function dumpType(LET\ConcreteType $type)
 		{
-			$str = "<div class=\"func\">";
-			if ($func->subscope) $str .= dumpScope($func->subscope);
-			foreach ($func->stmts as $stmt) {
-				$str .= "<div class=\"stmt\">{$stmt->desc()}</div>";
-				$str .= dumpNode($stmt);
-			}
+			$str = "<div class=\"type indent\">";
+			if ($type->subscope) $str .= dumpScope($type->subscope);
+			foreach ($type->members as $member) $str .= dumpNode($member);
 			$str .= "</div>";
 			return $str;
 		}
 		
-		function dumpNode(LET\Node $node)
+		function dumpFunc(LET\Func $func)
 		{
-			$str = "<div class=\"node\">{$node->details()}";
+			$str = "<div class=\"func indent\">";
+			if ($func->subscope) $str .= dumpScope($func->subscope);
+			foreach ($func->stmts as $stmt) $str .= dumpNode($stmt);
+			$str .= "</div>";
+			return $str;
+		}
+		
+		function dumpNode(LET\Node $node, $root = true)
+		{
+			$details = ($root ? $node->desc() : $node->details());
+			$str = "<div class=\"node\">$details";
 			$str .= "<div class=\"kind\">{$node->kind()}</div>";
-			if ($node instanceof LET\Expr) {
+			if (method_exists($node, 'type')) {
 				$type = $node->type();
 				$class = ($type instanceof LET\ConcreteType ? 'concrete' : ''); 
 				$str .= "<div class=\"type $class\">".($type ? $type->details() : '?')."</div>";
 			}
 			foreach ($node->children() as $child) {
 				if ($child instanceof LET\ConcreteType) continue;
-				$str .= dumpNode($child);
+				$str .= dumpNode($child, false);
 			}
 			$str .= "</div>";
 			return $str;

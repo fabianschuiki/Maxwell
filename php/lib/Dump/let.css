@@ -7,17 +7,20 @@ pre {
 }
 
 div.scope > div {
-	margin-bottom: 0.5em;
+	margin-bottom: 1em;
 }
 
 div.scope > div.funcs > pre { font-weight: bold; /*color: #3465a4;*/ }
 div.scope > div.types > pre { font-weight: bold; /*color: #75507b;*/ }
 
+div.indent {
+	margin-left:  1em;
+	padding-left: 1em;
+	border-left:  2px solid #ccc;
+}
+
 div.func {
-	margin-left:   1em;
-	padding-left:  1em;
-	border-left:   2px solid #ccc;
-	margin-bottom: 0.5em;
+	margin-bottom: 1em;
 }
 div.func > div.stmt {
 	white-space: pre;

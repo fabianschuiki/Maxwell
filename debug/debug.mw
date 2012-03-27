@@ -1,7 +1,18 @@
 /** Debugging some stuff. */
 
 type int {}
-func test (int a) -> (int b) {}
+
+type Point
+{
+	var int x;
+	var int y;
+}
+
+func test (int a) -> (int b)
+{
+	var int x = a;
+	var int y = b;
+}
 
 func main
 {

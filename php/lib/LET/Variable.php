@@ -10,14 +10,10 @@ class Variable extends Node
 	public function __construct(Scope $scope, \AST\VarStmt $node)
 	{
 		$initial = null;
-		if ($node->initial) {
-			$initial = Expr::make($scope, $node->initial);
-		}
+		if ($node->initial) $initial = Expr::make($scope, $node->initial);
 		
 		$type = Expr::make($scope, $node->type);
-		if ($type) {
-			$type = new TypeExpr($scope, $type);
-		}
+		if ($type) $type = new TypeExpr($scope, $type);
 		
 		$this->asn     = $node;
 		$this->type    = $type;
@@ -39,9 +35,8 @@ class Variable extends Node
 		if ($initial) $initial = $initial->details();
 		
 		$str = "$type {$this->name()}";
-		if ($initial) {
-			$str .= " = $initial";
-		}
+		if ($initial) $str .= " = $initial";
+		
 		return $str;
 	}
 	

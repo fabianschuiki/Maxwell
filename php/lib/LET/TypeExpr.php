@@ -22,7 +22,7 @@ class TypeExpr extends Type
 	{
 		if (method_exists($this->expr, 'type')) {
 			$type = $this->expr->type();
-			if ($type->isConcrete()) return $type;
+			if ($type->isSpecific()) return $type;
 		}
 		return $this;
 	}

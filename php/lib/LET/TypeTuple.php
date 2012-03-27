@@ -26,10 +26,10 @@ class TypeTuple extends Type
 	
 	public function children() { return array_values($this->fields); }
 	
-	public function isConcrete()
+	public function isSpecific()
 	{
 		foreach ($this->fields as $name => $field) {
-			if (!$field->isConcrete()) return false;
+			if (!$field->isSpecific()) return false;
 		}
 		return true;
 	}

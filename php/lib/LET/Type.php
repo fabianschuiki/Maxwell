@@ -3,5 +3,5 @@ namespace LET;
 
 abstract class Type extends Node
 {
-	public function isConcrete() { return false; }
+	public function isSpecific() { return false; }
 }

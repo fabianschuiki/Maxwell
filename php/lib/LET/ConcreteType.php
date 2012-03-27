@@ -6,7 +6,14 @@ abstract class ConcreteType extends Type
 	abstract function name();
 	abstract function members();
 	
-	public function isConcrete() { return true; }
+	public function isSpecific()
+	{
+		foreach ($this->members() as $member) {
+			$type = $member->type();
+			if (!$type || !$type->isSpecific()) return false;
+		}
+		return true;
+	}
 	
 	public function details()
 	{

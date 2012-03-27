@@ -41,6 +41,6 @@ div.node > div.type {
 	display:     inline-block;
 	color:       #f57900;
 }
-div.node > div.type.concrete {
+div.node > div.type.specific {
 	color: #4e9a06;
 }

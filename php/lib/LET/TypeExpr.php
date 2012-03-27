@@ -20,9 +20,9 @@ class TypeExpr extends Type
 	
 	public function reduce()
 	{
-		if ($this->expr instanceof Ident) {
+		if (method_exists($this->expr, 'type')) {
 			$type = $this->expr->type();
-			if ($type instanceof ConcreteType) return $type;
+			if ($type->isConcrete()) return $type;
 		}
 		return $this;
 	}

@@ -25,4 +25,12 @@ class TypeTuple extends Type
 	}
 	
 	public function children() { return array_values($this->fields); }
+	
+	public function isConcrete()
+	{
+		foreach ($this->fields as $name => $field) {
+			if (!$field->isConcrete()) return false;
+		}
+		return true;
+	}
 }

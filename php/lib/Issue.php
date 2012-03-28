@@ -35,6 +35,7 @@ class Issue
 			if (!$r instanceof Range && method_exists($r, 'range')) $r = $r->range();
 			return $r;
 		}, $marked);
+		$mb = count($marked);
 		$marked = array_filter($marked, function($r){ return $r instanceof Range; });
 		
 		$this->range   = $range;
@@ -47,61 +48,67 @@ class Issue
 			$this->marked = array();
 		}
 		
+		$source = null;
 		if ($this->range) {
-			$sfr  = basename($this->range->source->path);
-			$sfr .= ':';
-			$sfr .= $this->range->start->line.':'.$this->range->start->column;
+			$source = $this->range->source;
+		} else if (count($this->marked) > 0) {
+			$source = $this->marked[0]->source;
 		}
 		
 		$t = $this->type.':';
 		if ($this->type == 'error')   $t = "\033[1;31m$t\033[0m";
 		if ($this->type == 'warning') $t = "\033[1;33m$t\033[0m";
 		
-		$ml = "$t {$this->message}";
-		if ($sfr) {
-			$ml = "$sfr: $ml";
-		} else {
-			return $ml;
+		$o = "$t {$this->message}";
+		if ($source) {
+			$sfr  = basename($source->path);
+			if ($this->range) {
+				$sfr .= ':';
+				$sfr .= $this->range->start->line.':'.$this->range->start->column;
+			}
+			$o = "$sfr: $o";
 		}
-		$o  = $ml;
 		
-		$lines = range($this->range->start->line, $this->range->end->line);
+		$lines = ($this->range ? range($this->range->start->line, $this->range->end->line) : array());
 		foreach ($this->marked as $r) {
+			if (!$source) $source = $r->source;
 			$lines = array_merge($lines, range($r->start->line, $r->end->line));
 		}
 		$lines = array_unique($lines);
 		sort($lines);
 		
-		$ls = explode("\n", $this->range->source->content);
-		$pl = $lines[0]-1;
-		$o .= "";
-		foreach ($lines as $l) {
-			if ($l != $pl+1) {
-				$o .= "\n ...";
-			}
-			$pl = $l;
-			$line = str_replace("\t", " ", $ls[$l-1]);
-			$marks = '';
-			for ($i = 0; $i < strlen($line); $i++) {
-				$mark = ($line[$i] == "\t" ? "\t" : " ");
-				if ($this->range->contains($l, $i+1)) {
-					$mark = '^';
-				} else {
-					foreach ($this->marked as $r) {
-						if ($r->contains($l, $i+1)) {
-							$mark = '~';
-							break;
+		if (count($lines) > 0) {
+			$ls = explode("\n", $source->content);
+			$pl = $lines[0]-1;
+			$o .= "";
+			foreach ($lines as $l) {
+				if ($l != $pl+1) {
+					$o .= "\n ...";
+				}
+				$pl = $l;
+				$line = str_replace("\t", " ", $ls[$l-1]);
+				$marks = '';
+				for ($i = 0; $i < strlen($line); $i++) {
+					$mark = ($line[$i] == "\t" ? "\t" : " ");
+					if ($this->range && $this->range->contains($l, $i+1)) {
+						$mark = '^';
+					} else {
+						foreach ($this->marked as $r) {
+							if ($r->contains($l, $i+1)) {
+								$mark = '~';
+								break;
+							}
 						}
 					}
+					$marks .= $mark;
 				}
-				$marks .= $mark;
-			}
 			
-			$prefix = sprintf('%4d: ', $l);
-			$pad = str_repeat(' ', strlen($prefix));
-			$o .= "\n";
-			$o .= "$prefix$line\n";
-			$o .= "$pad\033[0;36m".$marks."\033[0m";
+				$prefix = sprintf('%4d: ', $l);
+				$pad = str_repeat(' ', strlen($prefix));
+				$o .= "\n";
+				$o .= "$prefix$line\n";
+				$o .= "$pad\033[0;36m".$marks."\033[0m";
+			}
 		}
 		
 		return $o;

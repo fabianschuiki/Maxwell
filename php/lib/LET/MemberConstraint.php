@@ -50,12 +50,41 @@ class MemberConstraint extends Constraint
 	
 	public function impose()
 	{
+		$types = array();
+		$scope = $this->node->scope;
+		while ($scope) {
+			foreach ($scope->types as $type) {
+				$members = array_map(function($member){ return $member->name(); }, $type->members());
+				$missing = array_diff($this->members, $members);
+				if (!count($missing)) $types[] = $type;
+			}
+			$scope = $scope->outer;
+		}
+		
+		$type = null;
+		if (count($types) == 0) {
+			$members = implode(', ', $this->members);
+			global $issues;
+			$issues[] = new \Issue(
+				'error',
+				"There is no type with members $members.",
+				$this->node->range()
+			);
+		}
+		if (count($types) == 1) $type = $types[0];
+		if (count($types) > 1)  $type = new TypeSet($this->node->scope, $types);
+		$this->type = $type;
+		//if (!$type) return;
+		
+		$this->node->imposeConstraint($this);
+		
+		//if ($type) 
+		
 		/*$types = array_map(function($node){ return $node->type(); }, $this->nodes);
 		if (in_array(null, $types, true)) return;
 		
 		$type = Type::intersect($types);
-		if (!$type) return;
-		
-		echo " -> \033[1mcommon type\033[0m: {$type->details()}\n";*/
+		if (!$type) return;*/
+		//if ($type) echo "{$this->details()} \033[1mvalid for types\033[0m: {$type->details()}\n";
 	}
 }

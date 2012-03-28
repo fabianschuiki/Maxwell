@@ -51,6 +51,17 @@ abstract class Node
 		return false;
 	}
 	
+	///Returns the range in the source file of this node.
+	public function range()
+	{
+		$ranges = array();
+		foreach ($this as $key => $value) {
+			if ($value instanceof \AST\Node) $ranges[] = $value->range();
+		}
+		$ranges = array_filter($ranges);
+		return \Range::union($ranges);
+	}
+	
 	///Handles generic function calls.
 	public function __call($name, array $args)
 	{
@@ -75,17 +86,40 @@ abstract class Node
 		$this->constraints = array();
 		$this->typeConstraint = new GenericType;
 	}
+	
 	public function imposeConstraint(Constraint $constraint)
 	{
-		echo "\033[1mimpose constraint\033[0m {$constraint->type->details()} \033[1mon\033[0m {$this->details()}\n";
-		//letDumpNPause();
+		if (!$constraint->type()) return;
+		
+		echo "\033[1mimpose constraint\033[0m {$constraint->type()->details()} \033[1mon\033[0m {$this->details()}\n";
+		
 		$this->constraints[] = $constraint;
-		if ($this->typeConstraint) $this->typeConstraint = Type::intersect($this->typeConstraint, $constraint->type());
+		$typeConstraint = $this->typeConstraint;
+		if ($typeConstraint) {
+			$typeConstraint = Type::intersect($typeConstraint, $constraint->type());
+			global $issues;
+			if (!$typeConstraint) {
+				$issues[] = new \Issue(
+					'error',
+					"Constraint {$constraint->details()} conflicts with other constraints.",
+					$this
+				);
+			} else if (!$typeConstraint || !Type::intersect($typeConstraint, $this->type())) {
+				$type = $this->type();
+				$type = ($type ? $type->details() : '?');
+				$issues[] = new \Issue(
+					'error',
+					"Entity of type '$type' cannot meet constraint {$constraint->details()}.",
+					$this
+				);
+			}
+			$this->constrainedType = $typeConstraint;
+		}
 	}
-	public function resolveConstraints()
+	
+	public function verifyConstraints()
 	{
-		$this->__call('resolveConstraints', array());
-		//$type = new GenericType;
+		$this->__call('verifyConstraints', array());
 		$constraints = $this->constraints;
 		if (!$constraints) return;
 		while (count($constraints) > 0) {
@@ -93,14 +127,13 @@ abstract class Node
 			foreach ($constraints as $b) {
 				if (!Type::intersect($a->type(), $b->type())) {
 					global $issues;
-					$issues[] = new Issue(
+					$issues[] = new \Issue(
 						'error',
-						"{$this->desc()}: {$a->desc()} and {$b->desc()} cannot both be met."
+						"{$a->desc()} and {$b->desc()} cannot both be met.",
+						$this
 					);
 				}
 			}
-			//$type = Type::intersect($type, $a->type());
 		}
-		//$this->typeConstraint = $type;
 	}
 }

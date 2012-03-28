@@ -119,7 +119,8 @@ class Analyzer
 		foreach ($constraints as $constraint) {
 			$constraint->impose();
 		}
-		/*$scope->resolveConstraints();*/
+		
+		//$scope->verifyConstraints();
 	}
 	
 	private $builtinNumericTypes = array();

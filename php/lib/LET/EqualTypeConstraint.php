@@ -64,16 +64,22 @@ class EqualTypeConstraint extends Constraint
 		$types = array_map(function($node){ return $node->type(); }, $this->nodes);
 		if (in_array(null, $types, true)) return;
 		
-		$this->type = Type::intersect($types);
-		if (!$this->type) return;
+		$type = Type::intersect($types);
+		if (!$type) {
+			global $issues;
+			$issues[] = new \Issue(
+				'error',
+				"The following types are not compatible.",
+				null,
+				$this->nodes
+			);
+		}
+		$this->type = $type;
+		//if (!$type) return;
 		
 		foreach ($this->nodes as $node) $node->imposeConstraint($this);
 	}
 	
-	/** Returns the dependency between the two constraints:
-	 *   1  if $this depends on $other
-	 *   0  if no dependency exists
-	 *  -1  if $other depends on $this */
 	public function dependency(Constraint $other)
 	{
 		if ($other instanceof EqualTypeConstraint) {

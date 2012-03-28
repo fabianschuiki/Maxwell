@@ -14,23 +14,21 @@ class Analyzer
 		
 		//Build the initial Language Entity Tree.
 		$scope = new LET\Scope($builtin);
+		$this->scope = $scope;
 		foreach ($this->nodes as $node) {
 			$this->buildEntity($scope, $node);
 		}
-		$this->scope = $scope;
 		if ($this->issues->isFatal()) return;
 		
 		//Bind the identifiers where possible.
 		$scope->bind();
 		$scope->reduce();
+		if ($this->issues->isFatal()) return;
 		
-		$constraints = $scope->spawnConstraints();
-		$scope->clearConstraints();
-		foreach ($constraints as $constraint) {
-			echo $constraint->desc()."\n";
-			$constraint->impose();
-		}
-		$scope->resolveConstraints();
+		//Infer types.
+		$this->inferTypes($scope);
+		$scope->reduce();
+		if ($this->issues->isFatal()) return;
 		
 		/*foreach ($this->nodes as $n) $this->reduce($n);
 		if ($this->issues->isFatal()) return;
@@ -98,6 +96,30 @@ class Analyzer
 				);
 			} break;
 		}
+	}
+	
+	private function inferTypes(LET\Scope $scope)
+	{
+		$constraints = $scope->spawnConstraints();
+		
+		echo "before sorting:\n";
+		foreach ($constraints as $c) echo "{$c->details()}\n";
+		usort($constraints, function($a,$b) { return $a->dependency($b); });
+		echo "after sorting:\n";
+		foreach ($constraints as $c) echo "{$c->details()}\n"; 
+		
+		/*foreach ($constraints as $a) {
+			foreach ($constraints as $b) {
+				if ($a === $b) continue;
+				if ($a->dependsOn($b)) echo "{$a->details()} \033[1;34mdepends on\033[0m {$b->details()}\n";
+			}
+		}*/
+		
+		$scope->clearConstraints();
+		foreach ($constraints as $constraint) {
+			$constraint->impose();
+		}
+		/*$scope->resolveConstraints();*/
 	}
 	
 	private $builtinNumericTypes = array();

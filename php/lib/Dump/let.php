@@ -7,7 +7,8 @@
 	</head>
 	
 	<?php
-	
+		if (!function_exists('dumpScope')):
+		
 		function dumpScope(LET\Scope $scope)
 		{
 			$str = "<div class=\"scope\">";
@@ -57,16 +58,18 @@
 			}
 			if (method_exists($node, 'typeConstraint')) {
 				$type = $node->typeConstraint();
-				if ($type) $str .= "<div class=\"type constraint\">".$type->details()."</div>";
+				if ($type && $type != $node->type()) $str .= "<div class=\"type constraint\">".$type->details()."</div>";
 			}
 			foreach ($node->children() as $child) {
 				if ($child instanceof LET\Type && $child->isSpecific()) continue;
+				if ($child instanceof LET\GenericType) continue;
 				$str .= dumpNode($child, false);
 			}
 			$str .= "</div>";
 			return $str;
 		}
-	
+		
+		endif;
 	?>
 	
 	<body><?php echo dumpScope($analyzer->scope); ?></body>

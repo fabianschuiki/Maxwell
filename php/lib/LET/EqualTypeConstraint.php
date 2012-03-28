@@ -69,4 +69,21 @@ class EqualTypeConstraint extends Constraint
 		
 		foreach ($this->nodes as $node) $node->imposeConstraint($this);
 	}
+	
+	/** Returns the dependency between the two constraints:
+	 *   1  if $this depends on $other
+	 *   0  if no dependency exists
+	 *  -1  if $other depends on $this */
+	public function dependency(Constraint $other)
+	{
+		if ($other instanceof EqualTypeConstraint) {
+			foreach ($this->nodes as $a) {
+				foreach ($other->nodes as $b) {
+					if ($a->hasChild($b)) return 1;
+					if ($b->hasChild($a)) return -1;
+				}
+			}
+		}
+		return 0;
+	}
 }

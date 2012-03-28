@@ -42,7 +42,7 @@ class Variable extends Node
 	
 	public function reduce()
 	{
-		if ($this->type)    $this->type    = $this->type->reduce();
+		if ($this->type())  $this->type    = $this->type()->reduce();
 		if ($this->initial) $this->initial = $this->initial->reduce();
 		return $this;
 	}

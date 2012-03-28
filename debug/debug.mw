@@ -17,9 +17,11 @@ func main
 	var int x = 5;
 	var int y = x;
 	var (int, int) p = (1, 2);
-	(a: 25, b: 64.97e47);
+	var t = (a: 25, b: 64.97e47);
+	var (float, float) point = t;
 	var z = x;
 	var tup = (x, z, 5);
+	var (int, int, float) tupfixed = tup;
 	var int res = test(x);
 	
 	var Point k;

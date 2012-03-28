@@ -27,11 +27,11 @@ class Constant_AST extends Constant
 	
 	public function value()    { return $this->asn->value->text; }
 	public function dataType() { return $this->asn->value->type; }
-	public function type()     { return $this->type; }
+	public function type()     { return Type::intersect($this->type, $this->typeConstraint); }
 	
 	public function reduce()
 	{
-		if ($this->type) $this->type = $this->type->reduce();
+		if ($this->type()) $this->type = $this->type()->reduce();
 		return $this;
 	}
 }

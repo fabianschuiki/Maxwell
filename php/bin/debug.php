@@ -104,6 +104,14 @@ $analyzer->issues = $issues;
 $analyzer->nodes = $parser->nodes;
 $analyzer->run();
 
+function letDumpNPause()
+{
+	global $file, $analyzer, $out;
+	$dump = Dump::let($file, $analyzer);
+	file_put_contents("$out.let.html", $dump);
+	readline();
+}
+
 //Dump the LET.
 $dump = Dump::let($file, $analyzer);
 file_put_contents("$out.let.html", $dump);

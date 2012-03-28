@@ -45,11 +45,11 @@ class Tuple_AST extends Expr
 		return new TypeTuple($this->scope, $fields);
 	}
 	
-	public function resolveConstraints()
+	public function imposeConstraint(Constraint $constraint)
 	{
-		parent::resolveConstraints();
+		parent::imposeConstraint($constraint);
 		
-		$type = $this->typeConstraint();
+		$type = $this->typeConstraint;
 		if (!$type instanceof TypeTuple) return;
 		
 		foreach ($this->exprs as $name => $expr) {

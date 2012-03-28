@@ -38,6 +38,19 @@ abstract class Node
 		return $children;
 	}
 	
+	///Returns whether the given node is a child node of this node.
+	public function hasChild(Node $other)
+	{
+		$children = array_map(function($node){ return $node->constraintTarget(); }, $this->children());
+		if (in_array($other, $children, true)) return true;
+		
+		foreach ($children as $child) {
+			if ($child->hasChild($other)) return true;
+		}
+		
+		return false;
+	}
+	
 	///Handles generic function calls.
 	public function __call($name, array $args)
 	{
@@ -60,22 +73,25 @@ abstract class Node
 	{
 		$this->__call('clearConstraints', array());
 		$this->constraints = array();
+		$this->typeConstraint = new GenericType;
 	}
 	public function imposeConstraint(Constraint $constraint)
 	{
-		$this->constraints[] = $constraint;
 		echo "\033[1mimpose constraint\033[0m {$constraint->type->details()} \033[1mon\033[0m {$this->details()}\n";
+		//letDumpNPause();
+		$this->constraints[] = $constraint;
+		if ($this->typeConstraint) $this->typeConstraint = Type::intersect($this->typeConstraint, $constraint->type());
 	}
 	public function resolveConstraints()
 	{
 		$this->__call('resolveConstraints', array());
-		$type = new GenericType;
+		//$type = new GenericType;
 		$constraints = $this->constraints;
 		if (!$constraints) return;
 		while (count($constraints) > 0) {
 			$a = array_shift($constraints);
 			foreach ($constraints as $b) {
-				if (!Type::intersect($a, $b)) {
+				if (!Type::intersect($a->type(), $b->type())) {
 					global $issues;
 					$issues[] = new Issue(
 						'error',
@@ -83,8 +99,8 @@ abstract class Node
 					);
 				}
 			}
-			$type = Type::intersect($type, $a->type());
+			//$type = Type::intersect($type, $a->type());
 		}
-		$this->typeConstraint = $type;
+		//$this->typeConstraint = $type;
 	}
 }

@@ -5,6 +5,7 @@ class MemberConstraint extends Constraint
 {
 	public $node;
 	public $members;
+	public $type;
 	
 	public function __construct(Node $node, $members)
 	{
@@ -19,7 +20,7 @@ class MemberConstraint extends Constraint
 	
 	public function details()
 	{
-		return $this->node->details(true).".{".implode(', ', $this->members).'}';
+		return "({$this->node->details()}).{".implode(', ', $this->members).'}';
 	}
 	
 	///Returns whether the constraint is met.
@@ -36,6 +37,8 @@ class MemberConstraint extends Constraint
 		return false;
 	}
 	
+	public function type() { return $this->type; }
+	
 	///Merges the other constraint if they share at least one node. Returns true if a merge occured, false otherwise.
 	public function merge(MemberConstraint $other)
 	{
@@ -45,7 +48,7 @@ class MemberConstraint extends Constraint
 		return true;
 	}
 	
-	public function apply()
+	public function impose()
 	{
 		/*$types = array_map(function($node){ return $node->type(); }, $this->nodes);
 		if (in_array(null, $types, true)) return;

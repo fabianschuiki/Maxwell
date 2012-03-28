@@ -22,8 +22,9 @@ class Variable extends Node
 		$scope->add($this);
 	}
 	
-	public function type() { return $this->type; }
-	public function name() { return $this->asn->name->text; }
+	public function type()           { return Type::intersect($this->type, $this->typeConstraint); }
+	public function typeConstraint() { return $this->typeConstraint; }
+	public function name()           { return $this->asn->name->text; }
 	
 	public function details($short = false)
 	{

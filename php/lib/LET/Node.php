@@ -4,6 +4,8 @@ namespace LET;
 abstract class Node
 {
 	public $scope;
+	public $constraints;
+	public $typeConstraint;
 	
 	///Returns the type of this LET node, which is its class name without the LET namespace.
 	public function kind()
@@ -53,4 +55,36 @@ abstract class Node
 	
 	public function spawnConstraints(array &$cons) { foreach ($this->children() as $node) $node->spawnConstraints($cons); }
 	public function constraintTarget() { return $this; }
+	
+	public function clearConstraints()
+	{
+		$this->__call('clearConstraints', array());
+		$this->constraints = array();
+	}
+	public function imposeConstraint(Constraint $constraint)
+	{
+		$this->constraints[] = $constraint;
+		echo "\033[1mimpose constraint\033[0m {$constraint->type->details()} \033[1mon\033[0m {$this->details()}\n";
+	}
+	public function resolveConstraints()
+	{
+		$this->__call('resolveConstraints', array());
+		$type = new GenericType;
+		$constraints = $this->constraints;
+		if (!$constraints) return;
+		while (count($constraints) > 0) {
+			$a = array_shift($constraints);
+			foreach ($constraints as $b) {
+				if (!Type::intersect($a, $b)) {
+					global $issues;
+					$issues[] = new Issue(
+						'error',
+						"{$this->desc()}: {$a->desc()} and {$b->desc()} cannot both be met."
+					);
+				}
+			}
+			$type = Type::intersect($type, $a->type());
+		}
+		$this->typeConstraint = $type;
+	}
 }

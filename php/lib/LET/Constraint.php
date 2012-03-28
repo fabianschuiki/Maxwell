@@ -14,6 +14,9 @@ abstract class Constraint
 	}
 	
 	abstract function details();
+	
 	abstract function met();
-	abstract function apply();
+	abstract function impose();
+	
+	abstract function type();
 }

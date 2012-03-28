@@ -23,7 +23,8 @@ abstract class Type extends Node
 	static public function intersect($types)
 	{
 		if (!is_array($types)) $types = func_get_args();
-		if (count($types) < 1) return null;
+		if (count($types) == 0) return null;
+		$types = array_filter($types);
 		
 		$intersection = array_shift($types);
 		while (count($types) > 0) {

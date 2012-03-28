@@ -19,6 +19,7 @@ func main
 	var (int, int) p = (1, 2);
 	(a: 25, b: 64.97e47);
 	var z = x;
+	var tup = (x, z, 5);
 	var int res = test(x);
 	
 	var Point k;

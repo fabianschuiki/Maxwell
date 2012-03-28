@@ -44,3 +44,6 @@ div.node > div.type {
 div.node > div.type.specific {
 	color: #4e9a06;
 }
+div.node > div.type.constraint {
+	color: #3465a4;
+}

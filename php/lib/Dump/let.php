@@ -55,6 +55,10 @@
 				$class = ($type instanceof LET\Type && $type->isSpecific() ? 'specific' : ''); 
 				$str .= "<div class=\"type $class\">".($type ? $type->details() : '?')."</div>";
 			}
+			if (method_exists($node, 'typeConstraint')) {
+				$type = $node->typeConstraint();
+				if ($type) $str .= "<div class=\"type constraint\">".$type->details()."</div>";
+			}
 			foreach ($node->children() as $child) {
 				if ($child instanceof LET\Type && $child->isSpecific()) continue;
 				$str .= dumpNode($child, false);

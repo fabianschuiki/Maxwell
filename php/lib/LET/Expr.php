@@ -28,6 +28,5 @@ abstract class Expr extends Node
 		return null;
 	}
 	
-	///Returns the inferred type of this node.
-	public function infType() { return null; }
+	public function typeConstraint() { return $this->typeConstraint; }
 }

@@ -25,10 +25,12 @@ class Analyzer
 		$scope->reduce();
 		
 		$constraints = $scope->spawnConstraints();
+		$scope->clearConstraints();
 		foreach ($constraints as $constraint) {
 			echo $constraint->desc()."\n";
-			$constraint->apply();
+			$constraint->impose();
 		}
+		$scope->resolveConstraints();
 		
 		/*foreach ($this->nodes as $n) $this->reduce($n);
 		if ($this->issues->isFatal()) return;

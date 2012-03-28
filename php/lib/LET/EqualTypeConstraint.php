@@ -4,6 +4,7 @@ namespace LET;
 class EqualTypeConstraint extends Constraint
 {
 	public $nodes;
+	public $type;
 	
 	public function __construct($nodes)
 	{
@@ -34,6 +35,8 @@ class EqualTypeConstraint extends Constraint
 		return true;
 	}
 	
+	public function type() { return $this->type; }
+	
 	///Merges the other constraint if they share at least one node. Returns true if a merge occured, false otherwise.
 	public function merge(EqualTypeConstraint $other)
 	{
@@ -56,14 +59,14 @@ class EqualTypeConstraint extends Constraint
 		return $hasCommon;
 	}
 	
-	public function apply()
+	public function impose()
 	{
 		$types = array_map(function($node){ return $node->type(); }, $this->nodes);
 		if (in_array(null, $types, true)) return;
 		
-		$type = Type::intersect($types);
-		if (!$type) return;
+		$this->type = Type::intersect($types);
+		if (!$this->type) return;
 		
-		echo " -> \033[1mcommon type\033[0m: {$type->details()}\n";
+		foreach ($this->nodes as $node) $node->imposeConstraint($this);
 	}
 }

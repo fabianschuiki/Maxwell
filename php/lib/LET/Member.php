@@ -12,4 +12,15 @@ abstract class Member extends Expr
 		$str = ($expr ? $expr->details() : '?');
 		return "$str.{$this->name()}";
 	}
+	
+	public function spawnConstraints(array &$constraints)
+	{
+		$expr = $this->expr();
+		if ($expr) {
+			if ($expr->type()) {
+				$constraints[] = new MemberConstraint($expr, $this->name());
+			}
+			$expr->spawnConstraints($constraints);
+		}
+	}
 }

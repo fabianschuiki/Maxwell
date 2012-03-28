@@ -20,4 +20,8 @@ func main
 	(a: 25, b: 64.97e47);
 	var z = x;
 	var int res = test(x);
+	
+	var Point k;
+	var int kx = k.x;
+	var int ky = k.y;
 }

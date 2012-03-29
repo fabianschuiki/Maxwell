@@ -17,6 +17,7 @@
 	<definitions>
 		<context id="keywords" style-ref="keyword">
 			<!--keywords-start-->
+			<keyword>var</keyword>
 			<keyword>func</keyword>
 			<keyword>type</keyword>
 			<keyword>primitive</keyword>

@@ -16,6 +16,6 @@ class FuncArg_Impl extends FuncArg
 		$scope->add($this);
 	}
 	
-	public function type() { return $this->type; }
-	public function name() { return $this->name; }
+	public function unconstrainedType() { return $this->type; }
+	public function name()              { return $this->name; }
 }

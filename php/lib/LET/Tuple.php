@@ -31,17 +31,15 @@ abstract class Tuple extends Expr
 		return new TypeTuple($this->scope, $fields);
 	}
 	
-	public function imposeConstraint(Constraint $constraint)
+	public function imposeTypeConstraint(Type $type)
 	{
-		parent::imposeConstraint($constraint);
+		parent::imposeTypeConstraint($type);
 		
-		$type = $this->typeConstraint;
-		if (!$type instanceof TypeTuple) return;
-		
-		foreach ($this->fields() as $name => $field) {
-			$constrained = null;
-			if (isset($type->fields[$name])) $constrained = $type->fields[$name];
-			$field->constraintTarget()->typeConstraint = $constrained;
+		if ($type instanceof TypeTuple) {
+			$pairs = TypeTuple::fieldPairs($this->unconstrainedType(), $type);
+			foreach ($pairs as $pair) {
+				$this->fields[$pair[0]]->imposeTypeConstraint($type->fields[$pair[1]]);
+			}
 		}
 	}
 }

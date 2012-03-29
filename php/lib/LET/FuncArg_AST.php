@@ -18,8 +18,8 @@ class FuncArg_AST extends FuncArg
 		$scope->add($this);
 	}
 	
-	public function type() { return $this->type; }
-	public function name() { return $this->asn->name->text; }
+	public function unconstrainedType() { return $this->type; }
+	public function name()              { return $this->asn->name->text; }
 	
 	public function reduce()
 	{

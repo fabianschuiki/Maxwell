@@ -102,8 +102,8 @@ class Analyzer
 	{
 		$constraints = $scope->spawnConstraints();
 		
-		echo "before sorting:\n";
-		foreach ($constraints as $c) echo "{$c->details()} ".($c->isSpecific() ? '<specific!>' : '')."\n";
+		/*echo "before sorting:\n";
+		foreach ($constraints as $c) echo "{$c->details()} ".($c->isSpecific() ? '<specific!>' : '')."\n";*/
 		usort($constraints, function($a,$b) {
 			$as = $a->isSpecific();
 			$bs = $b->isSpecific();
@@ -112,7 +112,7 @@ class Analyzer
 			return $a->dependency($b);
 		});
 		echo "after sorting:\n";
-		foreach ($constraints as $c) echo "{$c->details()}\n"; 
+		foreach ($constraints as $c) echo "\033[1;35mconstraint\033[0m {$c->details()} ".($c->isSpecific() ? '<specific!>' : '')."\n";
 		
 		/*foreach ($constraints as $a) {
 			foreach ($constraints as $b) {

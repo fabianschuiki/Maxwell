@@ -1,9 +1,9 @@
 <?php
 namespace LET;
 
-abstract class FuncArg extends Node
+abstract class FuncArg extends TypedNode
 {
-	abstract function type();
+	//abstract function type();
 	abstract function name();
 	
 	public function details()

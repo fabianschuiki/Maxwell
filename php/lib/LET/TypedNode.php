@@ -18,7 +18,7 @@ abstract class TypedNode extends Node
 		$this->typeConstraint = new GenericType;
 	}
 	
-	/// Imposes the given constraint upon the node.
+	/// Imposes the given constraint upon the node. Generates further imposeTypeConstraint calls.
 	public function imposeConstraint(Constraint $constraint)
 	{
 		if (!$constraint->type()) {
@@ -50,7 +50,13 @@ abstract class TypedNode extends Node
 				);
 			}
 			
-			$this->typeConstraint = $typeConstraint;
+			$this->imposeTypeConstraint($constraint->type());
 		}
+	}
+	
+	/// Imposes the given type constraint upon the node.
+	public function imposeTypeConstraint(Type $type)
+	{
+		$this->typeConstraint = Type::intersect($this->typeConstraint, $type);
 	}
 }

@@ -75,5 +75,13 @@ abstract class Ident extends Expr
 		return null;
 	}
 	
-	public function constraintTarget() { return $this->boundTo; }
+	public function spawnConstraints(array &$constraints)
+	{
+		parent::spawnConstraints($constraints);
+		if ($this->boundTo instanceof Variable || $this->boundTo instanceof FuncArg) {
+			$constraints[] = new EqualTypeConstraint($this, $this->boundTo);
+		}
+	}
+	
+	/*public function constraintTarget() { return ($this->boundTo && $this->boundTo instanceof Variable ? $this->boundTo : null); }*/
 }

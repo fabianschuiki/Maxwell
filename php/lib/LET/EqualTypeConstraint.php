@@ -9,9 +9,9 @@ class EqualTypeConstraint extends Constraint
 	public function __construct($nodes)
 	{
 		if (!is_array($nodes)) $nodes = func_get_args();
-		foreach ($nodes as $node) assert($node instanceof TypedNode && $node->type() instanceof Type);
+		foreach ($nodes as $node) if (!$node instanceof TypedNode) trigger_error("Node '{$node->details()}' is no TypedNode\n", E_USER_ERROR);
 		
-		$nodes = array_map(function($node){ return $node->constraintTarget(); }, $nodes);
+		//$nodes = array_map(function($node){ return $node->constraintTarget(); }, $nodes);
 		
 		$this->nodes = $nodes;
 	}
@@ -19,7 +19,7 @@ class EqualTypeConstraint extends Constraint
 	public function details()
 	{
 		$nodes = array_map(function($node){ return $node->details(true); }, $this->nodes);
-		return '"'.implode('" @= "', $nodes).'"';
+		return '"'.implode('" @ "', $nodes).'"';
 	}
 	
 	///Returns whether the constraint is met.
@@ -62,8 +62,12 @@ class EqualTypeConstraint extends Constraint
 	public function impose()
 	{
 		$types = array_map(function($node){ return $node->type(); }, $this->nodes);
-		if (in_array(null, $types, true)) return;
+		if (in_array(null, $types, true)) {
+			echo "\033[1;32mconstraint not imposable\033[0m, some node has null-type: {$this->details()}\n";
+			return;
+		}
 		
+		//echo "intersecting ".implode(', ', array_map(function($node){ return $node->details()." @".$node->type()->details(); }, $this->nodes))."\n";
 		$type = Type::intersect($types);
 		if (!$type) {
 			global $issues;

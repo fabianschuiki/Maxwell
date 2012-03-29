@@ -3,6 +3,8 @@ namespace LET;
 
 abstract class Call extends Expr
 {
+	public $typeProxy;
+	
 	abstract function callee();
 	abstract function args();
 	
@@ -23,7 +25,9 @@ abstract class Call extends Expr
 	
 	public function children()
 	{
-		return array($this->callee(), $this->args());
+		$children = array($this->callee(), $this->args());
+		if ($this->typeProxy) $children[] = $this->typeProxy;
+		return $children;
 	}
 	
 	///Returns the type of the function referenced by the callee, or null if there is none.
@@ -42,6 +46,12 @@ abstract class Call extends Expr
 		$type = $this->funcType();
 		if ($type) $type = $type->out();
 		return $type;
+	}
+	
+	public function spawnConstraints(array &$constraints)
+	{
+		if (!$this->typeProxy) $this->typeProxy = new CallTypeProxy($this);
+		parent::spawnConstraints($constraints);
 	}
 	
 	public function clearConstraints()
@@ -72,6 +82,34 @@ abstract class Call extends Expr
 			//Gives the callee the chance to update its binding.
 			$callee->bind();
 			$callee->reduce();
+		}
+	}
+}
+
+class CallTypeProxy extends TypedNode
+{
+	public $call;
+	
+	public function __construct(Call $call)
+	{
+		$this->call = $call;
+	}
+	
+	public function details()           { return 'proxy'; }
+	public function children()          { return array(); }
+	public function unconstrainedType() { return new GenericType; }
+	
+	public function spawnConstraints(array &$constraints)
+	{
+		parent::spawnConstraints($constraints);
+		$constraints[] = new EqualTypeConstraint($this->call->callee(), $this->call->typeProxy);
+	}
+	
+	public function imposeTypeConstraint(Type $type)
+	{
+		parent::imposeTypeConstraint($type);
+		if ($this->call && $type instanceof FuncType) {
+			$this->call->args()->imposeTypeConstraint($type->in());
 		}
 	}
 }

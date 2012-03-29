@@ -112,6 +112,7 @@ class Scope
 			if (!$merged) $reduced[] = $a;
 		}
 		
-		return array_filter($reduced, function($constraint){ return !$constraint->met(); });
+		//return array_filter($reduced, function($constraint){ return !$constraint->met(); });
+		return $reduced;
 	}
 }

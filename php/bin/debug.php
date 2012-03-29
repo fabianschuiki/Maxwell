@@ -44,6 +44,8 @@ if (!file_exists($outdir)) {
 }
 $out = $outdir.'/'.basename($file->path, '.mw');
 
+$startTime = microtime(true);
+
 $lexer = new Lexer;
 $lexer->file = $file;
 $lexer->run();
@@ -103,6 +105,7 @@ $analyzer->importScope = $importScope;
 $analyzer->issues = $issues;
 $analyzer->nodes = $parser->nodes;
 $analyzer->run();
+$stopTime = microtime(true);
 
 function letDumpNPause()
 {
@@ -118,6 +121,7 @@ file_put_contents("$out.let.html", $dump);
 $issues->exitIfFatal();
 
 /** STOP HERE */
+echo "[\033[36mcompilation took ".sprintf('%.1f', ($stopTime-$startTime)*1000)." ms\033[0m]\n";
 $issues->dump(); exit;
 
 //Dump the scope.

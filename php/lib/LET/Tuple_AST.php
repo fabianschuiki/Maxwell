@@ -1,61 +1,23 @@
 <?php
 namespace LET;
 
-class Tuple_AST extends Expr
+class Tuple_AST extends Tuple
 {
 	public $asn;
-	public $exprs;
+	public $fields;
 	
 	public function __construct(Scope $scope, \AST\TupleExpr $node)
 	{
-		$exprs = array();
-		foreach ($node->exprs as $name => $expr) {
-			$exprs[$name] = Expr::make($scope, $expr);
-		}
-		$exprs = array_filter($exprs);
-		
-		$this->asn   = $node;
-		$this->exprs = $exprs;
-		$this->scope = $scope;
-	}
-	
-	public function details()
-	{
-		$exprs = array();
-		foreach ($this->exprs as $name => $expr) {
-			$str = $expr->details();
-			if (is_string($name)) $str = "$name: $str";
-			$exprs[] = $str;
-		}
-		$exprs = implode(', ', $exprs);
-		
-		return "($exprs)";
-	}
-	
-	public function children() { return array_values($this->exprs); }
-	
-	public function unconstrainedType()
-	{
 		$fields = array();
-		foreach ($this->exprs as $name => $expr) {
-			$type = $expr->type();
-			if (!$type) return null;
-			$fields[$name] = $type;
+		foreach ($node->exprs as $name => $field) {
+			$fields[$name] = Expr::make($scope, $field);
 		}
-		return new TypeTuple($this->scope, $fields);
+		$fields = array_filter($fields);
+		
+		$this->asn    = $node;
+		$this->fields = $fields;
+		$this->scope  = $scope;
 	}
 	
-	public function imposeConstraint(Constraint $constraint)
-	{
-		parent::imposeConstraint($constraint);
-		
-		$type = $this->typeConstraint;
-		if (!$type instanceof TypeTuple) return;
-		
-		foreach ($this->exprs as $name => $expr) {
-			$constrained = null;
-			if (isset($type->fields[$name])) $constrained = $type->fields[$name];
-			$expr->constraintTarget()->typeConstraint = $constrained;
-		}
-	}
+	public function fields() { return $this->fields; }
 }

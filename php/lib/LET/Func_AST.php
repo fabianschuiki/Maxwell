@@ -59,4 +59,5 @@ class Func_AST extends Func
 	public function outputs()  { return $this->outputs; }
 	public function stmts()    { return $this->stmts; }
 	public function subscope() { return $this->subscope; }
+	public function range()    { return $this->asn->name->range; }
 }

@@ -54,7 +54,7 @@ abstract class Call extends Expr
 			}
 		}
 		
-		return ($args ? new TypeTuple($this->scope, $args) : null);
+		return ($args !== null ? new TypeTuple($this->scope, $args) : null);
 	}
 	
 	public function unconstrainedType()
@@ -62,6 +62,21 @@ abstract class Call extends Expr
 		$type = $this->funcType();
 		if ($type) $type = $type->out();
 		return $type;
+	}
+	
+	public function clearConstraints()
+	{
+		parent::clearConstraints();
+		
+		//This is somewhat nasty, yet it is required for the callee to filter the functions according to the argument tuple.
+		$args  = $this->argType();
+		if (!$args) $args = new GenericType;
+		$callee = $this->callee();
+		if ($callee) {
+			$callee->typeConstraint = new FuncType($this->scope, $args, new GenericType);
+			$callee->bind();
+			$callee->reduce();
+		}
 	}
 	
 	public function imposeConstraint(Constraint $constraint)

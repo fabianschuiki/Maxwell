@@ -20,7 +20,7 @@ type Application
 {
 	var int status;
 	
-	func run
+	func run () -> (Point result)
 	{
 		var x = 5;
 		var y = 10;

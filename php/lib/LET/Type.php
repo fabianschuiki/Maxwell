@@ -62,6 +62,7 @@ abstract class Type extends Node
 			return null;
 		}
 		if ($a instanceof TypeTuple && $b instanceof TypeTuple) {
+			if (count($a->fields) != count($b->fields)) return null;
 			$fields = array();
 			$pairs = TypeTuple::fieldPairs($a, $b);
 			foreach ($pairs as $pair) {

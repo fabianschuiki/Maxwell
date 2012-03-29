@@ -13,22 +13,30 @@ abstract class Ident extends Expr
 	
 	public function bind()
 	{
+		global $issues;
 		$nodes = $this->scope->find($this->name());
-		$unfilteredCount = count($nodes);
+		$unfiltered = $nodes;
+		if (count($unfiltered) == 0) {
+			$issues[] = new \Issue(
+				'error',
+				"Entity '{$this->name()}' is unknown.",
+				$this
+			);
+		}
 		
 		$type = $this->typeConstraint;
 		if ($type) {
 			$nodes = array_filter($nodes, function($node) use ($type) { return Type::intersect($node->type(), $type) != null; });
 		}
-		echo "binding identifier {$this->name()} -> $unfilteredCount nodes, ".count($nodes)." match type.\n";
+		echo "binding identifier {$this->name()} -> ".count($unfiltered)." nodes, ".count($nodes)." match type.\n";
 		
 		$boundTo = null;
-		if (count($nodes) == 0) {
-			global $issues;
+		if (count($nodes) == 0 && count($unfiltered) > 0) {
 			$issues[] = new \Issue(
 				'error',
-				"Entity '{$this->name()}' is unknown.",
-				$this
+				"No entity named '{$this->name()}' is of type '{$type->details()}'. Candidates are:",
+				$this,
+				$unfiltered
 			);
 		}
 		if (count($nodes) == 1) $boundTo = $nodes[0];

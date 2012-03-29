@@ -79,14 +79,23 @@ class Issue
 		
 		if (count($lines) > 0) {
 			$ls = explode("\n", $source->content);
+			
+			$whitelead_min = null;
+			foreach ($lines as $l) {
+				preg_match('/^\s*/', $ls[$l-1], $match);
+				$whitelead = strlen(str_replace("\t", "    ", $match[0]));
+				if (!$whitelead_min || $whitelead < $whitelead_min) $whitelead_min = $whitelead;
+			}
+			if (!$whitelead_min) $whitelead_min = 0;
+			
 			$pl = $lines[0]-1;
 			$o .= "";
 			foreach ($lines as $l) {
-				if ($l != $pl+1) {
-					$o .= "\n ...";
-				}
+				$skipped = ($l != $pl+1);
+				if ($skipped) $o .= "\r    ~";
+				
 				$pl = $l;
-				$line = str_replace("\t", " ", $ls[$l-1]);
+				$line = $ls[$l-1];
 				$marks = '';
 				for ($i = 0; $i < strlen($line); $i++) {
 					$mark = ($line[$i] == "\t" ? "\t" : " ");
@@ -102,12 +111,14 @@ class Issue
 					}
 					$marks .= $mark;
 				}
+				$line  = substr(str_replace("\t", "    ", $line),  $whitelead_min);
+				$marks = substr(str_replace("\t", "    ", $marks), $whitelead_min);
 			
-				$prefix = sprintf('%4d: ', $l);
+				$prefix = sprintf('%4d', $l);
 				$pad = str_repeat(' ', strlen($prefix));
 				$o .= "\n";
-				$o .= "$prefix$line\n";
-				$o .= "$pad\033[0;36m".$marks."\033[0m";
+				$o .= "$prefix| $line\n";
+				$o .= "$pad| \033[0;36m".$marks."\033[0m";
 			}
 		}
 		

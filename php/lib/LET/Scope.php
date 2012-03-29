@@ -27,9 +27,26 @@ class Scope
 		//Add to node to the appropriate container.
 		if ($node instanceof ConcreteType) $this->types[] = $node; else
 		if ($node instanceof Func)         $this->funcs[] = $node; else
-		if ($node instanceof FuncArg)      $this->vars[]  = $node; else
-		if ($node instanceof Variable)     $this->vars[]  = $node;
-		else {
+		if ($node instanceof FuncArg || $node instanceof Variable) {
+			$existing = null;
+			foreach ($this->vars as $variable) {
+				if ($variable->name() == $node->name()) {
+					$existing = $variable;
+					break;
+				}
+			}
+			if (!$existing) {
+				$this->vars[] = $node;
+			} else {
+				global $issues;
+				$issues[] = new \Issue(
+					'error',
+					"An entity named '{$node->name()}' already exists.",
+					$node,
+					$existing
+				);
+			}
+		} else {
 			trigger_error($node->kind()." not allowed in scope.");
 		}
 	}

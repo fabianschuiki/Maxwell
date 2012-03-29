@@ -41,7 +41,7 @@ abstract class Node
 	///Returns whether the given node is a child node of this node.
 	public function hasChild(Node $other)
 	{
-		$children = array_map(function($node){ return $node->constraintTarget(); }, $this->children());
+		$children = array_filter(array_map(function($node){ return $node->constraintTarget(); }, $this->children()));
 		if (in_array($other, $children, true)) return true;
 		
 		foreach ($children as $child) {
@@ -89,7 +89,10 @@ abstract class Node
 	
 	public function imposeConstraint(Constraint $constraint)
 	{
-		if (!$constraint->type()) return;
+		if (!$constraint->type()) {
+			echo "\033[30mskipping constraint\033[0m {$constraint->details()} as it has no type\n";
+			return;
+		}
 		
 		echo "\033[1mimpose constraint\033[0m {$constraint->type()->details()} \033[1mon\033[0m {$this->details()}\n";
 		
@@ -113,7 +116,7 @@ abstract class Node
 					$this
 				);
 			}
-			$this->constrainedType = $typeConstraint;
+			$this->typeConstraint = $typeConstraint;
 		}
 	}
 	

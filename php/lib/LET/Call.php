@@ -33,6 +33,22 @@ abstract class Call extends Expr
 			if ($func instanceof FuncType) $type = $func->out();
 		}
 		
-		return $type;
+		return Type::Intersect($type, $this->typeConstraint);
+	}
+	
+	public function imposeConstraint(Constraint $constraint)
+	{
+		parent::imposeConstraint($constraint);
+		
+		$callee = $this->callee();
+		if ($callee) $callee->typeConstraint = new FuncType($this->scope, new GenericType, $constraint->type());
+		/*$type = $this->typeConstraint;
+		if (!$type instanceof TypeTuple) return;
+		
+		foreach ($this->exprs as $name => $expr) {
+			$constrained = null;
+			if (isset($type->fields[$name])) $constrained = $type->fields[$name];
+			$expr->typeConstraint = $constrained;
+		}*/
 	}
 }

@@ -19,7 +19,7 @@ class EqualTypeConstraint extends Constraint
 	public function details()
 	{
 		$nodes = array_map(function($node){ return $node->details(true); }, $this->nodes);
-		return '"'.implode('" = "', $nodes).'"';
+		return '"'.implode('" @= "', $nodes).'"';
 	}
 	
 	///Returns whether the constraint is met.

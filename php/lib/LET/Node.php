@@ -90,7 +90,7 @@ abstract class Node
 	public function imposeConstraint(Constraint $constraint)
 	{
 		if (!$constraint->type()) {
-			echo "\033[30mskipping constraint\033[0m {$constraint->details()} as it has no type\n";
+			echo "\033[31;1mskipping constraint\033[0m {$constraint->details()} as it has no type\n";
 			return;
 		}
 		

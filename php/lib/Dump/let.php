@@ -51,6 +51,9 @@
 			$details = ($root ? $node->desc() : $node->details());
 			$str = "<div class=\"node\">$details";
 			$str .= "<div class=\"kind\">{$node->kind()}</div>";
+			if ($node instanceof LET\Ident && !$node->boundTo) {
+				$str .= "<div class=\"unbound\">unbound</div>";
+			}
 			if (method_exists($node, 'type')) {
 				$type = $node->type();
 				$class = ($type instanceof LET\Type && $type->isSpecific() ? 'specific' : ''); 

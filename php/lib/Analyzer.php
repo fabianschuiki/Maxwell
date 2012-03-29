@@ -101,32 +101,21 @@ class Analyzer
 	private function inferTypes(LET\Scope $scope)
 	{
 		$constraints = $scope->spawnConstraints();
-		
-		/*echo "before sorting:\n";
-		foreach ($constraints as $c) echo "{$c->details()} ".($c->isSpecific() ? '<specific!>' : '')."\n";*/
-		usort($constraints, function($a,$b) {
-			$as = $a->isSpecific();
-			$bs = $b->isSpecific();
-			if ($as && !$bs) return -1;
-			if (!$as && $bs) return  1;
-			return $a->dependency($b);
-		});
-		echo "after sorting:\n";
 		foreach ($constraints as $c) echo "\033[1;35mconstraint\033[0m {$c->details()} ".($c->isSpecific() ? '<specific!>' : '')."\n";
 		
-		/*foreach ($constraints as $a) {
-			foreach ($constraints as $b) {
-				if ($a === $b) continue;
-				if ($a->dependsOn($b)) echo "{$a->details()} \033[1;34mdepends on\033[0m {$b->details()}\n";
-			}
-		}*/
-		
 		$scope->clearConstraints();
-		foreach ($constraints as $constraint) {
+		while (count($constraints) > 0) {
+			usort($constraints, function($a,$b) {
+				$as = $a->isSpecific();
+				$bs = $b->isSpecific();
+				if ($as && !$bs) return -1;
+				if (!$as && $bs) return  1;
+				return $a->dependency($b);
+			});
+			
+			$constraint = array_shift($constraints);
 			$constraint->impose();
 		}
-		
-		//$scope->verifyConstraints();
 	}
 	
 	private $builtinNumericTypes = array();

@@ -11,5 +11,6 @@ class Ident_Impl extends Ident
 		$this->scope = $scope;
 	}
 	
-	public function name() { return $this->name; }
+	public function name()  { return strval($this->name); }
+	public function range() { return ($this->name instanceof \Token ? $this->name->range : null); }
 }

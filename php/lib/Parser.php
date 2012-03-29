@@ -224,19 +224,10 @@ class Parser
 		
 		$type = null;
 		if (count($ts) > 0) {
-			/*$type = array_pop($ts);
-			if (!$type->is('identifier')) {
-				$this->issues[] = new Issue(
-					'error',
-					"Function argument requires a type.",
-					$type->range
-				);
-				return null;
-			}
-			$type->context = 'def.func.arg.type';*/
-			$type = $this->parseType($ts);
+			$type = $this->parseExpr($ts);
 		}
 		
+		if (!$type || !$name) return null;
 		return new AST\FuncArg($type, $name);
 	}
 	
@@ -253,27 +244,6 @@ class Parser
 			);
 			return null;
 		}
-		$name->context = 'def.type.name';
-		
-		//Potential type attributes.
-		/*$primitive = false;
-		$attrs = array(
-			'primitive' => false
-		);
-		while (count($ts) && $ts[0]->is('keyword')) {
-			$attr = array_shift($ts);
-			switch ($attr->text) {
-				case 'primitive': $attrs['primitive'] = true; break;
-				default: {
-					$this->issues[] = new Issue(
-						'warning',
-						"'{$attr->text}' has no meaning as type attribute.",
-						$attr->range,
-						array($name->range)
-					);
-				} break;
-			}
-		}*/
 		
 		//Type Body
 		$body = array_shift($ts);
@@ -288,20 +258,8 @@ class Parser
 		}
 		$bodyNode = $this->parseBlock($body);
 		
+		if (!$name || !$bodyNode) return null;
 		return new AST\TypeStmt($keyword, $name, $bodyNode);
-		
-		//Create the node.
-		/*$t = new Node;
-		$t->kind      = 'def.type';
-		$t->name      = $name;
-		$t->primitive = $primitive;
-		$t->nodes     = array();
-		$dts = $defs->tokens;
-		while (count($dts)) {
-			$s = $this->parseTypeStmt($dts);
-			if ($s) $t->nodes[] = $s;
-		}
-		return $t;*/
 	}
 	
 	private function parseIfStmt(Token $keyword, array &$ts)

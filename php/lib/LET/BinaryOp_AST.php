@@ -11,7 +11,7 @@ class BinaryOp_AST extends BinaryOp
 	public function __construct(Scope $scope, \AST\BinaryOpExpr $node)
 	{
 		$this->asn   = $node;
-		$this->op    = new Ident_Impl($scope, $node->op->text);
+		$this->op    = new Ident_Impl($scope, $node->op);
 		$this->lhs   = Expr::make($scope, $node->lhs);
 		$this->rhs   = Expr::make($scope, $node->rhs);
 		$this->scope = $scope;

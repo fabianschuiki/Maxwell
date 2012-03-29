@@ -9,7 +9,7 @@ abstract class Ident extends Expr
 	abstract function name();
 	
 	public function details()  { return $this->name(); }
-	public function children() { return array(); } 
+	public function children() { return array(); }
 	
 	public function bind()
 	{

@@ -26,6 +26,9 @@ abstract class Node
 	}
 	abstract function details();
 	
+	/// Returns the human readable description of this node.
+	public function nice() { return $this->kind(); }
+	
 	///Returns this node's subnodes.
 	public function children()
 	{

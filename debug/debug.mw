@@ -28,6 +28,10 @@ type Application
 	}
 }
 
+func (=) ((int, int) a, (int, int) b)
+{
+}
+
 func main
 {
 	//var int x = 5;
@@ -48,4 +52,5 @@ func main
 	var a;
 	var b;
 	var p1 = (a, b);
+	p1 = x;
 }

@@ -11,5 +11,6 @@ class Ident_AST extends Ident
 		$this->scope = $scope;
 	}
 	
-	public function name() { return $this->asn->name->text; }
+	public function name()  { return $this->asn->name->text; }
+	public function range() { return $this->asn->range(); }
 }

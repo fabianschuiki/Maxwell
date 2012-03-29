@@ -12,6 +12,9 @@ abstract class Constraint
 	 *  -1  if $other depends on $this */
 	public function dependency(Constraint $other) { return 0; }
 	
+	/// Returns whether the constraint is specific, i.e. applying the constraint will result in the affected nodes having a specific type.
+	public function isSpecific() { return false; }
+	
 	abstract function details();
 	
 	abstract function met();

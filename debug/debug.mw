@@ -30,7 +30,7 @@ type Application
 
 func main
 {
-	var int x = 5;
+	//var int x = 5;
 	/*var int y = x;
 	var (int, int) p = (1, 2);
 	var t = (a: 25, b: 64.97e47);
@@ -38,8 +38,9 @@ func main
 	var z = x;
 	var tup = (x, z, 5);
 	var (int, int, float) tupfixed = tup;*/
-	var int res_a = test(x);
+	//var int res_a = test(x);
 	//var float res_b = test(x);
-	var int res_c = test(123);
-	//var float res_d = test(234);
+	
+	/* This doesn't work yet, as the compiler doesn't choose between float and int. This will come with assumptions later. */
+	//var int res_c = test(123);
 }

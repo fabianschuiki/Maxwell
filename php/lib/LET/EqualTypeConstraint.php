@@ -9,7 +9,7 @@ class EqualTypeConstraint extends Constraint
 	public function __construct($nodes)
 	{
 		if (!is_array($nodes)) $nodes = func_get_args();
-		foreach ($nodes as $node) assert($node instanceof Node && $node->type() instanceof Type);
+		foreach ($nodes as $node) assert($node instanceof TypedNode && $node->type() instanceof Type);
 		
 		$nodes = array_map(function($node){ return $node->constraintTarget(); }, $nodes);
 		
@@ -91,5 +91,12 @@ class EqualTypeConstraint extends Constraint
 			}
 		}
 		return 0;
+	}
+	
+	public function isSpecific()
+	{
+		$types = array_filter(array_map(function($node){ return $node->type(); }, $this->nodes));
+		foreach ($types as $type) if ($type->isSpecific()) return true;
+		return false;
 	}
 }

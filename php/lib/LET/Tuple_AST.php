@@ -55,7 +55,7 @@ class Tuple_AST extends Expr
 		foreach ($this->exprs as $name => $expr) {
 			$constrained = null;
 			if (isset($type->fields[$name])) $constrained = $type->fields[$name];
-			$expr->typeConstraint = $constrained;
+			$expr->constraintTarget()->typeConstraint = $constrained;
 		}
 	}
 }

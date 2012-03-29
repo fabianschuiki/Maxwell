@@ -566,7 +566,7 @@ class Parser
 		$args = $this->parseCallArgs($arg_group->tokens);
 		$expr = $this->parseExpr($ts);
 		
-		if (!$expr || !$args) return null;
+		if (!$expr || $args === null) return null;
 		return new AST\CallExpr($expr, $args);
 	}
 	

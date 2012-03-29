@@ -20,7 +20,7 @@ type Application
 {
 	var int status;
 	
-	func run (int x)
+	func run
 	{
 		var x = 5;
 		var y = 10;
@@ -43,4 +43,6 @@ func main
 	
 	/* This doesn't work yet, as the compiler doesn't choose between float and int. This will come with assumptions later. */
 	//var int res_c = test(123);
+	var Application app;
+	run();
 }

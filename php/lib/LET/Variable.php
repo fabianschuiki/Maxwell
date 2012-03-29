@@ -23,6 +23,7 @@ class Variable extends TypedNode
 	}
 	
 	public function name()              { return $this->asn->name->text; }
+	public function range()             { return $this->asn->name->range; }
 	public function unconstrainedType() { return $this->type; }
 	
 	public function details($short = false)

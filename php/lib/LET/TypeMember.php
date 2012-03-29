@@ -1,7 +1,7 @@
 <?php
 namespace LET;
 
-class TypeMember extends Node
+class TypeMember extends TypedNode
 {
 	public $asn;
 	public $type;
@@ -14,7 +14,7 @@ class TypeMember extends Node
 		$this->type = $type;
 	}
 	
-	public function type() { return $this->type; }
+	public function unconstrainedType() { return $this->type; }
 	public function name() { return $this->asn->name->text;	}
 	
 	public function details()

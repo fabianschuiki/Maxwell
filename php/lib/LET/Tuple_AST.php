@@ -34,7 +34,7 @@ class Tuple_AST extends Expr
 	
 	public function children() { return array_values($this->exprs); }
 	
-	public function type()
+	public function unconstrainedType()
 	{
 		$fields = array();
 		foreach ($this->exprs as $name => $expr) {

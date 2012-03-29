@@ -5,7 +5,6 @@ abstract class Constant extends Expr
 {
 	abstract function value();
 	abstract function dataType();
-	abstract function type();
 	
 	public function details()
 	{

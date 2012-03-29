@@ -25,9 +25,9 @@ class Constant_AST extends Constant
 		$this->scope = $scope;
 	}
 	
-	public function value()    { return $this->asn->value->text; }
-	public function dataType() { return $this->asn->value->type; }
-	public function type()     { return Type::intersect($this->type, $this->typeConstraint); }
+	public function value()             { return $this->asn->value->text; }
+	public function dataType()          { return $this->asn->value->type; }
+	public function unconstrainedType() { return $this->type; }
 	
 	public function reduce()
 	{

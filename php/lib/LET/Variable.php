@@ -1,7 +1,7 @@
 <?php
 namespace LET;
 
-class Variable extends Node
+class Variable extends TypedNode
 {
 	public $asn;
 	public $type;
@@ -22,14 +22,13 @@ class Variable extends Node
 		$scope->add($this);
 	}
 	
-	public function type()           { return Type::intersect($this->type, $this->typeConstraint); }
-	public function typeConstraint() { return $this->typeConstraint; }
-	public function name()           { return $this->asn->name->text; }
+	public function name()              { return $this->asn->name->text; }
+	public function unconstrainedType() { return $this->type; }
 	
 	public function details($short = false)
 	{
 		$type = $this->type();
-		if ($type) $type = $type->details();
+		$type = ($type ? $type->details() : '?');
 		
 		$initial = $this->initial;
 		if ($initial) $initial = $initial->details();

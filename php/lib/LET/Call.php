@@ -57,12 +57,11 @@ abstract class Call extends Expr
 		return ($args ? new TypeTuple($this->scope, $args) : null);
 	}
 	
-	public function type()
+	public function unconstrainedType()
 	{
 		$type = $this->funcType();
 		if ($type) $type = $type->out();
-		
-		return Type::Intersect($type, $this->typeConstraint);
+		return $type;
 	}
 	
 	public function imposeConstraint(Constraint $constraint)
@@ -74,7 +73,10 @@ abstract class Call extends Expr
 			$args  = $this->argType();
 			if (!$args) $args = new GenericType;
 			$callee->typeConstraint = new FuncType($this->scope, $args, $constraint->type());
-			$callee->bind(); //Gives the callee the chance to update its binding.
+			
+			//Gives the callee the chance to update its binding.
+			$callee->bind();
+			$callee->reduce();
 		}
 	}
 }

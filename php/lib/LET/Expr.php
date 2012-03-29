@@ -1,7 +1,7 @@
 <?php
 namespace LET;
 
-abstract class Expr extends Node
+abstract class Expr extends TypedNode
 {
 	///Returns a new subcalss of Expr wrapping the given expression.
 	static public function make(Scope $scope, \AST\Expr $expr)
@@ -27,6 +27,4 @@ abstract class Expr extends Node
 		);
 		return null;
 	}
-	
-	public function typeConstraint() { return $this->typeConstraint; }
 }

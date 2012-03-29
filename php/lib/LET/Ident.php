@@ -37,7 +37,7 @@ abstract class Ident extends Expr
 		$this->boundNodes = $nodes;
 	}
 	
-	public function type()
+	public function unconstrainedType()
 	{
 		if ($this->boundTo instanceof Type) {
 			return $this->boundTo;
@@ -68,13 +68,4 @@ abstract class Ident extends Expr
 	}
 	
 	public function constraintTarget() { return $this->boundTo; }
-	
-	public function imposeConstraint(Constraint $constraint)
-	{
-		parent::imposeConstraint($constraint);
-		
-		$tc = $this->typeConstraint;
-		$tc = ($tc ? $tc->details() : '?');
-		echo "imposing constraint on {$this->desc()}, type constraint is now $tc\n";
-	}
 }

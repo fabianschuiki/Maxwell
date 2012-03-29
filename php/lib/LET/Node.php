@@ -4,8 +4,6 @@ namespace LET;
 abstract class Node
 {
 	public $scope;
-	public $constraints;
-	public $typeConstraint;
 	
 	///Returns the type of this LET node, which is its class name without the LET namespace.
 	public function kind()
@@ -41,6 +39,7 @@ abstract class Node
 	///Returns whether the given node is a child node of this node.
 	public function hasChild(Node $other)
 	{
+		//TODO: fix this $node->constraintTarget() thing so it becomes clear in the function name that the constraint target is checked, not the node itself.
 		$children = array_filter(array_map(function($node){ return $node->constraintTarget(); }, $this->children()));
 		if (in_array($other, $children, true)) return true;
 		
@@ -79,64 +78,4 @@ abstract class Node
 	
 	public function spawnConstraints(array &$cons) { foreach ($this->children() as $node) $node->spawnConstraints($cons); }
 	public function constraintTarget() { return $this; }
-	
-	public function clearConstraints()
-	{
-		$this->__call('clearConstraints', array());
-		$this->constraints = array();
-		$this->typeConstraint = new GenericType;
-	}
-	
-	public function imposeConstraint(Constraint $constraint)
-	{
-		if (!$constraint->type()) {
-			echo "\033[31;1mskipping constraint\033[0m {$constraint->details()} as it has no type\n";
-			return;
-		}
-		
-		echo "\033[1mimpose constraint\033[0m {$constraint->type()->details()} \033[1mon\033[0m {$this->details()}\n";
-		
-		$this->constraints[] = $constraint;
-		$typeConstraint = $this->typeConstraint;
-		if ($typeConstraint) {
-			$typeConstraint = Type::intersect($typeConstraint, $constraint->type());
-			global $issues;
-			if (!$typeConstraint) {
-				$issues[] = new \Issue(
-					'error',
-					"Constraint {$constraint->details()} conflicts with other constraints.",
-					$this
-				);
-			} else if (!$typeConstraint || !Type::intersect($typeConstraint, $this->type())) {
-				$type = $this->type();
-				$type = ($type ? $type->details() : '?');
-				$issues[] = new \Issue(
-					'error',
-					"Entity of type '$type' cannot meet constraint {$constraint->details()}.",
-					$this
-				);
-			}
-			$this->typeConstraint = $typeConstraint;
-		}
-	}
-	
-	public function verifyConstraints()
-	{
-		$this->__call('verifyConstraints', array());
-		$constraints = $this->constraints;
-		if (!$constraints) return;
-		while (count($constraints) > 0) {
-			$a = array_shift($constraints);
-			foreach ($constraints as $b) {
-				if (!Type::intersect($a->type(), $b->type())) {
-					global $issues;
-					$issues[] = new \Issue(
-						'error',
-						"{$a->desc()} and {$b->desc()} cannot both be met.",
-						$this
-					);
-				}
-			}
-		}
-	}
 }

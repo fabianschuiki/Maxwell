@@ -14,9 +14,13 @@ abstract class Ident extends Expr
 	public function bind()
 	{
 		$nodes = $this->scope->find($this->name());
+		$unfilteredCount = count($nodes);
 		
-		//TODO: perform type check.
-		echo "binding identifier {$this->name()} -> ".count($nodes)." nodes\n";
+		$type = $this->typeConstraint;
+		if ($type) {
+			$nodes = array_filter($nodes, function($node) use ($type) { return Type::intersect($node->type(), $type) != null; });
+		}
+		echo "binding identifier {$this->name()} -> $unfilteredCount nodes, ".count($nodes)." match type.\n";
 		
 		$boundTo = null;
 		if (count($nodes) == 0) {
@@ -64,4 +68,13 @@ abstract class Ident extends Expr
 	}
 	
 	public function constraintTarget() { return $this->boundTo; }
+	
+	public function imposeConstraint(Constraint $constraint)
+	{
+		parent::imposeConstraint($constraint);
+		
+		$tc = $this->typeConstraint;
+		$tc = ($tc ? $tc->details() : '?');
+		echo "imposing constraint on {$this->desc()}, type constraint is now $tc\n";
+	}
 }

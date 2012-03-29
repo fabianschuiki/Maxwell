@@ -16,6 +16,18 @@ func test (float a) -> (int b)
 {
 }
 
+type Application
+{
+	var int status;
+	
+	func run
+	{
+		var x = 5;
+		var y = 10;
+		var (int, int) p = (x, y);
+	}
+}
+
 func main
 {
 	var int x = 5;

@@ -65,32 +65,6 @@ abstract class Call extends Expr
 		return Type::Intersect($type, $this->typeConstraint);
 	}
 	
-	public function spawnConstraints(array &$constraints)
-	{
-		//$callee = $this->callee();
-		//if ($callee) $constraints[] = new EqualTypeConstraint($this, $callee);
-		
-		/*$func = $this->funcType();
-		if ($func) {
-			echo "spawn constraint for {$this->desc()}\n";
-			
-			$a = $this->funcType();
-			if ($a) $a = $a->in;
-			$b = $this->argType();
-			
-			if ($a && $b) {
-				$pairs = TypeTuple::fieldPairs($a, $b);
-				$args  = $this->args();
-				foreach ($pairs as $pair) {
-					$at = $a->fields[$pair[0]];
-					$arg = $args[$pair[1]];
-					if ($at && $bt) 
-					echo " -> {$pair[0]} ~ {$pair[1]}\n";
-				}
-			}
-		}*/
-	}
-	
 	public function imposeConstraint(Constraint $constraint)
 	{
 		parent::imposeConstraint($constraint);
@@ -100,15 +74,7 @@ abstract class Call extends Expr
 			$args  = $this->argType();
 			if (!$args) $args = new GenericType;
 			$callee->typeConstraint = new FuncType($this->scope, $args, $constraint->type());
+			$callee->bind(); //Gives the callee the chance to update its binding.
 		}
-		
-		/*$type = $this->typeConstraint;
-		if (!$type instanceof TypeTuple) return;
-		
-		foreach ($this->exprs as $name => $expr) {
-			$constrained = null;
-			if (isset($type->fields[$name])) $constrained = $type->fields[$name];
-			$expr->typeConstraint = $constrained;
-		}*/
 	}
 }

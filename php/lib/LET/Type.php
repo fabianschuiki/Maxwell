@@ -41,6 +41,8 @@ abstract class Type extends Node
 		if ($a instanceof GenericType) return $b;
 		if ($b instanceof GenericType) return $a;
 		
+		//echo "intersectTwo {$a->details()} and {$b->details()}\n";
+		
 		if (!$a instanceof TypeSet && $b instanceof TypeSet) return static::intersectTwo($b, $a);
 		if ($a instanceof TypeSet) {
 			$types = array();
@@ -73,6 +75,13 @@ abstract class Type extends Node
 				else $fields[] = $type;
 			}
 			return new TypeTuple($a->scope, $fields);
+		}
+		
+		if ($a instanceof FuncType && $b instanceof FuncType) {
+			$in  = static::intersectTwo($a->in(),  $b->in());
+			$out = static::intersectTwo($a->out(), $b->out());
+			if (!$in || !$out) return null;
+			return new FuncType($a->scope, $in, $out);
 		}
 		
 		if ($a instanceof ConcreteType && $b instanceof ConcreteType) return ($a === $b ? $a : null);

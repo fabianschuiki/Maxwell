@@ -18,7 +18,7 @@ class ConcreteType_AST extends ConcreteType
 					$members[] = new TypeMember($scope, $stmt);
 				} break;
 				case 'FuncStmt': {
-					$scope->add(new Func_AST($scope, $stmt, $this));
+					new Func_AST($scope, $stmt, $this);
 				} break;
 				default: {
 					global $issues;

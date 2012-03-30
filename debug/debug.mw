@@ -16,10 +16,10 @@ func test (float a) -> (int b)
 {
 }
 
-func square (a) -> (b)
+/*func square (a) -> (b)
 {
 	b = a * a;
-}
+}*/
 
 type Application
 {
@@ -49,13 +49,14 @@ func main
 	var (int, int, float) tupfixed = tup;*/
 	//var int res_a = test(x);
 	//var float res_b = test(x);
+	var t = (5, 6);
 	
 	/* This doesn't work yet, as the compiler doesn't choose between float and int. This will come with assumptions later. */
 	//var int res_c = test(123);
 	var Application app;
 	var x = run(app);
-	var a;
+	/*var a;
 	var b;
 	var p1 = (a, b);
-	p1 = x;
+	p1 = x;*/
 }

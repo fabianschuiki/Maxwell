@@ -16,7 +16,7 @@ class Range
 			}
 			if ($r instanceof Range) {
 				if (!$range) {
-					$range = $r;
+					$range = clone $r;
 				} else {
 					$range->combine($r);
 				}

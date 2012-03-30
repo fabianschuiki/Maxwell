@@ -17,7 +17,7 @@ class Issue
 			foreach ($range as $r) {
 				if (!$r instanceof Range && method_exists($r, 'range')) $r = $r->range();
 				if (!$total) {
-					$total = $r;
+					$total = clone $r;
 				} else {
 					$total->combine($r);
 				} 

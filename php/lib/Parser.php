@@ -151,16 +151,14 @@ class Parser
 		
 		if ($ts[0]->is('group', '()')) {
 			$args_in = $this->parseFuncArgs(array_shift($ts)->tokens);
-		}
-		if (!isset($args_in)) {
+		} else {
 			$args_in = array();
 		}
 		
 		if ($ts[0]->is('symbol', '->') && $ts[1]->is('group', '()')) {
 			array_shift($ts);
 			$args_out = $this->parseFuncArgs(array_shift($ts)->tokens);
-		}
-		if (!isset($args_out)) {
+		} else {
 			$args_out = array();
 		}
 		
@@ -176,9 +174,7 @@ class Parser
 		}
 		$bodyNode = $this->parseBlock($body);
 		
-		$name->context = 'func.name';
-		$body->context = 'func.body';
-		
+		if (!$name || $args_in === null || $args_out === null || !$bodyNode) return null;
 		return new AST\FuncStmt($keyword, $name, $args_in, $args_out, $bodyNode);
 		
 		/*$f = new Node;
@@ -205,7 +201,9 @@ class Parser
 					break;
 				$sub[] = $t;
 			}
-			$args[] = $this->parseFuncArg($sub);
+			$arg = $this->parseFuncArg($sub);
+			if (!$arg) return null;
+			$args[] = $arg;
 		}
 		return $args;
 	}
@@ -227,7 +225,7 @@ class Parser
 			$type = $this->parseExpr($ts);
 		}
 		
-		if (!$type || !$name) return null;
+		if (!$name) return null;
 		return new AST\FuncArg($type, $name);
 	}
 	

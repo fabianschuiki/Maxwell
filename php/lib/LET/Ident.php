@@ -84,4 +84,17 @@ abstract class Ident extends Expr
 	}
 	
 	/*public function constraintTarget() { return ($this->boundTo && $this->boundTo instanceof Variable ? $this->boundTo : null); }*/
+	public function complainAboutAmbiguities()
+	{
+		parent::complainAboutAmbiguities();
+		if (count($this->boundNodes) > 1) {
+			global $issues;
+			$issues[] = new \Issue(
+				'error',
+				"Entity '{$this->name()}' is ambiguous. It may refer to:",
+				$this,
+				$this->boundNodes
+			);
+		}
+	}
 }

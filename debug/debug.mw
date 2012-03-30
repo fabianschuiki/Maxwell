@@ -16,6 +16,11 @@ func test (float a) -> (int b)
 {
 }
 
+func square (a) -> (b)
+{
+	b = a * a;
+}
+
 type Application
 {
 	var int status;
@@ -28,9 +33,9 @@ type Application
 	}
 }
 
-func (=) ((int, int) a, (int, int) b)
-{
-}
+func (=) ((int, int) a, (int, int) b) {}
+func (=) (a, b) -> (c) {}
+func (*) (a, b) -> (c) {}
 
 func main
 {

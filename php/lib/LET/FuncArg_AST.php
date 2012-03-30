@@ -8,8 +8,12 @@ class FuncArg_AST extends FuncArg
 	
 	public function __construct(Scope $scope, \AST\FuncArg $node)
 	{
-		$type = Expr::make($scope, $node->type);
-		if ($type) $type = new TypeExpr($scope, $type);
+		if ($node->type) {
+			$type = Expr::make($scope, $node->type);
+			if ($type) $type = new TypeExpr($scope, $type);
+		} else {
+			$type = new GenericType;
+		}
 		
 		$this->asn   = $node;
 		$this->type  = $type;

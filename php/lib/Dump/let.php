@@ -31,7 +31,7 @@
 		
 		function dumpType(LET\ConcreteType $type)
 		{
-			$str = "<div class=\"type\"><div class=\"name\">".$type->desc()."</div>";
+			$str = "<div class=\"type\"><div class=\"name\">".htmlentities($type->desc())."</div>";
 			if (!$type->isSpecific()) $str .= "<div class=\"attrs\">generic</div>";
 			$str .= "<div class=\"indent\">";
 			if ($type->subscope) $str .= dumpScope($type->subscope);
@@ -42,7 +42,7 @@
 		
 		function dumpFunc(LET\Func $func)
 		{
-			$str = "<div class=\"func\"><div class=\"name\">".$func->desc()."</div>";
+			$str = "<div class=\"func\"><div class=\"name\">".htmlentities($func->desc())."</div>";
 			if (!$func->isSpecific()) $str .= "<div class=\"attrs\">generic</div>";
 			$str .= "<div class=\"indent\">";
 			if ($func->subscope) $str .= dumpScope($func->subscope);
@@ -59,7 +59,7 @@
 		function dumpNode(LET\Node $node, $root = true)
 		{
 			$details = ($root ? $node->desc() : $node->details());
-			$str = "<div class=\"node\">$details";
+			$str = "<div class=\"node\">".htmlentities($details);
 			$str .= "<div class=\"kind\">{$node->kind()}</div>";
 			if ($node instanceof LET\Ident && !$node->boundTo) {
 				$str .= "<div class=\"unbound\">unbound</div>";
@@ -67,9 +67,9 @@
 			if ($node instanceof LET\TypedNode) {
 				$type = $node->type();
 				$class = ($type instanceof LET\Type && $type->isSpecific() ? 'specific' : ''); 
-				$str .= "<div class=\"type $class\">".($type ? $type->details() : '?')."</div>";
+				$str .= "<div class=\"type $class\">".($type ? htmlentities($type->details()) : '?')."</div>";
 				$constraint = $node->typeConstraint;
-				if ($constraint && $constraint != $node->type()) $str .= "<div class=\"type constraint\">".$constraint->details()."</div>";
+				if ($constraint && $constraint != $node->type()) $str .= "<div class=\"type constraint\">".htmlentities($constraint->details())."</div>";
 			}
 			foreach ($node->children() as $child) {
 				if ($child instanceof LET\Type && $child->isSpecific()) continue;

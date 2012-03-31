@@ -37,5 +37,15 @@ class ConcreteType_Spec extends ConcreteType
 	public function name()    { return $this->original->name(); }
 	public function members() { return $this->members; }
 	
-	public function details() { return parent::details()."#"; }
+	public function details()
+	{
+		$members = array();
+		foreach ($this->members as $member) {
+			$type = $member->type();
+			$type = ($type ? $type->details() : '?');
+			$members[] = "$type {$member->name()}";
+		}
+		$members = implode(', ', $members);
+		return parent::details()."<".$members.">";
+	}
 }

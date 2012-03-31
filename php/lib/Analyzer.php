@@ -37,6 +37,7 @@ class Analyzer
 			if ($this->issues->isFatal()) return;
 		
 			//Build the specializations.
+			//letDumpNPause();
 			$specializations = $this->buildSpecializations($nodes);
 			echo "built ".count($specializations)." specializations\n";
 			if ($this->issues->isFatal()) return;

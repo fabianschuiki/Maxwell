@@ -30,7 +30,16 @@ abstract class Ident extends Expr
 			$nodes = array_filter($nodes, function($node) use ($type) { return $node->type() && (Type::intersect($node->type(), $type) != null); });
 			$tc = $type->details();
 		}
-		echo "binding identifier {$this->name()} -> ".count($unfiltered)." nodes, ".count($nodes)." match type $tc.\n";
+		$anySpecific = false;
+		foreach ($nodes as $node) {
+			if ($node->isSpecific()) {
+				$anySpecific = true;
+				break;
+			}
+		}
+		if ($anySpecific) $nodes = array_filter($nodes, function($node) { return $node->isSpecific(); });
+		sort($nodes);
+		echo "binding identifier {$this->name()} -> ".count($unfiltered)." nodes, ".count($nodes)." ".($anySpecific ? 'specific' : '')." nodes match type $tc.\n";
 		
 		$boundTo = null;
 		if (count($nodes) == 0 && count($unfiltered) > 0) {
@@ -52,7 +61,7 @@ abstract class Ident extends Expr
 		if ($this->boundTo instanceof Type) {
 			return $this->boundTo;
 		}
-		if (method_exists($this->boundTo, 'type')) {
+		if ($this->boundTo instanceof TypedNode) {
 			return $this->boundTo->type();
 		}
 		if (is_array($this->boundNodes)) {
@@ -86,12 +95,12 @@ abstract class Ident extends Expr
 	}
 	
 	//Not sure whether this is required. The identifier needs to refilter the list of nodes when its type constraint changes. If only for funcs, this can be done in Call.
-	/*public function imposeTypeConstraint(Type $type)
+	public function imposeTypeConstraint(Type $type)
 	{
 		parent::imposeTypeConstraint($type);
 		$this->bind();
 		$this->reduce();
-	}*/
+	}
 	
 	/*public function constraintTarget() { return ($this->boundTo && $this->boundTo instanceof Variable ? $this->boundTo : null); }*/
 	public function complainAboutAmbiguities()
@@ -102,7 +111,7 @@ abstract class Ident extends Expr
 			$issues[] = new \Issue(
 				'error',
 				"Entity '{$this->name()}' is ambiguous. It may refer to:",
-				$this,
+				null,
 				$this->boundNodes
 			);
 		}

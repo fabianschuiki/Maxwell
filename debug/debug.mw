@@ -4,18 +4,25 @@ type Array
 {
 	var Element first;
 	var Element last;
+	
+	func add (value)
+	{
+		this.first.value = value;
+		this.last.value  = value;
+	}
 }
 
 type Element
 {
-	var Element next;
-	var Element prev;
 	var value;
 }
+
+func (=) (float a, float b) {}
+func (=) (int a, int b) {}
 
 func main
 {
 	var Array array;
-	var int i = array.first.value;
-	var int n = array.last.value;
+	var int i = 123;
+	add(array, i);
 }

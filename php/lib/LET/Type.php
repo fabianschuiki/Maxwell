@@ -46,8 +46,18 @@ abstract class Type extends Node
 	{
 		if ($a instanceof GenericType) return $b;
 		if ($b instanceof GenericType) return $a;
-		
 		//echo "intersectTwo {$a->details()} and {$b->details()}\n";
+		
+		//Choose the more specific scope to be used for the intersection.
+		$scope = $a->scope;
+		$s = $b->scope;
+		while ($s) {
+			if ($s == $scope) {
+				$scope = $b->scope;
+				break;
+			}
+			$s = $s->outer;
+		}
 		
 		if (!$a instanceof TypeSet && $b instanceof TypeSet) return static::intersectTwo($b, $a);
 		if ($a instanceof TypeSet) {
@@ -58,7 +68,7 @@ abstract class Type extends Node
 			}
 			if (!count($types)) return null;
 			if (count($types) == 1) return array_shift($types);
-			return new TypeSet($a->scope, $types);
+			return new TypeSet($scope, $types);
 		}
 		
 		if (!$a instanceof TypeTuple && $b instanceof TypeTuple) return static::intersectTwo($b, $a);
@@ -80,7 +90,7 @@ abstract class Type extends Node
 				if (is_string($bk)) $fields[$bk] = $type;
 				else $fields[] = $type;
 			}
-			return new TypeTuple($a->scope, $fields);
+			return new TypeTuple($scope, $fields);
 		}
 		
 		if (!$a instanceof MemberConstrainedType && $b instanceof MemberConstrainedType) return static::intersectTwo($b, $a);
@@ -119,7 +129,7 @@ abstract class Type extends Node
 			$in  = static::intersectTwo($a->in(),  $b->in());
 			$out = static::intersectTwo($a->out(), $b->out());
 			if (!$in || !$out) return null;
-			return new FuncType($a->scope, $in, $out);
+			return new FuncType($scope, $in, $out);
 		}
 		
 		if (!$a instanceof ConcreteType_Spec && $b instanceof ConcreteType_Spec) return static::intersectTwo($b, $a);

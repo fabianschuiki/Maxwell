@@ -49,8 +49,8 @@ abstract class Call extends Expr
 		$callee = $this->callee();
 		if ($callee) {
 			$callee->imposeTypeConstraint($this->funcType());
-			$callee->bind();
-			$callee->reduce();
+			/*$callee->bind();
+			$callee->reduce();*/
 		}
 	}
 	

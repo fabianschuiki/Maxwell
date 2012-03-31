@@ -2,33 +2,32 @@ body {
 	font-family: monospace;
 }
 
-pre {
-	margin: 0;
-}
-
 div.scope > div {
 	margin-bottom: 1em;
 }
-
-div.scope > div.funcs > pre { font-weight: bold; /*color: #3465a4;*/ }
-div.scope > div.types > pre { font-weight: bold; /*color: #75507b;*/ }
+div.scope > * > * > div.name {
+	font-weight: bold;
+	display:     inline-block;
+}
 
 div.indent {
 	margin-left:  1em;
 	padding-left: 1em;
 	border-left:  2px solid #ccc;
 }
+div.attrs {
+	margin-left: 1em;
+	display:     inline-block;
+	color:       #75507b;
+}
 
 div.func {
 	margin-bottom: 1em;
 }
-div.func > hr {
+div.func > * > hr {
 	margin:     0.25em 0;
 	border:     none;
 	border-top: 1px dotted #ccc;
-}
-div.func > div.stmt {
-	white-space: pre;
 }
 
 div.node {

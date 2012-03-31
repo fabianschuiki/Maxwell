@@ -18,7 +18,6 @@
 				if (!count($scope->$field)) continue;
 				$str .= "<div class=\"$field\">";
 				foreach ($scope->$field as $entity) {
-					$str .= "<pre>".$entity->desc()."</pre>";
 					if ($field == 'types') $str .= dumpType($entity);
 					if ($field == 'funcs') $str .= dumpFunc($entity);
 				}
@@ -30,16 +29,19 @@
 		
 		function dumpType(LET\ConcreteType $type)
 		{
-			$str = "<div class=\"type indent\">";
+			$str = "<div class=\"type\"><div class=\"name\">".$type->desc()."</div>";
+			$str .= "<div class=\"indent\">";
 			if ($type->subscope) $str .= dumpScope($type->subscope);
 			foreach ($type->members as $member) $str .= dumpNode($member);
-			$str .= "</div>";
+			$str .= "</div></div>";
 			return $str;
 		}
 		
 		function dumpFunc(LET\Func $func)
 		{
-			$str = "<div class=\"func indent\">";
+			$str = "<div class=\"func\"><div class=\"name\">".$func->desc()."</div>";
+			if (!$func->type()->isSpecific()) $str .= "<div class=\"attrs\">generic</div>";
+			$str .= "<div class=\"indent\">";
 			if ($func->subscope) $str .= dumpScope($func->subscope);
 			$args = array_merge($func->inputs(), $func->outputs());
 			if (count($args)) {
@@ -47,7 +49,7 @@
 				$str .= "<hr/>";
 			}
 			foreach ($func->stmts as $stmt) $str .= dumpNode($stmt);
-			$str .= "</div>";
+			$str .= "</div></div>";
 			return $str;
 		}
 		

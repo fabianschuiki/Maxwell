@@ -34,7 +34,7 @@ class TypeMember extends TypedNode
 	
 	public function reduce()
 	{
-		if ($this->type) {
+		if ($this->type && !$this->type instanceof ConcreteType) {
 			echo "reducing {$this->desc()} with type being of class ".get_class($this->type)."\n";
 			$this->type = $this->type->reduce();
 		}

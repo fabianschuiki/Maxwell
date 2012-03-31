@@ -37,7 +37,6 @@ class Analyzer
 			if ($this->issues->isFatal()) return;
 		
 			//Build the specializations.
-			//letDumpNPause();
 			$specializations = $this->buildSpecializations($nodes);
 			echo "built ".count($specializations)." specializations\n";
 			if ($this->issues->isFatal()) return;
@@ -49,11 +48,16 @@ class Analyzer
 			if ($wdc++ > 100) {
 				trigger_error("Analyzer ran through $wdc iterations, which is quite unlikely to happen.", E_USER_ERROR);
 			}
-			letDumpNPause();
+			//letDumpNPause();
 		}
 		
+		//Strip the generics from the scope.
+		//NOTE: Comment this line to see the generic nodes for debugging.
+		$scope->stripGenerics();
+		
 		//Complain about ambiguities.
-		//$this->complainAboutAmbiguities($scope->children());
+		//NOTE: Comment this line if not stripping generics as they will be whining about how they are ambiguous.
+		$this->complainAboutAmbiguities($scope->children());
 	}
 	
 	private function buildBuiltinScope()

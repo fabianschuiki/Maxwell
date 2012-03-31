@@ -90,4 +90,13 @@ class Scope
 		
 		return $nodes;
 	}
+	
+	public function stripGenerics()
+	{
+		$specificFilter = function($node) { return $node->isSpecific(); };
+		$this->types = array_filter($this->types, $specificFilter);
+		$this->funcs = array_filter($this->funcs, $specificFilter);
+		
+		foreach ($this->children() as $child) $child->subscope->stripGenerics();
+	}
 }

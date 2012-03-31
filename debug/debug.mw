@@ -1,19 +1,16 @@
-/** Debugging some stuff. */
+/** Maxwell debugging file. */
 
-type Vector
+type Array
 {
-	var x;
-	var y;
+	var Element first;
+	var Element last;
 }
 
-func test (Vector v)
+type Element
 {
-	var int a = v.x;
-	var int b = v.y;
+	var Element next;
 }
 
 func main
 {
-	var Vector v;
-	test(v);
 }

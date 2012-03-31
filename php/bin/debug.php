@@ -106,6 +106,7 @@ $analyzer->issues = $issues;
 $analyzer->nodes = $parser->nodes;
 $analyzer->run();
 $stopTime = microtime(true);
+echo "[\033[36mcompilation took ".sprintf('%.1f', ($stopTime-$startTime)*1000)." ms\033[0m]\n";
 
 function letDumpNPause()
 {
@@ -121,7 +122,6 @@ file_put_contents("$out.let.html", $dump);
 $issues->exitIfFatal();
 
 /** STOP HERE */
-echo "[\033[36mcompilation took ".sprintf('%.1f', ($stopTime-$startTime)*1000)." ms\033[0m]\n";
 $issues->dump(); exit;
 
 //Dump the scope.

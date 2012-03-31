@@ -42,6 +42,7 @@ class Variable extends TypedNode
 	
 	public function reduce()
 	{
+		parent::reduce();
 		if ($this->type())  $this->type    = $this->type()->reduce();
 		if ($this->initial) $this->initial = $this->initial->reduce();
 		return $this;

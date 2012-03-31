@@ -70,4 +70,10 @@ abstract class TypedNode extends Node
 		}
 		$this->typeConstraint = $constraint;
 	}
+	
+	public function reduce()
+	{
+		if ($this->typeConstraint) $this->typeConstraint = $this->typeConstraint->reduce();
+		return parent::reduce();
+	}
 }

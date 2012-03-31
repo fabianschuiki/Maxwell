@@ -51,45 +51,6 @@ class Analyzer
 		
 		//Complain about ambiguities.
 		//$this->complainAboutAmbiguities($scope->children());
-		
-		/*foreach ($this->nodes as $n) $this->reduce($n);
-		if ($this->issues->isFatal()) return;
-		
-		$builtinScope = new Scope;
-		$this->addBuiltIn($builtinScope);
-		if (!$this->importScope) {
-			$this->importScope = new Scope($builtinScope);
-		} else {
-			$this->importScope->parent = $builtinScope;
-		}
-		$this->scope = new Scope($this->importScope);
-		
-		foreach ($this->nodes as $n) $this->populateScope($this->scope, $n);
-		if ($this->issues->isFatal()) return;
-		
-		foreach ($this->nodes as $n) $this->bind($n);
-		if ($this->issues->isFatal()) return;
-		
-		foreach ($this->nodes as $n) $this->analyzeType($n);
-		if ($this->issues->isFatal()) return;
-		
-		foreach ($this->nodes as $n) $this->resolveMember($n);
-		if ($this->issues->isFatal()) return;
-		
-		foreach ($this->nodes as $n) $this->lateBind($n);
-		if ($this->issues->isFatal()) return;
-		
-		foreach ($this->nodes as $n) $this->incarnate($n);
-		if ($this->issues->isFatal()) return;
-		
-		foreach ($this->nodes as $n) $this->expandTupleOps($n);
-		if ($this->issues->isFatal()) return;
-		
-		foreach ($this->nodes as $n) $this->lateBind($n);
-		if ($this->issues->isFatal()) return;
-		
-		foreach ($this->nodes as $n) $this->generateCName($n);
-		if ($this->issues->isFatal()) return;*/
 	}
 	
 	private function buildBuiltinScope()

@@ -18,7 +18,7 @@ abstract class Member extends Expr
 	public function unconstrainedType()
 	{
 		$member = $this->typeMember();
-		if (!$member) return null;
+		if (!$member) return new GenericType;
 		return $member->type();
 	}
 	
@@ -40,10 +40,24 @@ abstract class Member extends Expr
 		$type = $this->type();
 		if (!$expr || !$type) return;
 		
+		/*$exprType = $expr->type();
+		if (!$exprType) $exprType = new GenericType;*/
+		
 		$constraint = new MemberConstrainedType(new GenericType, array($this->name() => $type), array($this->name() => $this));
+		
+		if ($expr->typeConstraint && !Type::intersect($expr->typeConstraint, $constraint)) {
+			global $issues;
+			$issues[] = new \Issue(
+				'error',
+				"Member '{$this->name()}' is not of type '{$type->details()}'.",
+				$this
+			);
+			return;
+		}
+		
 		$expr->imposeTypeConstraint($constraint);
 		$tp = $expr->type();
-		$tp = ($tp ? $tp->details() : $tp);
+		$tp = ($tp ? $tp->details() : '?');
 		echo "constrained {$expr->desc()} to {$constraint->details()}, yielding $tp\n";
 	}
 	

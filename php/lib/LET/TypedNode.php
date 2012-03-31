@@ -7,7 +7,7 @@ abstract class TypedNode extends Node
 	public $typeConstraint;
 	
 	/// The node's inferred type. Consists of the unconstrained type with the type constraint applied.
-	public function type() { return Type::intersect($this->unconstrainedType(), $this->typeConstraint); }
+	public function type() { return ($this->unconstrainedType() && $this->typeConstraint ? Type::intersect($this->unconstrainedType(), $this->typeConstraint) : null); }
 	abstract function unconstrainedType();
 	
 	/// Clears the constraints and the derived type constraint.
@@ -58,7 +58,8 @@ abstract class TypedNode extends Node
 	/// Imposes the given type constraint upon the node.
 	public function imposeTypeConstraint(Type $type)
 	{
-		$constraint = Type::intersect($this->typeConstraint, $type);
+		$constraint = null;
+		if ($this->typeConstraint) $constraint = Type::intersect($this->typeConstraint, $type);
 		if (!$constraint) {
 			global $issues;
 			$issues[] = new \Issue(

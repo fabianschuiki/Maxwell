@@ -18,6 +18,7 @@ class Analyzer
 		foreach ($this->nodes as $node) {
 			$this->buildEntity($scope, $node);
 		}
+		foreach ($scope->children() as $node) $node->clearConstraints();
 		if ($this->issues->isFatal()) return;
 		
 		//Analysis is an iterative process that works on a bunch of nodes at a time.

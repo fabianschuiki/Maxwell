@@ -41,6 +41,11 @@
 		{
 			$str = "<div class=\"func indent\">";
 			if ($func->subscope) $str .= dumpScope($func->subscope);
+			$args = array_merge($func->inputs(), $func->outputs());
+			if (count($args)) {
+				foreach ($args as $arg) $str .= dumpNode($arg);
+				$str .= "<hr/>";
+			}
 			foreach ($func->stmts as $stmt) $str .= dumpNode($stmt);
 			$str .= "</div>";
 			return $str;

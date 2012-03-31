@@ -22,6 +22,11 @@ div.indent {
 div.func {
 	margin-bottom: 1em;
 }
+div.func > hr {
+	margin:     0.25em 0;
+	border:     none;
+	border-top: 1px dotted #ccc;
+}
 div.func > div.stmt {
 	white-space: pre;
 }

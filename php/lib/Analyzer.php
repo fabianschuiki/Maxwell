@@ -86,6 +86,7 @@ class Analyzer
 	public function __call($name, $args)
 	{
 		if (count($args) >= 1 && is_array($args[0])) {
+			echo "-> \033[32;1m{$name}\033[0m\n";
 			foreach ($args[0] as $node)	call_user_func_array(array($node, $name), array_slice($args, 1));
 			return;
 		}

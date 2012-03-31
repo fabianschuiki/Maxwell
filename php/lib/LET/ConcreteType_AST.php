@@ -41,4 +41,6 @@ class ConcreteType_AST extends ConcreteType
 	
 	public function name()    { return $this->asn->name->text; }
 	public function members() { return $this->members; }
+	
+	public function range()   { return $this->asn->name->range; }
 }

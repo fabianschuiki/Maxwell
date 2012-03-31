@@ -3,6 +3,8 @@ namespace LET;
 
 abstract class ConcreteType extends Type
 {
+	public $specializations;
+	
 	abstract function name();
 	abstract function members();
 	
@@ -28,5 +30,23 @@ abstract class ConcreteType extends Type
 	public function children()
 	{
 		return $this->members();
+	}
+	
+	public function specialize(ConcreteType $type, array &$specializations)
+	{
+		if ($this == $type) return $this;
+		if ($this->specializations) {
+			foreach ($this->specializations as $spec) if ($spec == $type) return $spec;
+		} else {
+			$this->specializations = array();
+		}
+		
+		echo "\033[1mspecializing\033[0m {$this->details()} for {$type->details()}\n";
+		/*$spec = new Func_Spec($this, $type);
+		$this->specializations[] = $spec;
+		$specializations[] = $spec;
+		$this->scope->add($spec);*/
+		$spec = $this;
+		return $spec;
 	}
 }

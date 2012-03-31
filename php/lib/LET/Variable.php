@@ -50,9 +50,7 @@ class Variable extends TypedNode
 	public function spawnConstraints(array &$constraints)
 	{
 		if ($this->initial) {
-			if ($this->type() && $this->initial->type()) {
-				$constraints[] = new EqualTypeConstraint($this, $this->initial);
-			}
+			$constraints[] = new EqualTypeConstraint($this, $this->initial);
 			$this->initial->spawnConstraints($constraints);
 		}
 	}

@@ -77,6 +77,27 @@ abstract class Type extends Node
 			return new TypeTuple($a->scope, $fields);
 		}
 		
+		if (!$a instanceof MemberConstrainedType && $b instanceof MemberConstrainedType) return static::intersectTwo($b, $a);
+		if ($a instanceof MemberConstrainedType && !$b instanceof MemberConstrainedType) {
+			$type = static::intersectTwo($a->type, $b);
+			if (!$type) return null;
+			return new MemberConstrainedType($type, $a->members, $a->issuingNodes);
+		}
+		if ($a instanceof MemberConstrainedType && $b instanceof MemberConstrainedType) {
+			$type = static::intersectTwo($a->type, $b->type);
+			if (!$type) return null;
+			$members = array();
+			foreach ($a->members as $m => $t) {
+				if (isset($b->members[$m])) $t = static::intersectTwo($t, $b->members[$m]);
+				if (!$t) return null;
+				$members[$m] = $t;
+			}
+			foreach ($b->members as $m => $t) {
+				if (!isset($a->members[$m])) $members[$m] = $t;
+			}
+			return new MemberConstrainedType($type, $members, array_merge($a->issuingNodes, $b->issuingNodes));
+		}
+		
 		if ($a instanceof FuncType && $b instanceof FuncType) {
 			$in  = static::intersectTwo($a->in(),  $b->in());
 			$out = static::intersectTwo($a->out(), $b->out());

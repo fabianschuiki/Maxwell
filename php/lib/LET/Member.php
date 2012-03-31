@@ -13,32 +13,49 @@ abstract class Member extends Expr
 		return "$str.{$this->name()}";
 	}
 	
-	public function spawnConstraints(array &$constraints)
-	{
-		//parent::spawnConstraints($constraints);
-		
-		$expr = $this->expr();
-		if ($expr) {
-			if ($expr->type()) {
-				$constraints[] = new MemberConstraint($expr, $this->name());
-			}
-			$expr->spawnConstraints($constraints);
-		}
-	}
+	public function children() { return array($this->expr()); }
 	
 	public function unconstrainedType()
 	{
+		$member = $this->typeMember();
+		if (!$member) return null;
+		return $member->type();
+	}
+	
+	public function typeMember()
+	{
 		$expr = $this->expr();
 		if (!$expr) return null;
-		//echo "{$this->details()} has expr {$expr->details()}\n";
 		
 		$type = $expr->type();
 		if (!$type instanceof ConcreteType) return null;
 		
-		$member = null;
-		foreach ($type->members() as $m) if ($m->name() == $this->name()) $member = $m;
-		if (!$member instanceof TypeMember) return null;
+		foreach ($type->members() as $member) if ($member->name() == $this->name()) return $member;
+		return null;
+	}
+	
+	private function imposeMemberConstraintOnExpr()
+	{
+		$expr = $this->expr();
+		$type = $this->type();
+		if (!$expr || !$type) return;
 		
-		return $member->type();
+		$constraint = new MemberConstrainedType(new GenericType, array($this->name() => $type), array($this->name() => $this));
+		$expr->imposeTypeConstraint($constraint);
+		$tp = $expr->type();
+		$tp = ($tp ? $tp->details() : $tp);
+		echo "constrained {$expr->desc()} to {$constraint->details()}, yielding $tp\n";
+	}
+	
+	public function clearConstraints()
+	{
+		parent::clearConstraints();
+		$this->imposeMemberConstraintOnExpr();
+	}
+	
+	public function imposeTypeConstraint(Type $type)
+	{
+		parent::imposeTypeConstraint($type);
+		$this->imposeMemberConstraintOnExpr();
 	}
 }

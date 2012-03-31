@@ -29,6 +29,7 @@ abstract class TypedNode extends Node
 		
 		$this->constraints[] = $constraint;
 		
+		//TODO: most of this code could be obsolete. Maybe we should just call imposeTypeConstraint.
 		$typeConstraint = $this->typeConstraint;
 		if ($typeConstraint) {
 			$typeConstraint = Type::intersect($typeConstraint, $constraint->type());
@@ -57,6 +58,15 @@ abstract class TypedNode extends Node
 	/// Imposes the given type constraint upon the node.
 	public function imposeTypeConstraint(Type $type)
 	{
-		$this->typeConstraint = Type::intersect($this->typeConstraint, $type);
+		$constraint = Type::intersect($this->typeConstraint, $type);
+		if (!$constraint) {
+			global $issues;
+			$issues[] = new \Issue(
+				'error',
+				"Unable to constrain to '{$type->details()}'.",
+				$this
+			);
+		}
+		$this->typeConstraint = $constraint;
 	}
 }

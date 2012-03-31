@@ -7,11 +7,9 @@ class MemberConstraint extends Constraint
 	public $members;
 	public $type;
 	
-	public function __construct(Node $node, $members)
+	public function __construct(Node $node, array $members)
 	{
-		if (!is_array($members)) $members = array_slice(func_get_args(), 1);
-		
-		$node = $node->constraintTarget();
+		foreach ($members as $member => $type) assert(is_string($member) && $type instanceof Type);
 		assert($node->type() instanceof Type);
 		
 		$this->node    = $node;
@@ -20,7 +18,12 @@ class MemberConstraint extends Constraint
 	
 	public function details()
 	{
-		return "({$this->node->details()}).{".implode(', ', $this->members).'}';
+		$types = array();
+		foreach ($this->members as $member => $type) {
+			$types[] = "{$type->details()} $member";
+		}
+		
+		return "({$this->node->details()}).{".implode(', ', $types).'}';
 	}
 	
 	///Returns whether the constraint is met.
@@ -50,7 +53,11 @@ class MemberConstraint extends Constraint
 	
 	public function impose()
 	{
-		$types = array();
+		$this->type = new MemberConstrainedType(new GenericType, $this->members);
+		
+		$this->node->imposeConstraint($this);
+		
+		/*$types = array();
 		$scope = $this->node->scope;
 		while ($scope) {
 			foreach ($scope->types as $type) {
@@ -76,15 +83,6 @@ class MemberConstraint extends Constraint
 		$this->type = $type;
 		//if (!$type) return;
 		
-		$this->node->imposeConstraint($this);
-		
-		//if ($type) 
-		
-		/*$types = array_map(function($node){ return $node->type(); }, $this->nodes);
-		if (in_array(null, $types, true)) return;
-		
-		$type = Type::intersect($types);
-		if (!$type) return;*/
-		//if ($type) echo "{$this->details()} \033[1mvalid for types\033[0m: {$type->details()}\n";
+		$this->node->imposeConstraint($this);*/
 	}
 }

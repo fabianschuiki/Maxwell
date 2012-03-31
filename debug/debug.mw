@@ -6,10 +6,10 @@ type Spec
 	var b;
 }
 
-func test (Spec a)
+func test (s)
 {
-	var int x = a.a;
-	var int y = a.b;
+	//var int x = s.a;
+	//var int y = s.b;
 }
 
 type Gen
@@ -18,7 +18,11 @@ type Gen
 	var b;
 }
 
+type Point { var int x; var int y; }
+
 func main
 {
-	
+	var Point p;
+	var int x = p.x;
+	var int y = p.z;
 }

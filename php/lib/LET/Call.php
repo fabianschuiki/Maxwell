@@ -13,10 +13,6 @@ abstract class Call extends Expr
 		$callee = $this->callee();
 		$callee = ($callee ? $callee->details() : '?');
 		
-		/*$args = array_map(function($arg){
-			return ($arg ? $arg->details() : '?');
-		}, $this->args());
-		$args = implode(", ", $args);*/
 		$args = $this->args();
 		$args = ($args ? $args->details() : '?');
 		
@@ -30,22 +26,32 @@ abstract class Call extends Expr
 		return $children;
 	}
 	
-	///Returns the type of the function referenced by the callee, or null if there is none.
-	public function funcType()
+	public function unconstrainedType()
 	{
 		$callee = $this->callee();
 		if ($callee) {
 			$func = $callee->type();
-			if ($func instanceof FuncType) return $func;
+			if ($func instanceof FuncType) return $func->out();
 		}
 		return null;
 	}
 	
-	public function unconstrainedType()
+	/// Returns the FuncType requried by this call. It is dictated by the arguments' types and the call's type constraint.
+	private function funcType()
 	{
-		$type = $this->funcType();
-		if ($type) $type = $type->out();
-		return $type;
+		$args = $this->args()->type();
+		if (!$args) $args = new GenericType;
+		return new FuncType($this->scope, $args, $this->typeConstraint);
+	}
+	
+	private function imposeFuncTypeOnCallee()
+	{
+		$callee = $this->callee();
+		if ($callee) {
+			$callee->imposeTypeConstraint($this->funcType());
+			$callee->bind();
+			$callee->reduce();
+		}
 	}
 	
 	public function spawnConstraints(array &$constraints)
@@ -57,32 +63,13 @@ abstract class Call extends Expr
 	public function clearConstraints()
 	{
 		parent::clearConstraints();
-		
-		//This is somewhat nasty, yet it is required for the callee to filter the functions according to the argument tuple.
-		$args = $this->args()->type();
-		if (!$args) $args = new GenericType;
-		$callee = $this->callee();
-		if ($callee) {
-			$callee->typeConstraint = new FuncType($this->scope, $args, new GenericType);
-			$callee->bind();
-			$callee->reduce();
-		}
+		$this->imposeFuncTypeOnCallee();
 	}
 	
-	public function imposeConstraint(Constraint $constraint)
+	public function imposeTypeConstraint(Type $type)
 	{
-		parent::imposeConstraint($constraint);
-		
-		$callee = $this->callee();
-		if ($callee && $constraint->type()) {
-			$args = $this->args()->type();
-			if (!$args) $args = new GenericType;
-			$callee->typeConstraint = new FuncType($this->scope, $args, $constraint->type());
-			
-			//Gives the callee the chance to update its binding.
-			$callee->bind();
-			$callee->reduce();
-		}
+		parent::imposeTypeConstraint($type);
+		$this->imposeFuncTypeOnCallee();
 	}
 }
 

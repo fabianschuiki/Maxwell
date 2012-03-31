@@ -50,7 +50,7 @@ class Analyzer
 		}
 		
 		//Complain about ambiguities.
-		$this->complainAboutAmbiguities($nodes);
+		//$this->complainAboutAmbiguities($scope->children());
 		
 		/*foreach ($this->nodes as $n) $this->reduce($n);
 		if ($this->issues->isFatal()) return;

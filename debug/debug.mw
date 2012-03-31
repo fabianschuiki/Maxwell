@@ -1,31 +1,24 @@
 /** Debugging some stuff. */
 
-// should resolve to (a: int, b: int) -> ()
-func spec (a, b)
+type Spec
 {
-	var (int, int) tuple = (a, b);
+	var a;
+	var b;
 }
 
-// should resolve to (a: *, b: *) -> ()
-func gen (a, b)
+func test (Spec a)
 {
-	var tuple = (a, b);
-	norm(a, b);
+	var int x = a.a;
+	var int y = a.b;
 }
 
-func norm (a, b)
+type Gen
 {
-	var tuple = (a, b);
+	var a;
+	var b;
 }
 
 func main
 {
-	var int x;
-	var int y;
-	gen(x, y);
 	
-	var float a;
-	var float b;
-	gen(a, b);
-	gen(a, b);
 }

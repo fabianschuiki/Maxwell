@@ -15,6 +15,8 @@ abstract class Member extends Expr
 	
 	public function spawnConstraints(array &$constraints)
 	{
+		parent::spawnConstraints($constraints);
+		
 		$expr = $this->expr();
 		if ($expr) {
 			if ($expr->type()) {
@@ -22,5 +24,21 @@ abstract class Member extends Expr
 			}
 			$expr->spawnConstraints($constraints);
 		}
+	}
+	
+	public function unconstrainedType()
+	{
+		$expr = $this->expr();
+		if (!$expr) return null;
+		//echo "{$this->details()} has expr {$expr->details()}\n";
+		
+		$type = $expr->type();
+		if (!$type instanceof ConcreteType) return null;
+		
+		$member = null;
+		foreach ($type->members() as $m) if ($m->name() == $this->name()) $member = $m;
+		if (!$member instanceof TypeMember) return null;
+		
+		return $member->type();
 	}
 }

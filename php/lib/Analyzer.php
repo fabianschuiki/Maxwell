@@ -42,7 +42,8 @@ class Analyzer
 			if ($this->issues->isFatal()) return;
 			
 			//The specializations need to be analyzed as well.
-			$nodes = $specializations;
+			$nodes = $scope->children();
+			if (!$specializations) break;
 			
 			if ($wdc++ > 100) {
 				trigger_error("Analyzer ran through $wdc iterations, which is quite unlikely to happen.", E_USER_ERROR);
@@ -118,7 +119,7 @@ class Analyzer
 	private function inferTypes(array $nodes)
 	{
 		$constraints = $this->spawnConstraints($nodes);
-		foreach ($constraints as $c) echo "\033[1;35mconstraint\033[0m {$c->details()} ".($c->isSpecific() ? '<specific!>' : '')."\n";
+		foreach ($constraints as $c) echo "unordered constraint {$c->details()}\n";
 		
 		foreach ($nodes as $node) $node->clearConstraints();
 		while (count($constraints) > 0) {
@@ -131,6 +132,7 @@ class Analyzer
 			});
 			
 			$constraint = array_shift($constraints);
+			echo "\033[1;35mconstraint\033[0m {$constraint->details()} ".($constraint->isSpecific() ? '<specific!>' : '')."\n";
 			$constraint->impose();
 		}
 	}

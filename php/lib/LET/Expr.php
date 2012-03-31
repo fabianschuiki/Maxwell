@@ -37,11 +37,10 @@ abstract class Expr extends TypedNode
 		if (!$type) {
 			$issues[] = new \Issue(
 				'error',
-				"Impossible to infer type of expressions.",
+				"Impossible to infer type of expression.",
 				$this
 			);
-		}
-		if (!$type->isSpecific()) {
+		} else if (!$type->isSpecific()) {
 			$issues[] = new \Issue(
 				'error',
 				"Expression is of generic type '{$type->details()}' which cannot be compiled.",

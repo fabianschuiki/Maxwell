@@ -81,4 +81,15 @@ abstract class Node
 	
 	public function spawnConstraints(array &$cons) { foreach ($this->children() as $node) $node->spawnConstraints($cons); }
 	public function constraintTarget() { return $this; }
+	
+	public function buildSpecializations(array &$specs) { foreach ($this->children() as $node) $node->buildSpecializations($specs); }
+	public function cloneInto(Scope $scope)
+	{
+		$class = get_class($this);
+		if (isset($this->asn) && $this->asn) {
+			echo "auto-cloning $class\n";
+			return new $class($scope, $this->asn);
+		}
+		trigger_error("Unable to automatically cloneInto $class.", E_USER_ERROR);
+	}
 }

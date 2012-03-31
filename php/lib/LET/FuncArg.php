@@ -12,6 +12,4 @@ abstract class FuncArg extends TypedNode
 		
 		return "$type {$this->name()}";
 	}
-	
-	abstract function cloneInto(Scope $scope);
 }

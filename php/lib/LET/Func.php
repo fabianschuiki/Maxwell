@@ -55,10 +55,10 @@ abstract class Func extends Node
 			$this->specializations = array();
 		}
 		
-		echo "\033[1mspecializing\033[0m {$this->details()} for {$type->details()}:\n";
+		echo "\033[1mspecializing\033[0m {$this->details()} for {$type->details()}\n";
 		$spec = new Func_Spec($this, $type);
 		$this->specializations[] = $spec;
 		$this->scope->add($spec);
-		return $this;
+		return $spec;
 	}
 }

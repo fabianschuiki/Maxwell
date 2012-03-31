@@ -90,29 +90,4 @@ class Scope
 		
 		return $nodes;
 	}
-	
-	public function spawnConstraints()
-	{
-		$constraints = array();
-		foreach ($this->children() as $node) {
-			$node->spawnConstraints($constraints);
-		}
-		
-		$reduced = array();
-		foreach ($constraints as $a) {
-			$kind = $a->kind();
-			$merged = false;
-			foreach ($reduced as $b) {
-				if ($kind != $b->kind()) continue;
-				if ($b->merge($a)) {
-					$merged = true;
-					break;
-				}
-			}
-			if (!$merged) $reduced[] = $a;
-		}
-		
-		//return array_filter($reduced, function($constraint){ return !$constraint->met(); });
-		return $reduced;
-	}
 }

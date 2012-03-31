@@ -43,10 +43,14 @@ class Func_Spec extends Func
 		$mapArgTypes($inputs,  $inputPairs,  $type->in());
 		$mapArgTypes($outputs, $outputPairs, $type->out());
 		
+		$stmts = array();
+		foreach ($original->stmts() as $stmt) $stmts[] = $stmt->cloneInto($subscope);
+		$stmts = array_filter($stmts);
+		
 		$this->original = $original;
 		$this->inputs   = $inputs;
 		$this->outputs  = $outputs;
-		$this->stmts    = array();
+		$this->stmts    = $stmts;
 		$this->subscope = $subscope;
 	}
 	

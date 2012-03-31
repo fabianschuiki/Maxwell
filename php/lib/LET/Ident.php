@@ -106,12 +106,14 @@ abstract class Ident extends Expr
 		}
 	}
 	
-	public function requestSpecializations()
+	public function buildSpecializations(array &$specializations)
 	{
-		parent::requestSpecializations();
+		parent::buildSpecializations($specializations);
 		
 		if (($this->boundTo instanceof Func || $this->boundTo instanceof ConcreteType) && !$this->boundTo->isSpecific()) {
-			$this->boundTo = $this->boundTo->specialize($this->type());
+			$spec = $this->boundTo->specialize($this->type());
+			$this->boundTo = $spec;
+			$specializations[] = $spec;
 		} 
 	}
 }

@@ -3,7 +3,6 @@ namespace LET;
 
 class FuncArg_Impl extends FuncArg
 {
-	public $type;
 	public $name;
 	
 	public function __construct(Scope $scope, Type $type, $name)
@@ -16,6 +15,5 @@ class FuncArg_Impl extends FuncArg
 		$scope->add($this);
 	}
 	
-	public function unconstrainedType() { return $this->type; }
-	public function name()              { return $this->name; }
+	public function name() { return $this->name; }
 }

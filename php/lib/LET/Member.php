@@ -15,7 +15,7 @@ abstract class Member extends Expr
 	
 	public function spawnConstraints(array &$constraints)
 	{
-		parent::spawnConstraints($constraints);
+		//parent::spawnConstraints($constraints);
 		
 		$expr = $this->expr();
 		if ($expr) {

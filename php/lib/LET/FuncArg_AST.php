@@ -4,7 +4,6 @@ namespace LET;
 class FuncArg_AST extends FuncArg
 {
 	public $asn;
-	public $type;
 	
 	public function __construct(Scope $scope, \AST\FuncArg $node)
 	{
@@ -22,12 +21,5 @@ class FuncArg_AST extends FuncArg
 		$scope->add($this);
 	}
 	
-	public function unconstrainedType() { return $this->type; }
-	public function name()              { return $this->asn->name->text; }
-	
-	public function reduce()
-	{
-		if ($this->type) $this->type = $this->type->reduce();
-		return $this;
-	}
+	public function name() { return $this->asn->name->text; }
 }

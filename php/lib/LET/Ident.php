@@ -110,7 +110,7 @@ abstract class Ident extends Expr
 	{
 		parent::buildSpecializations($specializations);
 		
-		if (($this->boundTo instanceof Func || $this->boundTo instanceof ConcreteType) && !$this->boundTo->isSpecific()) {
+		if (($this->boundTo instanceof Func /*|| $this->boundTo instanceof ConcreteType*/) && !$this->boundTo->isSpecific()) {
 			$spec = $this->boundTo->specialize($this->type(), $specializations);
 			$this->boundTo = $spec;
 		} 

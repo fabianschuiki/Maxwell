@@ -64,18 +64,16 @@
 			if ($node instanceof LET\Ident && !$node->boundTo) {
 				$str .= "<div class=\"unbound\">unbound</div>";
 			}
-			if (method_exists($node, 'type')) {
+			if ($node instanceof LET\TypedNode) {
 				$type = $node->type();
 				$class = ($type instanceof LET\Type && $type->isSpecific() ? 'specific' : ''); 
 				$str .= "<div class=\"type $class\">".($type ? $type->details() : '?')."</div>";
-			}
-			if ($node instanceof LET\TypedNode) {
-				$type = $node->typeConstraint;
-				if ($type && $type != $node->type()) $str .= "<div class=\"type constraint\">".$type->details()."</div>";
+				$constraint = $node->typeConstraint;
+				if ($constraint && $constraint != $node->type()) $str .= "<div class=\"type constraint\">".$constraint->details()."</div>";
 			}
 			foreach ($node->children() as $child) {
 				if ($child instanceof LET\Type && $child->isSpecific()) continue;
-				if ($child instanceof LET\GenericType) continue;
+				if ($child instanceof LET\GenericType || $child instanceof LET\ConcreteType) continue;
 				$str .= dumpNode($child, false);
 			}
 			$str .= "</div>";

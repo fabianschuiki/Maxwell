@@ -63,7 +63,7 @@ class EqualTypeConstraint extends Constraint
 	{
 		$types = array_map(function($node){ return $node->type(); }, $this->nodes);
 		if (in_array(null, $types, true)) {
-			echo "\033[1;32mconstraint not imposable\033[0m, some node has null-type: {$this->details()}\n";
+			echo "\033[1;33mconstraint not imposable\033[0m, some node has null-type: {$this->details()}\n";
 			return;
 		}
 		

@@ -34,12 +34,15 @@ class MemberConstrainedType extends Type
 	public function reduce()
 	{
 		if ($this->type) $this->type = $this->type->reduce();
+		//echo "reducing {$this->desc()} to {$this->type->desc()}\n";
+		if ($this->type instanceof ConcreteType && $this->type->isSpecific()) return $this->type;
 		if ($this->type instanceof ConcreteType) {
-			$members = $this->members;
+			/*$members = $this->members;
 			foreach ($this->type->members as $member) {
 				$name = $member->name();
 				if (!isset($members[$name])) continue;
-				if (!Type::intersect($member->type(), $members[$name])) {
+				//if (!Type::intersect($member->type(), $members[$name])) {
+				if ($member->type() != $members[$name]) {
 					global $issues;
 					$issues[] = new \Issue(
 						'error',
@@ -60,7 +63,8 @@ class MemberConstrainedType extends Type
 				);
 			}
 			if (count($members)) return null;
-			return $this->type;
+			echo "reducing {$this->desc()} to {$this->type->desc()}\n";
+			return $this->type;*/
 		}
 		return $this;
 	}

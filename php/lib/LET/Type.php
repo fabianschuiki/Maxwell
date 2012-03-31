@@ -24,7 +24,13 @@ abstract class Type extends Node
 	{
 		if (!is_array($types)) $types = func_get_args();
 		if (count($types) == 0) return null;
-		$types = array_filter($types);
+		foreach ($types as $type) {
+			if ($type) continue;
+			//trigger_error("Intersect with null type!", E_USER_ERROR);
+			throw new \RuntimeException("Intersect contains null: ".implode(', ', array_map(function($type){ return ($type ? $type->details() : 'null'); }, $types)));
+			debug_backtrace();
+		}
+		//$types = array_filter($types);
 		
 		$intersection = array_shift($types);
 		while (count($types) > 0) {
@@ -105,6 +111,11 @@ abstract class Type extends Node
 			return new FuncType($a->scope, $in, $out);
 		}
 		
+		if (!$a instanceof ConcreteType_Spec && $b instanceof ConcreteType_Spec) return static::intersectTwo($b, $a);
+		if ($a instanceof ConcreteType_Spec && $b instanceof ConcreteType) {
+			if ($a->name() != $b->name()) return null;
+			return $a;
+		}
 		if ($a instanceof ConcreteType && $b instanceof ConcreteType) return ($a === $b ? $a : null);
 		return null;
 	}

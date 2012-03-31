@@ -7,7 +7,13 @@ abstract class TypedNode extends Node
 	public $typeConstraint;
 	
 	/// The node's inferred type. Consists of the unconstrained type with the type constraint applied.
-	public function type() { return ($this->unconstrainedType() && $this->typeConstraint ? Type::intersect($this->unconstrainedType(), $this->typeConstraint) : null); }
+	public function type()
+	{
+		if (!$this->unconstrainedType() || !$this->typeConstraint) return $null;
+		$type = Type::intersect($this->unconstrainedType(), $this->typeConstraint);
+		if ($type) $type = $type->reduce();
+		return $type;
+	}
 	abstract function unconstrainedType();
 	
 	/// Clears the constraints and the derived type constraint.
@@ -73,6 +79,8 @@ abstract class TypedNode extends Node
 	
 	public function reduce()
 	{
+		//$red = $this->typeConstraint->reduce();
+		//echo "reducing {$this->desc()} with constraint {$this->typeConstraint->details()} to {$red->details()}\n";
 		if ($this->typeConstraint) $this->typeConstraint = $this->typeConstraint->reduce();
 		return parent::reduce();
 	}

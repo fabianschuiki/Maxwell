@@ -27,7 +27,7 @@ abstract class Ident extends Expr
 		$type = $this->typeConstraint;
 		$tc = '?';
 		if ($type) {
-			$nodes = array_filter($nodes, function($node) use ($type) { return Type::intersect($node->type(), $type) != null; });
+			$nodes = array_filter($nodes, function($node) use ($type) { return $node->type() && (Type::intersect($node->type(), $type) != null); });
 			$tc = $type->details();
 		}
 		echo "binding identifier {$this->name()} -> ".count($unfiltered)." nodes, ".count($nodes)." match type $tc.\n";

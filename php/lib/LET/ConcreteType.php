@@ -32,7 +32,9 @@ abstract class ConcreteType extends Type
 		return $this->members();
 	}
 	
-	public function specialize(ConcreteType $type, array &$specializations)
+	public function type() { return $this; }
+	
+	public function specialize(MemberConstrainedType $type, array &$specializations)
 	{
 		if ($this == $type) return $this;
 		if ($this->specializations) {
@@ -42,11 +44,10 @@ abstract class ConcreteType extends Type
 		}
 		
 		echo "\033[1mspecializing\033[0m {$this->details()} for {$type->details()}\n";
-		/*$spec = new Func_Spec($this, $type);
+		$spec = new ConcreteType_Spec($this, $type);
 		$this->specializations[] = $spec;
 		$specializations[] = $spec;
-		$this->scope->add($spec);*/
-		$spec = $this;
+		$this->scope->add($spec);
 		return $spec;
 	}
 }

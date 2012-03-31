@@ -1,28 +1,19 @@
 /** Debugging some stuff. */
 
-type Spec
+type Vector
 {
-	var a;
-	var b;
+	var x;
+	var y;
 }
 
-func test (s)
+func test (Vector v)
 {
-	//var int x = s.a;
-	//var int y = s.b;
+	var int a = v.x;
+	var int b = v.y;
 }
-
-type Gen
-{
-	var a;
-	var b;
-}
-
-type Point { var int x; var int y; }
 
 func main
 {
-	var Point p;
-	var int x = p.x;
-	var int y = p.y;
+	/*var Vector v;
+	test(v);*/
 }

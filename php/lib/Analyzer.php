@@ -46,6 +46,7 @@ class Analyzer
 			if ($wdc++ > 100) {
 				trigger_error("Analyzer ran through $wdc iterations, which is quite unlikely to happen.", E_USER_ERROR);
 			}
+			//letDumpNPause();
 		}
 		
 		//Complain about ambiguities.

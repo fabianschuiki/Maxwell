@@ -47,8 +47,9 @@ abstract class Func extends Node
 		return $this->type()->isSpecific();
 	}
 	
-	public function specialize(FuncType $type)
+	public function specialize(FuncType $type, array &$specializations)
 	{
+		if ($this->type() == $type) return $this;
 		if ($this->specializations) {
 			foreach ($this->specializations as $spec) if ($spec->type() == $type) return $spec;
 		} else {
@@ -58,6 +59,7 @@ abstract class Func extends Node
 		echo "\033[1mspecializing\033[0m {$this->details()} for {$type->details()}\n";
 		$spec = new Func_Spec($this, $type);
 		$this->specializations[] = $spec;
+		$specializations[] = $spec;
 		$this->scope->add($spec);
 		return $spec;
 	}

@@ -10,6 +10,12 @@ func spec (a, b)
 func gen (a, b)
 {
 	var tuple = (a, b);
+	norm(a, b);
+}
+
+func norm (a, b)
+{
+	var tuple = (a, b);
 }
 
 func main

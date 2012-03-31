@@ -9,12 +9,32 @@
 	</metadata>
 	
 	<styles>
-		<style id="comment" _name="Comment" map-to="def:comment"/>
-		<style id="keyword" _name="Keyword" map-to="def:keyword"/>
-		<style id="string" _name="String" map-to="def:string"/>
+		<style id="comment"        _name="Comment"               map-to="def:comment"/>
+		<style id="keyword"        _name="Keyword"               map-to="def:keyword"/>
+		<style id="string"         _name="String"                map-to="def:string"/>
+        <style id="floating-point" _name="Floating point number" map-to="def:floating-point"/>
+        <style id="decimal"        _name="Decimal number"        map-to="def:decimal"/>
 	</styles>
 	
 	<definitions>
+		<context id="float" style-ref="floating-point">
+            <match extended="true">
+                (?&lt;![\w\.])
+                ((\.[0-9]+ | [0-9]+\.[0-9]*) ([Ee][+-]?[0-9]*)? |
+                 ([0-9]+[Ee][+-]?[0-9]*))
+                [fFlL]?
+                (?![\w\.])
+            </match>
+        </context>
+
+        <context id="decimal" style-ref="decimal">
+            <match extended="true">
+                (?&lt;![\w\.])
+                [0-9]+[uUlL]*
+                (?![\w\.])
+            </match>
+        </context>
+		
 		<context id="keywords" style-ref="keyword">
 			<!--keywords-start-->
 			<keyword>var</keyword>
@@ -48,6 +68,8 @@
 				<context ref="def:c-like-close-comment-outside-comment"/>
 				<context ref="keywords"/>
 				<context ref="string"/>
+				<context ref="float"/>
+				<context ref="decimal"/>
 			</include>
 		</context>
 	</definitions>

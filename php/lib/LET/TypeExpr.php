@@ -20,9 +20,9 @@ class TypeExpr extends Type
 	
 	public function reduce()
 	{
-		if (method_exists($this->expr, 'type')) {
+		if ($this->expr instanceof TypedNode) {
 			$type = $this->expr->type();
-			if ($type /*&& $type->isSpecific()*/) return $type;
+			if ($type) return $type;
 		}
 		return $this;
 	}

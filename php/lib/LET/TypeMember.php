@@ -25,9 +25,19 @@ class TypeMember extends TypedNode
 		return "$type {$this->name()}";
 	}
 	
+	public function children()
+	{
+		$type = $this->type;
+		if (!$type || $type instanceof ConcreteType) return array();
+		return array($type);
+	}
+	
 	public function reduce()
 	{
-		if ($this->type) $this->type = $this->type->reduce();
+		if ($this->type) {
+			echo "reducing {$this->desc()} with type being of class ".get_class($this->type)."\n";
+			$this->type = $this->type->reduce();
+		}
 		return $this;
 	}
 }

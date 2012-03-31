@@ -11,7 +11,7 @@ abstract class TypedNode extends Node
 	{
 		if (!$this->unconstrainedType() || !$this->typeConstraint) return $null;
 		$type = Type::intersect($this->unconstrainedType(), $this->typeConstraint);
-		if ($type) $type = $type->reduce();
+		if ($type && !$type instanceof ConcreteType) $type = $type->reduce();
 		return $type;
 	}
 	abstract function unconstrainedType();

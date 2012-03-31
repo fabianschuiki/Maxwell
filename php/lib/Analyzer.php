@@ -29,6 +29,7 @@ class Analyzer
 			//Bind the identifiers where possible.
 			$this->bind($nodes);
 			$this->reduce($nodes);
+			return;
 			if ($this->issues->isFatal()) return;
 		
 			//Infer types.

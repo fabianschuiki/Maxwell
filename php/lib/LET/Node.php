@@ -67,6 +67,7 @@ abstract class Node
 	///Handles generic function calls.
 	public function __call($name, array $args)
 	{
+		echo "$name {$this->desc()}\n";
 		foreach ($this->children() as $child) {
 			call_user_func_array(array($child, $name), $args);
 		}

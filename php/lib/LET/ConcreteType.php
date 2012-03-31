@@ -12,6 +12,7 @@ abstract class ConcreteType extends Type
 	{
 		foreach ($this->members() as $member) {
 			$type = $member->type();
+			if ($type == $this) continue;
 			if (!$type || !$type->isSpecific()) return false;
 		}
 		return true;

@@ -9,6 +9,7 @@ type Array
 type Element
 {
 	var Element next;
+	var Element prev;
 }
 
 func main

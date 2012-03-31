@@ -8,6 +8,8 @@ class TypeMember extends TypedNode
 	
 	public function __construct(Scope $scope, \AST\VarStmt $node)
 	{
+		parent::__construct();
+		
 		$type = Type::make($scope, $node->type);
 		
 		$this->asn  = $node;
@@ -35,9 +37,16 @@ class TypeMember extends TypedNode
 	public function reduce()
 	{
 		if ($this->type && !$this->type instanceof ConcreteType) {
-			echo "reducing {$this->desc()} with type being of class ".get_class($this->type)."\n";
+			//echo "reducing {$this->desc()} with type being of class ".get_class($this->type)."\n";
 			$this->type = $this->type->reduce();
 		}
 		return $this;
+	}
+	
+	public function cloneInto(Scope $scope)
+	{
+		$clone = new self($scope, $this->asn);
+		$clone->type = $this->type;
+		return $clone;
 	}
 }

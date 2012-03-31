@@ -55,4 +55,15 @@ class Variable extends TypedNode
 			$this->initial->spawnConstraints($constraints);
 		}
 	}
+	
+	public function buildSpecializations(array &$specializations)
+	{
+		parent::buildSpecializations($specializations);
+		
+		$type = $this->type();
+		if ($type instanceof MemberConstrainedType && $type->type instanceof ConcreteType) {
+			$spec = $type->type->specialize($this->type(), $specializations);
+			$this->type = $spec;
+		} 
+	}
 }

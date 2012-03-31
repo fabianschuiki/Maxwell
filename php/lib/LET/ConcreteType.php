@@ -32,14 +32,21 @@ abstract class ConcreteType extends Type
 	
 	public function specialize(MemberConstrainedType $type, array &$specializations)
 	{
-		if ($this == $type) return $this;
 		if ($this->specializations) {
-			foreach ($this->specializations as $spec) if ($spec == $type) return $spec;
+			foreach ($this->specializations as $spec) if (Type::intersect($spec, $type)) return $spec;
 		} else {
 			$this->specializations = array();
 		}
 		
 		echo "\033[1mspecializing\033[0m {$this->details()} for {$type->details()}\n";
+		
+		foreach ($type->members as $name => $memberType) {
+			if (!$memberType instanceof MemberConstrainedType) continue;
+			echo "subspecialization {$memberType->details()}\n";
+			$type->members[$name] = $memberType->type->specialize($memberType, $specializations);
+			echo "-> yields {$type->members[$name]->details()}\n";
+		}
+		
 		$spec = new ConcreteType_Spec($this, $type);
 		$this->specializations[] = $spec;
 		$specializations[] = $spec;

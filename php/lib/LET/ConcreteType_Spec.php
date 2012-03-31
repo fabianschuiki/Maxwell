@@ -17,6 +17,7 @@ class ConcreteType_Spec extends ConcreteType
 			$name = $member->name();
 			if (!isset($type->members[$name])) continue;
 			$memberType = $type->members[$name];
+			assert($memberType && !$memberType instanceof MemberConstrainedType);
 			$member->type = Type::intersect($member->type, $memberType);
 			if (!$member->type) {
 				global $issues;
@@ -43,7 +44,7 @@ class ConcreteType_Spec extends ConcreteType
 		foreach ($this->members as $member) {
 			$type = $member->type();
 			$type = ($type ? $type->details() : '?');
-			$members[] = "$type {$member->name()}";
+			$members[] = "{$member->name()}: $type";
 		}
 		$members = implode(', ', $members);
 		return parent::details()."<".$members.">";

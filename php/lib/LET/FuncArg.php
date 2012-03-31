@@ -32,7 +32,6 @@ abstract class FuncArg extends TypedNode
 		if ($type instanceof MemberConstrainedType && $type->type instanceof ConcreteType) {
 			$spec = $type->type->specialize($this->type(), $specializations);
 			$this->type = $spec;
-			//$specializations[] = $this;
 		} 
 	}
 }

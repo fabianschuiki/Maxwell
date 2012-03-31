@@ -29,7 +29,6 @@ class Analyzer
 			//Bind the identifiers where possible.
 			$this->bind($nodes);
 			$this->reduce($nodes);
-			return;
 			if ($this->issues->isFatal()) return;
 		
 			//Infer types.
@@ -49,7 +48,7 @@ class Analyzer
 			if ($wdc++ > 100) {
 				trigger_error("Analyzer ran through $wdc iterations, which is quite unlikely to happen.", E_USER_ERROR);
 			}
-			//letDumpNPause();
+			letDumpNPause();
 		}
 		
 		//Complain about ambiguities.
@@ -120,6 +119,8 @@ class Analyzer
 	
 	private function inferTypes(array $nodes)
 	{
+		echo "-> \033[32;1minferTypes\033[0m\n";
+		
 		$constraints = $this->spawnConstraints($nodes);
 		foreach ($constraints as $c) echo "unordered constraint {$c->details()}\n";
 		
@@ -141,10 +142,12 @@ class Analyzer
 	
 	private function buildSpecializations(array $nodes)
 	{
+		echo "-> \033[32;1mbuildSpecializations\033[0m\n";
+		
 		$specializations = array();
 		foreach ($nodes as $node) {
 			$node->buildSpecializations($specializations);
 		}
-		return array_unique($specializations, SORT_REGULAR);
+		return /*array_unique(*/$specializations/*, SORT_REGULAR)*/;
 	}
 }

@@ -6,6 +6,12 @@ abstract class TypedNode extends Node
 	public $constraints;
 	public $typeConstraint;
 	
+	public function __construct()
+	{
+		$this->constraints = array();
+		$this->typeConstraint = new GenericType;
+	}
+	
 	/// The node's inferred type. Consists of the unconstrained type with the type constraint applied.
 	public function type()
 	{

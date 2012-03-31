@@ -86,8 +86,19 @@ abstract class Type extends Node
 		if (!$a instanceof MemberConstrainedType && $b instanceof MemberConstrainedType) return static::intersectTwo($b, $a);
 		if ($a instanceof MemberConstrainedType && !$b instanceof MemberConstrainedType) {
 			$type = static::intersectTwo($a->type, $b);
-			if (!$type) return null;
-			return new MemberConstrainedType($type, $a->members, $a->issuingNodes);
+			if (!$type || !$type instanceof ConcreteType) return null;
+			
+			//Strip members whose type constraint is met.
+			$members = $a->members;
+			foreach ($b->members() as $member) {
+				$name = $member->name();
+				if (!isset($members[$name])) continue;
+				$inter = static::intersectTwo($members[$name], $member->type());
+				if ($inter === $member->type()) unset($members[$name]);
+			}
+			
+			if (!$members) return $b;
+			return new MemberConstrainedType($type, $members, $a->issuingNodes);
 		}
 		if ($a instanceof MemberConstrainedType && $b instanceof MemberConstrainedType) {
 			$type = static::intersectTwo($a->type, $b->type);

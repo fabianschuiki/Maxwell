@@ -8,8 +8,8 @@ type Array
 
 type Element
 {
-	/*var Element next;
-	var Element prev;*/
+	var Element next;
+	var Element prev;
 	var value;
 }
 

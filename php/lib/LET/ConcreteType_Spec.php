@@ -5,6 +5,7 @@ class ConcreteType_Spec extends ConcreteType
 {
 	public $original;
 	public $members;
+	public $specializedMembers;
 	
 	public function __construct(ConcreteType $original, MemberConstrainedType $type)
 	{
@@ -13,6 +14,7 @@ class ConcreteType_Spec extends ConcreteType
 		$members = array();
 		foreach ($original->members() as $member) $members[] = $member->cloneInto($subscope);
 		
+		$specializedMembers = array();
 		foreach ($members as $member) {
 			$name = $member->name();
 			if (!isset($type->members[$name])) continue;
@@ -28,10 +30,12 @@ class ConcreteType_Spec extends ConcreteType
 					$original
 				);
 			}
+			$specializedMembers[] = $member;
 		}
 		
 		$this->original = $original;
 		$this->members  = $members;
+		$this->specializedMembers = $specializedMembers;
 		$this->subscope = $subscope;
 	}
 	
@@ -41,7 +45,7 @@ class ConcreteType_Spec extends ConcreteType
 	public function details()
 	{
 		$members = array();
-		foreach ($this->members as $member) {
+		foreach ($this->specializedMembers as $member) {
 			$type = $member->type();
 			$type = ($type ? $type->details() : '?');
 			$members[] = "{$member->name()}: $type";

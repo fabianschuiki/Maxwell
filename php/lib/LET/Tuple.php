@@ -37,8 +37,8 @@ abstract class Tuple extends Expr
 		
 		if ($type instanceof TypeTuple) {
 			$pairs = TypeTuple::fieldPairs($this->unconstrainedType(), $type);
-			foreach ($pairs as $pair) {
-				$this->fields[$pair[0]]->imposeTypeConstraint($type->fields[$pair[1]]);
+			foreach ($pairs as $a => $b) {
+				$this->fields[$a]->imposeTypeConstraint($type->fields[$b]);
 			}
 		}
 	}

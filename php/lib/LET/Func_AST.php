@@ -4,6 +4,8 @@ namespace LET;
 class Func_AST extends Func
 {
 	public $asn;
+	public $inputs;
+	public $outputs;
 	public $stmts;
 	public $subscope;
 	

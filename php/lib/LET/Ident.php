@@ -83,6 +83,14 @@ abstract class Ident extends Expr
 		}
 	}
 	
+	//Not sure whether this is required. The identifier needs to refilter the list of nodes when its type constraint changes. If only for funcs, this can be done in Call.
+	/*public function imposeTypeConstraint(Type $type)
+	{
+		parent::imposeTypeConstraint($type);
+		$this->bind();
+		$this->reduce();
+	}*/
+	
 	/*public function constraintTarget() { return ($this->boundTo && $this->boundTo instanceof Variable ? $this->boundTo : null); }*/
 	public function complainAboutAmbiguities()
 	{
@@ -96,5 +104,14 @@ abstract class Ident extends Expr
 				$this->boundNodes
 			);
 		}
+	}
+	
+	public function requestSpecializations()
+	{
+		parent::requestSpecializations();
+		
+		if (($this->boundTo instanceof Func || $this->boundTo instanceof ConcreteType) && !$this->boundTo->isSpecific()) {
+			$this->boundTo = $this->boundTo->specialize($this->type());
+		} 
 	}
 }

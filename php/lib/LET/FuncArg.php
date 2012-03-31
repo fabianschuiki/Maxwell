@@ -3,7 +3,6 @@ namespace LET;
 
 abstract class FuncArg extends TypedNode
 {
-	//abstract function type();
 	abstract function name();
 	
 	public function details()
@@ -13,4 +12,6 @@ abstract class FuncArg extends TypedNode
 		
 		return "$type {$this->name()}";
 	}
+	
+	abstract function cloneInto(Scope $scope);
 }

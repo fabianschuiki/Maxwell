@@ -65,8 +65,7 @@ abstract class Type extends Node
 			if (count($a->fields) != count($b->fields)) return null;
 			$fields = array();
 			$pairs = TypeTuple::fieldPairs($a, $b);
-			foreach ($pairs as $pair) {
-				list($ak, $bk) = $pair;
+			foreach ($pairs as $ak => $bk) {
 				$af = $a->fields[$ak];
 				$bf = $b->fields[$bk];
 				$type = static::intersectTwo($af, $bf);

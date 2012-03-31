@@ -30,6 +30,10 @@ class Analyzer
 		$scope->reduce();
 		if ($this->issues->isFatal()) return;
 		
+		//Create specializations.
+		$scope->requestSpecializations();
+		if ($this->issues->isFatal()) return;
+		
 		//Complain about ambiguities.
 		$scope->complainAboutAmbiguities();
 		

@@ -17,7 +17,9 @@
 			foreach ($fields as $field) {
 				if (!count($scope->$field)) continue;
 				$str .= "<div class=\"$field\">";
-				foreach ($scope->$field as $entity) {
+				$entities = $scope->$field;
+				usort($entities, function($a,$b){ return strcmp($a->name(), $b->name()); });
+				foreach ($entities as $entity) {
 					if ($field == 'types') $str .= dumpType($entity);
 					if ($field == 'funcs') $str .= dumpFunc($entity);
 				}
@@ -30,9 +32,10 @@
 		function dumpType(LET\ConcreteType $type)
 		{
 			$str = "<div class=\"type\"><div class=\"name\">".$type->desc()."</div>";
+			if (!$type->isSpecific()) $str .= "<div class=\"attrs\">generic</div>";
 			$str .= "<div class=\"indent\">";
 			if ($type->subscope) $str .= dumpScope($type->subscope);
-			foreach ($type->members as $member) $str .= dumpNode($member);
+			foreach ($type->members() as $member) $str .= dumpNode($member);
 			$str .= "</div></div>";
 			return $str;
 		}
@@ -40,7 +43,7 @@
 		function dumpFunc(LET\Func $func)
 		{
 			$str = "<div class=\"func\"><div class=\"name\">".$func->desc()."</div>";
-			if (!$func->type()->isSpecific()) $str .= "<div class=\"attrs\">generic</div>";
+			if (!$func->isSpecific()) $str .= "<div class=\"attrs\">generic</div>";
 			$str .= "<div class=\"indent\">";
 			if ($func->subscope) $str .= dumpScope($func->subscope);
 			$args = array_merge($func->inputs(), $func->outputs());
@@ -48,7 +51,7 @@
 				foreach ($args as $arg) $str .= dumpNode($arg);
 				$str .= "<hr/>";
 			}
-			foreach ($func->stmts as $stmt) $str .= dumpNode($stmt);
+			foreach ($func->stmts() as $stmt) $str .= dumpNode($stmt);
 			$str .= "</div></div>";
 			return $str;
 		}

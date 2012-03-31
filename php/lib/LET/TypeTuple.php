@@ -34,18 +34,23 @@ class TypeTuple extends Type
 		return true;
 	}
 	
-	static public function fieldPairs(TypeTuple $a, TypeTuple $b)
+	static public function fieldPairs($a, $b)
 	{
 		$pairs = array();
+		assert($a instanceof TypeTuple || is_array($a));
+		assert($b instanceof TypeTuple || is_array($b));
+		
+		$an0 = ($a instanceof TypeTuple ? array_keys($a->fields) : $a);
+		$bn0 = ($b instanceof TypeTuple ? array_keys($b->fields) : $b);
 		
 		$nameFilter  = function($v) { return is_string($v); };
-		$an = array_filter(array_keys($a->fields), $nameFilter);
-		$bn = array_filter(array_keys($b->fields), $nameFilter);
+		$an = array_filter($an0, $nameFilter);
+		$bn = array_filter($bn0, $nameFilter);
 		$names = array_intersect($an, $bn);
-		foreach ($names as $name) $pairs[] = array($name, $name);
+		foreach ($names as $name) $pairs[$name] = $name;
 		
-		$af = array_values(array_diff(array_keys($a->fields), $names));
-		$bf = array_values(array_diff(array_keys($b->fields), $names));
+		$af = array_values(array_diff($an0, $names));
+		$bf = array_values(array_diff($bn0, $names));
 		
 		$indexFilter = function($v) { return is_int($v); };
 		
@@ -55,7 +60,7 @@ class TypeTuple extends Type
 			if (count($bf) > 0) {
 				$ak = $af[$afkey];
 				$bk = array_shift($bf);
-				$pairs[] = array($ak, $bk);
+				$pairs[$ak] = $bk;
 				unset($af[$afkey]);
 			}
 		}
@@ -66,7 +71,7 @@ class TypeTuple extends Type
 			if (count($af) > 0) {
 				$ak = array_shift($af);
 				$bk = $bf[$bfkey];
-				$pairs[] = array($ak, $bk);
+				$pairs[$ak] = $bk;
 				unset($bf[$bfkey]);
 			}
 		}

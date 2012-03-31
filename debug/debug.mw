@@ -1,62 +1,25 @@
 /** Debugging some stuff. */
 
-type Point
+// should resolve to (a: int, b: int) -> ()
+func spec (a, b)
 {
-	var int x;
-	var int y;
+	var (int, int) tuple = (a, b);
 }
 
-func test (int a) -> (int b)
+// should resolve to (a: *, b: *) -> ()
+func gen (a, b)
 {
-	var int x = a;
-	var int y = b;
+	var tuple = (a, b);
 }
-
-func test (float a) -> (int b)
-{
-}
-
-/*func square (a) -> (b)
-{
-	b = a * a;
-}*/
-
-type Application
-{
-	var int status;
-	
-	func run () -> (int a, int b)
-	{
-		var x = 5;
-		var y = 10;
-		var (int, int) p = (x, y);
-	}
-}
-
-func (=) ((int, int) a, (int, int) b) {}
-func (=) (a, b) -> (c) {}
-func (*) (a, b) -> (c) {}
 
 func main
 {
-	//var int x = 5;
-	/*var int y = x;
-	var (int, int) p = (1, 2);
-	var t = (a: 25, b: 64.97e47);
-	var (float, float) point = t;
-	var z = x;
-	var tup = (x, z, 5);
-	var (int, int, float) tupfixed = tup;*/
-	//var int res_a = test(x);
-	//var float res_b = test(x);
-	var t = (5, 6);
+	var int x;
+	var int y;
+	gen(x, y);
 	
-	/* This doesn't work yet, as the compiler doesn't choose between float and int. This will come with assumptions later. */
-	//var int res_c = test(123);
-	var Application app;
-	var x = run(app);
-	/*var a;
-	var b;
-	var p1 = (a, b);
-	p1 = x;*/
+	var float a;
+	var float b;
+	gen(a, b);
+	gen(a, b);
 }

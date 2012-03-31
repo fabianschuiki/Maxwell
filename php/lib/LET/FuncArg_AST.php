@@ -30,4 +30,9 @@ class FuncArg_AST extends FuncArg
 		if ($this->type) $this->type = $this->type->reduce();
 		return $this;
 	}
+	
+	public function cloneInto(Scope $scope)
+	{
+		return new self($scope, $this->asn);
+	}
 }

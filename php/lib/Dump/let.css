@@ -56,3 +56,6 @@ div.node > div.type.specific {
 div.node > div.type.constraint {
 	color: #3465a4;
 }
+div.node > div.type > span.uncon {
+	color: #999;
+}

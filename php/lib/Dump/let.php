@@ -70,7 +70,7 @@
 				$type = $node->type();
 				$uncon = $node->unconstrainedType();
 				$class = ($type instanceof LET\Type && $type->isSpecific() ? 'specific' : ''); 
-				$str .= "<div class=\"type $class\">".($type ? htmlentities($type->details()) : ($uncon ? "(".htmlEntities($uncon->details()).")" : '?'))."</div>";
+				$str .= "<div class=\"type $class\">".($type ? htmlentities($type->details()) : "?|<span class=\"uncon\">".($uncon ? htmlEntities($uncon->details()) : '?')."</span>")."</div>";
 				$constraint = $node->typeConstraint;
 				if ($constraint && $constraint != $node->type()) $str .= "<div class=\"type constraint\">".htmlentities($constraint->details())."</div>";
 			}

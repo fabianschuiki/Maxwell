@@ -42,7 +42,7 @@ abstract class Ident extends Expr
 			if ($anySpecific) $nodes = array_filter($nodes, function($node) { return $node->isSpecific(); });
 		}
 		sort($nodes);
-		echo "binding identifier {$this->name()} -> ".count($unfiltered)." nodes, ".count($nodes)." ".($anySpecific ? 'specific' : '')." nodes match type $tc.\n";
+		//echo "binding identifier {$this->name()} -> ".count($unfiltered)." nodes, ".count($nodes)." ".($anySpecific ? 'specific' : '')." nodes match type $tc.\n";
 		
 		$boundTo = $this->boundTo; //WARNING: this might be an ugly hack. Haven't considered all implications. Should prevent bound identifiers from losing their binding.
 		if (count($nodes) == 0 && count($unfiltered) > 0) {
@@ -150,8 +150,8 @@ abstract class Ident extends Expr
 		
 		if (($this->boundTo instanceof Func /*|| $this->boundTo instanceof ConcreteType*/) && !$this->boundTo->isSpecific()) {
 			$spec = $this->boundTo->specialize($this->type(), $specializations);
-			echo "asked to specialize {$this->boundTo->details()} for {$this->type()->details()}\n";
-			echo "  got {$spec->details()}\n";
+			/*echo "asked to specialize {$this->boundTo->details()} for {$this->type()->details()}\n";
+			echo "  got {$spec->details()}\n";*/
 			$this->boundTo = $spec;
 		}
 	}
@@ -159,9 +159,9 @@ abstract class Ident extends Expr
 	public function notifyNodeChangedType(Node $node)
 	{
 		if ($this->boundTo === $node) {
-			echo "        binding is affected: '{$this->boundTo->details()}'\n";
+			/*echo "        binding is affected: '{$this->boundTo->details()}'\n";
 			echo "        lastConfirmedType:   '{$this->lastConfirmedType->details()}'\n";
-			echo "        type:                '{$this->type()->details()}'\n";
+			echo "        type:                '{$this->type()->details()}'\n";*/
 			$this->maybeTypeChanged();
 		}
 		parent::notifyNodeChangedType($node);

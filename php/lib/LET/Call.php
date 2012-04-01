@@ -82,11 +82,11 @@ abstract class Call extends Expr
 	public function notifyNodeChangedType(Node $node)
 	{
 		if ($node === $this->args()) {
-			echo "\033[32mnotify\033[0m: {$this->desc()} argument type changed\n";
+			//echo "\033[32mnotify\033[0m: {$this->desc()} \033[1margument\033[0m type changed\n";
 			$this->imposeFuncTypeOnCallee();
 		}
 		if ($node === $this->typeProxy) {
-			echo "\033[32mnotify\033[0m: {$this->desc()} return type changed\n";
+			//echo "\033[32mnotify\033[0m: {$this->desc()} \033[1mreturn\033[0m type changed\n";
 			$this->maybeTypeChanged();
 		}
 		parent::notifyNodeChangedType($node);
@@ -137,6 +137,7 @@ class CallTypeProxy extends TypedNode
 	public function imposeTypeConstraint(Type $type)
 	{
 		if ($this->call && $type instanceof FuncType) {
+			//echo "- imposing constraint {$type->in()->details()} on args {$this->call->args()->details()}\n";
 			$this->call->args()->imposeTypeConstraint($type->in());
 			//$this->call->propagateTypeChange();
 		}

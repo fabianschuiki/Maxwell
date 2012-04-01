@@ -121,8 +121,8 @@ abstract class TypedNode extends Node
 	public function propagateTypeChange()
 	{
 		foreach ($this->constraints as $constraint) {
-			if (!$constraint instanceof EqualTypeConstraint || $constraint->isImposing) continue;
-			echo "- propagating type change: {$constraint->details()}\n";
+			if (!$constraint instanceof EqualTypeConstraint/* || $constraint->isImposing*/) continue;
+			//echo "- propagating type change: {$constraint->details()}\n";
 			$constraint->impose();
 		}
 		//if ($this->parent) $this->parent->notifyNodeChangedType($this);

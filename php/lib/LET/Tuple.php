@@ -48,7 +48,7 @@ abstract class Tuple extends Expr
 	public function notifyNodeChangedType(Node $node)
 	{
 		if (in_array($node, $this->fields(), true)) {
-			echo "\033[32mnotify\033[0m: {$this->desc()} field {$node->details()} changed\n";
+			//echo "\033[32mnotify\033[0m: {$this->desc()} field {$node->details()} changed\n";
 			//$this->propagateTypeChange($this);
 			$this->maybeTypeChanged();
 		}

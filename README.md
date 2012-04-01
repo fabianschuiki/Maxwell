@@ -14,4 +14,3 @@ About the Source
 ----------------
 The PHP compiler source files are located in `php/lib`. There is a rudimentary driver file in `php/bin/debug.php` that initializes the fundamental components `SourceFile`, `Lexer`, `Parser`, and `Analyzer`, and executes the compilation.
 
-Most of the files on the root level of `php/lib` are now *obsolete* and may be ignored.

@@ -11,6 +11,9 @@ type Vector
 	var y;
 	
 	func (*) (Vector other) -> (result) { result = this.x*other.x + this.y*other.y; }
+	func (+) (Vector other) -> (result) { result.x = this.x + other.x; result.y = this.y + other.y; }
+	func (-) (Vector other) -> (result) { result.x = this.x - other.x; result.y = this.y - other.y; }
+	func (=) (Vector other) -> (result) { result.x = (this.x = other.x); result.y = (this.y = other.y); }
 }
 
 //A mathematical norm.
@@ -22,8 +25,8 @@ type Line
 	var Vector s;
 	var Vector e;
 	
-	func direction { return this.e - this.s; }
-	func length { return norm(this.direction); }
+	func direction () -> (d) { d = this.e - this.s; }
+	func length () -> (l) { l = norm(direction(this)); }
 }
 
 /** Test program. */

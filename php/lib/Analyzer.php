@@ -67,7 +67,7 @@ class Analyzer
 		$scope = new LET\Scope;
 		
 		$primitives    = array('int', 'float');
-		$operators     = array('+', '-', '*', '/');
+		$operators     = array('+', '-', '*', '/', '=');
 		$boolOperators = array('>', '<', '==', '!=', '<=', '>=');
 		
 		$bool = new LET\PrimitiveBuiltinType($scope, 'bool');

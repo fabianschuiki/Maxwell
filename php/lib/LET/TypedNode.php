@@ -46,7 +46,7 @@ abstract class TypedNode extends Node
 		$typeConstraint = $this->typeConstraint;
 		if ($typeConstraint) {
 			$typeConstraint = Type::intersectTwo($typeConstraint, $constraint->type(), $this->scope);
-			if ($typeConstraint == $this->typeConstraint) echo " - superfluous constraint {$constraint->details()}\n";
+			if ($typeConstraint == $this->typeConstraint) /*echo " - superfluous constraint {$constraint->details()}\n"*/return;
 			
 			global $issues;
 			if (!$typeConstraint) {
@@ -125,8 +125,8 @@ abstract class TypedNode extends Node
 		foreach ($this->constraints as $constraint) {
 			if (!$constraint instanceof EqualTypeConstraint/* || $constraint->isImposing*/) continue;
 			//echo " - re-impose {$constraint->details()}\n";
-			//$constraint->impose();
-			$constraint->imposeAgain = true;
+			$constraint->impose();
+			//$constraint->imposeAgain = true;
 		}
 		//if ($this->parent) $this->parent->notifyNodeChangedType($this);
 	}

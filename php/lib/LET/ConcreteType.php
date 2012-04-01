@@ -49,9 +49,7 @@ abstract class ConcreteType extends Type
 		
 		foreach ($type->members as $name => $memberType) {
 			if (!$memberType instanceof MemberConstrainedType) continue;
-			echo "subspecialization {$memberType->details()}\n";
 			$type->members[$name] = $memberType->type->specialize($memberType, $specializations);
-			echo "-> yields {$type->members[$name]->details()}\n";
 		}
 		
 		$spec = new ConcreteType_Spec($this, $type);

@@ -3,19 +3,29 @@
 func (=) (int a, int b) {}
 func (=) (float a, float b) {}
 
-type Value
+type Stack
+{
+	var Element top;
+}
+
+type Element
 {
 	var v;
 }
 
-func make (v) -> (Value value) { value.v = v; }
-func get  (Value value) -> (v) { v = value.v; }
+func push (Stack s, v)
+{
+	s.top.v = v;
+}
+
+func pop (Stack s) -> (v)
+{
+	v = s.top.v;
+}
 
 func main
 {
-	var float f;
-	var int   i;
-	
-	var Value fv = make(f);
-	var Value iv = make(i);
+	var int i;
+	var Stack stack;
+	push(stack, i);
 }

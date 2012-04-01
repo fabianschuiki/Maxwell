@@ -98,9 +98,10 @@ abstract class Ident extends Expr
 	//Not sure whether this is required. The identifier needs to refilter the list of nodes when its type constraint changes. If only for funcs, this can be done in Call.
 	public function imposeTypeConstraint(Type $type)
 	{
+		$typeBefore = $this->type();
 		parent::imposeTypeConstraint($type);
-		/*$this->bind();
-		$this->reduce();*/
+		$typeAfter  = $this->type();
+		if ($typeBefore != $typeAfter) $this->propagateTypeChange();
 	}
 	
 	/*public function constraintTarget() { return ($this->boundTo && $this->boundTo instanceof Variable ? $this->boundTo : null); }*/
@@ -134,13 +135,7 @@ abstract class Ident extends Expr
 			echo "identifier '{$this->details()}' referenced node {$node->desc()} changed type\n";
 			echo "- unconstrained type: {$this->unconstrainedType()->details()}\n";
 			echo "- type: {$this->type()->details()}\n";
-			
-			foreach ($this->constraints as $constraint) {
-				if ($constraint instanceof EqualTypeConstraint) {
-					echo "- propagating type change: {$constraint->details()}\n";
-					$constraint->impose();
-				}
-			}
+			$this->propagateTypeChange();
 			
 		} else if (is_array($this->boundNodes) && in_array($node, $this->boundNodes)) {
 			echo "identifier '{$this->details()}' contains a potential node {$node->desc()} that changed type\n";

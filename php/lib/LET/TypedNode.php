@@ -83,6 +83,15 @@ abstract class TypedNode extends Node
 		$this->typeConstraint = $constraint;
 	}
 	
+	public function propagateTypeChange()
+	{
+		foreach ($this->constraints as $constraint) {
+			if (!$constraint instanceof EqualTypeConstraint) continue;
+			echo "- propagating type change: {$constraint->details()}\n";
+			$constraint->impose();
+		}
+	}
+	
 	public function reduce()
 	{
 		//$red = $this->typeConstraint->reduce();

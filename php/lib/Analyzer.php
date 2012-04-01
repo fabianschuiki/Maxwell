@@ -27,18 +27,20 @@ class Analyzer
 		while ($nodes)
 		{
 			//Bind the identifiers where possible.
-			$this->bind($nodes);   letDumpNPause();
-			$this->reduce($nodes); letDumpNPause();
+			$this->bind($nodes);
+			$this->reduce($nodes);
 			if ($this->issues->isFatal()) return;
+			letDumpNPause();
 		
 			//Infer types.
-			$this->inferTypes($nodes); letDumpNPause();
-			//$this->reduce($nodes);     letDumpNPause();
+			$this->inferTypes($nodes);
+			//$this->reduce($nodes);
 			if ($this->issues->isFatal()) return;
+			letDumpNPause();
 		
 			//Build the specializations.
 			$specializations = $this->buildSpecializations($nodes);
-			echo "built ".count($specializations)." specializations\n"; letDumpNPause();
+			echo "built ".count($specializations)." specializations\n";
 			if ($this->issues->isFatal()) return;
 			
 			//The specializations need to be analyzed as well.
@@ -48,7 +50,7 @@ class Analyzer
 			if ($wdc++ > 100) {
 				trigger_error("Analyzer ran through $wdc iterations, which is quite unlikely to happen.", E_USER_ERROR);
 			}
-			//letDumpNPause();
+			letDumpNPause();
 		}
 		
 		//Strip the generics from the scope.

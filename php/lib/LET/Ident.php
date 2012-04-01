@@ -41,7 +41,7 @@ abstract class Ident extends Expr
 		sort($nodes);
 		//echo "binding identifier {$this->name()} -> ".count($unfiltered)." nodes, ".count($nodes)." ".($anySpecific ? 'specific' : '')." nodes match type $tc.\n";
 		
-		$boundTo = null;
+		$boundTo = $this->boundTo; //WARNING: this might be an ugly hack. Haven't considered all implications. Should prevent bound identifiers from losing their binding.
 		if (count($nodes) == 0 && count($unfiltered) > 0) {
 			$issues[] = new \Issue(
 				'error',
@@ -50,6 +50,7 @@ abstract class Ident extends Expr
 				$unfiltered
 			);
 		}
+		if (count($nodes) == 0) $boundTo = null;
 		if (count($nodes) == 1) $boundTo = $nodes[0];
 		
 		$this->boundTo    = $boundTo;
@@ -98,8 +99,8 @@ abstract class Ident extends Expr
 	public function imposeTypeConstraint(Type $type)
 	{
 		parent::imposeTypeConstraint($type);
-		$this->bind();
-		$this->reduce();
+		/*$this->bind();
+		$this->reduce();*/
 	}
 	
 	/*public function constraintTarget() { return ($this->boundTo && $this->boundTo instanceof Variable ? $this->boundTo : null); }*/
@@ -124,6 +125,25 @@ abstract class Ident extends Expr
 		if (($this->boundTo instanceof Func /*|| $this->boundTo instanceof ConcreteType*/) && !$this->boundTo->isSpecific()) {
 			$spec = $this->boundTo->specialize($this->type(), $specializations);
 			$this->boundTo = $spec;
-		} 
+		}
+	}
+	
+	public function notifyNodeChangedType(Node $node)
+	{
+		if ($this->boundTo === $node) {
+			echo "identifier '{$this->details()}' referenced node {$node->desc()} changed type\n";
+			echo "- unconstrained type: {$this->unconstrainedType()->details()}\n";
+			echo "- type: {$this->type()->details()}\n";
+			
+			foreach ($this->constraints as $constraint) {
+				if ($constraint instanceof EqualTypeConstraint) {
+					echo "- propagating type change: {$constraint->details()}\n";
+					$constraint->impose();
+				}
+			}
+			
+		} else if (is_array($this->boundNodes) && in_array($node, $this->boundNodes)) {
+			echo "identifier '{$this->details()}' contains a potential node {$node->desc()} that changed type\n";
+		}
 	}
 }

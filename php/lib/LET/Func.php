@@ -1,9 +1,10 @@
 <?php
 namespace LET;
 
-abstract class Func extends Node
+abstract class Func extends TypedNode
 {
 	public $specializations;
+	private $lastConfirmedType;
 	
 	abstract function name();
 	abstract function inputs();
@@ -27,10 +28,13 @@ abstract class Func extends Node
 		);
 	}
 	
-	public function type()
+	public function unconstrainedType()
 	{
 		return new FuncType($this->scope, $this->argsType($this->inputs()), $this->argsType($this->outputs()));
 	}
+	
+	public function type() { return $this->unconstrainedType(); }
+	public function imposeTypeConstraint(Type $type) { trigger_error("Func {$this->details()} should not have type constraints.", E_USER_ERROR); }
 	
 	private function argsType(array $args)
 	{
@@ -62,5 +66,15 @@ abstract class Func extends Node
 		$specializations[] = $spec;
 		$this->scope->add($spec);
 		return $spec;
+	}
+	
+	public function maybeTypeChanged()
+	{
+		$type = $this->type();
+		if ($type != $this->lastConfirmedType && $this->lastConfirmedType) {
+			echo "\033[32;1mtype changed\033[0m for {$this->desc()}\n";
+			$this->scope->notifyNodeChangedType($this);
+		}
+		$this->lastConfirmedType = $type;
 	}
 }

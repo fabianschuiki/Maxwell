@@ -15,8 +15,16 @@ class Func_Spec extends Func
 		$inputs = array();
 		$outputs = array();
 		
-		foreach ($original->inputs  as $input)  $inputs[]  = $input->cloneInto($subscope);
-		foreach ($original->outputs as $output) $outputs[] = $output->cloneInto($subscope);
+		foreach ($original->inputs as $input) {
+			$i = $input->cloneInto($subscope);
+			$i->parent = $this;
+			$inputs[] = $i;
+		}
+		foreach ($original->outputs as $output) {
+			$o = $output->cloneInto($subscope);
+			$o->parent = $this;
+			$outputs[] = $o;
+		}
 		
 		$argNameMap  = function($arg){ return $arg->name(); };
 		$inputNames  = array_map($argNameMap, $inputs);

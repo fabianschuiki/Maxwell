@@ -18,10 +18,11 @@ abstract class FuncArg extends TypedNode
 	
 	public function reduce()
 	{
-		//parent::reduce();
-		if ($this->type()) $this->type = $this->type()->reduce();
+		if ($this->type()) {
+			$this->type = $this->type()->reduce();
+			$this->parent->maybeTypeChanged();
+		}
 		return parent::reduce();
-		return $this;
 	}
 	
 	public function buildSpecializations(array &$specializations)
@@ -33,6 +34,13 @@ abstract class FuncArg extends TypedNode
 			$spec = $type->type->specialize($this->type(), $specializations);
 			echo "issued specialization {$this->desc()}: type now is {$spec->desc()}\n";
 			$this->type = $spec;
+			$this->parent->maybeTypeChanged();
 		} 
+	}
+	
+	public function imposeTypeConstraint(Type $type)
+	{
+		parent::imposeTypeConstraint($type);
+		$this->parent->maybeTypeChanged();
 	}
 }

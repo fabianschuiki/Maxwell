@@ -49,8 +49,8 @@ abstract class Call extends Expr
 		$callee = $this->callee();
 		if ($callee) {
 			$callee->imposeTypeConstraint($this->funcType());
-			/*$callee->bind();
-			$callee->reduce();*/
+			$callee->bind();
+			$callee->reduce();
 		}
 	}
 	
@@ -97,6 +97,12 @@ class CallTypeProxy extends TypedNode
 		parent::imposeTypeConstraint($type);
 		if ($this->call && $type instanceof FuncType) {
 			$this->call->args()->imposeTypeConstraint($type->in());
+			foreach ($this->call->constraints as $constraint) {
+				if ($constraint instanceof EqualTypeConstraint) {
+					echo "- propagating type change: {$constraint->details()}\n";
+					$constraint->impose();
+				}
+			}
 		}
 	}
 }

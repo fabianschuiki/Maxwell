@@ -4,6 +4,7 @@ namespace LET;
 abstract class Node
 {
 	public $scope;
+	public $parent;
 	
 	public function __construct() {}
 	
@@ -36,6 +37,7 @@ abstract class Node
 	{
 		$children = array();
 		foreach ($this as $key => $value) {
+			if ($key == 'parent') continue;
 			if ($value instanceof Node) $children[] = $value;
 		}
 		return $children;

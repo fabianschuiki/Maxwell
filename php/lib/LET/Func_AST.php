@@ -16,14 +16,20 @@ class Func_AST extends Func
 		$subscope = new Scope($scope, $this);
 		
 		if ($thisType instanceof Type) {
-			$inputs[] = new FuncArg_Impl($subscope, $thisType, 'this');
+			$i = new FuncArg_Impl($subscope, $thisType, 'this');
+			$i->parent = $this;
+			$inputs[] = $i;
 		}
 		
 		foreach ($node->args_in as $arg) {
-			$inputs[] = new FuncArg_AST($subscope, $arg);
+			$i = new FuncArg_AST($subscope, $arg);
+			$i->parent = $this;
+			$inputs[] = $i;
 		}
 		foreach ($node->args_out as $arg) {
-			$outputs[] = new FuncArg_AST($subscope, $arg);
+			$o = new FuncArg_AST($subscope, $arg);
+			$o->parent = $this;
+			$outputs[] = $o;
 		}
 		
 		$stmts = array();

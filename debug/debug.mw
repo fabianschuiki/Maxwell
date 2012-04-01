@@ -1,48 +1,14 @@
 /** Maxwell debugging file. */
 
-//Square roots.
-func sqrt (int a) -> (int r) {}
-func sqrt (float a) -> (float r) {}
+func show (bool a)  {}
+func show (int a)   {}
+//func show (float a) {}
 
-//A mathematical vector.
-type Vector
-{
-	var x;
-	var y;
-	
-	func (*) (Vector other) -> (result) { result = this.x*other.x + this.y*other.y; }
-	func (+) (Vector other) -> (Vector result) { result.x = this.x + other.x; result.y = this.y + other.y; }
-	func (-) (Vector other) -> (Vector result) { result.x = this.x - other.x; result.y = this.y - other.y; }
-	func (=) (Vector other) { this.x = other.x; this.y = other.y; }
-}
-
-//A mathematical norm.
-func norm (a) -> (v) { v = sqrt(a*a); }
-
-//A straight line between two points.
-type Line
-{
-	var Vector s;
-	var Vector e;
-	
-	func direction () -> (d) { d = this.e - this.s; }
-	func length () -> (l) { l = norm(direction(this)); }
-}
-
-/** Test program. */
 func main
 {
-	var Line l;
+	var a = 5;
+	var b = 10;
+	var t = (a == b);
 	
-	var Vector v;
-	var int x = v.x;
-	var int y = v.y;
-	l.s = v;
-	l.e = v;
-	
-	//Compiler will complain that length is generic:
-	length(l);
-	
-	//Will compile just fine:
-	//direction(l);
+	show (a);
 }

@@ -17,6 +17,13 @@ abstract class Func extends TypedNode
 		return "'{$this->name()}' (".implode(", ", array_map($det, $this->inputs())).") -> (".implode(", ", array_map($det, $this->outputs())).")";
 	}
 	
+	public function nice()
+	{
+		$str = "Function '{$this->name()}'";
+		if (!$this->isSpecific()) $str = "Generic $str";
+		return $str;
+	}
+	
 	public function children()
 	{
 		return array_merge(

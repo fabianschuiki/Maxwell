@@ -59,7 +59,8 @@ class Issue
 		if ($this->type == 'error')   $t = "\033[1;31m$t\033[0m";
 		if ($this->type == 'warning') $t = "\033[1;33m$t\033[0m";
 		
-		$o = "$t {$this->message}";
+		$msg = str_replace("\n", "\n    : ", $this->message);
+		$o = "$t $msg";
 		if ($source) {
 			$sfr  = basename($source->path);
 			if ($this->range) {

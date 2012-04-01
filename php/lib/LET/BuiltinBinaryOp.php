@@ -40,4 +40,6 @@ class BuiltinBinaryOp extends Func
 	public function outputs()  { return $this->outputs; }
 	public function stmts()    { return array(); }
 	public function subscope() { return $this->subscope; }
+	
+	public function nice() { return "Builtin Operator {$this->name}"; }
 }

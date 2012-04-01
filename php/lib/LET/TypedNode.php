@@ -149,11 +149,13 @@ abstract class TypedNode extends Node
 		} else if (!$type->isSpecific()) {
 			$issues[] = new \Issue(
 				'error',
-				"{$this->nice()} is of generic type '{$type->details()}' which cannot be compiled.",
+				"{$this->nice()} is of generic type '{$this->niceType()}' which cannot be compiled.",
 				$this
 			);
 		} else {
 			parent::complainAboutAmbiguities();
 		}
 	}
+	
+	public function niceType() { return $this->type()->details(); }
 }

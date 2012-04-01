@@ -66,13 +66,17 @@ class Analyzer
 	{
 		$scope = new LET\Scope;
 		
-		$primitives = array('int', 'float', 'double');
-		$operators  = array('+', '-', '*', '/');
+		$primitives    = array('int', 'float');
+		$operators     = array('+', '-', '*', '/');
+		$boolOperators = array('>', '<', '==', '!=', '<=', '>=');
+		
+		$bool = new LET\PrimitiveBuiltinType($scope, 'bool');
+		foreach ($boolOperators as $operator) new LET\BuiltinBinaryOp($scope, $operator, $bool, $bool);
+		
 		foreach ($primitives as $primitive) {
 			$type = new LET\PrimitiveBuiltinType($scope, $primitive);
-			foreach ($operators as $operator) {
-				new LET\BuiltinBinaryOp($scope, $operator, $type);
-			}
+			foreach ($operators     as $operator) new LET\BuiltinBinaryOp($scope, $operator, $type);
+			foreach ($boolOperators as $operator) new LET\BuiltinBinaryOp($scope, $operator, $type, $bool);
 		}
 		
 		return $scope;

@@ -45,6 +45,8 @@ class Variable extends TypedNode
 		return $str;
 	}
 	
+	public function nice() { return "Variable '{$this->name()}'"; }
+	
 	public function reduce()
 	{
 		parent::reduce();

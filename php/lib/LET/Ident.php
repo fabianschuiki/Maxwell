@@ -69,8 +69,22 @@ abstract class Ident extends Expr
 		if ($this->boundTo instanceof TypedNode) {
 			return $this->boundTo->type();
 		}
-		/*if (is_array($this->boundNodes)) {
-			$type = new GenericType;
+		if (is_array($this->boundNodes)) {
+			$in  = new GenericType;
+			$out = new GenericType;
+			foreach ($this->boundNodes as $node) {
+				if (!$node instanceof TypedNode) continue;
+				$nodeType = $node->type();
+				if (!$nodeType instanceof FuncType) continue;
+				
+				if ($in  && $nodeType->in())  $in  = Type::intersectTwo($in,  $nodeType->in());
+				if ($out && $nodeType->out()) $out = Type::intersectTwo($out, $nodeType->out());
+			}
+			if (!$in)  $in  = new GenericType;
+			if (!$out) $out = new GenericType;
+			if ($in instanceof GenericType && $out instanceof GenericType) return new GenericType;
+			return new FuncType($this->scope, $in, $out);
+			/*$type = new GenericType;
 			foreach ($this->boundNodes as $node) {
 				if (!$node instanceof TypedNode || $node instanceof Type) continue;
 				$other = $node->type();
@@ -88,8 +102,8 @@ abstract class Ident extends Expr
 					$type = Type::intersect($type, $node->type(), $this->scope);
 				}
 			}
-			return $type;
-		}*/
+			return $type;*/
+		}
 		return null;
 	}
 	

@@ -84,6 +84,27 @@ abstract class Call extends Expr
 		}
 		parent::notifyNodeChangedType($node);
 	}
+	
+	public function complainAboutAmbiguities()
+	{
+		$callee = $this->callee();
+		if ($callee instanceof Ident && count($callee->boundNodes) > 1) {
+			$nodes = "";
+			foreach ($callee->boundNodes as $node) {
+				$nodes .= "\n- {$node->nice()}  {$node->niceType()}";
+			}
+			
+			global $issues;
+			$issues[] = new \Issue(
+				'error',
+				"{$this->nice()} is ambiguous. It may refer to:".$nodes,
+				$this,
+				$callee->boundNodes
+			);
+		} else {
+			parent::complainAboutAmbiguities();
+		}
+	}
 }
 
 class CallTypeProxy extends TypedNode

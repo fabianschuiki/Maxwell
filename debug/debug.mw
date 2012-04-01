@@ -25,4 +25,7 @@ func main
 	var Array array;
 	var int i = 123;
 	add(array, i);
+	
+	var float f = 234;
+	add(array, f);
 }

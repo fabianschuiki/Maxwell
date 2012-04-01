@@ -33,7 +33,7 @@ class Analyzer
 		
 			//Infer types.
 			$this->inferTypes($nodes); letDumpNPause();
-			$this->reduce($nodes);     letDumpNPause();
+			//$this->reduce($nodes);     letDumpNPause();
 			if ($this->issues->isFatal()) return;
 		
 			//Build the specializations.

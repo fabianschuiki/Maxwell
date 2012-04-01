@@ -39,7 +39,7 @@ abstract class TypedNode extends Node
 		}
 		//echo "\033[1mimpose constraint\033[0m {$constraint->type()->details()} \033[1mon\033[0m {$this->desc()}\n";
 		
-		$this->constraints[] = $constraint;
+		if (!in_array($constraint, $this->constraints, true)) $this->constraints[] = $constraint;
 		
 		//TODO: most of this code could be obsolete. Maybe we should just call imposeTypeConstraint.
 		$typeConstraint = $this->typeConstraint;

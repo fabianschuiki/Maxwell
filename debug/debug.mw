@@ -1,5 +1,8 @@
 /** Maxwell debugging file. */
 
+func (=) (int a, int b) {}
+func (=) (float a, float b) {}
+
 type Value
 {
 	var v;
@@ -10,4 +13,9 @@ func get  (Value value) -> (v) { v = value.v; }
 
 func main
 {
+	var float f;
+	var int   i;
+	
+	var Value fv = make(f);
+	var Value iv = make(i);
 }

@@ -8,6 +8,7 @@ class Member_AST extends Member
 	
 	public function __construct(Scope $scope, \AST\MemberExpr $node)
 	{
+		parent::__construct();
 		$this->asn = $node;
 		$this->expr = Expr::make($scope, $node->expr);
 		$this->scope = $scope;

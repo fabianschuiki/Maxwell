@@ -24,4 +24,11 @@ class FuncArg_AST extends FuncArg
 	}
 	
 	public function name() { return $this->asn->name->text; }
+	
+	public function cloneInto(Scope $scope)
+	{
+		$clone = new self($scope, $this->asn);
+		$clone->type = $this->type;
+		return $clone;
+	}
 }

@@ -7,6 +7,7 @@ class Ident_AST extends Ident
 	
 	public function __construct(Scope $scope, \AST\IdentExpr $node)
 	{
+		parent::__construct();
 		$this->asn   = $node;
 		$this->scope = $scope;
 	}

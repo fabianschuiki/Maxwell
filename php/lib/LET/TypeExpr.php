@@ -7,6 +7,7 @@ class TypeExpr extends Type
 	
 	public function __construct(Scope $scope, Expr $expr)
 	{
+		parent::__construct();
 		$this->expr  = $expr;
 		$this->scope = $scope;
 	}
@@ -15,7 +16,7 @@ class TypeExpr extends Type
 	
 	public function details()
 	{
-		return ($this->expr ? $this->expr->details() : '?');
+		return ($this->expr ? '"'.$this->expr->details().'"' : '?');
 	}
 	
 	public function reduce()

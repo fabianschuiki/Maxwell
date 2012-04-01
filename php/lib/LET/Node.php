@@ -5,6 +5,8 @@ abstract class Node
 {
 	public $scope;
 	
+	public function __construct() {}
+	
 	///Returns the type of this LET node, which is its class name without the LET namespace.
 	public function kind()
 	{

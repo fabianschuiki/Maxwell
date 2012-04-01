@@ -7,6 +7,8 @@ class Tuple_Impl extends Tuple
 	
 	public function __construct(Scope $scope, array $fields)
 	{
+		parent::__construct();
+		
 		foreach ($fields as $name => $field) assert($field instanceof TypedNode);
 		
 		$this->fields = $fields;

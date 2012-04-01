@@ -39,7 +39,7 @@ abstract class Ident extends Expr
 		}
 		if ($anySpecific) $nodes = array_filter($nodes, function($node) { return $node->isSpecific(); });
 		sort($nodes);
-		echo "binding identifier {$this->name()} -> ".count($unfiltered)." nodes, ".count($nodes)." ".($anySpecific ? 'specific' : '')." nodes match type $tc.\n";
+		//echo "binding identifier {$this->name()} -> ".count($unfiltered)." nodes, ".count($nodes)." ".($anySpecific ? 'specific' : '')." nodes match type $tc.\n";
 		
 		$boundTo = null;
 		if (count($nodes) == 0 && count($unfiltered) > 0) {

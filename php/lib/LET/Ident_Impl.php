@@ -7,6 +7,7 @@ class Ident_Impl extends Ident
 	
 	public function __construct(Scope $scope, $name)
 	{
+		parent::__construct();
 		$this->name  = $name;
 		$this->scope = $scope;
 	}

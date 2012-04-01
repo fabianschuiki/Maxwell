@@ -18,7 +18,7 @@ class Analyzer
 		foreach ($this->nodes as $node) {
 			$this->buildEntity($scope, $node);
 		}
-		foreach ($scope->children() as $node) $node->clearConstraints();
+		//foreach ($scope->children() as $node) $node->clearConstraints();
 		if ($this->issues->isFatal()) return;
 		
 		//Analysis is an iterative process that works on a bunch of nodes at a time.
@@ -27,18 +27,18 @@ class Analyzer
 		while ($nodes)
 		{
 			//Bind the identifiers where possible.
-			$this->bind($nodes);
-			$this->reduce($nodes);
+			$this->bind($nodes);   letDumpNPause();
+			$this->reduce($nodes); letDumpNPause();
 			if ($this->issues->isFatal()) return;
 		
 			//Infer types.
-			$this->inferTypes($nodes);
-			$this->reduce($nodes);
+			$this->inferTypes($nodes); letDumpNPause();
+			$this->reduce($nodes);     letDumpNPause();
 			if ($this->issues->isFatal()) return;
 		
 			//Build the specializations.
 			$specializations = $this->buildSpecializations($nodes);
-			echo "built ".count($specializations)." specializations\n";
+			echo "built ".count($specializations)." specializations\n"; letDumpNPause();
 			if ($this->issues->isFatal()) return;
 			
 			//The specializations need to be analyzed as well.

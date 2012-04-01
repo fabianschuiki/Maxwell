@@ -9,6 +9,8 @@ class Variable extends TypedNode
 	
 	public function __construct(Scope $scope, \AST\VarStmt $node)
 	{
+		parent::__construct();
+		
 		$initial = null;
 		if ($node->initial) $initial = Expr::make($scope, $node->initial);
 		

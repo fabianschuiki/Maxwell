@@ -9,13 +9,6 @@ class Call_AST extends Call
 	
 	public function __construct(Scope $scope, \AST\CallExpr $node)
 	{
-		/*$args = array();
-		foreach ($node->args as $arg) {
-			$args[] = new CallArg_AST($scope, $arg);
-		}
-		$args = array_filter($args);*/
-		
-		//DEBUG: create a tuple from the arguments.
 		$args = array();
 		foreach ($node->args as $arg) {
 			$name = $arg->name->text;

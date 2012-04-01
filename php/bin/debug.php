@@ -110,10 +110,13 @@ echo "[\033[36mcompilation took ".sprintf('%.1f', ($stopTime-$startTime)*1000)."
 
 function letDumpNPause()
 {
-	global $file, $analyzer, $out;
+	global $file, $analyzer, $out, $startTime;
 	$dump = Dump::let($file, $analyzer);
 	file_put_contents("$out.let.html", $dump);
-	readline();
+	$pauseStart = microtime(true);
+	readline("[\033[36mpaused - press enter to continue\033[0m]");
+	$pauseEnd = microtime(true);
+	$startTime += ($pauseEnd - $pauseStart);
 }
 
 //Dump the LET.

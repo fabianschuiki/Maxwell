@@ -79,7 +79,7 @@ abstract class Call extends Expr
 			$this->imposeFuncTypeOnCallee();
 		}
 		if ($node === $this->typeProxy) {
-			echo "\033[32mnotify\033[0m; {$this->desc()} return type changed\n";
+			echo "\033[32mnotify\033[0m: {$this->desc()} return type changed\n";
 			$this->maybeTypeChanged();
 		}
 		parent::notifyNodeChangedType($node);

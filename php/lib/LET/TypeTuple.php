@@ -76,7 +76,7 @@ class TypeTuple extends Type
 			}
 		}
 		
-		$missing = array_merge($af, $bf);
+		/*$missing = array_merge($af, $bf);
 		if (count($missing)) {
 			$fields = implode(', ', $missing);
 			global $issues;
@@ -84,7 +84,7 @@ class TypeTuple extends Type
 				'error',
 				"Type tuple '{$a->details()}' and '{$b->details()}' don't share the fields $fields."
 			);
-		}
+		}*/
 		
 		return $pairs;
 	}

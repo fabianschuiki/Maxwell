@@ -30,13 +30,13 @@ class Analyzer
 			$this->bind($nodes);
 			$this->reduce($nodes);
 			if ($this->issues->isFatal()) return;
-			letDumpNPause();
+			//letDumpNPause();
 		
 			//Infer types.
 			$this->inferTypes($nodes);
 			//$this->reduce($nodes);
 			if ($this->issues->isFatal()) return;
-			letDumpNPause();
+			//letDumpNPause();
 		
 			//Build the specializations.
 			$specializations = $this->buildSpecializations($scope->children());
@@ -50,7 +50,7 @@ class Analyzer
 			if ($wdc++ > 100) {
 				trigger_error("Analyzer ran through $wdc iterations, which is quite unlikely to happen.", E_USER_ERROR);
 			}
-			letDumpNPause();
+			//letDumpNPause();
 		}
 		
 		//Strip the generics from the scope.

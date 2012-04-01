@@ -93,7 +93,7 @@ abstract class TypedNode extends Node
 		$type = $this->type();
 		if ($type != $this->lastConfirmedType && $this->lastConfirmedType) {
 			$this->lastConfirmedType = $type;
-			echo "\033[32;1mtype changed\033[0m: {$this->desc()}\n";
+			//echo "\033[32;1mtype changed\033[0m: {$this->desc()}".($this->parent ? ' -> propagates to parent' : '')."\n";
 			$this->notifyTypeChanged();
 			$this->propagateTypeChange();
 		}
@@ -102,12 +102,15 @@ abstract class TypedNode extends Node
 	
 	public function notifyTypeChanged()
 	{
-		if ($this->parent) $this->parent->notifyNodeChangedType($this);
+		if ($this->parent) {
+			//echo "\033[32mstarting notification chain\033[0m for {$this->desc()} at {$this->parent->desc()}\n";
+			$this->parent->notifyNodeChangedType($this);
+		}
 	}
 	
 	public function notifyNodeChangedType(Node $node)
 	{
-		//echo "\033[32mnotify\033[0m: {$this->desc()}\n";
+		//echo "\033[0mnotify\033[0m: {$this->desc()}\n";
 		if ($node === $this) {
 			//echo " -> \033[31mterminating notification chain\033[0m\n";
 			return;

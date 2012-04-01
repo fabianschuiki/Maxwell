@@ -2,31 +2,37 @@
 
 func (=) (int a, int b) {}
 func (=) (float a, float b) {}
+func (*) (int a, int b) -> (int c) {}
+func (*) (float a, float b) -> (float c) {}
+func (+) (int a, int b) -> (int c) {}
+func (+) (float a, float b) -> (float c) {}
+func sqrt (int x) -> (int y) {}
+func sqrt (float x) -> (float y) {}
 
-type Stack
+type Vector
 {
-	var Element top;
+	var x;
+	var y;
 }
 
-type Element
+func (*) (Vector a, Vector b) -> (v)
 {
-	var v;
+	v = a.x*b.x + a.y*b.y;
 }
 
-func push (Stack s, v)
+func norm (a) -> (n)
 {
-	s.top.v = v;
-}
-
-func pop (Stack s) -> (v)
-{
-	v = s.top.v;
+	n = sqrt(a*a);
 }
 
 func main
 {
-	var i;
-	var Stack stack;
-	push(stack, i);
-	var int n = pop(stack);
+	var int i = 5;
+	
+	var Vector v;
+	var int x = v.x;
+	var int y = v.y;
+	
+	norm(i);
+	norm(v);
 }

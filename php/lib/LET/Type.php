@@ -104,6 +104,7 @@ abstract class Type extends Node
 				$name = $member->name();
 				if (!isset($members[$name])) continue;
 				$inter = static::intersectTwo($members[$name], $member->type());
+				if (!$inter) return null;
 				if ($inter === $member->type()) unset($members[$name]);
 			}
 			

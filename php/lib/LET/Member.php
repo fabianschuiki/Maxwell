@@ -58,7 +58,7 @@ abstract class Member extends Expr
 		$expr->imposeTypeConstraint($constraint);
 		$tp = $expr->type();
 		$tp = ($tp ? $tp->details() : '?');
-		echo "constrained {$expr->desc()} to {$constraint->details()}, yielding $tp\n";
+		//echo "constrained {$expr->desc()} to {$constraint->details()}, yielding $tp\n";
 	}
 	
 	public function clearConstraints()

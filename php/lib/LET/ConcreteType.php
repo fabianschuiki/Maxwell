@@ -34,7 +34,13 @@ abstract class ConcreteType extends Type
 	{
 		if (Type::intersect($this, $type) === $this) return $this;
 		if ($this->specializations) {
-			foreach ($this->specializations as $spec) if (Type::intersect($spec, $type)) return $spec;
+			echo "looking for existing specializations...\n";
+			foreach ($this->specializations as $spec) {
+				$inter = Type::intersect($spec, $type);
+				$details = ($inter ? $inter->details() : 'null');
+				echo "- intersected {$spec->details()} and {$type->details()}  ->  {$details}\n";
+				if ($inter) return $spec;
+			}
 		} else {
 			$this->specializations = array();
 		}

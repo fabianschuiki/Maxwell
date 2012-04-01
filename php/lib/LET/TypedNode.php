@@ -37,7 +37,7 @@ abstract class TypedNode extends Node
 			echo "\033[31;1mskipping constraint\033[0m {$constraint->details()} as it has no type\n";
 			return;
 		}
-		echo "\033[1mimpose constraint\033[0m {$constraint->type()->details()} \033[1mon\033[0m {$this->desc()}\n";
+		//echo "\033[1mimpose constraint\033[0m {$constraint->type()->details()} \033[1mon\033[0m {$this->desc()}\n";
 		
 		$this->constraints[] = $constraint;
 		

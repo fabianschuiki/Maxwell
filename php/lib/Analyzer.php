@@ -42,7 +42,7 @@ class Analyzer
 			if ($this->issues->isFatal()) return;
 			
 			//The specializations need to be analyzed as well.
-			$nodes = $scope->children();
+			$nodes = /*$scope->children()*/$specializations;
 			if (!$specializations) break;
 			
 			if ($wdc++ > 100) {
@@ -127,7 +127,7 @@ class Analyzer
 		echo "-> \033[32;1minferTypes\033[0m\n";
 		
 		$constraints = $this->spawnConstraints($nodes);
-		foreach ($constraints as $c) echo "unordered constraint {$c->details()}\n";
+		//foreach ($constraints as $c) echo "unordered constraint {$c->details()}\n";
 		
 		foreach ($nodes as $node) $node->clearConstraints();
 		while (count($constraints) > 0) {

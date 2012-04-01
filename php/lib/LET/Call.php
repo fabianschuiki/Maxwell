@@ -26,6 +26,13 @@ abstract class Call extends Expr
 		return $children;
 	}
 	
+	public function nice()
+	{
+		$callee = $this->callee();
+		if ($callee instanceof Ident) return "Call to '{$callee->name()}'";
+		return parent::nice();
+	}
+	
 	public function unconstrainedType()
 	{
 		$callee = $this->callee();

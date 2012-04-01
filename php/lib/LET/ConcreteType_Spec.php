@@ -39,8 +39,8 @@ class ConcreteType_Spec extends ConcreteType
 		$this->subscope = $subscope;
 	}
 	
-	public function name()    { return $this->original->name(); }
-	public function members() { return $this->members; }
+	public function name()     { return $this->original->name(); }
+	public function members()  { return $this->members; }
 	
 	public function details()
 	{

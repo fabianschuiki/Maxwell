@@ -38,7 +38,14 @@ abstract class Call extends Expr
 		$callee = $this->callee();
 		if ($callee) {
 			$func = $callee->type();
-			if ($func instanceof FuncType) return $func->out();
+			if ($func instanceof FuncType) {
+				$out = $func->out();
+				if ($out instanceof TypeTuple) {
+					$fields = $out->fields;
+					if (count($fields) == 1) return array_pop($fields);
+				}
+				return $out;
+			}
 		}
 		return null;
 	}
@@ -95,7 +102,7 @@ abstract class Call extends Expr
 	public function complainAboutAmbiguities()
 	{
 		$callee = $this->callee();
-		if ($callee instanceof Ident && count($callee->boundNodes) > 1) {
+		if ($callee instanceof Ident && count($callee->boundNodes) > 1 && !$callee->boundTo) {
 			$nodes = "";
 			foreach ($callee->boundNodes as $node) {
 				$nodes .= "\n- {$node->nice()}  {$node->niceType()}";
@@ -108,6 +115,7 @@ abstract class Call extends Expr
 				$this,
 				$callee->boundNodes
 			);
+			echo "   - call complaint issued {$this->desc()}\n";
 		} else {
 			parent::complainAboutAmbiguities();
 		}

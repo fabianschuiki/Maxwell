@@ -42,6 +42,7 @@ class Analyzer
 			$specializations = $this->buildSpecializations($scope->children());
 			echo "built ".count($specializations)." specializations\n";
 			if ($this->issues->isFatal()) return;
+			//letDumpNPause();
 			
 			//The specializations need to be analyzed as well.
 			$nodes = /*$scope->children()*/$specializations;
@@ -50,7 +51,6 @@ class Analyzer
 			if ($wdc++ > 100) {
 				trigger_error("Analyzer ran through $wdc iterations, which is quite unlikely to happen.", E_USER_ERROR);
 			}
-			//letDumpNPause();
 		}
 		
 		//Strip the generics from the scope.

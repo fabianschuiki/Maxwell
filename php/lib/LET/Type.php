@@ -19,6 +19,35 @@ abstract class Type extends Node
 		return null;
 	}
 	
+	static public function equal($types)
+	{
+		if (!is_array($types)) $types = func_get_args();
+		while (count($types) > 0) {
+			$a = array_shift($types);
+			foreach ($types as $b) if (!static::equalTwo($a, $b)) return false;
+		}
+		return true;
+	}
+	
+	static public function equalTwo(Type $a, Type $b)
+	{
+		if ($a instanceof FuncType && $b instanceof FuncType) {
+			return (static::equalTwo($a->in(), $b->in()) && static::equalTwo($a->out(), $b->out()));
+		}
+		if ($a instanceof TypeTuple && $b instanceof TypeTuple) {
+			if (array_keys($a->fields) != array_keys($b->fields)) return false;
+			foreach ($a->fields as $name => $type) if (!static::equalTwo($type, $b->fields[$name])) return false;
+			return true;
+		}
+		if ($a instanceof MemberConstrainedType && $b instanceof MemberConstrainedType) {
+			if (!static::equalTwo($a->type, $b->type)) return false;
+			if (array_keys($a->members) != array_keys($b->members)) return false;
+			foreach ($a->members as $member => $type) if (!static::equalTwo($type, $b->members[$member])) return false;
+			return true; 
+		}
+		return ($a == $b);
+	}
+	
 	/// Finds the largest common type (set, tuple, etc.) among a number of types.
 	static public function intersect($types)
 	{

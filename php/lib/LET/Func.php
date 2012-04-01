@@ -60,12 +60,27 @@ abstract class Func extends TypedNode
 	public function specialize(FuncType $type, array &$specializations)
 	{
 		$thisType = $this->type();
-		if (Type::intersect($thisType, $type, $thisType->scope) == $thisType) return $this;
+		$inter = Type::intersect($thisType, $type, $thisType->scope);
+		if (Type::equal($inter, $thisType)) return $this;
+		
+		if ($this->name() == '-') {
+			echo "\033[1mdeciding whether to specialize\033[0m {$this->details()} for {$type->details()}\n";
+			echo "  this type:    {$thisType->details()}\n";
+			echo "  intersection: {$inter->details()}\n";
+			foreach ($inter as $k => $v) {
+				if (!isset($thisType->$k)) continue;
+				if ($thisType->$k instanceof Type && $inter->$k instanceof Type) {
+					echo "inter->$k == thisType->$k: ".(Type::equal($thisType->$k, $inter->$k) ? 'yes' : 'no')."\n";
+				}
+			}
+			//letDumpNPause();
+		}
 		
 		if ($this->specializations) {
 			foreach ($this->specializations as $spec) {
 				$specType = $spec->type();
 				$inter = Type::intersect($specType, $type);
+				//NOTE: this might cause some trouble as it potentially returns a more specialized function than was requested. If problems arise, use Type::equal instead. 
 				if ($inter) return $spec;
 			}
 		} else {
@@ -74,7 +89,7 @@ abstract class Func extends TypedNode
 		
 		foreach (array($type->in(), $type->out()) as $tuple) {
 			foreach ($tuple->fields as $name => $arg) {
-				if (!$arg instanceof MemberConstrainedType) continue;
+				if (!$arg instanceof MemberConstrainedType || !$arg->type instanceof ConcreteType) continue;
 				echo "specialization for $name\n";
 				$tuple->fields[$name] = $arg->type->specialize($arg, $specializations);
 			}

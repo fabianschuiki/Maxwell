@@ -15,6 +15,7 @@ class TypeTuple extends Type
 	{
 		$fields = array();
 		foreach ($this->fields as $name => $field) {
+			if (!$field) throw new \RuntimeException("TypeTuple field $name has null type.");
 			$str = $field->details();
 			if (is_string($name)) $str = "$name: $str";
 			$fields[] = $str;

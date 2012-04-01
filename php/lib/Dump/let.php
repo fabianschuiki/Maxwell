@@ -76,7 +76,7 @@
 			}
 			foreach ($node->children() as $child) {
 				if ($child instanceof LET\Type && $child->isSpecific()) continue;
-				if ($child instanceof LET\GenericType || $child instanceof LET\ConcreteType) continue;
+				if ($child instanceof LET\GenericType || $child instanceof LET\ConcreteType || $child instanceof LET\MemberConstrainedType) continue;
 				$str .= dumpNode($child, false);
 			}
 			$str .= "</div>";

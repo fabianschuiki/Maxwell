@@ -141,6 +141,7 @@ abstract class TypedNode extends Node
 	
 	public function complainAboutAmbiguities()
 	{
+		//echo " - complaint opportunity for {$this->desc()}\n";
 		global $issues;
 		$type = $this->type();
 		if (!$type) {

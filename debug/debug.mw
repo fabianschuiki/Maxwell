@@ -11,13 +11,13 @@ type Vector
 	var y;
 	
 	func (*) (Vector other) -> (result) { result = this.x*other.x + this.y*other.y; }
-	func (+) (Vector other) -> (result) { result.x = this.x + other.x; result.y = this.y + other.y; }
-	func (-) (Vector other) -> (result) { result.x = this.x - other.x; result.y = this.y - other.y; }
-	func (=) (Vector other) -> (result) { result.x = (this.x = other.x); result.y = (this.y = other.y); }
+	func (+) (Vector other) -> (Vector result) { result.x = this.x + other.x; result.y = this.y + other.y; }
+	func (-) (Vector other) -> (Vector result) { result.x = this.x - other.x; result.y = this.y - other.y; }
+	func (=) (Vector other) { this.x = other.x; this.y = other.y; }
 }
 
 //A mathematical norm.
-func norm (a) -> (v) { sqrt(a*a); }
+func norm (a) -> (v) { v = sqrt(a*a); }
 
 //A straight line between two points.
 type Line
@@ -32,4 +32,17 @@ type Line
 /** Test program. */
 func main
 {
+	var Line l;
+	/*var int sx = l.s.x;
+	var int sy = l.s.y;
+	var int ex = l.e.x;
+	var int ey = l.e.y;*/
+	var Vector v;
+	var int x = v.x;
+	var int y = v.y;
+	v = direction(l);
+	
+	//Won't compile with either of the following:
+	//length(l);
+	//var int x = length(l);
 }

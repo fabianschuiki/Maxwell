@@ -133,7 +133,7 @@ abstract class Ident extends Expr
 	public function complainAboutAmbiguities()
 	{
 		parent::complainAboutAmbiguities();
-		if (count($this->boundNodes) > 1) {
+		if (count($this->boundNodes) > 1 && !$this->boundTo) {
 			global $issues;
 			$issues[] = new \Issue(
 				'error',

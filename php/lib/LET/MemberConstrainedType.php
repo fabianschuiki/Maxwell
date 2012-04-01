@@ -26,10 +26,8 @@ class MemberConstrainedType extends Type
 		return "{$this->type->details()}[".implode(',', $types)."]";
 	}
 	
-	public function isSpecific()
-	{
-		return $this->type->isSpecific();
-	}
+	public function isSpecific() { return $this->type->isSpecific(); }
+	public function children() { return array_merge(array($this->type), $this->members); }
 	
 	public function reduce()
 	{

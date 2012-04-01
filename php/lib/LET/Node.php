@@ -97,4 +97,13 @@ abstract class Node
 		}
 		trigger_error("Unable to automatically cloneInto $class.", E_USER_ERROR);
 	}
+	
+	public function complainAboutAmbiguities()
+	{
+		if (!$this instanceof TypedNode) return;
+		foreach ($this->children() as $child) {
+			if (!$child instanceof TypedNode) continue;
+			$child->complainAboutAmbiguities();
+		}
+	}
 }

@@ -33,16 +33,16 @@ type Line
 func main
 {
 	var Line l;
-	/*var int sx = l.s.x;
-	var int sy = l.s.y;
-	var int ex = l.e.x;
-	var int ey = l.e.y;*/
+	
 	var Vector v;
 	var int x = v.x;
 	var int y = v.y;
-	v = direction(l);
+	l.s = v;
+	l.e = v;
 	
-	//Won't compile with either of the following:
-	//length(l);
-	//var int x = length(l);
+	//Compiler will complain that length is generic:
+	length(l);
+	
+	//Will compile just fine:
+	//direction(l);
 }

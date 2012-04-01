@@ -27,10 +27,12 @@ class Call_AST extends Call
 				$args[] = $expr;
 			}
 		}
+		$args = new Tuple_Impl($scope, $args);
+		$args->parent = $this;
 		
 		$this->asn    = $node;
 		$this->callee = Expr::make($scope, $node->callee);
-		$this->args   = new Tuple_Impl($scope, $args);
+		$this->args   = $args;
 		$this->scope  = $scope;
 	}
 	

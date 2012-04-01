@@ -4,7 +4,6 @@ namespace LET;
 abstract class Func extends TypedNode
 {
 	public $specializations;
-	private $lastConfirmedType;
 	
 	abstract function name();
 	abstract function inputs();
@@ -53,11 +52,25 @@ abstract class Func extends TypedNode
 	
 	public function specialize(FuncType $type, array &$specializations)
 	{
-		if ($this->type() == $type) return $this;
+		$thisType = $this->type();
+		if (Type::intersect($thisType, $type, $thisType->scope) == $thisType) return $this;
+		
 		if ($this->specializations) {
-			foreach ($this->specializations as $spec) if ($spec->type() == $type) return $spec;
+			foreach ($this->specializations as $spec) {
+				$specType = $spec->type();
+				$inter = Type::intersect($specType, $type);
+				if ($inter) return $spec;
+			}
 		} else {
 			$this->specializations = array();
+		}
+		
+		foreach (array($type->in(), $type->out()) as $tuple) {
+			foreach ($tuple->fields as $name => $arg) {
+				if (!$arg instanceof MemberConstrainedType) continue;
+				echo "specialization for $name\n";
+				$tuple->fields[$name] = $arg->type->specialize($arg, $specializations);
+			}
 		}
 		
 		echo "\033[1mspecializing\033[0m {$this->details()} for {$type->details()}\n";
@@ -68,7 +81,12 @@ abstract class Func extends TypedNode
 		return $spec;
 	}
 	
-	public function maybeTypeChanged()
+	public function notifyTypeChanged()
+	{
+		$this->scope->notifyNodeChangedType($this);
+	}
+	
+	/*public function maybeTypeChanged()
 	{
 		$type = $this->type();
 		if ($type != $this->lastConfirmedType && $this->lastConfirmedType) {
@@ -76,5 +94,5 @@ abstract class Func extends TypedNode
 			$this->scope->notifyNodeChangedType($this);
 		}
 		$this->lastConfirmedType = $type;
-	}
+	}*/
 }

@@ -33,13 +33,25 @@ abstract class Tuple extends Expr
 	
 	public function imposeTypeConstraint(Type $type)
 	{
-		parent::imposeTypeConstraint($type);
-		
+		echo "       type before:       {$this->type()->details()}\n";
 		if ($type instanceof TypeTuple) {
 			$pairs = TypeTuple::fieldPairs($this->unconstrainedType(), $type);
 			foreach ($pairs as $a => $b) {
 				$this->fields[$a]->imposeTypeConstraint($type->fields[$b]);
 			}
 		}
+		echo "       type after:        {$this->type()->details()}\n";
+		echo "       lastConfirmedType: {$this->lastConfirmedType->details()}\n";
+		parent::imposeTypeConstraint($type);
+	}
+	
+	public function notifyNodeChangedType(Node $node)
+	{
+		if (in_array($node, $this->fields(), true)) {
+			echo "\033[32mnotify\033[0m: {$this->desc()} field {$node->details()} changed\n";
+			//$this->propagateTypeChange($this);
+			$this->maybeTypeChanged();
+		}
+		parent::notifyNodeChangedType($node);
 	}
 }

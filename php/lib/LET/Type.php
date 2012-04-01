@@ -22,7 +22,16 @@ abstract class Type extends Node
 	/// Finds the largest common type (set, tuple, etc.) among a number of types.
 	static public function intersect($types)
 	{
-		if (!is_array($types)) $types = func_get_args();
+		$args = func_get_args();
+		$scope = null;
+		if (count($args) > 0) {
+			$scope = array_pop($args);
+			if (!$scope instanceof Scope) {
+				array_push($args, $scope);
+				$scope = null;
+			}
+		}
+		if (!is_array($types)) $types = $args;
 		if (count($types) == 0) return null;
 		foreach ($types as $type) {
 			if ($type) continue;
@@ -34,7 +43,7 @@ abstract class Type extends Node
 		
 		$intersection = array_shift($types);
 		while (count($types) > 0) {
-			$intersection = static::intersectTwo($intersection, array_shift($types));
+			$intersection = static::intersectTwo($intersection, array_shift($types), $scope);
 			if (!$intersection) return null;
 		}
 		
@@ -42,28 +51,31 @@ abstract class Type extends Node
 	}
 	
 	/// Intersects two types and returns whatever they have in common, or null if they are entirely different.
-	static private function intersectTwo(Type $a, Type $b)
+	static public function intersectTwo(Type $a, Type $b, $scope = null)
 	{
+		if ($a === $b) return $a;
 		if ($a instanceof GenericType) return $b;
 		if ($b instanceof GenericType) return $a;
 		//echo "intersectTwo {$a->details()} and {$b->details()}\n";
 		
 		//Choose the more specific scope to be used for the intersection.
-		$scope = $a->scope;
-		$s = $b->scope;
-		while ($s) {
-			if ($s == $scope) {
-				$scope = $b->scope;
-				break;
+		if (!$scope) {
+			$scope = $a->scope;
+			$s = $b->scope;
+			while ($s) {
+				if ($s == $scope) {
+					$scope = $b->scope;
+					break;
+				}
+				$s = $s->outer;
 			}
-			$s = $s->outer;
 		}
 		
-		if (!$a instanceof TypeSet && $b instanceof TypeSet) return static::intersectTwo($b, $a);
+		if (!$a instanceof TypeSet && $b instanceof TypeSet) return static::intersectTwo($b, $a, $scope);
 		if ($a instanceof TypeSet) {
 			$types = array();
 			foreach ($a->types as $type) {
-				$t = static::intersectTwo($type, $b);
+				$t = static::intersectTwo($type, $b, $scope);
 				if ($t) $types[] = $t;
 			}
 			if (!count($types)) return null;
@@ -71,10 +83,10 @@ abstract class Type extends Node
 			return new TypeSet($scope, $types);
 		}
 		
-		if (!$a instanceof TypeTuple && $b instanceof TypeTuple) return static::intersectTwo($b, $a);
+		if (!$a instanceof TypeTuple && $b instanceof TypeTuple) return static::intersectTwo($b, $a, $scope);
 		if ($a instanceof TypeTuple && !$b instanceof TypeTuple) {
 			$fields = $a->fields;
-			if (count($fields) == 1) return static::intersectTwo(array_shift($fields), $b);
+			if (count($fields) == 1) return static::intersectTwo(array_shift($fields), $b, $scope);
 			return null;
 		}
 		if ($a instanceof TypeTuple && $b instanceof TypeTuple) {
@@ -84,7 +96,7 @@ abstract class Type extends Node
 			foreach ($pairs as $ak => $bk) {
 				$af = $a->fields[$ak];
 				$bf = $b->fields[$bk];
-				$type = static::intersectTwo($af, $bf);
+				$type = static::intersectTwo($af, $bf, $scope);
 				if (!$type) return null;
 				if (is_string($ak)) $fields[$ak] = $type; else
 				if (is_string($bk)) $fields[$bk] = $type;
@@ -93,9 +105,9 @@ abstract class Type extends Node
 			return new TypeTuple($scope, $fields);
 		}
 		
-		if (!$a instanceof MemberConstrainedType && $b instanceof MemberConstrainedType) return static::intersectTwo($b, $a);
+		if (!$a instanceof MemberConstrainedType && $b instanceof MemberConstrainedType) return static::intersectTwo($b, $a, $scope);
 		if ($a instanceof MemberConstrainedType && !$b instanceof MemberConstrainedType) {
-			$type = static::intersectTwo($a->type, $b);
+			$type = static::intersectTwo($a->type, $b, $scope);
 			if (!$type || !$type instanceof ConcreteType) return null;
 			
 			//Strip members whose type constraint is met.
@@ -103,7 +115,7 @@ abstract class Type extends Node
 			foreach ($b->members() as $member) {
 				$name = $member->name();
 				if (!isset($members[$name])) continue;
-				$inter = static::intersectTwo($members[$name], $member->type());
+				$inter = static::intersectTwo($members[$name], $member->type(), $scope);
 				if (!$inter) return null;
 				if ($inter === $member->type()) unset($members[$name]);
 			}
@@ -112,11 +124,11 @@ abstract class Type extends Node
 			return new MemberConstrainedType($type, $members, $a->issuingNodes);
 		}
 		if ($a instanceof MemberConstrainedType && $b instanceof MemberConstrainedType) {
-			$type = static::intersectTwo($a->type, $b->type);
+			$type = static::intersectTwo($a->type, $b->type, $scope);
 			if (!$type) return null;
 			$members = array();
 			foreach ($a->members as $m => $t) {
-				if (isset($b->members[$m])) $t = static::intersectTwo($t, $b->members[$m]);
+				if (isset($b->members[$m])) $t = static::intersectTwo($t, $b->members[$m], $scope);
 				if (!$t) return null;
 				$members[$m] = $t;
 			}
@@ -127,13 +139,13 @@ abstract class Type extends Node
 		}
 		
 		if ($a instanceof FuncType && $b instanceof FuncType) {
-			$in  = static::intersectTwo($a->in(),  $b->in());
-			$out = static::intersectTwo($a->out(), $b->out());
+			$in  = static::intersectTwo($a->in(),  $b->in(),  $scope);
+			$out = static::intersectTwo($a->out(), $b->out(), $scope);
 			if (!$in || !$out) return null;
 			return new FuncType($scope, $in, $out);
 		}
 		
-		if (!$a instanceof ConcreteType_Spec && $b instanceof ConcreteType_Spec) return static::intersectTwo($b, $a);
+		if (!$a instanceof ConcreteType_Spec && $b instanceof ConcreteType_Spec) return static::intersectTwo($b, $a, $scope);
 		if ($a instanceof ConcreteType_Spec && $b instanceof ConcreteType) {
 			if ($a->name() != $b->name()) return null;
 			return $a;

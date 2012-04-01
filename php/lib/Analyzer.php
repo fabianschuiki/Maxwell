@@ -39,7 +39,7 @@ class Analyzer
 			letDumpNPause();
 		
 			//Build the specializations.
-			$specializations = $this->buildSpecializations($nodes);
+			$specializations = $this->buildSpecializations($scope->children());
 			echo "built ".count($specializations)." specializations\n";
 			if ($this->issues->isFatal()) return;
 			

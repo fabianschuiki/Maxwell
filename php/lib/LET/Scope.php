@@ -58,6 +58,7 @@ class Scope
 	
 	public function __call($name, array $args)
 	{
+		if ($this->node) call_user_func_array(array($this->node, $name), $args);
 		foreach ($this->children() as $node) {
 			call_user_func_array(array($node, $name), $args);
 			if ($node->subscope) call_user_func_array(array($node->subscope, $name), $args);

@@ -5,6 +5,7 @@ abstract class Ident extends Expr
 {
 	public $boundTo;
 	public $boundNodes;
+	//public $lastConfirmedType;
 	
 	abstract function name();
 	
@@ -55,6 +56,7 @@ abstract class Ident extends Expr
 		
 		$this->boundTo    = $boundTo;
 		$this->boundNodes = $nodes;
+		$this->maybeTypeChanged();
 	}
 	
 	public function unconstrainedType()
@@ -96,13 +98,18 @@ abstract class Ident extends Expr
 	}
 	
 	//Not sure whether this is required. The identifier needs to refilter the list of nodes when its type constraint changes. If only for funcs, this can be done in Call.
-	public function imposeTypeConstraint(Type $type)
+	/*public function imposeTypeConstraint(Type $type)
 	{
-		$typeBefore = $this->type();
+		//$typeBefore = $this->type();
 		parent::imposeTypeConstraint($type);
-		$typeAfter  = $this->type();
-		if ($typeBefore != $typeAfter) $this->propagateTypeChange();
-	}
+		$type = $this->type();
+		if ($type != $this->lastConfirmedType && $this->lastConfirmedType) {
+			$this->lastConfirmedType = $type;
+			if ($this->parent) $this->parent->notifyNodeChangedType($this);
+			$this->propagateTypeChange();
+		}
+		$this->lastConfirmedType = $type;
+	}*/
 	
 	/*public function constraintTarget() { return ($this->boundTo && $this->boundTo instanceof Variable ? $this->boundTo : null); }*/
 	public function complainAboutAmbiguities()
@@ -125,6 +132,8 @@ abstract class Ident extends Expr
 		
 		if (($this->boundTo instanceof Func /*|| $this->boundTo instanceof ConcreteType*/) && !$this->boundTo->isSpecific()) {
 			$spec = $this->boundTo->specialize($this->type(), $specializations);
+			echo "asked to specialize {$this->boundTo->details()} for {$this->type()->details()}\n";
+			echo "  got {$spec->details()}\n";
 			$this->boundTo = $spec;
 		}
 	}
@@ -132,13 +141,11 @@ abstract class Ident extends Expr
 	public function notifyNodeChangedType(Node $node)
 	{
 		if ($this->boundTo === $node) {
-			echo "identifier '{$this->details()}' referenced node {$node->desc()} changed type\n";
-			echo "- unconstrained type: {$this->unconstrainedType()->details()}\n";
-			echo "- type: {$this->type()->details()}\n";
-			$this->propagateTypeChange();
-			
-		} else if (is_array($this->boundNodes) && in_array($node, $this->boundNodes)) {
-			echo "identifier '{$this->details()}' contains a potential node {$node->desc()} that changed type\n";
+			echo "        binding is affected: '{$this->boundTo->details()}'\n";
+			echo "        lastConfirmedType:   '{$this->lastConfirmedType->details()}'\n";
+			echo "        type:                '{$this->type()->details()}'\n";
+			$this->maybeTypeChanged();
 		}
+		parent::notifyNodeChangedType($node);
 	}
 }

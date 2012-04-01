@@ -12,7 +12,10 @@ class Variable extends TypedNode
 		parent::__construct();
 		
 		$initial = null;
-		if ($node->initial) $initial = Expr::make($scope, $node->initial);
+		if ($node->initial) {
+			$initial = Expr::make($scope, $node->initial);
+			if ($initial) $initial->parent = $this;
+		}
 		
 		$type = Type::make($scope, $node->type);
 		
@@ -66,6 +69,38 @@ class Variable extends TypedNode
 		if ($type instanceof MemberConstrainedType && $type->type instanceof ConcreteType) {
 			$spec = $type->type->specialize($this->type(), $specializations);
 			$this->type = $spec;
-		} 
+		}
 	}
+	
+	/*public function imposeTypeConstraint(Type $type)
+	{
+		$typeBefore = $this->type();
+		parent::imposeTypeConstraint($type);
+		$typeAfter  = $this->type();
+		if ($typeBefore != $typeAfter) {
+			echo "- variable '{$this->name()}' changed type, notifying scope...\n"; 
+			$this->propagateTypeChange();
+			//$this->scope->notifyNodeChangedType($this);
+		}
+	}*/
+	
+	public function notifyTypeChanged()
+	{
+		$this->scope->notifyNodeChangedType($this);
+	}
+	
+	/*public function notifyNodeChangedType(Node $node)
+	{
+		parent::notifyNodeChangedType($node);
+		if ($node === $this->initial) {
+			echo "{$this->desc()} detected initial node {$node->details()} changed type\n";
+			$this->propagateTypeChange();
+		}
+	}*/
+	
+	/*public function propagateTypeChange()
+	{
+		parent::propagateTypeChange();
+		$this->scope->notifyNodeChangedType($this);
+	}*/
 }

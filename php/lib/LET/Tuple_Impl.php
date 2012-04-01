@@ -9,7 +9,10 @@ class Tuple_Impl extends Tuple
 	{
 		parent::__construct();
 		
-		foreach ($fields as $name => $field) assert($field instanceof TypedNode);
+		foreach ($fields as $name => $field) {
+			assert($field instanceof TypedNode);
+			$field->parent = $this;
+		}
 		
 		$this->fields = $fields;
 		$this->scope  = $scope;

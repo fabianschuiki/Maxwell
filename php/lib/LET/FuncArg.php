@@ -32,7 +32,7 @@ abstract class FuncArg extends TypedNode
 		$type = $this->type();
 		if ($type instanceof MemberConstrainedType && $type->type instanceof ConcreteType) {
 			$spec = $type->type->specialize($this->type(), $specializations);
-			echo "issued specialization {$this->desc()}: type now is {$spec->desc()}\n";
+			//echo "issued specialization {$this->desc()}: type now is {$spec->desc()}\n";
 			$this->type = $spec;
 			$this->parent->maybeTypeChanged();
 		} 

@@ -12,7 +12,9 @@ class Tuple_AST extends Tuple
 		
 		$fields = array();
 		foreach ($node->exprs as $name => $field) {
-			$fields[$name] = Expr::make($scope, $field);
+			$f = Expr::make($scope, $field);
+			$f->parent = $this;
+			$fields[$name] = $f;
 		}
 		$fields = array_filter($fields);
 		

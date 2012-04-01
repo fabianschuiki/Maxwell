@@ -1,31 +1,13 @@
 /** Maxwell debugging file. */
 
-type Array
+type Value
 {
-	var Element first;
-	var Element last;
-	
-	func add (value)
-	{
-		this.first.value = value;
-		this.last.value  = value;
-	}
+	var v;
 }
 
-type Element
-{
-	var value;
-}
-
-func (=) (float a, float b) {}
-func (=) (int a, int b) {}
+func make (v) -> (Value value) { value.v = v; }
+func get  (Value value) -> (v) { v = value.v; }
 
 func main
 {
-	var Array array;
-	var int i = 123;
-	add(array, i);
-	
-	var float f = 234;
-	add(array, f);
 }

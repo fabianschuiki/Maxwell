@@ -28,10 +28,8 @@ abstract class Expr extends TypedNode
 		return null;
 	}
 	
-	public function complainAboutAmbiguities()
+	/*public function complainAboutAmbiguities()
 	{
-		parent::complainAboutAmbiguities();
-		
 		global $issues;
 		$type = $this->type();
 		if (!$type) {
@@ -46,6 +44,8 @@ abstract class Expr extends TypedNode
 				"Expression is of generic type '{$type->details()}' which cannot be compiled.",
 				$this
 			);
+		} else {
+			parent::complainAboutAmbiguities();
 		}
-	}
+	}*/
 }

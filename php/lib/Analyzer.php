@@ -66,9 +66,13 @@ class Analyzer
 	{
 		$scope = new LET\Scope;
 		
-		$primitives = array('int', 'float');
+		$primitives = array('int', 'float', 'double');
+		$operators  = array('+', '-', '*', '/');
 		foreach ($primitives as $primitive) {
-			new LET\PrimitiveBuiltinType($scope, $primitive);
+			$type = new LET\PrimitiveBuiltinType($scope, $primitive);
+			foreach ($operators as $operator) {
+				new LET\BuiltinBinaryOp($scope, $operator, $type);
+			}
 		}
 		
 		return $scope;

@@ -31,16 +31,18 @@ abstract class Ident extends Expr
 			$nodes = array_filter($nodes, function($node) use ($type) { return $node->type() && (Type::intersect($node->type(), $type) != null); });
 			$tc = $type->details();
 		}
-		$anySpecific = false;
-		foreach ($nodes as $node) {
-			if ($node->isSpecific()) {
-				$anySpecific = true;
-				break;
+		if ($type->isSpecific()) {
+			$anySpecific = false;
+			foreach ($nodes as $node) {
+				if ($node->isSpecific()) {
+					$anySpecific = true;
+					break;
+				}
 			}
+			if ($anySpecific) $nodes = array_filter($nodes, function($node) { return $node->isSpecific(); });
 		}
-		if ($anySpecific) $nodes = array_filter($nodes, function($node) { return $node->isSpecific(); });
 		sort($nodes);
-		//echo "binding identifier {$this->name()} -> ".count($unfiltered)." nodes, ".count($nodes)." ".($anySpecific ? 'specific' : '')." nodes match type $tc.\n";
+		echo "binding identifier {$this->name()} -> ".count($unfiltered)." nodes, ".count($nodes)." ".($anySpecific ? 'specific' : '')." nodes match type $tc.\n";
 		
 		$boundTo = $this->boundTo; //WARNING: this might be an ugly hack. Haven't considered all implications. Should prevent bound identifiers from losing their binding.
 		if (count($nodes) == 0 && count($unfiltered) > 0) {
@@ -67,25 +69,27 @@ abstract class Ident extends Expr
 		if ($this->boundTo instanceof TypedNode) {
 			return $this->boundTo->type();
 		}
-		if (is_array($this->boundNodes)) {
+		/*if (is_array($this->boundNodes)) {
 			$type = new GenericType;
 			foreach ($this->boundNodes as $node) {
-				if (!method_exists($node, 'type')) continue;
+				if (!$node instanceof TypedNode || $node instanceof Type) continue;
 				$other = $node->type();
 				if (!$other) continue;
+				echo "intersecting with {$other->details()}\n";
 				
 				if ($type instanceof FuncType && $other instanceof FuncType) {
-					$in  = Type::intersect($type->in(),  $other->in());
-					$out = Type::intersect($type->out(), $other->out());
+					$in  = Type::intersect($type->in(),  $other->in(),  $this->scope);
+					$out = Type::intersect($type->out(), $other->out(), $this->scope);
 					if (!$in)  $in  = new GenericType;
 					if (!$out) $out = new GenericType;
+					echo "  got {$in->details()} -> {$out->details()}\n";
 					$type = new FuncType($this->scope, $in, $out);
 				} else {
-					$type = Type::intersect($type, $node->type());
+					$type = Type::intersect($type, $node->type(), $this->scope);
 				}
 			}
 			return $type;
-		}
+		}*/
 		return null;
 	}
 	

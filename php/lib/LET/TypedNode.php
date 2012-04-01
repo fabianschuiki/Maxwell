@@ -135,4 +135,25 @@ abstract class TypedNode extends Node
 		if ($this->typeConstraint) $this->typeConstraint = $this->typeConstraint->reduce();
 		return parent::reduce();
 	}
+	
+	public function complainAboutAmbiguities()
+	{
+		global $issues;
+		$type = $this->type();
+		if (!$type) {
+			$issues[] = new \Issue(
+				'error',
+				"Impossible to infer type of {$this->nice()}.",
+				$this
+			);
+		} else if (!$type->isSpecific()) {
+			$issues[] = new \Issue(
+				'error',
+				"{$this->nice()} is of generic type '{$type->details()}' which cannot be compiled.",
+				$this
+			);
+		} else {
+			parent::complainAboutAmbiguities();
+		}
+	}
 }

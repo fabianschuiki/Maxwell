@@ -1,38 +1,8 @@
 /** Maxwell debugging file. */
 
-func (=) (int a, int b) {}
-func (=) (float a, float b) {}
-func (*) (int a, int b) -> (int c) {}
-func (*) (float a, float b) -> (float c) {}
-func (+) (int a, int b) -> (int c) {}
-func (+) (float a, float b) -> (float c) {}
-func sqrt (int x) -> (int y) {}
-func sqrt (float x) -> (float y) {}
-
-type Vector
-{
-	var x;
-	var y;
-}
-
-func (*) (Vector a, Vector b) -> (v)
-{
-	v = a.x*b.x + a.y*b.y;
-}
-
-func norm (a) -> (n)
-{
-	n = sqrt(a*a);
-}
-
 func main
 {
-	var int i = 5;
-	
-	var Vector v;
-	var int x = v.x;
-	var int y = v.y;
-	
-	norm(i);
-	norm(v);
+	var a = 5;
+	var b = 10;
+	a + b;
 }

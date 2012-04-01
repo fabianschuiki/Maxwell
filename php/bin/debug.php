@@ -61,7 +61,7 @@ file_put_contents("$out.ast.html", $dump);
 $issues->exitIfFatal();
 
 //Resolve the imports.
-$importScope = new Scope;
+/*$importScope = new Scope;
 $importIncludes = "#include \"".basename($out).".h\"\n";
 foreach ($parser->nodes as $node)
 {
@@ -96,7 +96,7 @@ foreach ($parser->nodes as $node)
 		}
 	}
 	$importIncludes .= "#include \"{$node->name}.h\"\n";
-}
+}*/
 
 echo "\033[1mcompiling {$file->path}\033[0m...\n";
 

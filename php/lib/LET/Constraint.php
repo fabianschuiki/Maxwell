@@ -4,6 +4,7 @@ namespace LET;
 abstract class Constraint
 {
 	public $isImposing = false;
+	public $imposeAgain = false;
 	
 	public function kind() { return preg_replace('/^'.preg_quote(__NAMESPACE__.'\\').'/', '', get_class($this)); }
 	public function desc() { return "{$this->kind()} {$this->details()}"; }

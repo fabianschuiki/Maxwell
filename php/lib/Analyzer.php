@@ -140,8 +140,9 @@ class Analyzer
 		//foreach ($constraints as $c) echo "unordered constraint {$c->details()}\n";
 		
 		foreach ($nodes as $node) $node->clearConstraints();
-		while (count($constraints) > 0) {
-			usort($constraints, function($a,$b) {
+		$left = $constraints;
+		while (count($left) > 0) {
+			usort($left, function($a,$b) {
 				$as = $a->isSpecific();
 				$bs = $b->isSpecific();
 				if ($as && !$bs) return -1;
@@ -149,9 +150,20 @@ class Analyzer
 				return $a->dependency($b);
 			});
 			
-			$constraint = array_shift($constraints);
+			$constraint = array_shift($left);
 			echo "\033[1;35mconstraint\033[0m {$constraint->details()} ".($constraint->isSpecific() ? '<specific!>' : '')."\n";
 			$constraint->impose();
+			
+			if (count($left) == 0) {
+				foreach ($constraints as $constraint) {
+					if ($constraint->imposeAgain) {
+						$constraint->imposeAgain = false;
+						if ($constraint->met()) continue;
+						echo "\033[1;35mre-imposing\033[0m {$constraint->details()}\n";
+						array_push($left, $constraint);
+					}
+				}
+			}
 		}
 	}
 	

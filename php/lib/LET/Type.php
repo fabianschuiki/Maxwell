@@ -29,8 +29,12 @@ abstract class Type extends Node
 		return true;
 	}
 	
-	static public function equalTwo(Type $a, Type $b)
+	static public function equalTwo($a, $b)
 	{
+		if (!$a) return false;
+		if (!$b) return false;
+		assert($a instanceof Type && $b instanceof Type);
+		
 		if ($a instanceof FuncType && $b instanceof FuncType) {
 			return (static::equalTwo($a->in(), $b->in()) && static::equalTwo($a->out(), $b->out()));
 		}

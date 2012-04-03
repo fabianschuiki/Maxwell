@@ -107,6 +107,10 @@ $analyzer->nodes = $parser->nodes;
 $analyzer->run();
 $stopTime = microtime(true);
 echo "[\033[36mcompilation took ".sprintf('%.1f', ($stopTime-$startTime)*1000)." ms\033[0m]\n";
+/*foreach (get_class_vars(Analyzer) as $key => $value) {
+	if (strpos($key, "stat_") === 0) echo substr($key, 5).":  $value\n";
+}*/
+Analyzer::dumpStats();
 
 function letDumpNPause()
 {

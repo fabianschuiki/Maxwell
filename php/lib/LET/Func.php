@@ -63,7 +63,7 @@ abstract class Func extends TypedNode
 		$inter = Type::intersect($thisType, $type, $thisType->scope);
 		if (Type::equal($inter, $thisType)) return $this;
 		
-		if ($this->name() == '-') {
+		/*if ($this->name() == '-') {
 			echo "\033[1mdeciding whether to specialize\033[0m {$this->details()} for {$type->details()}\n";
 			echo "  this type:    {$thisType->details()}\n";
 			echo "  intersection: {$inter->details()}\n";
@@ -74,7 +74,7 @@ abstract class Func extends TypedNode
 				}
 			}
 			//letDumpNPause();
-		}
+		}*/
 		
 		if ($this->specializations) {
 			foreach ($this->specializations as $spec) {
@@ -90,7 +90,7 @@ abstract class Func extends TypedNode
 		foreach (array($type->in(), $type->out()) as $tuple) {
 			foreach ($tuple->fields as $name => $arg) {
 				if (!$arg instanceof MemberConstrainedType || !$arg->type instanceof ConcreteType) continue;
-				echo "specialization for $name\n";
+				//echo "specialization for $name\n";
 				$tuple->fields[$name] = $arg->type->specialize($arg, $specializations);
 			}
 		}

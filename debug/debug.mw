@@ -1,14 +1,43 @@
-/** Maxwell debugging file. */
+//Square roots.
+func sqrt (int a) -> (int r) {}
+func sqrt (float a) -> (float r) {}
 
-func show (bool a)  {}
-func show (int a)   {}
-//func show (float a) {}
+//A mathematical vector.
+type Vector
+{
+	var x;
+	var y;
+	
+	func (*) (Vector other) -> (result) { result = this.x*other.x + this.y*other.y; }
+	func (+) (Vector other) -> (Vector result) { result.x = this.x + other.x; result.y = this.y + other.y; }
+	func (-) (Vector other) -> (Vector result) { result.x = this.x - other.x; result.y = this.y - other.y; }
+	func (=) (Vector other) { this.x = other.x; this.y = other.y; }
+}
 
+//A mathematical norm.
+func norm (a) -> (v) { v = sqrt(a*a); }
+
+//A straight line between two points.
+type Line
+{
+	var Vector s;
+	var Vector e;
+	
+	func direction () -> (d) { d = this.e - this.s; }
+	func length () -> (l) { l = norm(direction(this)); }
+}
+
+//Main function.
 func main
 {
-	var a = 5;
-	var b = 10;
-	var t = (a == b);
+	/*var float f;
+	var Vector v;
+	v.x = f;
+	v.y = f;
 	
-	show (a);
+	norm(f);
+	norm(v);*/
+	
+	var Line l;
+	var int x = length(l);
 }

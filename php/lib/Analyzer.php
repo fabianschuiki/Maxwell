@@ -7,6 +7,28 @@ class Analyzer
 	public $scope;
 	public $issues;
 	
+	static public $stat_imposeTypeConstraint = 0;
+	static public $stat_notifyNodeChangedType = 0;
+	static public $stat_maybeTypeChanged = 0;
+	static public $stat_bind = 0;
+	static public $stat_bindInVain = 0;
+	static public $stat_reimposedConstraints = 0;
+	
+	static public $stat_time_impose = 0;
+	static public $stat_time_sortingConstraints = 0;
+	
+	static public function dumpStats($offsets = null)
+	{
+		foreach (get_class_vars(Analyzer) as $key => $value) {
+			if (strpos($key, "stat_") !== 0) continue;
+			$n = substr($key, 5);
+			$v = $value;
+			if (is_array($offsets)) $v -= $offsets[$key];
+			if (strpos($n, "time_") === 0) $v = sprintf('%.1fms', $v*1000);
+			echo "- ".$n.":  ".($v)."\n";
+		}
+	}
+	
 	public function run()
 	{
 		//Prepare the builtin types and functions.
@@ -142,6 +164,8 @@ class Analyzer
 		foreach ($nodes as $node) $node->clearConstraints();
 		$left = $constraints;
 		while (count($left) > 0) {
+			$stat = get_class_vars(Analyzer);
+			$t0 = microtime(true);
 			usort($left, function($a,$b) {
 				$as = $a->isSpecific();
 				$bs = $b->isSpecific();
@@ -149,10 +173,13 @@ class Analyzer
 				if (!$as && $bs) return  1;
 				return $a->dependency($b);
 			});
+			\Analyzer::$stat_time_sortingConstraints += microtime(true)-$t0;
 			
 			$constraint = array_shift($left);
 			echo "\033[1;35mconstraint\033[0m {$constraint->details()} ".($constraint->isSpecific() ? '<specific!>' : '')."\n";
 			$constraint->impose();
+			
+			self::dumpStats($stat);
 			
 			if (count($left) == 0) {
 				foreach ($constraints as $constraint) {

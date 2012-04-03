@@ -74,6 +74,7 @@ abstract class TypedNode extends Node
 	/// Imposes the given type constraint upon the node.
 	public function imposeTypeConstraint(Type $type)
 	{
+		\Analyzer::$stat_imposeTypeConstraint++;
 		$constraint = null;
 		if ($this->typeConstraint) $constraint = Type::intersectTwo($this->typeConstraint, $type, $this->scope);
 		if (!$constraint) {
@@ -91,6 +92,7 @@ abstract class TypedNode extends Node
 	
 	public function maybeTypeChanged()
 	{
+		\Analyzer::$stat_maybeTypeChanged++;
 		$type = $this->type();
 		if ($type != $this->lastConfirmedType && $this->lastConfirmedType) {
 			//echo " - type changed {$this->desc()} from {$this->lastConfirmedType->details()}\n";
@@ -113,6 +115,7 @@ abstract class TypedNode extends Node
 	public function notifyNodeChangedType(Node $node)
 	{
 		//echo "\033[0mnotify\033[0m: {$this->desc()}\n";
+		\Analyzer::$stat_notifyNodeChangedType++;
 		if ($node === $this) {
 			//echo " -> \033[31mterminating notification chain\033[0m\n";
 			return;
@@ -125,6 +128,7 @@ abstract class TypedNode extends Node
 		foreach ($this->constraints as $constraint) {
 			if (!$constraint instanceof EqualTypeConstraint/* || $constraint->isImposing*/) continue;
 			//echo " - re-impose {$constraint->details()}\n";
+			\Analyzer::$stat_reimposedConstraints++;
 			$constraint->impose();
 			//$constraint->imposeAgain = true;
 		}

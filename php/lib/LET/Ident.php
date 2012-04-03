@@ -5,7 +5,7 @@ abstract class Ident extends Expr
 {
 	public $boundTo;
 	public $boundNodes;
-	//public $lastConfirmedType;
+	public $lastConfirmedTypeConstraint;
 	
 	abstract function name();
 	
@@ -14,6 +14,11 @@ abstract class Ident extends Expr
 	
 	public function bind()
 	{
+		\Analyzer::$stat_bind++;
+		if (Type::equalTwo($this->lastConfirmedTypeConstraint, $this->typeConstraint))
+			\Analyzer::$stat_bindInVain++;
+		$this->lastConfirmedTypeConstraint = $this->typeConstraint;
+		
 		global $issues;
 		$nodes = $this->scope->find($this->name());
 		$unfiltered = $nodes;
@@ -42,7 +47,7 @@ abstract class Ident extends Expr
 			if ($anySpecific) $nodes = array_filter($nodes, function($node) { return $node->isSpecific(); });
 		//}
 		sort($nodes);
-		echo "binding identifier {$this->name()} -> ".count($unfiltered)." nodes, ".count($nodes)." ".($anySpecific ? 'specific' : '')." nodes match type $tc.\n";
+		//echo "binding identifier {$this->name()} -> ".count($unfiltered)." nodes, ".count($nodes)." ".($anySpecific ? 'specific' : '')." nodes match type $tc.\n";
 		
 		$boundTo = $this->boundTo; //WARNING: this might be an ugly hack. Haven't considered all implications. Should prevent bound identifiers from losing their binding.
 		if (count($nodes) == 0 && count($unfiltered) > 0) {

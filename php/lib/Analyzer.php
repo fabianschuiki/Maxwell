@@ -14,13 +14,20 @@ class Analyzer
 	static public $stat_bindInVain = 0;
 	static public $stat_reimposedConstraints = 0;
 	
-	static public $stat_time_impose = 0;
+	//static public $stat_time_impose = 0;
 	static public $stat_time_sortingConstraints = 0;
+	static public $stat_time_initialSortingConstraints = 0;
+	static public $stat_time_constraintIsSpecificMapping = 0;
+	static public $stat_time_constraintIsSpecificIteration = 0;
+	static public $stat_time_calculateUnconstrainedType = 0;
+	
+	static public $stat_constraintSequence = array();
 	
 	static public function dumpStats($offsets = null)
 	{
 		foreach (get_class_vars(Analyzer) as $key => $value) {
 			if (strpos($key, "stat_") !== 0) continue;
+			if (is_array($value)) continue;
 			$n = substr($key, 5);
 			$v = $value;
 			if (is_array($offsets)) $v -= $offsets[$key];
@@ -82,6 +89,9 @@ class Analyzer
 		//Complain about ambiguities.
 		//NOTE: Comment this line if not stripping generics as they will be whining about how they are ambiguous.
 		$this->complainAboutAmbiguities($scope->children());
+		
+		echo "constraint sequence:\n";
+		foreach (self::$stat_constraintSequence as $c) echo "- $c\n";
 	}
 	
 	private function buildBuiltinScope()
@@ -161,6 +171,17 @@ class Analyzer
 		$constraints = $this->spawnConstraints($nodes);
 		//foreach ($constraints as $c) echo "unordered constraint {$c->details()}\n";
 		
+		//Sort the constraints so they are applied correctly.
+		$t0 = microtime(true);
+		usort($constraints, function($a,$b) {
+			/*$as = $a->isSpecific();
+			$bs = $b->isSpecific();
+			if ($as && !$bs) return -1;
+			if (!$as && $bs) return  1;*/
+			return $a->dependency($b);
+		});
+		\Analyzer::$stat_time_initialSortingConstraints += microtime(true)-$t0;
+		
 		foreach ($nodes as $node) $node->clearConstraints();
 		$left = $constraints;
 		while (count($left) > 0) {
@@ -171,11 +192,13 @@ class Analyzer
 				$bs = $b->isSpecific();
 				if ($as && !$bs) return -1;
 				if (!$as && $bs) return  1;
-				return $a->dependency($b);
+				//return $a->dependency($b);
+				return 0;
 			});
 			\Analyzer::$stat_time_sortingConstraints += microtime(true)-$t0;
 			
 			$constraint = array_shift($left);
+			Analyzer::$stat_constraintSequence[] = $constraint->details();
 			echo "\033[1;35mconstraint\033[0m {$constraint->details()} ".($constraint->isSpecific() ? '<specific!>' : '')."\n";
 			$constraint->impose();
 			

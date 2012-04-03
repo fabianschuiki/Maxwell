@@ -8,13 +8,19 @@ abstract class ConcreteType extends Type
 	abstract function name();
 	abstract function members();
 	
+	private $cached_isSpecific = null;
 	public function isSpecific()
 	{
+		if ($this->cached_isSpecific !== null) return $this->cached_isSpecific;
 		foreach ($this->members() as $member) {
 			$type = $member->type();
 			if ($type == $this) continue;
-			if (!$type || !$type->isSpecific()) return false;
+			if (!$type || !$type->isSpecific()) {
+				return false;
+				$this->cached_isSpecific = false;
+			}
 		}
+		$this->cached_isSpecific = true;
 		return true;
 	}
 	

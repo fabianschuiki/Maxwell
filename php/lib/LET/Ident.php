@@ -5,6 +5,7 @@ abstract class Ident extends Expr
 {
 	public $boundTo;
 	public $boundNodes;
+	public $boundNodesCommonType;
 	public $lastConfirmedTypeConstraint;
 	
 	abstract function name();
@@ -60,6 +61,27 @@ abstract class Ident extends Expr
 		}
 		if (count($nodes) == 0) $boundTo = null;
 		if (count($nodes) == 1) $boundTo = $nodes[0];
+		if (count($nodes)) {
+			$in  = new GenericType;
+			$out = new GenericType;
+			foreach ($nodes as $node) {
+				if (!$node instanceof TypedNode) continue;
+				$nodeType = $node->type();
+				if (!$nodeType instanceof FuncType) continue;
+				
+				if ($in  && $nodeType->in())  $in  = Type::intersectTwo($in,  $nodeType->in());
+				if ($out && $nodeType->out()) $out = Type::intersectTwo($out, $nodeType->out());
+			}
+			if (!$in)  $in  = new GenericType;
+			if (!$out) $out = new GenericType;
+			if ($in instanceof GenericType && $out instanceof GenericType) {
+				$this->boundNodesCommonType = new GenericType;
+			} else {
+				$this->boundNodesCommonType = new FuncType($this->scope, $in, $out);
+			}
+		} else {
+			$this->boundNodesCommonType = null;
+		}
 		
 		$this->boundTo    = $boundTo;
 		$this->boundNodes = $nodes;
@@ -74,7 +96,8 @@ abstract class Ident extends Expr
 		if ($this->boundTo instanceof TypedNode) {
 			return $this->boundTo->type();
 		}
-		if (is_array($this->boundNodes)) {
+		/*if (is_array($this->boundNodes)) {
+			return new GenericType;
 			$in  = new GenericType;
 			$out = new GenericType;
 			foreach ($this->boundNodes as $node) {
@@ -89,27 +112,9 @@ abstract class Ident extends Expr
 			if (!$out) $out = new GenericType;
 			if ($in instanceof GenericType && $out instanceof GenericType) return new GenericType;
 			return new FuncType($this->scope, $in, $out);
-			/*$type = new GenericType;
-			foreach ($this->boundNodes as $node) {
-				if (!$node instanceof TypedNode || $node instanceof Type) continue;
-				$other = $node->type();
-				if (!$other) continue;
-				echo "intersecting with {$other->details()}\n";
-				
-				if ($type instanceof FuncType && $other instanceof FuncType) {
-					$in  = Type::intersect($type->in(),  $other->in(),  $this->scope);
-					$out = Type::intersect($type->out(), $other->out(), $this->scope);
-					if (!$in)  $in  = new GenericType;
-					if (!$out) $out = new GenericType;
-					echo "  got {$in->details()} -> {$out->details()}\n";
-					$type = new FuncType($this->scope, $in, $out);
-				} else {
-					$type = Type::intersect($type, $node->type(), $this->scope);
-				}
-			}
-			return $type;*/
 		}
-		return null;
+		return null;*/
+		return $this->boundNodesCommonType;
 	}
 	
 	public function spawnConstraints(array &$constraints)

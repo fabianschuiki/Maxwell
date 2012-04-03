@@ -62,7 +62,6 @@ class EqualTypeConstraint extends Constraint
 	
 	public function impose()
 	{
-		$t0 = microtime(true);
 		$types = array_map(function($node){ return $node->type(); }, $this->nodes);
 		if (in_array(null, $types, true)) {
 			echo "\033[1;33mconstraint not imposable\033[0m, some node has null-type: {$this->details()}\n";
@@ -84,7 +83,6 @@ class EqualTypeConstraint extends Constraint
 		//if (!$type) return;
 		
 		foreach ($this->nodes as $node) $node->imposeConstraint($this);
-		\Analyzer::$stat_time_impose += microtime(true)-$t0;
 	}
 	
 	public function dependency(Constraint $other)
@@ -102,8 +100,12 @@ class EqualTypeConstraint extends Constraint
 	
 	public function isSpecific()
 	{
+		$t0 = microtime(true);
 		$types = array_filter(array_map(function($node){ return $node->type(); }, $this->nodes));
+		\Analyzer::$stat_time_constraintIsSpecificMapping += microtime(true)-$t0;
+		$t0 = microtime(true);
 		foreach ($types as $type) if ($type->isSpecific()) return true;
+		\Analyzer::$stat_time_constraintIsSpecificIteration += microtime(true)-$t0;
 		return false;
 	}
 }

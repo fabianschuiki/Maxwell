@@ -16,8 +16,11 @@ abstract class TypedNode extends Node
 	/// The node's inferred type. Consists of the unconstrained type with the type constraint applied.
 	public function type()
 	{
-		if (!$this->unconstrainedType() || !$this->typeConstraint) return $null;
-		$type = Type::intersectTwo($this->unconstrainedType(), $this->typeConstraint, $this->scope);
+		$t0 = microtime(true);
+		$unconstrained = $this->unconstrainedType();
+		\Analyzer::$stat_time_calculateUnconstrainedType += microtime(true)-$t0;
+		if (!$unconstrained || !$this->typeConstraint) return $null;
+		$type = Type::intersectTwo($unconstrained, $this->typeConstraint, $this->scope);
 		if ($type && !$type instanceof ConcreteType) $type = $type->reduce();
 		return $type;
 	}

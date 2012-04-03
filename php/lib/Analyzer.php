@@ -21,8 +21,6 @@ class Analyzer
 	static public $stat_time_constraintIsSpecificIteration = 0;
 	static public $stat_time_calculateUnconstrainedType = 0;
 	
-	static public $stat_constraintSequence = array();
-	
 	static public function dumpStats($offsets = null)
 	{
 		foreach (get_class_vars(Analyzer) as $key => $value) {
@@ -89,9 +87,6 @@ class Analyzer
 		//Complain about ambiguities.
 		//NOTE: Comment this line if not stripping generics as they will be whining about how they are ambiguous.
 		$this->complainAboutAmbiguities($scope->children());
-		
-		echo "constraint sequence:\n";
-		foreach (self::$stat_constraintSequence as $c) echo "- $c\n";
 	}
 	
 	private function buildBuiltinScope()
@@ -198,11 +193,10 @@ class Analyzer
 			\Analyzer::$stat_time_sortingConstraints += microtime(true)-$t0;
 			
 			$constraint = array_shift($left);
-			Analyzer::$stat_constraintSequence[] = $constraint->details();
 			echo "\033[1;35mconstraint\033[0m {$constraint->details()} ".($constraint->isSpecific() ? '<specific!>' : '')."\n";
 			$constraint->impose();
 			
-			self::dumpStats($stat);
+			//self::dumpStats($stat);
 			
 			if (count($left) == 0) {
 				foreach ($constraints as $constraint) {

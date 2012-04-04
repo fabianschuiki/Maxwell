@@ -34,7 +34,9 @@ class Func_AST extends Func
 		
 		$stmts = array();
 		foreach ($node->body->stmts as $stmt) {
-			switch ($stmt->kind()) {
+			$s = Node::make($subscope, $stmt);
+			if (!$s instanceof ConcreteType_AST && !$s instanceof Func_AST) $stmts[] = $s;
+			/*switch ($stmt->kind()) {
 				case 'VarStmt':    $stmts[] = new Variable($subscope, $stmt); break;
 				case 'TypeStmt':   new Type_AST($subscope, $stmt); break;
 				case 'FuncStmt':   new Func_AST($subscope, $stmt); break;
@@ -48,7 +50,7 @@ class Func_AST extends Func
 						$stmt
 					);
 				};
-			}
+			}*/
 		}
 		$stmts = array_filter($stmts);
 		

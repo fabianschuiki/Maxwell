@@ -1,0 +1,105 @@
+#!/usr/bin/php
+<?php
+
+/**
+ * mwci
+ * 
+ * The interactive Maxwell compiler and interpreter.
+ */
+
+require_once __DIR__.'/../lib/autoload.php';
+error_reporting(E_ALL ^ E_NOTICE);
+
+$mwci = new mwci;
+while (true)
+{
+	$input = readline(sprintf("mwci> "));
+	if (strlen($input) == 0) continue;
+	
+	if ($input[0] == ':') {
+		$mwci->processCommand(rtrim(substr($input, 1)));
+	} else {
+		$mwci->processInput($input);
+	}
+}
+
+
+class mwci
+{
+	public $scope;
+	
+	public function __construct()
+	{
+	}
+	
+	public function processCommand($command)
+	{
+		switch ($command) {
+			case 'quit':
+			case 'q': exit; break;
+			
+			case 'scope': $this->dumpScope(); break;
+			
+			default: {
+				echo "\033[31mUnknown command\033[0m '$command'. Type ':help' for an overview of commands.\n";
+			} break;
+		}
+	}
+	
+	public function processInput($input)
+	{
+		global $issues;
+		$issues = new IssueList;
+
+		$file = new SourceFile;
+		$file->path = 'interactive';
+		$file->content = $input;
+
+		$lexer = new Lexer;
+		$lexer->file = $file;
+		$lexer->run();
+		if ($issues->isFatal()) goto issues;
+
+		$parser = new Parser;
+		$parser->tokens = $lexer->tokens;
+		$parser->issues = $issues;
+		$parser->run();
+		if ($issues->isFatal()) goto issues;
+		
+		$analyzer = new Analyzer;
+		$analyzer->scope  = $this->scope;
+		$analyzer->issues = $issues;
+		$analyzer->nodes  = $parser->nodes;
+		$analyzer->finalize = false;
+		$analyzer->restrictRootLevel = false;
+		$analyzer->run();
+		$this->scope = $analyzer->scope;
+		if ($issues->isFatal()) goto issues;
+		
+		issues:
+		$issues->dump();
+	}
+	
+	private function dumpScope()
+	{
+		if (!$this->scope) {
+			echo "No scope has been initialized yet. Start typing!\n";
+			return;
+		}
+		
+		foreach ($this->scope->funcs as $func) echo "\033[1mfunc\033[0m \033[34m{$func->name()}\033[0m {$func->argDetails()}\n";
+		foreach ($this->scope->types as $type) {
+			$str = "\033[1mtype\033[0m \033[34m{$type->name()}\033[0m";
+			if (!$type->isSpecific()) $str .= " \033[35mgeneric\033[0m";
+			$str .= "\n";
+			echo $str;
+		}
+		
+		foreach ($this->scope->vars as $variable) {
+			$str = "\033[1mvar\033[0m";
+			if (!$variable->type() instanceof LET\GenericType) $str .= " {$variable->type()->details()}";
+			$str .= " \033[34m{$variable->name()}\033[0m\n";
+			echo $str;
+		}
+	}
+}

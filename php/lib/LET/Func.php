@@ -14,7 +14,13 @@ abstract class Func extends TypedNode
 	public function details()
 	{
 		$det = function($arg){ return $arg->details(); };
-		return "'{$this->name()}' (".implode(", ", array_map($det, $this->inputs())).") -> (".implode(", ", array_map($det, $this->outputs())).")";
+		return "'{$this->name()}' {$this->argDetails()}";
+	}
+	
+	public function argDetails()
+	{
+		$det = function($arg){ return $arg->details(); };
+		return "(".implode(", ", array_map($det, $this->inputs())).") -> (".implode(", ", array_map($det, $this->outputs())).")";
 	}
 	
 	public function nice()

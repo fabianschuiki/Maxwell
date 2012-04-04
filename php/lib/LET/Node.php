@@ -8,6 +8,16 @@ abstract class Node
 	
 	public function __construct() {}
 	
+	static public function make(Scope $scope, \AST\Stmt $stmt)
+	{
+		if ($stmt instanceof \AST\VarStmt)    return new Variable($scope, $stmt);
+		if ($stmt instanceof \AST\TypeStmt)   return new ConcreteType_AST($scope, $stmt);
+		if ($stmt instanceof \AST\FuncStmt)   return new Func_AST($scope, $stmt);
+		if ($stmt instanceof \AST\ExprStmt)   return Expr::make($scope, $stmt->expr);
+		if ($stmt instanceof \AST\InlineStmt) return new Inline($scope, $stmt);
+		return null;
+	}
+	
 	///Returns the type of this LET node, which is its class name without the LET namespace.
 	public function kind()
 	{

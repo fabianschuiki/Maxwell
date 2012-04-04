@@ -7,6 +7,9 @@ class Analyzer
 	public $scope;
 	public $issues;
 	
+	public $finalize = true;
+	public $restrictRootLevel = true;
+	
 	static public $stat_imposeTypeConstraint = 0;
 	static public $stat_notifyNodeChangedType = 0;
 	static public $stat_maybeTypeChanged = 0;
@@ -40,8 +43,12 @@ class Analyzer
 		$builtin = $this->buildBuiltinScope();
 		
 		//Build the initial Language Entity Tree.
-		$scope = new LET\Scope($builtin);
-		$this->scope = $scope;
+		if ($this->scope) {
+			$scope = $this->scope;
+		} else {
+			$scope = new LET\Scope($builtin);
+			$this->scope = $scope;
+		}
 		foreach ($this->nodes as $node) {
 			$this->buildEntity($scope, $node);
 		}
@@ -80,13 +87,15 @@ class Analyzer
 			}
 		}
 		
-		//Strip the generics from the scope.
-		//NOTE: Comment this line to see the generic nodes for debugging.
-		$scope->stripGenerics();
+		if ($this->finalize) {
+			//Strip the generics from the scope.
+			//NOTE: Comment this line to see the generic nodes for debugging.
+			$scope->stripGenerics();
 		
-		//Complain about ambiguities.
-		//NOTE: Comment this line if not stripping generics as they will be whining about how they are ambiguous.
-		$this->complainAboutAmbiguities($scope->children());
+			//Complain about ambiguities.
+			//NOTE: Comment this line if not stripping generics as they will be whining about how they are ambiguous.
+			$this->complainAboutAmbiguities($scope->children());
+		}
 	}
 	
 	private function buildBuiltinScope()
@@ -111,7 +120,7 @@ class Analyzer
 	
 	private function buildEntity(LET\Scope $scope, AST\Node $node)
 	{
-		switch ($node->kind()) {
+		/*switch ($node->kind()) {
 			case 'TypeStmt': new LET\ConcreteType_AST($scope, $node); break;
 			case 'FuncStmt': new LET\Func_AST($scope, $node); break;
 			default: {
@@ -122,6 +131,17 @@ class Analyzer
 					$node
 				);
 			} break;
+		}*/
+		$n = LET\Node::make($scope, $node);
+		if ($this->restrictRootLevel) {
+			if (!$n instanceof Func_AST && !$n instanceof ConcreteType_AST) {
+				global $issues;
+				$issues[] = new \Issue(
+					'warning',
+					"{$node->nice()} is not allowed at file level. Ignored.",
+					$node
+				);
+			} 
 		}
 	}
 	

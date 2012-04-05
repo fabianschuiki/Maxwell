@@ -49,14 +49,16 @@ class Analyzer
 			$scope = new LET\Scope($builtin);
 			$this->scope = $scope;
 		}
+		$stmts = array();
 		foreach ($this->nodes as $node) {
-			$this->buildEntity($scope, $node);
+			$stmt = $this->buildEntity($scope, $node);
+			if ($stmt instanceof LET\Node) $stmts[] = $stmt;
 		}
 		//foreach ($scope->children() as $node) $node->clearConstraints();
 		if ($this->issues->isFatal()) return;
 		
 		//Analysis is an iterative process that works on a bunch of nodes at a time.
-		$nodes = $scope->children();
+		$nodes = array_merge($scope->children(), $stmts);
 		$wdc = 0;
 		while ($nodes)
 		{
@@ -73,7 +75,7 @@ class Analyzer
 			//letDumpNPause();
 		
 			//Build the specializations.
-			$specializations = $this->buildSpecializations($scope->children());
+			$specializations = $this->buildSpecializations(array_merge($scope->children(), $stmts));
 			echo "built ".count($specializations)." specializations\n";
 			if ($this->issues->isFatal()) return;
 			//letDumpNPause();
@@ -141,8 +143,10 @@ class Analyzer
 					"{$node->nice()} is not allowed at file level. Ignored.",
 					$node
 				);
+				return null;
 			} 
 		}
+		return $n;
 	}
 	
 	public function __call($name, $args)

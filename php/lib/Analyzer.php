@@ -5,6 +5,7 @@ class Analyzer
 	public $nodes;
 	public $importScope;
 	public $scope;
+	public $root;
 	public $issues;
 	
 	public $finalize = true;
@@ -43,22 +44,24 @@ class Analyzer
 		$builtin = $this->buildBuiltinScope();
 		
 		//Build the initial Language Entity Tree.
-		if ($this->scope) {
-			$scope = $this->scope;
-		} else {
+		$root = $this->root;
+		if (!$root) {
 			$scope = new LET\Scope($builtin);
-			$this->scope = $scope;
+			$root = new LET\RootNode($scope);
 		}
-		$stmts = array();
+		$this->root = $root;
+		$scope = $root->scope;
+		$this->scope = $scope;
+		
 		foreach ($this->nodes as $node) {
 			$stmt = $this->buildEntity($scope, $node);
-			if ($stmt instanceof LET\Node) $stmts[] = $stmt;
+			if ($stmt instanceof LET\Node && !$stmt instanceof LET\Func_AST && !$stmt instanceof LET\ConcreteType_AST) $root->stmts[] = $stmt;
 		}
 		//foreach ($scope->children() as $node) $node->clearConstraints();
 		if ($this->issues->isFatal()) return;
 		
 		//Analysis is an iterative process that works on a bunch of nodes at a time.
-		$nodes = array_merge($scope->children(), $stmts);
+		$nodes = $root->children();/*array_merge($scope->children(), $root->stmts);*/
 		$wdc = 0;
 		while ($nodes)
 		{
@@ -75,7 +78,7 @@ class Analyzer
 			//letDumpNPause();
 		
 			//Build the specializations.
-			$specializations = $this->buildSpecializations(array_merge($scope->children(), $stmts));
+			$specializations = $this->buildSpecializations($root->children());
 			echo "built ".count($specializations)." specializations\n";
 			if ($this->issues->isFatal()) return;
 			//letDumpNPause();
@@ -96,7 +99,7 @@ class Analyzer
 		
 			//Complain about ambiguities.
 			//NOTE: Comment this line if not stripping generics as they will be whining about how they are ambiguous.
-			$this->complainAboutAmbiguities($scope->children());
+			$this->complainAboutAmbiguities($root->children());
 		}
 	}
 	
@@ -136,7 +139,7 @@ class Analyzer
 		}*/
 		$n = LET\Node::make($scope, $node);
 		if ($this->restrictRootLevel) {
-			if (!$n instanceof Func_AST && !$n instanceof ConcreteType_AST) {
+			if (!$n instanceof LET\Func_AST && !$n instanceof LET\ConcreteType_AST) {
 				global $issues;
 				$issues[] = new \Issue(
 					'warning',

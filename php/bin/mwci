@@ -10,7 +10,7 @@
 require_once __DIR__.'/../lib/autoload.php';
 error_reporting(E_ALL ^ E_NOTICE);
 
-$mwci = new mwci;
+$mwci   = new mwci;
 while (true)
 {
 	$input = readline(sprintf("mwci> "));
@@ -26,7 +26,7 @@ while (true)
 
 class mwci
 {
-	public $scope;
+	public $root;
 	
 	public function __construct()
 	{
@@ -67,13 +67,13 @@ class mwci
 		if ($issues->isFatal()) goto issues;
 		
 		$analyzer = new Analyzer;
-		$analyzer->scope  = $this->scope;
+		$analyzer->root   = $this->root;
 		$analyzer->issues = $issues;
 		$analyzer->nodes  = $parser->nodes;
 		$analyzer->finalize = false;
 		$analyzer->restrictRootLevel = false;
 		$analyzer->run();
-		$this->scope = $analyzer->scope;
+		$this->root = $analyzer->root;
 		if ($issues->isFatal()) goto issues;
 		
 		issues:
@@ -82,20 +82,22 @@ class mwci
 	
 	private function dumpScope()
 	{
-		if (!$this->scope) {
+		$scope = $this->root;
+		if ($scope) $scope = $scope->scope;
+		if (!$scope) {
 			echo "No scope has been initialized yet. Start typing!\n";
 			return;
 		}
 		
-		foreach ($this->scope->funcs as $func) echo "\033[1mfunc\033[0m \033[34m{$func->name()}\033[0m {$func->argDetails()}\n";
-		foreach ($this->scope->types as $type) {
+		foreach ($scope->funcs as $func) echo "\033[1mfunc\033[0m \033[34m{$func->name()}\033[0m {$func->argDetails()}\n";
+		foreach ($scope->types as $type) {
 			$str = "\033[1mtype\033[0m \033[34m{$type->name()}\033[0m";
 			if (!$type->isSpecific()) $str .= " \033[35mgeneric\033[0m";
 			$str .= "\n";
 			echo $str;
 		}
 		
-		foreach ($this->scope->vars as $variable) {
+		foreach ($scope->vars as $variable) {
 			$str = "\033[1mvar\033[0m";
 			if (!$variable->type() instanceof LET\GenericType) $str .= " {$variable->type()->details()}";
 			$str .= " \033[34m{$variable->name()}\033[0m\n";

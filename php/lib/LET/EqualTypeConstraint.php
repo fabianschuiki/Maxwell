@@ -62,6 +62,8 @@ class EqualTypeConstraint extends Constraint
 	
 	public function impose()
 	{
+		echo "\033[1;35mconstraint\033[0m {$this->details()} ".($this->isSpecific() ? '<specific!>' : '')."\n";
+		
 		$types = array_map(function($node){ return $node->type(); }, $this->nodes);
 		if (in_array(null, $types, true)) {
 			echo "\033[1;33mconstraint not imposable\033[0m, some node has null-type: {$this->details()}\n";

@@ -220,7 +220,6 @@ class Analyzer
 			\Analyzer::$stat_time_sortingConstraints += microtime(true)-$t0;
 			
 			$constraint = array_shift($left);
-			echo "\033[1;35mconstraint\033[0m {$constraint->details()} ".($constraint->isSpecific() ? '<specific!>' : '')."\n";
 			$constraint->impose();
 			
 			//self::dumpStats($stat);

@@ -10,7 +10,14 @@
 require_once __DIR__.'/../lib/autoload.php';
 error_reporting(E_ALL ^ E_NOTICE);
 
-$mwci   = new mwci;
+$mwci = new mwci;
+
+
+foreach (array_slice($argv, 1) as $path) {
+	$mwci->import($path);
+}
+
+
 while (true)
 {
 	$input = readline(sprintf("mwci> "));
@@ -34,11 +41,21 @@ class mwci
 	
 	public function processCommand($command)
 	{
+		$args    = explode(' ', $command);
+		$command = array_shift($args);
 		switch ($command) {
 			case 'quit':
 			case 'q': exit; break;
 			
 			case 'scope': $this->dumpScope(); break;
+			
+			case 'import': {
+				if (count($args) != 1) {
+					echo "'import' requires \033[31mone file path\033[0m as argument.\n";
+					return;
+				}
+				$this->import($args[0]);
+			} break;
 			
 			default: {
 				echo "\033[31mUnknown command\033[0m '$command'. Type ':help' for an overview of commands.\n";
@@ -48,13 +65,34 @@ class mwci
 	
 	public function processInput($input)
 	{
-		global $issues;
-		$issues = new IssueList;
-
 		$file = new SourceFile;
 		$file->path = 'interactive';
 		$file->content = $input;
 
+		$this->processFile($file);
+	}
+	
+	public function import($path)
+	{
+		$file = new SourceFile;
+		$file->path = $path;
+		if (!file_exists($file->path)) {
+			$i = new Issue(
+				'error',
+				"Source file '{$file->path}' does not exist."
+			);
+			echo "$i\n";
+			return;
+		}
+		$file->load();
+		$this->processFile($file);
+	}
+	
+	public function processFile(SourceFile $file)
+	{
+		global $issues;
+		$issues = new IssueList;
+		
 		$lexer = new Lexer;
 		$lexer->file = $file;
 		$lexer->run();

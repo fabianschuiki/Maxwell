@@ -38,12 +38,6 @@ class Lexer
 			$c   = ($i   < $len ? $input[$i]   : null);
 			$nc  = ($i+1 < $len ? $input[$i+1] : null);
 			
-			//Advance the location.
-			if ($c == "\n") {
-				$loc->line++;
-				$loc->column = 0;
-			}
-			
 			//Process the character based on the context.
 			$newBufferType = null;
 			$wrapUpAnyway  = false;
@@ -211,7 +205,12 @@ class Lexer
 			}
 			
 			//Increase the location column counter.
-			$loc->column++;
+			if ($c == "\n") {
+				$loc->line++;
+				$loc->column = 0;
+			} else {
+				$loc->column++;
+			}
 			$loc->offset++;
 			
 			//Adjust the buffer range's end.

@@ -2,3 +2,9 @@ func square (int x) -> (int y)
 {
 	y = x*x;
 }
+
+type Vector
+{
+	var int x;
+	var int y;
+}

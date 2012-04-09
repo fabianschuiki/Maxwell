@@ -124,7 +124,7 @@ class mwci
 			if (!$entity instanceof LET\Expr) continue;
 			$result = $this->interpreter->evaluate($entity);
 			if ($result instanceof Interpreter\Value) {
-				echo "\033[34m{$result->type->details()}\033[0m: {$result->value}\n";
+				echo "\033[34m{$result->typeDetails()}\033[0m: {$result->valueDetails()}\n";
 			}
 			if ($issues->isFatal()) goto issues;
 		}

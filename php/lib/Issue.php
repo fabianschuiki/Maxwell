@@ -100,11 +100,11 @@ class Issue
 				$marks = '';
 				for ($i = 0; $i < strlen($line); $i++) {
 					$mark = ($line[$i] == "\t" ? "\t" : " ");
-					if ($this->range && $this->range->contains($l, $i+1)) {
+					if ($this->range && $this->range->contains($l, $i)) {
 						$mark = '^';
 					} else {
 						foreach ($this->marked as $r) {
-							if ($r->contains($l, $i+1)) {
+							if ($r->contains($l, $i)) {
 								$mark = '~';
 								break;
 							}

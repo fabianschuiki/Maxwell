@@ -117,8 +117,10 @@ class Parser
 	
 	private function parseFuncStmt(Token &$keyword, array &$ts)
 	{
-		$name = array_shift($ts);
-		if ($name->is('group', '()')) {
+		$name = null;
+		if (count($ts) >= 1) $name = array_shift($ts);
+		
+		if ($name && $name->is('group', '()')) {
 			$tokens = $name->tokens;
 			if (count($tokens) < 1) {
 				$this->issues[] = new Issue(
@@ -139,36 +141,38 @@ class Parser
 				);
 			}
 		}
-		if (!$name->is('identifier') && !$name->is('symbol')) {
+		if (!$name || (!$name->is('identifier') && !$name->is('symbol'))) {
 			$this->issues[] = new Issue(
 				'error',
-				"function requires a name or operator symbol in paranthesis",
-				$name->range,
-				array($keyword->range)
+				"Function requires a name or an operator symbol in paranthesis.",
+				$name,
+				$keyword
 			);
 			return null;
 		}
 		
-		if ($ts[0]->is('group', '()')) {
+		if (count($ts) >= 1 && $ts[0]->is('group', '()')) {
 			$args_in = $this->parseFuncArgs(array_shift($ts)->tokens);
 		} else {
 			$args_in = array();
 		}
 		
-		if ($ts[0]->is('symbol', '->') && $ts[1]->is('group', '()')) {
+		if (count($ts) >= 2 && $ts[0]->is('symbol', '->') && $ts[1]->is('group', '()')) {
 			array_shift($ts);
 			$args_out = $this->parseFuncArgs(array_shift($ts)->tokens);
 		} else {
 			$args_out = array();
 		}
 		
-		$body = array_shift($ts);
-		if (!$body->is('group', '{}')) {
+		$body = null;
+		if (count($ts) && $ts[0]->is('group', '{}')) $body = array_shift($ts);
+		
+		if (!$body) {
 			$this->issues[] = new Issue(
 				'error',
-				"function requires a body",
-				$body->range,
-				array($keyword->range, $name->range)
+				"Function requires a body.",
+				$body,
+				array($keyword, $name)
 			);
 			return null;
 		}

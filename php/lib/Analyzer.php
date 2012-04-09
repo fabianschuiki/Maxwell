@@ -7,6 +7,7 @@ class Analyzer
 	public $scope;
 	public $root;
 	public $issues;
+	public $entities;
 	
 	public $finalize = true;
 	public $restrictRootLevel = true;
@@ -43,7 +44,7 @@ class Analyzer
 		//Prepare the builtin types and functions.
 		$builtin = $this->buildBuiltinScope();
 		
-		//Build the initial Language Entity Tree.
+		//Build the root node and scope.
 		$root = $this->root;
 		if (!$root) {
 			$scope = new LET\Scope($builtin);
@@ -53,15 +54,20 @@ class Analyzer
 		$scope = $root->scope;
 		$this->scope = $scope;
 		
+		//Build the initial Language Entity Tree.
+		$nodes = array();
 		foreach ($this->nodes as $node) {
 			$stmt = $this->buildEntity($scope, $node);
-			if ($stmt instanceof LET\Node && !$stmt instanceof LET\Func_AST && !$stmt instanceof LET\ConcreteType_AST) $root->stmts[] = $stmt;
+			if ($stmt instanceof LET\Node) {
+				if (!$stmt instanceof LET\Func_AST && !$stmt instanceof LET\ConcreteType_AST) $root->stmts[] = $stmt;
+				$nodes[] = $stmt;
+			}
 		}
-		//foreach ($scope->children() as $node) $node->clearConstraints();
+		$this->entities = $nodes;
 		if ($this->issues->isFatal()) return;
 		
 		//Analysis is an iterative process that works on a bunch of nodes at a time.
-		$nodes = $root->children();/*array_merge($scope->children(), $root->stmts);*/
+		//$nodes = $root->children();/*array_merge($scope->children(), $root->stmts);*/
 		$wdc = 0;
 		while ($nodes)
 		{

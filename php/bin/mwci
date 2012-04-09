@@ -34,9 +34,11 @@ while (true)
 class mwci
 {
 	public $root;
+	public $interpreter;
 	
 	public function __construct()
 	{
+		$this->interpreter = new Interpreter\Interpreter();
 	}
 	
 	public function processCommand($command)
@@ -111,8 +113,15 @@ class mwci
 		$analyzer->finalize = false;
 		$analyzer->restrictRootLevel = false;
 		$analyzer->run();
-		$this->root = $analyzer->root;
+		if (!$this->root) {
+			$this->root = $analyzer->root;
+			$this->interpreter->root = $analyzer->root;
+		}
 		if ($issues->isFatal()) goto issues;
+		
+		foreach ($analyzer->entities as $entity) {
+			if ($entity instanceof LET\Expr) $this->interpreter->evaluate($entity);
+		}
 		
 		issues:
 		$issues->dump();

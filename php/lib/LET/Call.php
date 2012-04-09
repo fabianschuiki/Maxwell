@@ -120,6 +120,13 @@ abstract class Call extends Expr
 			parent::complainAboutAmbiguities();
 		}
 	}
+	
+	public function func()
+	{
+		$callee = $this->callee();
+		if ($callee && $callee->boundTo) return $callee->boundTo;
+		return null;
+	}
 }
 
 class CallTypeProxy extends TypedNode

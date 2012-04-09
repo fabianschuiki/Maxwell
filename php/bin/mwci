@@ -119,8 +119,14 @@ class mwci
 		}
 		if ($issues->isFatal()) goto issues;
 		
+		$this->interpreter->issues = $issues;
 		foreach ($analyzer->entities as $entity) {
-			if ($entity instanceof LET\Expr) $this->interpreter->evaluate($entity);
+			if (!$entity instanceof LET\Expr) continue;
+			$result = $this->interpreter->evaluate($entity);
+			if ($result instanceof Interpreter\Value) {
+				echo "\033[34m{$result->type->details()}\033[0m: {$result->value}\n";
+			}
+			if ($issues->isFatal()) goto issues;
 		}
 		
 		issues:

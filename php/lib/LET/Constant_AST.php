@@ -12,8 +12,11 @@ class Constant_AST extends Constant
 		switch ($node->value->type) {
 			case 'numeric': {
 				$types = array();
-				$types[] = new TypeExpr($scope, new Ident_Impl($scope, 'int'));
-				$types[] = new TypeExpr($scope, new Ident_Impl($scope, 'float'));
+				if (strpos($this->value(), '.') === false) {
+					$types[] = new TypeExpr($scope, new Ident_Impl($scope, 'int'));
+				} else {
+					$types[] = new TypeExpr($scope, new Ident_Impl($scope, 'float'));
+				}
 				$type = new TypeSet($scope, $types);
 			} break;
 			case 'string': {

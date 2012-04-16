@@ -129,10 +129,12 @@ class Interpreter
 	{
 		$target = $this->evaluate($node->expr(), $scope);
 		assert($target);
-		echo get_class($target)."\n";
-		if (!isset($target->value[$node->name()])) {
+		$object = $target->value();
+		assert($object instanceof ObjectValue);
+		return $object->members[$node->name()];
+		/*if (!isset($target->value[$node->name()])) {
 			$target->value[$node->name()] = new Variable($node->expr());
 		}
-		return $target->value[$node->name()];
+		return $target->value[$node->name()];*/
 	}
 }

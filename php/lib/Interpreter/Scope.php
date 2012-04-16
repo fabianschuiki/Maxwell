@@ -24,7 +24,7 @@ class Scope
 		$node = array_shift($this->let->find($name));
 		if (!$node) return null;
 		
-		$value = new ConcreteValue($node->type(), array());
+		$value = new ObjectValue($node->type());
 		$this->vars[$name] = $value;
 		return $value;
 	}

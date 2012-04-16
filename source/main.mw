@@ -1,8 +1,3 @@
-/** This is the main driver file for the Maxwell compiler. */
-import String;
-import StringArray;
-
-func main (StringArray args)
+func main
 {
-	show("Welcome to the Maxwell compiler." .. "\033[1mNot doing that\033[0m much yet." .. cast(4687));
 }

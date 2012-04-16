@@ -44,6 +44,8 @@ class Issue
 	
 	public function __toString()
 	{
+		$colored = getenv("COLORTERM");
+		
 		if (!is_array($this->marked)) {
 			$this->marked = array();
 		}
@@ -56,8 +58,8 @@ class Issue
 		}
 		
 		$t = $this->type.':';
-		if ($this->type == 'error')   $t = "\033[1;31m$t\033[0m";
-		if ($this->type == 'warning') $t = "\033[1;33m$t\033[0m";
+		if ($this->type == 'error' && $colored)   $t = "\033[1;31m$t\033[0m";
+		if ($this->type == 'warning' && $colored) $t = "\033[1;33m$t\033[0m";
 		
 		$msg = str_replace("\n", "\n    : ", $this->message);
 		$o = "$t $msg";
@@ -114,12 +116,13 @@ class Issue
 				}
 				$line  = substr(str_replace("\t", "    ", $line),  $whitelead_min);
 				$marks = substr(str_replace("\t", "    ", $marks), $whitelead_min);
+				if ($colored) $marks = "\033[0;36m$marks\033[0m";
 			
 				$prefix = sprintf('%4d', $l);
 				$pad = str_repeat(' ', strlen($prefix));
 				$o .= "\n";
 				$o .= "$prefix| $line\n";
-				$o .= "$pad| \033[0;36m".$marks."\033[0m";
+				$o .= "$pad| $marks";
 			}
 		}
 		

@@ -7,4 +7,15 @@ type Vector
 {
 	var int x;
 	var int y;
+	
+	func lengthSquared -> (l)
+	{
+		l = x*x + y*y;
+	}
+}
+
+func main
+{
+	var Vector v;
+	var int lsq = v.lengthSquared();
 }

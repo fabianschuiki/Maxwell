@@ -43,7 +43,7 @@ abstract class Member extends Expr
 		/*$exprType = $expr->type();
 		if (!$exprType) $exprType = new GenericType;*/
 		
-		$constraint = new MemberConstrainedType(new GenericType, array($this->name() => $type), array($this->name() => $this));
+		$constraint = new MemberConstrainedType(new GenericType, array(strval($this->name()) => $type), array(strval($this->name()) => $this));
 		
 		if ($expr->typeConstraint && !Type::intersect($expr->typeConstraint, $constraint)) {
 			global $issues;

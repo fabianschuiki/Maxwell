@@ -76,14 +76,15 @@ class Scope
 		$vars = array();
 		if (!$noVars) {
 			$vars = array_filter($this->vars, $filter);
-			if ($this->node instanceof Func) {
+			//The following is commented out as it does break type inference for now. x does not introduce a type constraint on the type's member, whereas this.x does.
+			/*if ($this->node instanceof Func) {
 				$inputs = $this->node->inputs();
 				if (count($inputs) > 0 && $inputs[0]->name() == "this" && $inputs[0]->type() instanceof ConcreteType) {
 					foreach ($inputs[0]->type()->members() as $member) {
 						if ($member->name() == $name) $vars[] = $member;
 					}
 				}
-			}
+			}*/
 		}
 		
 		$outer = array();

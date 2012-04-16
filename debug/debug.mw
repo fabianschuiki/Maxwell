@@ -1,16 +1,16 @@
 type Vector
 {
-	var int x;
-	var int y;
+	var x;
+	var y;
 	
-	func lengthSquared = x*x + y*y;
+	func lengthSquared = square(this.x) + square(this.y);
 }
 
 func main
 {
 	var Vector v;
 	var lsq = v.lengthSquared();
-	square(3);
+	var int lquad = square(lsq);
 }
 
-func square (int x) = x*x;
+func square (x) = x*x;

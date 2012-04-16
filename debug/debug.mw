@@ -1,10 +1,10 @@
-func square (int x) -> (int y)
+func square (x) -> (y)
 {
 	y = x*x;
 }
 
 type Vector
 {
-	var int x;
-	var int y;
+	var x;
+	var y;
 }

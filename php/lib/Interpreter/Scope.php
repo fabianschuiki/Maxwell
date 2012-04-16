@@ -16,5 +16,16 @@ class Scope
 		$this->vars  = array();
 	}
 	
-	
+	public function get($name)
+	{
+		assert(is_string($name));
+		if (isset($this->vars[$name])) return $this->vars[$name];
+		
+		$node = array_shift($this->let->find($name));
+		if (!$node) return null;
+		
+		$value = new ConcreteValue($node->type(), array());
+		$this->vars[$name] = $value;
+		return $value;
+	}
 }

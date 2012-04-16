@@ -3,7 +3,7 @@ type Vector
 	var int x;
 	var int y;
 	
-	func lengthSquared { return x*x, y*y; }
+	func lengthSquared { return a: x*x, b: y*y; }
 }
 
 func main

@@ -48,13 +48,15 @@ class ReturnStmt extends Node
 							$expr
 						);
 					} else {
-						$n = null;
-						for ($i = 0; $i < 1000 && $n == null; $i++) {
-							$n = "~$i";
-							foreach ($func->outputs() as $o) {
-								if ($o->name() == $n) {
-									$n = null;
-									break;
+						$n = $name;
+						if (is_numeric($n)) {
+							for ($i = 0; $i < 1000 && $n == null; $i++) {
+								$n = "~$i";
+								foreach ($func->outputs() as $o) {
+									if ($o->name() == $n) {
+										$n = null;
+										break;
+									}
 								}
 							}
 						}

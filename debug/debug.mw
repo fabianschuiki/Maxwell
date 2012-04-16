@@ -5,12 +5,12 @@ type Vector
 	
 	func lengthSquared -> (l)
 	{
-		l = x*x + y*y;
+		return x*x + y*y;
 	}
 }
 
 func main
 {
 	var Vector v;
-	var int lsq = v.lengthSquared();
+	var lsq = v.lengthSquared();
 }

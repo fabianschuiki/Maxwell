@@ -15,5 +15,5 @@ class Member_AST extends Member
 	}
 	
 	public function expr() { return $this->expr; }
-	public function name() { return $this->asn->name->text; }
+	public function name() { return $this->asn->name; }
 }

@@ -385,7 +385,7 @@ class Parser
 	private function parseExpr(array $ts)
 	{
 		if (count($ts) == 1 && $ts[0]->is('group', '()')) {
-			return $this->parseTupleExpr($ts[0], $ts[0]->tokens);
+			return $this->parseTupleExpr($ts[0]->tokens);
 		}
 		
 		if (count($ts) >= 2) {
@@ -465,7 +465,7 @@ class Parser
 		return new AST\VarStmt($keyword, $type, $name, $initial);
 	}
 	
-	private function parseTupleExpr(Token &$grp, array $ts)
+	private function parseTupleExpr(array $ts)
 	{
 		$exprs = array();
 		while (count($ts)) {
@@ -604,5 +604,15 @@ class Parser
 			$token
 		);
 		return null;
+	}
+	
+	private function parseReturnStmt(Token $keyword, array &$ts)
+	{
+		$sub = static::upToSymbol(';', $ts);
+		
+		$expr = null;
+		if (count($sub)) $expr = $this->parseTupleExpr($sub);
+		
+		return new AST\ReturnStmt($keyword, $expr);
 	}
 }

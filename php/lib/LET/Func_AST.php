@@ -35,7 +35,18 @@ class Func_AST extends Func
 		$stmts = array();
 		foreach ($node->body->stmts as $stmt) {
 			$s = Node::make($subscope, $stmt);
-			if (!$s instanceof ConcreteType_AST && !$s instanceof Func_AST) $stmts[] = $s;
+			if (!$s instanceof ConcreteType_AST && !$s instanceof Func_AST) {
+				if ($s) {
+					$stmts[] = $s;
+				} else {
+					global $issues;
+					$issues[] = new \Issue(
+						'warning',
+						"{$stmt->nice()} is not allowed inside a function. Ignored.",
+						$stmt
+					);
+				}
+			}
 			/*switch ($stmt->kind()) {
 				case 'VarStmt':    $stmts[] = new Variable($subscope, $stmt); break;
 				case 'TypeStmt':   new Type_AST($subscope, $stmt); break;

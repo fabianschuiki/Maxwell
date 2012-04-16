@@ -15,6 +15,7 @@ abstract class Node
 		if ($stmt instanceof \AST\FuncStmt)   return new Func_AST($scope, $stmt);
 		if ($stmt instanceof \AST\ExprStmt)   return Expr::make($scope, $stmt->expr);
 		if ($stmt instanceof \AST\InlineStmt) return new Inline($scope, $stmt);
+		if ($stmt instanceof \AST\ReturnStmt) return new ReturnStmt($scope, $stmt);
 		return null;
 	}
 	

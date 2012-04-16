@@ -157,26 +157,44 @@ class Parser
 			$args_in = array();
 		}
 		
-		if (count($ts) >= 2 && $ts[0]->is('symbol', '->') && $ts[1]->is('group', '()')) {
-			array_shift($ts);
-			$args_out = $this->parseFuncArgs(array_shift($ts)->tokens);
-		} else {
+		$bodyNode = null;
+		$args_out = null;
+		if (count($ts) >= 1 && $ts[0]->is('symbol', '=')) {
+			$eq = array_shift($ts);
+			$sub = $this->upToSymbol(';', $ts);
+			if (!count($sub)) {
+				$this->issues[] = new Issue(
+					'error',
+					"Function requires an expression after '='.",
+					$eq,
+					array($keyword, $name)
+				);
+				return null;
+			}
+			$bodyNode = $this->parseExpr($sub);
 			$args_out = array();
+		} else {
+			if (count($ts) >= 2 && $ts[0]->is('symbol', '->') && $ts[1]->is('group', '()')) {
+				array_shift($ts);
+				$args_out = $this->parseFuncArgs(array_shift($ts)->tokens);
+			} else {
+				$args_out = array();
+			}
+			
+			$body = null;
+			if (count($ts) && $ts[0]->is('group', '{}')) $body = array_shift($ts);
+			
+			if (!$body) {
+				$this->issues[] = new Issue(
+					'error',
+					"Function requires a body.",
+					$body,
+					array($keyword, $name)
+				);
+				return null;
+			}
+			$bodyNode = $this->parseBlock($body);
 		}
-		
-		$body = null;
-		if (count($ts) && $ts[0]->is('group', '{}')) $body = array_shift($ts);
-		
-		if (!$body) {
-			$this->issues[] = new Issue(
-				'error',
-				"Function requires a body.",
-				$body,
-				array($keyword, $name)
-			);
-			return null;
-		}
-		$bodyNode = $this->parseBlock($body);
 		
 		if (!$name || $args_in === null || $args_out === null || !$bodyNode) return null;
 		return new AST\FuncStmt($keyword, $name, $args_in, $args_out, $bodyNode);

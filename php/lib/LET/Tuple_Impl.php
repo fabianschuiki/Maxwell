@@ -19,4 +19,13 @@ class Tuple_Impl extends Tuple
 	}
 	
 	public function fields() { return $this->fields; }
+	
+	public function cloneInto(Scope $scope)
+	{
+		$fields = array();
+		foreach ($this->fields as $name => $field) {
+			$fields[$name] = $field->cloneInto($scope);
+		}
+		return new self($scope, $fields);
+	}
 }

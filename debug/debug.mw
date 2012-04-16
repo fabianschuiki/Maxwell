@@ -3,11 +3,14 @@ type Vector
 	var int x;
 	var int y;
 	
-	func lengthSquared { return a: x*x, b: y*y; }
+	func lengthSquared = x*x + y*y;
 }
 
 func main
 {
 	var Vector v;
 	var lsq = v.lengthSquared();
+	square(3);
 }
+
+func square (int x) = x*x;

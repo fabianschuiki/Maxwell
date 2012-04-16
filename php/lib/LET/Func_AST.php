@@ -39,23 +39,28 @@ class Func_AST extends Func
 		$this->subscope = $subscope;
 		
 		$stmts = array();
-		foreach ($node->body->stmts as $stmt) {
-			$s = Node::make($subscope, $stmt);
-			if (!$s instanceof ConcreteType_AST && !$s instanceof Func_AST) {
-				if ($s) {
-					$stmts[] = $s;
-				} else {
-					global $issues;
-					$issues[] = new \Issue(
-						'warning',
-						"{$stmt->nice()} is not allowed inside a function. Ignored.",
-						$stmt
-					);
+		if ($node->body instanceof \AST\Block) {
+			foreach ($node->body->stmts as $stmt) {
+				$s = Node::make($subscope, $stmt);
+				if (!$s instanceof ConcreteType_AST && !$s instanceof Func_AST) {
+					if ($s) {
+						$stmts[] = $s;
+					} else {
+						global $issues;
+						$issues[] = new \Issue(
+							'warning',
+							"{$stmt->nice()} is not allowed inside a function. Ignored.",
+							$stmt
+						);
+					}
 				}
 			}
+			$stmts = array_filter($stmts);
+		} else {
+			$e = Expr::make($subscope, $node->body);
+			if ($e) $stmts[] = new ReturnStmt($subscope, $e);
 		}
-		$stmts = array_filter($stmts);
-		$this->stmts    = $stmts;
+		$this->stmts = $stmts;
 		
 		$scope->add($this);
 	}

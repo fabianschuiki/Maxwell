@@ -3,14 +3,19 @@ namespace LET;
 
 class ReturnStmt extends Node
 {
+	public $asn;
 	public $tuple;
 	public $func;
 	public $pairs;
 	
-	public function __construct(Scope $scope, Expr $expr)
+	public function __construct(Scope $scope, \AST\ReturnStmt $node)
 	{
-		$tuple = $expr;
-		if (!$tuple instanceof Tuple) $tuple = new Tuple_Impl($scope, array($tuple));
+		if ($node->expr) {
+			$tuple = Expr::make($scope, $node->expr);
+			if (!$tuple instanceof Tuple) $tuple = new Tuple_Impl($scope, array($tuple));
+		} else {
+			$tuple = new Tuple_Impl($scope, array());
+		}
 		
 		$func = $scope;
 		while ($scope) {
@@ -68,14 +73,16 @@ class ReturnStmt extends Node
 			}
 		}
 		
+		$this->asn   = $node;
 		$this->tuple = $tuple;
 		$this->func  = $func;
 		$this->pairs = $pairs;
 		$this->scope = $scope;
 	}
 	
+	public function tuple()    { return $this->tuple; }
 	public function children() { return array($this->tuple); }
-	public function details()  { return "return {$this->tuple->details()}"; }
+	public function details()  { return "return {$this->tuple()->details()}"; }
 	
 	public function spawnConstraints(array &$constraints)
 	{
@@ -84,10 +91,5 @@ class ReturnStmt extends Node
 		foreach ($this->pairs as $a => $b) {
 			$constraints[] = new EqualTypeConstraint($this->tuple->fields[$a], $b);
 		}
-	}
-	
-	public function cloneInto(Scope $scope)
-	{
-		return new self($scope, $this->tuple->cloneInto($scope));
 	}
 }

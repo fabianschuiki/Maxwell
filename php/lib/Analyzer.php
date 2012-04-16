@@ -100,7 +100,7 @@ class Analyzer
 		if ($this->finalize) {
 			//Strip the generics from the scope.
 			//NOTE: Comment this line to see the generic nodes for debugging.
-			//$scope->stripGenerics();
+			$scope->stripGenerics();
 		
 			//Complain about ambiguities.
 			//NOTE: Comment this line if not stripping generics as they will be whining about how they are ambiguous.

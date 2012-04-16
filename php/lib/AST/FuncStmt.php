@@ -9,8 +9,10 @@ class FuncStmt extends Stmt
 	public $args_out;
 	public $body;
 	
-	public function __construct(\Token $keyword, \Token $name, array $args_in, array $args_out, Block $body)
+	public function __construct(\Token $keyword, \Token $name, array $args_in, array $args_out, Node $body)
 	{
+		assert($body instanceof Block || $body instanceof Expr);
+		
 		$this->keyword  = $keyword;
 		$this->name     = $name;
 		$this->args_in  = $args_in;

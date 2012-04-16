@@ -60,14 +60,13 @@ class Analyzer
 			$stmt = $this->buildEntity($scope, $node);
 			if ($stmt instanceof LET\Node) {
 				if (!$stmt instanceof LET\Func_AST && !$stmt instanceof LET\ConcreteType_AST) $root->stmts[] = $stmt;
-				$nodes[] = $stmt;
 			}
 		}
+		$nodes = array_merge($scope->children(), $root->stmts);
 		$this->entities = $nodes;
 		if ($this->issues->isFatal()) return;
 		
 		//Analysis is an iterative process that works on a bunch of nodes at a time.
-		//$nodes = $root->children();/*array_merge($scope->children(), $root->stmts);*/
 		$wdc = 0;
 		while ($nodes)
 		{
@@ -101,7 +100,7 @@ class Analyzer
 		if ($this->finalize) {
 			//Strip the generics from the scope.
 			//NOTE: Comment this line to see the generic nodes for debugging.
-			$scope->stripGenerics();
+			//$scope->stripGenerics();
 		
 			//Complain about ambiguities.
 			//NOTE: Comment this line if not stripping generics as they will be whining about how they are ambiguous.

@@ -18,7 +18,7 @@ abstract class Member extends Expr
 	public function unconstrainedType()
 	{
 		$member = $this->typeMember();
-		if (!$member) return new GenericType;
+		if (!$member) return /*new GenericType*/null;
 		return $member->type();
 	}
 	
@@ -71,5 +71,19 @@ abstract class Member extends Expr
 	{
 		parent::imposeTypeConstraint($type);
 		$this->imposeMemberConstraintOnExpr();
+	}
+	
+	public function complainAboutAmbiguities()
+	{
+		parent::complainAboutAmbiguities();
+		
+		if (!$this->typeMember()) {
+			global $issues;
+			$issues[] = new \Issue(
+				'error',
+				"{$this->expr()->type()->name()} has no member named '{$this->name()}'.",
+				$this
+			);
+		}
 	}
 }

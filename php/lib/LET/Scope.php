@@ -76,6 +76,14 @@ class Scope
 		$vars = array();
 		if (!$noVars) {
 			$vars = array_filter($this->vars, $filter);
+			if ($this->node instanceof Func) {
+				$inputs = $this->node->inputs();
+				if (count($inputs) > 0 && $inputs[0]->name() == "this" && $inputs[0]->type() instanceof ConcreteType) {
+					foreach ($inputs[0]->type()->members() as $member) {
+						if ($member->name() == $name) $vars[] = $member;
+					}
+				}
+			}
 		}
 		
 		$outer = array();

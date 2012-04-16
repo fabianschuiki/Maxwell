@@ -10,6 +10,12 @@ class Call_AST extends Call
 	public function __construct(Scope $scope, \AST\CallExpr $node)
 	{
 		$args = array();
+		$callee = Expr::make($scope, $node->callee);
+		if ($callee instanceof Member) {
+			$args["this"] = $callee->expr();
+			$callee = new Ident_Impl($scope, $callee->name());
+		}
+		
 		foreach ($node->args as $arg) {
 			$name = $arg->name->text;
 			$expr = Expr::make($scope, $arg->expr);
@@ -24,7 +30,7 @@ class Call_AST extends Call
 		$args->parent = $this;
 		
 		$this->asn    = $node;
-		$this->callee = Expr::make($scope, $node->callee);
+		$this->callee = $callee;
 		$this->args   = $args;
 		$this->scope  = $scope;
 	}

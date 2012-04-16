@@ -52,8 +52,15 @@ abstract class Func extends TypedNode
 	{
 		$fields = array();
 		foreach ($args as $arg) {
+			$name = $arg->name();
 			$type = $arg->type();
-			if ($type) $fields[$arg->name()] = $type;
+			if ($type) {
+				if ($name[0] == '~') {
+					$fields[] = $type;
+				} else {
+					$fields[$arg->name()] = $type;
+				}
+			}
 		}
 		return new TypeTuple($this->scope, $fields);
 	}

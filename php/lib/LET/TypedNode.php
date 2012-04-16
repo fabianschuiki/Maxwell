@@ -163,9 +163,9 @@ abstract class TypedNode extends Node
 				"{$this->nice()} is of generic type '{$this->niceType()}' which cannot be compiled.",
 				$this
 			);
-		}/* else */{
-			parent::complainAboutAmbiguities();
+			return;
 		}
+		parent::complainAboutAmbiguities();
 	}
 	
 	public function niceType() { return $this->type()->details(); }

@@ -10,8 +10,12 @@ class ReturnStmt extends Node
 	
 	public function __construct(Scope $scope, \AST\ReturnStmt $node)
 	{
-		$tuple = Expr::make($scope, $node->expr);
-		if (!$tuple instanceof Tuple) $tuple = new Tuple_Impl($scope, array($tuple));
+		if ($node->expr) {
+			$tuple = Expr::make($scope, $node->expr);
+			if (!$tuple instanceof Tuple) $tuple = new Tuple_Impl($scope, array($tuple));
+		} else {
+			$tuple = new Tuple_Impl($scope, array());
+		}
 		
 		$func = $scope;
 		while ($scope) {

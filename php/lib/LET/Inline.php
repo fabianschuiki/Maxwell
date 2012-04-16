@@ -1,7 +1,7 @@
 <?php
 namespace LET;
 
-class Inline extends Node
+class Inline extends Stmt
 {
 	public $asn;
 	

@@ -1,7 +1,7 @@
 <?php
 namespace LET;
 
-class ReturnStmt extends Node
+class ReturnStmt extends Stmt
 {
 	public $tuple;
 	public $func;

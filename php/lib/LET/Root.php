@@ -7,11 +7,11 @@ class Root extends Node
 	{
 		assert(!$ast || is_array($ast));
 		
-		$scope = new Scope;
+		$this->scope = new Scope;
 		
 		if ($ast) {
 			foreach ($ast as $node) {
-				$n = Node::make($scope, $node);
+				$n = Node::make($this->scope, $node);
 				if (!$n instanceof Func_AST && !$n instanceof ConcreteType_AST) {
 					global $issues;
 					$issues[] = new \Issue(
@@ -23,8 +23,6 @@ class Root extends Node
 				}
 			}
 		}
-		
-		$this->scope = $scope;
 	}
 	
 	public function children()

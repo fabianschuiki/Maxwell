@@ -6,6 +6,7 @@ class Driver
 	private $inputFiles = array();
 	private $outputPath = null;
 	private $buildDir   = null;
+	private $dumpStats  = false;
 	
 	public function configure(array $args)
 	{
@@ -21,6 +22,7 @@ class Driver
 						if (!count($args)) static::error("-b requires a build directory");
 						$this->buildDir = array_shift($args);
 					} break;
+					case "--stats": $this->dumpStats = true; break;
 				}
 			} else {
 				$this->inputFiles[] = $arg;
@@ -45,6 +47,7 @@ class Driver
 			$file = new \SourceFile;
 			$file->path = $inputFile;
 			$file->load();
+			
 			$f = new \stdClass;
 			$f->file = $file;
 			$files[] = $f;
@@ -69,6 +72,7 @@ class Driver
 			
 			$file->ast = $parser->nodes;
 			$file->let = $let;
+			$this->writeLETFile($file);
 		}
 		
 		//Analyze each file.
@@ -78,7 +82,14 @@ class Driver
 			$analyzer->root   = $file->let;
 			$analyzer->run();
 			if ($issues->dumpAndCheck()) return;
+			if ($this->dumpStats) $analyzer->dumpStats();
+			$this->writeLETFile($file);
 		}
+	}
+	
+	private function writeLETFile($file)
+	{
+		file_put_contents($this->buildDir."/".basename($file->file->path, '.mw').".let", serialize($file->let));
 	}
 	
 	static public function error($msg) { die("mwc: $msg\n"); }

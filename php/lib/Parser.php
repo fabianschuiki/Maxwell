@@ -81,38 +81,29 @@ class Parser
 		$this->issues[] = new Issue(
 			'error',
 			"Keyword '$keyword' has no meaning in a statement.",
-			$keyword->range
+			$keyword
 		);
 		return null;
 	}
 	
 	private function parseImportStmt(Token &$keyword, array &$ts)
 	{
-		$name = array_shift($ts);
+		$name = null;
+		if (count($ts) >= 1) $name = array_shift($ts);
+		
 		if (!$name->is('identifier')) {
 			$this->issues[] = new Issue(
 				'error',
-				"Import requires a name.",
-				$name->range,
-				array($keyword->range)
+				"Import statement requires a file name.",
+				$name,
+				$keyword
 			);
 			return null;
 		}
-		if (count($ts) > 0 && $ts[0]->is('symbol', ';')) {
-			array_shift($ts);
-		}
-		$name->context = 'import.name';
+		if (count($ts) >= 1 && $ts[0]->is('symbol', ';')) array_shift($ts);
 		
+		if (!$name) return null;
 		return new AST\ImportStmt($keyword, $name);
-		
-		$i = new Node;
-		$i->c_ignore = true;
-		$i->kind  = 'def.import';
-		$i->name  = $name;
-		$i->range = clone $keyword->range;
-		$i->range->combine($name->range);
-		$name->node = $i;
-		return $i;
 	}
 	
 	private function parseFuncStmt(Token &$keyword, array &$ts)

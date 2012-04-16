@@ -90,6 +90,9 @@ class Scope
 		$outer = array();
 		if ($this->outer) {
 			$outer = $this->outer->find($name, $noVars || count($vars));
+		} else if (static::$builtin !== $this) {
+			if (!static::$builtin) static::makeBuiltin();
+			$outer = static::$builtin->find($name, true);
 		}
 		
 		$nodes = array_merge(
@@ -109,5 +112,26 @@ class Scope
 		$this->funcs = array_filter($this->funcs, $specificFilter);
 		
 		foreach ($this->children() as $child) $child->subscope->stripGenerics();
+	}
+	
+	static private $builtin = null;
+	static private function makeBuiltin()
+	{
+		$scope = new LET\Scope;
+		
+		$primitives    = array('int', 'float');
+		$operators     = array('+', '-', '*', '/', '=');
+		$boolOperators = array('>', '<', '==', '!=', '<=', '>=');
+		
+		$bool = new LET\PrimitiveBuiltinType($scope, 'bool');
+		foreach ($boolOperators as $operator) new LET\BuiltinBinaryOp($scope, $operator, $bool, $bool);
+
+		foreach ($primitives as $primitive) {
+			$type = new LET\PrimitiveBuiltinType($scope, $primitive);
+			foreach ($operators     as $operator) new LET\BuiltinBinaryOp($scope, $operator, $type);
+			foreach ($boolOperators as $operator) new LET\BuiltinBinaryOp($scope, $operator, $type, $bool);
+		}
+
+		static::$builtin = $scope;
 	}
 }

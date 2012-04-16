@@ -64,7 +64,7 @@ class Driver
 			$parser->run();
 			if ($issues->dumpAndCheck()) return;
 			
-			$let = new \LET\RootNode($parser->nodes);
+			$let = new \LET\Root($parser->nodes);
 			if ($issues->dumpAndCheck()) return;
 			
 			$file->ast = $parser->nodes;
@@ -75,11 +75,9 @@ class Driver
 		foreach ($files as $file) {
 			$analyzer = new \Analyzer;
 			$analyzer->issues = $issues;
-			$analyzer->nodes = $file->ast;
+			$analyzer->root   = $file->let;
 			$analyzer->run();
 			if ($issues->dumpAndCheck()) return;
-			
-			$file->let = $analyzer->root;
 		}
 	}
 	

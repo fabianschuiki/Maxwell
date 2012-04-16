@@ -41,11 +41,12 @@ class Analyzer
 	
 	public function run()
 	{
+		assert($this->root instanceof \LET\Root);
 		//Prepare the builtin types and functions.
-		$builtin = $this->buildBuiltinScope();
+		//$builtin = $this->buildBuiltinScope();
 		
 		//Build the root node and scope.
-		$root = $this->root;
+		/*$root = $this->root;
 		if (!$root) {
 			$scope = new LET\Scope($builtin);
 			$root = new LET\RootNode($scope);
@@ -62,7 +63,10 @@ class Analyzer
 				if (!$stmt instanceof LET\Func_AST && !$stmt instanceof LET\ConcreteType_AST) $root->stmts[] = $stmt;
 			}
 		}
-		$nodes = array_merge($scope->children(), $root->stmts);
+		$nodes = array_merge($scope->children(), $root->stmts);*/
+		
+		$scope = $this->root->scope;
+		$nodes = $this->root->children();
 		$this->entities = $nodes;
 		if ($this->issues->isFatal()) return;
 		
@@ -83,7 +87,7 @@ class Analyzer
 			//letDumpNPause();
 		
 			//Build the specializations.
-			$specializations = $this->buildSpecializations($root->children());
+			$specializations = $this->buildSpecializations($this->root->children());
 			echo "built ".count($specializations)." specializations\n";
 			if ($this->issues->isFatal()) return;
 			//letDumpNPause();
@@ -104,57 +108,8 @@ class Analyzer
 		
 			//Complain about ambiguities.
 			//NOTE: Comment this line if not stripping generics as they will be whining about how they are ambiguous.
-			$this->complainAboutAmbiguities($root->children());
+			$this->complainAboutAmbiguities($this->root->children());
 		}
-	}
-	
-	private function buildBuiltinScope()
-	{
-		$scope = new LET\Scope;
-		
-		$primitives    = array('int', 'float');
-		$operators     = array('+', '-', '*', '/', '=');
-		$boolOperators = array('>', '<', '==', '!=', '<=', '>=');
-		
-		$bool = new LET\PrimitiveBuiltinType($scope, 'bool');
-		foreach ($boolOperators as $operator) new LET\BuiltinBinaryOp($scope, $operator, $bool, $bool);
-		
-		foreach ($primitives as $primitive) {
-			$type = new LET\PrimitiveBuiltinType($scope, $primitive);
-			foreach ($operators     as $operator) new LET\BuiltinBinaryOp($scope, $operator, $type);
-			foreach ($boolOperators as $operator) new LET\BuiltinBinaryOp($scope, $operator, $type, $bool);
-		}
-		
-		return $scope;
-	}
-	
-	private function buildEntity(LET\Scope $scope, AST\Node $node)
-	{
-		/*switch ($node->kind()) {
-			case 'TypeStmt': new LET\ConcreteType_AST($scope, $node); break;
-			case 'FuncStmt': new LET\Func_AST($scope, $node); break;
-			default: {
-				global $issues;
-				$issues[] = new \Issue(
-					'warning',
-					"{$node->nice()} is not allowed at file level. Ignored.",
-					$node
-				);
-			} break;
-		}*/
-		$n = LET\Node::make($scope, $node);
-		if ($this->restrictRootLevel) {
-			if (!$n instanceof LET\Func_AST && !$n instanceof LET\ConcreteType_AST) {
-				global $issues;
-				$issues[] = new \Issue(
-					'warning',
-					"{$node->nice()} is not allowed at file level. Ignored.",
-					$node
-				);
-				return null;
-			} 
-		}
-		return $n;
 	}
 	
 	public function __call($name, $args)

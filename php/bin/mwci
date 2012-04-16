@@ -149,7 +149,7 @@ class mwci
 			echo $str;
 		}
 		foreach ($scope->types as $type) {
-			$str = "\033[1mtype\033[0m \033[34m{$type->name()}\033[0m";
+			$str = "\033[1mtype\033[0m \033[34m{$type->details()}\033[0m";
 			if (!$type->isSpecific()) $str .= " \033[35mgeneric\033[0m";
 			$str .= "\n";
 			echo $str;

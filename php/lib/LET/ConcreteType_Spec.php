@@ -51,6 +51,6 @@ class ConcreteType_Spec extends ConcreteType
 			$members[] = "{$member->name()}: $type";
 		}
 		$members = implode(', ', $members);
-		return parent::details()."<".$members.">";
+		return $this->original->details()."<".$members.">";
 	}
 }

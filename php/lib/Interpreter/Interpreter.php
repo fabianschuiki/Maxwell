@@ -122,6 +122,19 @@ class Interpreter
 		}
 		assert($definedIn instanceof Scope);
 		
-		return $definedIn->vars[$ident->boundTo->name()];
+		return $definedIn->get($ident->boundTo->name());
+	}
+	
+	private function evaluateMember(Scope $scope, \LET\Member $node)
+	{
+		$target = $this->evaluate($node->expr(), $scope);
+		assert($target);
+		$object = $target->value();
+		assert($object instanceof ObjectValue);
+		return $object->members[$node->name()];
+		/*if (!isset($target->value[$node->name()])) {
+			$target->value[$node->name()] = new Variable($node->expr());
+		}
+		return $target->value[$node->name()];*/
 	}
 }

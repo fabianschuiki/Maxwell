@@ -142,9 +142,14 @@ class mwci
 			return;
 		}
 		
-		foreach ($scope->funcs as $func) echo "\033[1mfunc\033[0m \033[34m{$func->name()}\033[0m {$func->argDetails()}\n";
+		foreach ($scope->funcs as $func) {
+			$str = "\033[1mfunc\033[0m \033[34m{$func->name()}\033[0m {$func->argDetails()}";
+			if (!$func->isSpecific()) $str .= " \033[35mgeneric\033[0m";
+			$str .= "\n";
+			echo $str;
+		}
 		foreach ($scope->types as $type) {
-			$str = "\033[1mtype\033[0m \033[34m{$type->name()}\033[0m";
+			$str = "\033[1mtype\033[0m \033[34m{$type->details()}\033[0m";
 			if (!$type->isSpecific()) $str .= " \033[35mgeneric\033[0m";
 			$str .= "\n";
 			echo $str;

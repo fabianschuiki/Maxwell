@@ -14,7 +14,7 @@ class FuncArg_Impl extends FuncArg
 		$this->name  = $name;
 		$this->scope = $scope;
 		
-		$scope->add($this);
+		if ($name[0] != "~") $scope->add($this);
 	}
 	
 	public function name() { return $this->name; }

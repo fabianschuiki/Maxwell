@@ -48,14 +48,27 @@ class ReturnStmt extends Node
 							$expr
 						);
 					} else {
-						$arg = new FuncArg_Impl($func->subscope, new GenericType, '~');
+						$n = null;
+						for ($i = 0; $i < 1000 && $n == null; $i++) {
+							$n = "~$i";
+							foreach ($func->outputs() as $o) {
+								if ($o->name() == $n) {
+									$n = null;
+									break;
+								}
+							}
+						}
+						
+						$arg = new FuncArg_Impl($func->subscope, new GenericType, $n);
 						$arg->parent = $func;
 						$func->outputs[] = $arg;
+						$pairs[$name] = $arg;
 						echo "create function output argument {$arg->desc()}\n";
 					}
+				} else {
+					foreach ($func->outputs() as $o) if ($o->name() == $name) $pairs[$name] = $o;
 				}
 			}
-			$pairs = TypeTuple::fieldPairs(array_keys($tuple->fields), array_map(function($o){ return $o->name(); }, $func->outputs()));
 		}
 		
 		$this->asn   = $node;
@@ -74,9 +87,7 @@ class ReturnStmt extends Node
 		parent::spawnConstraints($constraints);
 		
 		foreach ($this->pairs as $a => $b) {
-			$output = null;
-			foreach ($this->func->outputs() as $o) if ($o->name() == $b) $output = $o;
-			$constraints[] = new EqualTypeConstraint($this->tuple->fields[$a], $output);
+			$constraints[] = new EqualTypeConstraint($this->tuple->fields[$a], $b);
 		}
 	}
 }

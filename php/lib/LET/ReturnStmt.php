@@ -6,6 +6,7 @@ class ReturnStmt extends Node
 	public $asn;
 	public $tuple;
 	public $func;
+	public $pairs;
 	
 	public function __construct(Scope $scope, \AST\ReturnStmt $node)
 	{
@@ -29,9 +30,34 @@ class ReturnStmt extends Node
 			);
 		}
 		
+		$pairs = array();
+		if ($func) {
+			$pairs = TypeTuple::fieldPairs(array_keys($tuple->fields), array_map(function($o){ return $o->name(); }, $func->outputs()));
+			$hasOutputs = count($func->outputs()) > 0;
+			foreach ($tuple->fields as $name => $expr) {
+				if (!isset($pairs[$name])) {
+					if ($hasOutputs) {
+						global $issues;
+						$issues[] = new \Issue(
+							'warning',
+							"Return value ignored as it does not have a corresponding function output argument.",
+							$expr
+						);
+					} else {
+						$arg = new FuncArg_Impl($func->subscope, new GenericType, '~');
+						$arg->parent = $func;
+						$func->outputs[] = $arg;
+						echo "create function output argument {$arg->desc()}\n";
+					}
+				}
+			}
+			$pairs = TypeTuple::fieldPairs(array_keys($tuple->fields), array_map(function($o){ return $o->name(); }, $func->outputs()));
+		}
+		
 		$this->asn   = $node;
 		$this->tuple = $tuple;
 		$this->func  = $func;
+		$this->pairs = $pairs;
 		$this->scope = $scope;
 	}
 	
@@ -43,8 +69,7 @@ class ReturnStmt extends Node
 	{
 		parent::spawnConstraints($constraints);
 		
-		$pairs = TypeTuple::fieldPairs(array_keys($this->tuple->fields), array_map(function($o){ return $o->name(); }, $this->func->outputs()));
-		foreach ($pairs as $a => $b) {
+		foreach ($this->pairs as $a => $b) {
 			$output = null;
 			foreach ($this->func->outputs() as $o) if ($o->name() == $b) $output = $o;
 			$constraints[] = new EqualTypeConstraint($this->tuple->fields[$a], $output);

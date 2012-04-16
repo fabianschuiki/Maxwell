@@ -32,6 +32,12 @@ class Func_AST extends Func
 			$outputs[] = $o;
 		}
 		
+		$this->asn      = $node;
+		$this->inputs   = $inputs;
+		$this->outputs  = $outputs;
+		$this->scope    = $scope;
+		$this->subscope = $subscope;
+		
 		$stmts = array();
 		foreach ($node->body->stmts as $stmt) {
 			$s = Node::make($subscope, $stmt);
@@ -47,30 +53,9 @@ class Func_AST extends Func
 					);
 				}
 			}
-			/*switch ($stmt->kind()) {
-				case 'VarStmt':    $stmts[] = new Variable($subscope, $stmt); break;
-				case 'TypeStmt':   new Type_AST($subscope, $stmt); break;
-				case 'FuncStmt':   new Func_AST($subscope, $stmt); break;
-				case 'ExprStmt':   $stmts[] = Expr::make($subscope, $stmt->expr); break;
-				case 'InlineStmt': $stmts[] = new Inline($subscope, $stmt); break;
-				default: {
-					global $issues;
-					$issues[] = new \Issue(
-						'warning',
-						"{$stmt->nice()} is not allowed inside function '{$node->name}'. Ignored.",
-						$stmt
-					);
-				};
-			}*/
 		}
 		$stmts = array_filter($stmts);
-		
-		$this->asn      = $node;
-		$this->inputs   = $inputs;
-		$this->outputs  = $outputs;
 		$this->stmts    = $stmts;
-		$this->scope    = $scope;
-		$this->subscope = $subscope;
 		
 		$scope->add($this);
 	}

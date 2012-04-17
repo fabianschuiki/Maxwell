@@ -97,6 +97,10 @@ class Driver
 			$input->imported = $imports;
 		}
 		
+		//Analysis iteration starts here:
+		//TODO: analyze each imported file, starting with the last (generally the least referenced one) through another call to mwc, until no more specializations are issued.
+		//TODO: for each imported file, load the .specs file into the specializations array.
+		
 		//Analyze each file.
 		foreach ($inputs as $input) {
 			$input->analyze();
@@ -104,10 +108,15 @@ class Driver
 			$input->saveInterface();
 		}
 		
+		//NOTE: every imported file's specializations array now contains the required specializations from the other imported files, as well as our input files.
 		//Perform specializations in imported files.
 		foreach ($imported as $i) {
 			$i->saveSpecs();
 		}
+		
+		//NOTE: that we will loop back up where the imported files are re-analyzed, which causes them to specialize whatever is stored in the .spec files.
+		
+		//Analysis iteration loops back up from here.
 		
 		if ($this->upToStage == 2) return;
 	}

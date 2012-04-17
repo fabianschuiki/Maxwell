@@ -66,7 +66,7 @@ class Scope
 	}
 	
 	///Searches the scope hierarchy (this and its parents) for nodes with the given name.
-	public function find($name, $noVars = false)
+	public function find($name, $noVars = false, $noBuiltin = false)
 	{
 		if (!$name) return array();
 		assert(is_string($name));
@@ -90,16 +90,25 @@ class Scope
 		$outer = array();
 		if ($this->outer) {
 			$outer = $this->outer->find($name, $noVars || count($vars));
-		} else if (static::$builtin !== $this) {
+		} else if (static::$builtin !== $this && !$noBuiltin) {
 			if (!static::$builtin) static::makeBuiltin();
 			$outer = static::$builtin->find($name, true);
+		}
+		
+		$imported = array();
+		if ($this->node instanceof Root && is_array($this->node->importedRoots)) {
+			foreach ($this->node->importedRoots as $root) {
+				$imported = array_merge($imported, $root->scope->find($name, true, true));
+			}
+			if (count($imported)) \mwc\debug("found ".count($imported)." imported nodes named $name\n");
 		}
 		
 		$nodes = array_merge(
 			array_filter($this->types, $filter),
 			array_filter($this->funcs, $filter),
 			$vars,
-			$outer
+			$outer,
+			$imported
 		);
 		
 		return $nodes;

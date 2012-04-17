@@ -6,6 +6,7 @@ class InputFile extends SourceFile
 	public $source;
 	public $ast;
 	public $let;
+	public $imported; //imported interfaces
 	
 	public function load()
 	{
@@ -43,11 +44,15 @@ class InputFile extends SourceFile
 		global $issues;
 		assert($this->let instanceof \LET\Root);
 		
+		$this->let->importedRoots = $this->imported;
+		
 		$analyzer = new \Analyzer;
 		$analyzer->issues = $issues;
 		$analyzer->root   = $this->let;
 		$analyzer->run();
 		if ($issues->dumpAndCheck()) return;
+		
+		$this->let->importedRoots = null;
 	}
 	
 	public function saveLET()

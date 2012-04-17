@@ -4,12 +4,13 @@ namespace LET;
 class Root extends Node
 {
 	public $imports;
+	public $importedRoots;
 	
 	public function __construct($ast = null)
 	{
 		assert(!$ast || is_array($ast));
 		
-		$this->scope  = new Scope;
+		$this->scope  = new Scope(null, $this);
 		$this->imports = array();
 		
 		if ($ast) {
@@ -41,8 +42,9 @@ class Root extends Node
 		$imports = $this->imports;
 		
 		$r = new self;
-		$r->imports = $imports;
-		$r->scope   = $scope;
+		$r->imports  = $imports;
+		$r->scope    = $scope;
+		$scope->node = $r;
 		return $r;
 	}
 }

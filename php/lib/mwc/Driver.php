@@ -87,6 +87,15 @@ class Driver
 				$importsToProcess = array_merge($importsToProcess, $file->let->imports);
 			}
 		}
+		foreach ($inputs as $input) {
+			$names = array_map(function($i){ return strval($i->name); }, $input->let->imports);
+			$imports = array();
+			foreach ($names as $name) {
+				assert(isset($imported[$name]));
+				$imports[] = $imported[$name]->let;
+			}
+			$input->imported = $imports;
+		}
 		
 		//Analyze each file.
 		foreach ($inputs as $input) {

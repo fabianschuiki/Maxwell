@@ -188,4 +188,9 @@ abstract class Type extends Node
 	}
 	
 	public function isSpecific() { return false; }
+	
+	public function reduceToTypeExpr(Scope $scope)
+	{
+		throw new \RuntimeException("reduceToTypeExpr not implemented for ".get_class($this));
+	}
 }

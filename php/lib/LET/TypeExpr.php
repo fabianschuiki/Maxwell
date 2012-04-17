@@ -27,4 +27,9 @@ class TypeExpr extends Type
 		}
 		return $this;
 	}
+	
+	public function reduceToTypeExpr(Scope $scope)
+	{
+		return new TypeExpr($scope, $this->expr->cloneInto($scope));
+	}
 }

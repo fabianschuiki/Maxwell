@@ -75,7 +75,7 @@ class Driver
 				$imported[strval($import->name)] = $file;
 				
 				$intf = $file->interfacePath();
-				if (!file_exists($intf) || filemtime($intf) < filemtime($file->path)) {
+				if (/*!file_exists($intf) || filemtime($intf) < filemtime($file->path)*/true) {
 					global $argv;
 					static::say("parsing {$file->path}");
 					$cmd = escapeshellarg($argv[0])." -p -b ".escapeshellarg($this->buildDir)." ".escapeshellarg($file->path);

@@ -103,7 +103,7 @@ abstract class Node
 	{
 		$class = get_class($this);
 		if (isset($this->asn) && $this->asn) {
-			echo "auto-cloning $class\n";
+			\mwc\debug("auto-cloning $class\n");
 			return new $class($scope, $this->asn);
 		}
 		trigger_error("Unable to automatically cloneInto $class.", E_USER_ERROR);
@@ -116,5 +116,11 @@ abstract class Node
 			if (!$child instanceof TypedNode) continue;
 			$child->complainAboutAmbiguities();
 		}
+	}
+	
+	/// Reduces the node to its simplest form that still enables type inference.
+	public function reduceToInterface()
+	{
+		throw new \RuntimeException("reduceToInterface not implemented!");
 	}
 }

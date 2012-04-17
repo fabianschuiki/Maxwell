@@ -130,4 +130,9 @@ abstract class Func extends TypedNode
 		}
 		$this->lastConfirmedType = $type;
 	}*/
+	
+	public function reduceToInterface(Scope $scope)
+	{
+		return new Func_Intf($scope, $this);
+	}
 }

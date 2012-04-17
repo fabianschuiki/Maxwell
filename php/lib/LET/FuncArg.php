@@ -43,4 +43,9 @@ abstract class FuncArg extends TypedNode
 		parent::imposeTypeConstraint($type);
 		$this->parent->maybeTypeChanged();
 	}
+	
+	public function reduceToInterface(Scope $scope)
+	{
+		return new FuncArg_Intf($scope, $this);
+	}
 }

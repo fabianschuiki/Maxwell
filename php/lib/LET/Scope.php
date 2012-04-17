@@ -114,6 +114,20 @@ class Scope
 		foreach ($this->children() as $child) $child->subscope->stripGenerics();
 	}
 	
+	public function reduceToInterface($scope = null)
+	{
+		assert(!$scope || $scope instanceof Scope);
+		
+		$s = new self;
+		$s->outer = $scope;
+		$s->node  = $this->node;
+		
+		foreach ($this->funcs as $func) $s->funcs[] = $func->reduceToInterface($s);
+		foreach ($this->types as $type) $s->types[] = $type->reduceToInterface($s);
+		
+		return $s;
+	}
+	
 	static private $builtin = null;
 	static private function makeBuiltin()
 	{

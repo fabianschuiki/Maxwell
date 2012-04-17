@@ -32,10 +32,17 @@ class Root extends Node
 		}
 	}
 	
-	public function children()
-	{
-		return $this->scope->children();
-	}
+	public function children() { return $this->scope->children(); }
+	public function details()  { return null; }
 	
-	public function details() { return null; }
+	public function reduceToInterface()
+	{
+		$scope   = $this->scope->reduceToInterface();
+		$imports = $this->imports;
+		
+		$r = new self;
+		$r->imports = $imports;
+		$r->scope   = $scope;
+		return $r;
+	}
 }

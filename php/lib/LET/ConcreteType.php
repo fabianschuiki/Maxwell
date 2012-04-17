@@ -8,7 +8,7 @@ abstract class ConcreteType extends Type
 	abstract function name();
 	abstract function members();
 	
-	private $cached_isSpecific = null;
+	public $cached_isSpecific = null;
 	public function isSpecific()
 	{
 		if ($this->cached_isSpecific !== null) return $this->cached_isSpecific;
@@ -63,5 +63,15 @@ abstract class ConcreteType extends Type
 		$specializations[] = $spec;
 		$this->scope->add($spec);
 		return $spec;
+	}
+	
+	public function reduceToInterface(Scope $scope)
+	{
+		return new ConcreteType_Intf($scope, $this);
+	}
+	
+	public function reduceToTypeExpr(Scope $scope)
+	{
+		return new TypeExpr($scope, new Ident_Impl($scope, $this->name()));
 	}
 }

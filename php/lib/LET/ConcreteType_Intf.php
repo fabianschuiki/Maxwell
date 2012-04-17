@@ -8,7 +8,17 @@ class ConcreteType_Intf extends ConcreteType
 	
 	public function __construct(Scope $scope, ConcreteType $type)
 	{
-		$this->name = strval($type->name());
+		$subscope = $type->subscope->reduceToInterface($scope);
+		
+		$members = array();
+		foreach ($type->members() as $member) {
+			$members[] = $member->reduceToInterface($subscope);
+		}
+		
+		$this->name     = strval($type->name());
+		$this->members  = $members;
+		$this->subscope = $subscope;
+		$this->scope    = $scope;
 	}
 	
 	public function name()    { return $this->name; }

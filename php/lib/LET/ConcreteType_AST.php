@@ -15,7 +15,7 @@ class ConcreteType_AST extends ConcreteType
 		foreach ($node->body->stmts as $stmt) {
 			switch ($stmt->kind()) {
 				case 'VarStmt': {
-					$members[] = new TypeMember($scope, $stmt);
+					$members[] = new TypeMember_AST($scope, $stmt);
 				} break;
 				case 'FuncStmt': {
 					new Func_AST($scope, $stmt, $this);

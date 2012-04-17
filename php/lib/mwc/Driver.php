@@ -57,25 +57,34 @@ class Driver
 		//Feed each file through the lexer, parse it and build the LET.
 		foreach ($inputs as $input) {
 			$input->parse();
-			$this->writeLETFile($file);
+			$input->saveLET();
+			$input->saveInterface();
 		}
 		if ($this->upToStage == 1) return;
 		
 		//Resolve the imports.
 		$imported = array();
+		$importsToProcess = array();
 		foreach ($inputs as $input) {
-			foreach ($input->let->imports as $import) {
-				if (!isset($imported[strval($import->name)])) {
-					$file = new ImportedFile(dirname($input->path)."/{$import->name}.mw", $this->buildDir);
-					$intf = $file->interfacePath();
-					if (!file_exists($intf)) {
-						global $argv;
-						static::say("parsing {$file->path}");
-						passthru(escapeshellarg($argv[0])." -p -b ".escapeshellarg($this->buildPath)." ".escapeshellarg($file->path));
-					}
-					$file->load();
-					$imported[strval($import->name)] = $file;
+			$importsToProcess = array_merge($importsToProcess, $input->let->imports);
+		}
+		while ($importsToProcess) {
+			$import = array_shift($importsToProcess);
+			if (!isset($imported[strval($import->name)])) {
+				$file = new ImportedFile(dirname($input->path)."/{$import->name}.mw", $this->buildDir);
+				$imported[strval($import->name)] = $file;
+				
+				$intf = $file->interfacePath();
+				if (!file_exists($intf) || filemtime($intf) < filemtime($file->path)) {
+					global $argv;
+					static::say("parsing {$file->path}");
+					$cmd = escapeshellarg($argv[0])." -p -b ".escapeshellarg($this->buildDir)." ".escapeshellarg($file->path);
+					passthru($cmd);
 				}
+				$file->load();
+				if ($issues->dumpAndCheck()) return;
+				
+				$importsToProcess = array_merge($importsToProcess, $file->let->imports);
 			}
 		}
 		

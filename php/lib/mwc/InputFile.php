@@ -37,4 +37,15 @@ class InputFile extends SourceFile
 		if ($issues->dumpAndCheck()) return;
 		$this->let = $let;
 	}
+	
+	public function saveLET()
+	{
+		file_put_contents($this->letPath(), serialize($this->let));
+	}
+	
+	public function saveInterface()
+	{
+		$reduced = $this->let/*->reduceToInterface()*/;
+		file_put_contents($this->interfacePath(), serialize($reduced));
+	}
 }

@@ -22,6 +22,7 @@ class Func_Intf extends Func
 		$this->inputs   = $inputs;
 		$this->outputs  = $outputs;
 		$this->subscope = $subscope;
+		$this->scope    = $scope;
 	}
 	
 	public function name()     { return $this->name; }

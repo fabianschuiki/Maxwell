@@ -58,7 +58,7 @@ class InputFile extends SourceFile
 	
 	public function saveInterface()
 	{
-		$reduced = $this->let/*->reduceToInterface()*/;
+		$reduced = $this->let->reduceToInterface();
 		file_put_contents($this->interfacePath(), serialize($reduced));
 		file_put_contents($this->interfacePath().".html", \Dump::let($reduced));
 	}

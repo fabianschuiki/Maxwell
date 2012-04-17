@@ -121,6 +121,6 @@ abstract class Node
 	/// Reduces the node to its simplest form that still enables type inference.
 	public function reduceToInterface()
 	{
-		throw new \RuntimeException("reduceToInterface not implemented!");
+		throw new \RuntimeException("reduceToInterface not implemented for ".get_class($this));
 	}
 }

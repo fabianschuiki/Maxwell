@@ -176,4 +176,9 @@ abstract class Ident extends Expr
 		}
 		parent::notifyNodeChangedType($node);
 	}
+	
+	public function reduceToInterface(Scope $scope)
+	{
+		return new Ident_Impl($scope, $this->name());
+	}
 }

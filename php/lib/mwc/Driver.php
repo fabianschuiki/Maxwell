@@ -104,7 +104,7 @@ class Driver
 			$input->saveInterface();
 		}
 		
-		//Gather the specializations required in imported files.
+		//Perform specializations in imported files.
 		foreach ($imported as $i) {
 			$i->saveSpecs();
 		}

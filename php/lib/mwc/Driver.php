@@ -103,6 +103,12 @@ class Driver
 			$input->saveLET();
 			$input->saveInterface();
 		}
+		
+		//Gather the specializations required in imported files.
+		foreach ($imported as $i) {
+			$i->saveSpecs();
+		}
+		
 		if ($this->upToStage == 2) return;
 	}
 	

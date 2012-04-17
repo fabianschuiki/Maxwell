@@ -5,6 +5,7 @@ class Root extends Node
 {
 	public $imports;
 	public $importedRoots;
+	public $specializations;
 	
 	public function __construct($ast = null)
 	{
@@ -12,6 +13,7 @@ class Root extends Node
 		
 		$this->scope  = new Scope(null, $this);
 		$this->imports = array();
+		$this->specializations = array();
 		
 		if ($ast) {
 			foreach ($ast as $node) {

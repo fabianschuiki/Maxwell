@@ -137,6 +137,12 @@ class Scope
 		return $s;
 	}
 	
+	public function rootNode()
+	{
+		for ($root = $this; $root && !$root->node instanceof Root; $root = $root->outer);
+		return ($root ? $root->node : null);
+	}
+	
 	static private $builtin = null;
 	static private function makeBuiltin()
 	{

@@ -25,4 +25,16 @@ class ConcreteType_Intf extends ConcreteType
 	public function members() { return $this->members; }
 	
 	public function reduceToInterface() { throw new \RuntimeExcpetion("ConcreteType_Intf should never be asked for reduction"); }
+	
+	public function specialize(MemberConstrainedType $type, array &$specializations)
+	{
+		if (in_array($type, $this->specializations)) return $type;
+		$this->specializations[] = $type;
+		
+		$root = $this->scope->rootNode();
+		assert($root instanceof Root);
+		\mwc\debug("asked to specialize external type {$type->details()} at ".get_class($root)."\n");
+		$root->specializations[] = $type;
+		return $type;
+	}
 }

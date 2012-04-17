@@ -1,8 +1,16 @@
 import Vector;
 
+type Hector
+{
+	var hello;
+}
+
 func main
 {
 	var Vector v;
 	var int vx = v.x;
 	var int vy = v.y;
+	
+	var Hector h;
+	var int hh = h.hello;
 }

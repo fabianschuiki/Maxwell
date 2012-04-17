@@ -15,6 +15,7 @@ class SourceFile
 		$this->basePath = $buildDir."/".basename($this->path, ".mw");
 	}
 	
-	public function interfacePath()   { return $this->basePath.".intf"; }
-	public function letPath()         { return $this->basePath.".let"; }
+	public function interfacePath() { return $this->basePath.".intf"; }
+	public function letPath()       { return $this->basePath.".let"; }
+	public function specsPath()     { return $this->basePath.".specs"; }
 }

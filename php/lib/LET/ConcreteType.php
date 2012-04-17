@@ -3,7 +3,7 @@ namespace LET;
 
 abstract class ConcreteType extends Type
 {
-	public $specializations;
+	public $specializations = array();
 	
 	abstract function name();
 	abstract function members();

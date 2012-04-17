@@ -7,6 +7,7 @@ class Driver
 	private $outputPath = null;
 	private $buildDir   = null;
 	private $dumpStats  = false;
+	private $upToStage  = 2;
 	
 	public function configure(array $args)
 	{
@@ -22,7 +23,10 @@ class Driver
 						if (!count($args)) static::error("-b requires a build directory");
 						$this->buildDir = array_shift($args);
 					} break;
+					case "-p": $this->upToStage = 1; break; //parse only
+					case "-a": $this->upToStage = 2; break; //parse and analyze only
 					case "--stats": $this->dumpStats = true; break;
+					case "--debug": global $debugMode; $debugMode = true; break;
 				}
 			} else {
 				$this->inputFiles[] = $arg;
@@ -41,38 +45,38 @@ class Driver
 		$issues = new \IssueList;
 		
 		//Open the source files.
-		$files = array();
+		$inputs = array();
 		foreach ($this->inputFiles as $inputFile) {
 			if (!file_exists($inputFile)) static::error("source file '$inputFile' does not exist");
-			$file = new \SourceFile;
-			$file->path = $inputFile;
-			$file->load();
-			
-			$f = new \stdClass;
-			$f->file = $file;
-			$files[] = $f;
+			$input = new InputFile($inputFile, $this->buildDir);
+			$input->load();
+			$inputs[] = $input;
 		}
 		if ($issues->dumpAndCheck()) return;
 		
 		//Feed each file through the lexer, parse it and build the LET.
-		foreach ($files as $file) {
-			$lexer = new \Lexer;
-			$lexer->file = $file->file;
-			$lexer->run();
-			if ($issues->dumpAndCheck()) return;
-			
-			$parser = new \Parser;
-			$parser->tokens = $lexer->tokens;
-			$parser->issues = $issues;
-			$parser->run();
-			if ($issues->dumpAndCheck()) return;
-			
-			$let = new \LET\Root($parser->nodes);
-			if ($issues->dumpAndCheck()) return;
-			
-			$file->ast = $parser->nodes;
-			$file->let = $let;
+		foreach ($inputs as $input) {
+			$input->parse();
 			$this->writeLETFile($file);
+		}
+		if ($this->upToStage == 1) return;
+		
+		//Resolve the imports.
+		$imported = array();
+		foreach ($inputs as $input) {
+			foreach ($input->let->imports as $import) {
+				if (!isset($imported[strval($import->name)])) {
+					$file = new ImportedFile(dirname($input->path)."/{$import->name}.mw", $this->buildDir);
+					$intf = $file->interfacePath();
+					if (!file_exists($intf)) {
+						global $argv;
+						static::say("parsing {$file->path}");
+						passthru(escapeshellarg($argv[0])." -p -b ".escapeshellarg($this->buildPath)." ".escapeshellarg($file->path));
+					}
+					$file->load();
+					$imported[strval($import->name)] = $file;
+				}
+			}
 		}
 		
 		//Analyze each file.
@@ -85,13 +89,21 @@ class Driver
 			if ($this->dumpStats) $analyzer->dumpStats();
 			$this->writeLETFile($file);
 		}
+		if ($this->upToStage == 2) return;
 	}
 	
 	private function writeLETFile($file)
 	{
-		file_put_contents($this->buildDir."/".basename($file->file->path, '.mw').".let", serialize($file->let));
+		file_put_contents($this->buildDir."/".basename($file->source->path, '.mw').".let", serialize($file->let));
 	}
 	
 	static public function error($msg) { die("mwc: $msg\n"); }
 	static public function say($msg)   { echo "mwc: $msg\n"; }
+}
+
+function debug($msg)
+{
+	global $debugMode;
+	if (!$debugMode) return;
+	echo $msg;
 }

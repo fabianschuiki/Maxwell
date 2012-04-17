@@ -89,14 +89,10 @@ class Driver
 		}
 		
 		//Analyze each file.
-		foreach ($files as $file) {
-			$analyzer = new \Analyzer;
-			$analyzer->issues = $issues;
-			$analyzer->root   = $file->let;
-			$analyzer->run();
-			if ($issues->dumpAndCheck()) return;
-			if ($this->dumpStats) $analyzer->dumpStats();
-			$this->writeLETFile($file);
+		foreach ($inputs as $input) {
+			$input->analyze();
+			$input->saveLET();
+			$input->saveInterface();
 		}
 		if ($this->upToStage == 2) return;
 	}

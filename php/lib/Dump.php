@@ -11,7 +11,7 @@ class Dump
 		return $html;
 	}
 	
-	static public function let(SourceFile $file, Analyzer $analyzer)
+	static public function let(\LET\Root $let)
 	{
 		ob_start();
 		include __DIR__.'/Dump/let.php';

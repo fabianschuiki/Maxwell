@@ -38,14 +38,28 @@ class InputFile extends SourceFile
 		$this->let = $let;
 	}
 	
+	public function analyze()
+	{
+		global $issues;
+		assert($this->let instanceof \LET\Root);
+		
+		$analyzer = new \Analyzer;
+		$analyzer->issues = $issues;
+		$analyzer->root   = $this->let;
+		$analyzer->run();
+		if ($issues->dumpAndCheck()) return;
+	}
+	
 	public function saveLET()
 	{
 		file_put_contents($this->letPath(), serialize($this->let));
+		file_put_contents($this->letPath().".html", \Dump::let($this->let));
 	}
 	
 	public function saveInterface()
 	{
-		$reduced = $this->let->reduceToInterface();
+		$reduced = $this->let/*->reduceToInterface()*/;
 		file_put_contents($this->interfacePath(), serialize($reduced));
+		file_put_contents($this->interfacePath().".html", \Dump::let($reduced));
 	}
 }

@@ -108,7 +108,7 @@ abstract class Func extends TypedNode
 			}
 		}
 		
-		echo "\033[1mspecializing\033[0m {$this->details()} for {$type->details()}\n";
+		\mwc\debug("\033[1mspecializing\033[0m {$this->details()} for {$type->details()}\n");
 		$spec = new Func_Spec($this, $type);
 		$this->specializations[] = $spec;
 		$specializations[] = $spec;

@@ -2,4 +2,7 @@ import Vector;
 
 func main
 {
+	var Vector v;
+	var int vx = v.x;
+	var int vy = v.y;
 }

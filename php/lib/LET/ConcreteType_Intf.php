@@ -13,6 +13,7 @@ class ConcreteType_Intf extends ConcreteType
 			debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		}
 		$subscope = $type->subscope->reduceToInterface($scope);
+		$subscope->node = $this;
 		
 		$members = array();
 		foreach ($type->members() as $member) {

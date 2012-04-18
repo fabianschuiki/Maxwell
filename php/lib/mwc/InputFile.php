@@ -44,7 +44,7 @@ class InputFile extends SourceFile
 		global $issues;
 		assert($this->let instanceof \LET\Root);
 		
-		//$this->let->importedRoots = $this->imported;
+		$this->let->importedRoots = $this->imported;
 		
 		$analyzer = new \Analyzer;
 		$analyzer->issues = $issues;
@@ -52,7 +52,7 @@ class InputFile extends SourceFile
 		$analyzer->run();
 		if ($issues->dumpAndCheck()) return;
 		
-		//$this->let->importedRoots = null;
+		$this->let->importedRoots = null;
 	}
 	
 	public function saveLET()

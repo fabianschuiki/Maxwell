@@ -7,6 +7,8 @@ class TypeMember_Intf extends TypeMember
 	
 	public function __construct(Scope $scope, TypeMember $member)
 	{
+		parent::__construct();
+		
 		$type = $member->type();
 		$type = ($type instanceof ConcreteType ? $type->reduceToTypeExpr($scope) : $type->reduceToInterface($scope));
 		

@@ -32,6 +32,7 @@ class ConcreteType_Intf extends ConcreteType
 	
 	public function specialize(MemberConstrainedType $type, array &$specializations)
 	{
+		if (!$this->specializations) $this->specializations = array();
 		if (in_array($type, $this->specializations)) return $type;
 		$this->specializations[] = $type;
 		

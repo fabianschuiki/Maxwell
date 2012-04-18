@@ -15,8 +15,16 @@ class Func_Intf extends Func
 		
 		$inputs  = array();
 		$outputs = array();
-		foreach ($func->inputs()  as $i) $inputs[]  = $i->reduceToInterface($subscope);
-		foreach ($func->outputs() as $o) $outputs[] = $o->reduceToInterface($subscope);
+		foreach ($func->inputs() as $i) {
+			$a = $i->reduceToInterface($subscope);
+			$a->parent = $this;
+			$inputs[] = $a;
+		}
+		foreach ($func->outputs() as $o) {
+			$a = $o->reduceToInterface($subscope);
+			$a->parent = $this;
+			$outputs[] = $a;
+		}
 		
 		$this->name     = strval($func->name());
 		$this->inputs   = $inputs;

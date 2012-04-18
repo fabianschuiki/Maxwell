@@ -3,10 +3,16 @@ namespace LET;
 
 abstract class ConcreteType extends Type
 {
-	public $specializations = array();
+	public $specializations;
+	public $id;
 	
 	abstract function name();
 	abstract function members();
+	
+	public function __construct()
+	{
+		$this->id = md5(time());
+	}
 	
 	public $cached_isSpecific = null;
 	public function isSpecific()

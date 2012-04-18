@@ -9,6 +9,8 @@ class ConcreteType_AST extends ConcreteType
 	
 	public function __construct(Scope $scope, \AST\TypeStmt $node)
 	{
+		parent::__construct();
+		
 		$members  = array();
 		$subscope = new Scope($scope, $this);
 		

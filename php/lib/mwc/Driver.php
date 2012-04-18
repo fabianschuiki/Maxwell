@@ -124,7 +124,7 @@ class Driver
 		}
 		
 		//TODO: for each imported file, load the .specs file into the specializations array.
-		foreach ($imported as $i) $i->loadSpecs();
+		//foreach ($imported as $i) $i->loadSpecs();
 		
 		//Analyze each file.
 		foreach ($inputs as $input) {

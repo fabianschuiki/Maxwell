@@ -28,8 +28,8 @@ class TypeExpr extends Type
 		return $this;
 	}
 	
-	public function reduceToInterface(Scope $scope)
+	public function reduceToAbsolute(Scope $scope)
 	{
-		return new TypeExpr($scope, $this->expr->reduceToInterface($scope));
+		return new TypeExpr($scope, $this->expr->reduceToAbsolute($scope));
 	}
 }

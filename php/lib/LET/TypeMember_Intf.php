@@ -9,15 +9,12 @@ class TypeMember_Intf extends TypeMember
 	{
 		parent::__construct();
 		
-		$type = $member->type();
-		$type = ($type instanceof ConcreteType ? $type->reduceToTypeExpr($scope) : $type->reduceToInterface($scope));
-		
 		$this->name  = strval($member->name());
-		$this->type  = $type;
+		$this->type  = $member->type()->reduceToAbsolute($scope);
 		$this->scope = $scope;
 	}
 	
 	public function name() { return $this->name; }
 	
-	public function reduceToInterface() { throw new \RuntimeExcpetion("TypeMember_Intf should never be asked for reduction"); }
+	public function reduceToInterface() { throw new \RuntimeExcpetion("TypeMember_Intf should never be asked for interface reduction"); }
 }

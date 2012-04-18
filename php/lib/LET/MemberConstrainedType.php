@@ -67,9 +67,8 @@ class MemberConstrainedType extends Type
 		return $this;
 	}
 	
-	public function reduceToInterface(Scope $scope)
+	public function reduceToAbsolute(Scope $scope)
 	{
-		$type = ($this->type instanceof ConcreteType ? $this->type->reduceToTypeExpr($scope) : $this->type->reduceToInterface($scope));
-		return new self($type, array(), array());
+		return new self($this->type->reduceToAbsolute($scope), array(), array());
 	}
 }

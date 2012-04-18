@@ -119,8 +119,11 @@ abstract class Node
 	}
 	
 	/// Reduces the node to its simplest form that still enables type inference.
-	public function reduceToInterface()
-	{
-		throw new \RuntimeException("reduceToInterface not implemented for ".get_class($this));
-	}
+	/// Nodes that are used in binding and type inference in an interface should implement this.
+	public function reduceToInterface(Scope $scope) { throw new \RuntimeException("reduceToInterface not implemented for ".get_class($this)); }
+	
+	/// Reduces the node to a form that does not reference types and functions directly, but rather
+	/// has proxy entities in place of them.
+	/// Nodes that bind to Funcs and ConcreteTypes should implement this.
+	public function reduceToAbsolute() { throw new \RuntimeException("reduceToAbsolute not implemented for ".get_class($this)); }
 }

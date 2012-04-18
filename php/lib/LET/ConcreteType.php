@@ -11,7 +11,7 @@ abstract class ConcreteType extends Type
 	
 	public function __construct()
 	{
-		$this->id = uniqid();
+		$this->id = `uuidgen`;
 	}
 	
 	public $cached_isSpecific = null;
@@ -74,6 +74,11 @@ abstract class ConcreteType extends Type
 	public function reduceToInterface(Scope $scope)
 	{
 		return new ConcreteType_Intf($scope, $this);
+	}
+	
+	public function reduceToAbsolute(Scope $scope)
+	{
+		return new Proxy($this->id);
 	}
 	
 	public function reduceToTypeExpr(Scope $scope)

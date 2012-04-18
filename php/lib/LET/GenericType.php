@@ -4,5 +4,5 @@ namespace LET;
 class GenericType extends Type
 {
 	public function details() { return "*"; }
-	public function reduceToInterface(Scope $scope) { return new GenericType; }
+	public function reduceToAbsolute(Scope $scope) { return new GenericType; }
 }

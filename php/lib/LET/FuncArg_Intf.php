@@ -8,8 +8,12 @@ class FuncArg_Intf extends FuncArg
 	public function __construct(Scope $scope, FuncArg $arg)
 	{
 		parent::__construct();
+		
+		$type = $arg->type();
+		$type = ($type instanceof ConcreteType ? $type->reduceToTypeExpr($scope) : $type->reduceToInterface($scope));
+		
 		$this->name  = strval($arg->name());
-		$this->type  = $arg->type()->reduceToInterface($scope);
+		$this->type  = $type;
 		$this->scope = $scope;
 	}
 	

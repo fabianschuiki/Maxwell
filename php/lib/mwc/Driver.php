@@ -86,7 +86,7 @@ class Driver
 				if (!file_exists($intf) || filemtime($intf) < filemtime($file->path)) {
 					$cmd = "$mwc -p -b ".escapeshellarg($this->buildDir)." ".escapeshellarg($file->path);
 					static::say("parsing {$file->path}");
-					//debug("$cmd\n");
+					debug("$cmd\n");
 					$result = 0;
 					passthru($cmd, $result);
 					if ($result != 0) static::error("unable to parse {$file->path}");
@@ -116,7 +116,7 @@ class Driver
 				$i = array_pop($toAnalyze);
 				$cmd = "$mwc -a --ignore-imports -b ".escapeshellarg($this->buildDir)." ".escapeshellarg($i->path);
 				static::say("analyzing {$i->path}");
-				//debug("$cmd\n");
+				debug("$cmd\n");
 				$result = 0;
 				passthru($cmd, $result);
 				if ($result != 0) static::error("unable to analyze {$file->path}");

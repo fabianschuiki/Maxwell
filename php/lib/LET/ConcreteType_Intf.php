@@ -8,6 +8,8 @@ class ConcreteType_Intf extends ConcreteType
 	
 	public function __construct(Scope $scope, ConcreteType $type)
 	{
+		parent::__construct();
+		
 		if (!$type->subscope) {
 			echo "missing subscope for ".get_class($type)."\n";
 			debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
@@ -20,6 +22,7 @@ class ConcreteType_Intf extends ConcreteType
 			$members[] = $member->reduceToInterface($subscope);
 		}
 		
+		$this->id       = $type->id;
 		$this->name     = strval($type->name());
 		$this->members  = $members;
 		$this->subscope = $subscope;
@@ -41,6 +44,7 @@ class ConcreteType_Intf extends ConcreteType
 		assert($root instanceof Root);
 		\mwc\debug("asked to specialize external type {$type->details()} at ".get_class($root)."\n");
 		//$root->specializations[] = $type->reduceToInterface(new Scope);
+		$root->specializations[] = array($type->id, new MemberConstrainedType(new GenericType, $type->members, array()));
 		return $type;
 	}
 }

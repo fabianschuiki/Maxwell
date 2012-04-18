@@ -7,6 +7,8 @@ class PrimitiveBuiltinType extends BuiltinType
 	
 	public function __construct(Scope $scope, $name)
 	{
+		parent::__construct();
+		
 		assert(is_string($name));
 		
 		$this->name  = $name;
@@ -17,4 +19,9 @@ class PrimitiveBuiltinType extends BuiltinType
 	
 	public function name()    { return $this->name; }
 	public function members() { return array(); }
+	
+	public function reduceToAbsolute(Scope $scope)
+	{
+		return new TypeExpr($scope, new Ident_Impl($scope, $this->name));
+	}
 }

@@ -9,6 +9,8 @@ class ConcreteType_Spec extends ConcreteType
 	
 	public function __construct(ConcreteType $original, MemberConstrainedType $type)
 	{
+		parent::__construct();
+		
 		$subscope = new Scope($original->scope, $this);
 		
 		$members = array();

@@ -78,11 +78,6 @@ abstract class ConcreteType extends Type
 	
 	public function reduceToAbsolute(Scope $scope)
 	{
-		return new Proxy($this->id);
-	}
-	
-	public function reduceToTypeExpr(Scope $scope)
-	{
-		return new TypeExpr($scope, new Ident_Impl($scope, $this->name()));
+		return new ConcreteType_Proxy($this->id);
 	}
 }

@@ -41,7 +41,12 @@ class Root extends Node
 	public function reduceToInterface()
 	{
 		$scope   = $this->scope->reduceToInterface();
-		$imports = $this->imports;
+		$imports = array_map(function($i){
+			$v = clone $i;
+			$v->keyword = strval($v->keyword);
+			$v->name = strval($v->name);
+			return $v;
+		}, $this->imports);
 		
 		$r = new self;
 		$r->imports  = $imports;

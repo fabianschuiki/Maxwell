@@ -11,10 +11,7 @@ ${BUILD_DIR}:
 	mkdir -p ${BUILD_DIR}
 
 strip:
-	rm ${BUILD_DIR}/*.intf
-	rm ${BUILD_DIR}/*.let
-	rm ${BUILD_DIR}/*.specs
-	rm ${BUILD_DIR}/*.html
+	rm ${BUILD_DIR}/*
 
 debug: ${EXEC}
 	${EXEC}

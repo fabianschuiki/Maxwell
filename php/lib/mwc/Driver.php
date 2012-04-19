@@ -7,8 +7,6 @@ class Driver
 	private $outputPath    = null;
 	private $buildDir      = null;
 	private $dumpStats     = false;
-	private $upToStage     = 2;
-	private $ignoreImports = false;
 	
 	public function configure(array $args)
 	{
@@ -24,11 +22,8 @@ class Driver
 						if (!count($args)) static::error("-b requires a build directory");
 						$this->buildDir = array_shift($args);
 					} break;
-					case "-p": $this->upToStage = 1; break; //parse only
-					case "-a": $this->upToStage = 2; break; //parse and analyze only
 					case "--stats": $this->dumpStats = true; break;
 					case "--debug": global $debugMode; $debugMode = true; break;
-					case "--ignore-imports": $this->ignoreImports = true; break;
 					default: {
 						static::error("unknown option '$arg'");
 					} break;
@@ -65,10 +60,13 @@ class Driver
 		//Feed each file through the lexer, parse it and build the LET.
 		foreach ($inputs as $input) {
 			$input->parse();
+			$input->bindLocally();
 			$input->saveLET();
 			$input->saveInterface();
 		}
-		if ($this->upToStage == 1) return;
+		if ($issues->dumpAndCheck()) return;
+		
+		return;
 		
 		//Resolve the imports.
 		$imported = array();
@@ -106,42 +104,6 @@ class Driver
 			}
 			$input->imported = $imports;
 		}
-		
-		//Analysis iteration starts here:
-		//TODO: analyze each imported file, starting with the last (generally the least referenced one) through another call to mwc, until no more specializations are issued.
-		//Analyze the imported files.
-		if (!$this->ignoreImports) {
-			$toAnalyze = $imported;
-			while (count($toAnalyze)) {
-				$i = array_pop($toAnalyze);
-				$cmd = "$mwc -a --ignore-imports -b ".escapeshellarg($this->buildDir)." ".escapeshellarg($i->path);
-				static::say("analyzing {$i->path}");
-				debug("$cmd\n");
-				$result = 0;
-				passthru($cmd, $result);
-				if ($result != 0) static::error("unable to analyze {$file->path}");
-			}
-		}
-		
-		//TODO: for each imported file, load the .specs file into the specializations array.
-		//foreach ($imported as $i) $i->loadSpecs();
-		
-		//Analyze each file.
-		foreach ($inputs as $input) {
-			$input->analyze();
-			$input->saveLET();
-			$input->saveInterface();
-		}
-		
-		//NOTE: every imported file's specializations array now contains the required specializations from the other imported files, as well as our input files.
-		//Perform specializations in imported files.
-		foreach ($imported as $i) $i->saveSpecs();
-		
-		//NOTE: that we will loop back up where the imported files are re-analyzed, which causes them to specialize whatever is stored in the .spec files.
-		
-		//Analysis iteration loops back up from here.
-		
-		if ($this->upToStage == 2) return;
 	}
 	
 	private function writeLETFile($file)

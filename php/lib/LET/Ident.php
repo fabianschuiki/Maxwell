@@ -13,7 +13,7 @@ abstract class Ident extends Expr
 	public function details()  { return $this->name(); }
 	public function children() { return array(); }
 	
-	public function bind()
+	public function bind($weak = false)
 	{
 		\Analyzer::$stat_bind++;
 		if (Type::equalTwo($this->lastConfirmedTypeConstraint, $this->typeConstraint))
@@ -23,7 +23,7 @@ abstract class Ident extends Expr
 		global $issues;
 		$nodes = $this->scope->find($this->name());
 		$unfiltered = $nodes;
-		if (count($unfiltered) == 0) {
+		if (count($unfiltered) == 0 && !$weak) {
 			$issues[] = new \Issue(
 				'error',
 				"Entity '{$this->name()}' is unknown.",

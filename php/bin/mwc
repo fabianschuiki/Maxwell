@@ -10,6 +10,9 @@
 require_once __DIR__.'/../lib/autoload.php';
 error_reporting(E_ALL ^ E_NOTICE);
 
+global $enableColors;
+$enableColors = (`tput colors` > 2);
+
 $driver = new mwc\Driver;
 $driver->configure(array_slice($argv, 1));
 $driver->run();

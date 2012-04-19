@@ -39,6 +39,12 @@ class InputFile extends SourceFile
 		$this->let = $let;
 	}
 	
+	public function bindLocally()
+	{
+		$this->let->bind(true);
+		$this->let->reduce();
+	}
+	
 	public function analyze()
 	{
 		global $issues;

@@ -14,6 +14,7 @@ abstract class Func extends TypedNode
 	
 	public function __construct()
 	{
+		parent::__construct();
 		$this->id = trim(`uuidgen`);
 	}
 	

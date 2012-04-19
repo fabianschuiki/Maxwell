@@ -9,6 +9,7 @@ abstract class TypedNode extends Node
 	
 	public function __construct()
 	{
+		parent::__construct();
 		$this->constraints = array();
 		$this->typeConstraint = new GenericType;
 	}
@@ -128,6 +129,7 @@ abstract class TypedNode extends Node
 	
 	public function propagateTypeChange()
 	{
+		if (!is_array($this->constraints)) \mwc\Driver::error("non-array constraints in ".get_class($this));
 		foreach ($this->constraints as $constraint) {
 			if (!$constraint instanceof EqualTypeConstraint/* || $constraint->isImposing*/) continue;
 			//echo " - re-impose {$constraint->details()}\n";

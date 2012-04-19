@@ -94,6 +94,7 @@ class Driver
 		
 		//Perform the initial analysis for all files.
 		$specs = array();
+		$nodes = array();
 		foreach ($inputFiles as $inputFile) {
 			static::debug("analyzing $inputFile");
 			
@@ -103,19 +104,19 @@ class Driver
 			
 			//Load the required interfaces.
 			$imports = array();
-			$nodes = array();
+			$importedNodes = array();
 			foreach ($input->let->imports as $import) {
 				$path = $input->importList[strval($import->name)];
 				static::debug("- loading interface $path");
 				$f = new ImportedFile($path, $this->buildDir);
 				$f->load();
 				$imports[] = $f;
-				foreach ($f->let->children() as $node) $nodes[$node->id] = $node;
+				foreach ($f->let->children() as $node) $importedNodes[$node->id] = $node;
 			}
 			if ($issues->dumpAndCheck()) return;
 			
-			foreach ($nodes as $id => $node) {
-				$node->bindProxies($nodes);
+			foreach ($importedNodes as $id => $node) {
+				$node->bindProxies($importedNodes);
 				$node->bind();
 				$node->reduce();
 				if ($issues->dumpAndCheck()) return;
@@ -131,10 +132,19 @@ class Driver
 			
 			//Keep the specialization requests for later.
 			foreach ($imports as $import) $specs = array_merge($specs, $import->let->specializations);
+			
+			//Disassemble the root scope into individual entities.
+			foreach ($input->let->children() as $node) {
+				$e = new Entity($node->id, $this->buildDir);
+				$e->node = $node;
+				$e->save();
+				$nodes[] = $node->id;
+			}
 		}
 		
 		//Show the specs.
-		foreach ($specs as $spec) static::debug("- specialization {$spec->details()}");
+		if (count($specs)) static::debug("specializations:");
+		foreach ($specs as $spec) static::debug("- {$spec->details()}");
 	}
 	
 	static public function error($msg) { echo "mwc: $msg\n"; exit(1); }

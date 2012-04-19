@@ -47,7 +47,7 @@ abstract class Ident extends Expr
 			}
 			if ($anySpecific) $nodes = array_filter($nodes, function($node) { return $node->isSpecific(); });
 		//}
-		sort($nodes);
+		usort($nodes, function($a,$b){ return 0; });
 		//echo "binding identifier {$this->name()} -> ".count($unfiltered)." nodes, ".count($nodes)." ".($anySpecific ? 'specific' : '')." nodes match type $tc.\n";
 		
 		$boundTo = $this->boundTo; //WARNING: this might be an ugly hack. Haven't considered all implications. Should prevent bound identifiers from losing their binding.

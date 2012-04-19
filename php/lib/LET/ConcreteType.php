@@ -11,6 +11,7 @@ abstract class ConcreteType extends Type
 	
 	public function __construct()
 	{
+		parent::__construct();
 		$this->id = trim(`uuidgen`);
 	}
 	

@@ -100,7 +100,6 @@ class Scope
 			foreach ($this->node->importedRoots as $root) {
 				$imported = array_merge($imported, $root->scope->find($name, true, true));
 			}
-			if (count($imported)) \mwc\debug("found ".count($imported)." imported nodes named $name\n");
 		}
 		
 		$nodes = array_merge(

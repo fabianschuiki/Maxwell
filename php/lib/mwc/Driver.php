@@ -107,7 +107,9 @@ class Driver
 				static::debug("- loading interface $path");
 				$f = new ImportedFile($path, $this->buildDir);
 				$f->load();
+				$imports[] = $f;
 			}
+			$input->importedFiles = $imports;
 			if ($issues->dumpAndCheck()) return;
 		}
 	}

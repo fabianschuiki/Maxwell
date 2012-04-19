@@ -7,7 +7,7 @@ class InputFile extends SourceFile
 	public $ast;
 	public $let;
 	public $importList;
-	public $imported;
+	public $importedFiles;
 	
 	public function load()
 	{
@@ -66,7 +66,7 @@ class InputFile extends SourceFile
 		global $issues;
 		assert($this->let instanceof \LET\Root);
 		
-		$this->let->importedRoots = $this->imported;
+		$this->let->importedRoots = array_map(function($f){ return $f->let; }, $this->importedFiles);
 		
 		$analyzer = new \Analyzer;
 		$analyzer->issues = $issues;

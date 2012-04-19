@@ -47,7 +47,8 @@ class IssueList implements ArrayAccess
 	
 	public function dumpAndCheck()
 	{
+		$fatal = $this->isFatal();
 		$this->dump();
-		return $this->isFatal();
+		return $fatal;
 	}
 }

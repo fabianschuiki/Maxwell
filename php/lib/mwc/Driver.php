@@ -47,61 +47,45 @@ class Driver
 		global $issues;
 		$issues = new \IssueList;
 		
-		//Open the source files.
-		$inputs = array();
-		foreach ($this->inputFiles as $inputFile) {
+		//Process the input files and resovle the imports.
+		$inputFiles = array();
+		$inputFilesLeft = $this->inputFiles;
+		while ($inputFilesLeft) {
+			$inputFile = array_shift($inputFilesLeft);
+			static::debug("parsing $inputFile");
+			
+			//Load the input file.
 			if (!file_exists($inputFile)) static::error("source file '$inputFile' does not exist");
 			$input = new InputFile($inputFile, $this->buildDir);
 			$input->load();
-			$inputs[] = $input;
-		}
-		if ($issues->dumpAndCheck()) return;
-		
-		//Feed each file through the lexer, parse it and build the LET.
-		foreach ($inputs as $input) {
+			$inputFiles[] = $inputFile;
+			if ($issues->dumpAndCheck()) return;
+			
+			//Parse and process.
 			$input->parse();
 			$input->bindLocally();
-		}
-		if ($issues->dumpAndCheck()) return;
-		
-		//Resolve the imports
-		$imported = array();
-		$importsToProcess = array();
-		foreach ($inputs as $input) $importsToProcess = array_merge($importsToProcess, $input->let->imports);
-		while ($importsToProcess) {
-			$import = array_shift($importsToProcess);
-			$name   = strval($import->name);
+			if ($issues->dumpAndCheck()) return;
 			
-			if (!isset($imported[$name])) {
-				//TODO: actually check other locations for this file.
-				$file = new InputFile(dirname($input->path)."/{$import->name}.mw", $this->buildDir);
-				$imported[$name] = $file;
-				
-				static::say("importing $name");
-				$file->load();
-				$file->parse();
-				$file->bindLocally();
-				$file->saveLET();
-				$file->saveInterface();
-				if ($issues->dumpAndCheck()) return;
-				
-				$importsToProcess = array_merge($importsToProcess, $file->let->imports);
+			//Dump the preliminary LET and interface.
+			$input->saveLET();
+			$input->saveInterface();
+			
+			//Resolve the imports.
+			$importsToProcess = $input->let->imports;
+			while ($importsToProcess) {
+				$import = array_shift($importsToProcess);
+				$path   = dirname($input->path)."/{$import->name}.mw";
+				if (!file_exists($path)) {
+					$issues[] = new \Issue(
+						'error',
+						"Nothing found to import named '{$import->name}'.",
+						$import
+					);
+				}
+				if (!in_array($path, $inputFiles)) $inputFilesLeft[] = $path;
 			}
+			if ($issues->dumpAndCheck()) return;
 		}
-		/*foreach ($inputs as $input) {
-			$names = array_map(function($i){ return strval($i->name); }, $input->let->imports);
-			$imports = array();
-			foreach ($names as $name) {
-				assert(isset($imported[$name]));
-				$imports[] = $imported[$name]->let;
-			}
-			$input->imported = $imports;
-		}*/
-	}
-	
-	private function writeLETFile($file)
-	{
-		file_put_contents($this->buildDir."/".basename($file->source->path, '.mw').".let", serialize($file->let));
 	}
 	
 	static public function error($msg) { echo "mwc: $msg\n"; exit(1); }

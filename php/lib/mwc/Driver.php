@@ -111,6 +111,9 @@ class Driver
 			}
 			$input->importedFiles = $imports;
 			if ($issues->dumpAndCheck()) return;
+			
+			//Analyze.
+			$input->analyze();
 		}
 	}
 	

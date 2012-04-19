@@ -60,7 +60,7 @@ class ReturnStmt extends Stmt
 						$arg->parent = $func;
 						$func->outputs[] = $arg;
 						$pairs[$name] = $arg;
-						\mwc\debug("create function output argument {$arg->desc()}\n");
+						//\mwc\debug("create function output argument {$arg->desc()}\n");
 					}
 				} else {
 					foreach ($func->outputs() as $o) if ($o->name() == $name) $pairs[$name] = $o;

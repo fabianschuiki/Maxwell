@@ -61,41 +61,34 @@ class Driver
 		foreach ($inputs as $input) {
 			$input->parse();
 			$input->bindLocally();
-			$input->saveLET();
-			$input->saveInterface();
 		}
 		if ($issues->dumpAndCheck()) return;
 		
-		return;
-		
-		//Resolve the imports.
+		//Resolve the imports
 		$imported = array();
 		$importsToProcess = array();
-		foreach ($inputs as $input) {
-			$importsToProcess = array_merge($importsToProcess, $input->let->imports);
-		}
+		foreach ($inputs as $input) $importsToProcess = array_merge($importsToProcess, $input->let->imports);
 		while ($importsToProcess) {
 			$import = array_shift($importsToProcess);
-			if (!isset($imported[strval($import->name)])) {
-				$file = new ImportedFile(dirname($input->path)."/{$import->name}.mw", $this->buildDir);
-				$imported[strval($import->name)] = $file;
+			$name   = strval($import->name);
+			
+			if (!isset($imported[$name])) {
+				//TODO: actually check other locations for this file.
+				$file = new InputFile(dirname($input->path)."/{$import->name}.mw", $this->buildDir);
+				$imported[$name] = $file;
 				
-				$intf = $file->interfacePath();
-				if (!file_exists($intf) || filemtime($intf) < filemtime($file->path)) {
-					$cmd = "$mwc -p -b ".escapeshellarg($this->buildDir)." ".escapeshellarg($file->path);
-					static::say("parsing {$file->path}");
-					debug("$cmd\n");
-					$result = 0;
-					passthru($cmd, $result);
-					if ($result != 0) static::error("unable to parse {$file->path}");
-				}
+				static::say("importing $name");
 				$file->load();
+				$file->parse();
+				$file->bindLocally();
+				$file->saveLET();
+				$file->saveInterface();
 				if ($issues->dumpAndCheck()) return;
 				
 				$importsToProcess = array_merge($importsToProcess, $file->let->imports);
 			}
 		}
-		foreach ($inputs as $input) {
+		/*foreach ($inputs as $input) {
 			$names = array_map(function($i){ return strval($i->name); }, $input->let->imports);
 			$imports = array();
 			foreach ($names as $name) {
@@ -103,7 +96,7 @@ class Driver
 				$imports[] = $imported[$name]->let;
 			}
 			$input->imported = $imports;
-		}
+		}*/
 	}
 	
 	private function writeLETFile($file)

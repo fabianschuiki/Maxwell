@@ -115,6 +115,7 @@ class Driver
 			if ($issues->dumpAndCheck()) return;
 			
 			foreach ($nodes as $id => $node) {
+				$node->bindProxies($nodes);
 				$node->bind();
 				$node->reduce();
 				if ($issues->dumpAndCheck()) return;

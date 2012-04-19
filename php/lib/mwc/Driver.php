@@ -71,18 +71,42 @@ class Driver
 			$input->saveInterface();
 			
 			//Resolve the imports.
+			$importList = array();
 			$importsToProcess = $input->let->imports;
 			while ($importsToProcess) {
 				$import = array_shift($importsToProcess);
-				$path   = dirname($input->path)."/{$import->name}.mw";
+				$name   = strval($import->name);
+				$path   = dirname($input->path)."/{$name}.mw";
 				if (!file_exists($path)) {
 					$issues[] = new \Issue(
 						'error',
-						"Nothing found to import named '{$import->name}'.",
+						"Nothing found to import named '{$name}'.",
 						$import
 					);
 				}
 				if (!in_array($path, $inputFiles)) $inputFilesLeft[] = $path;
+				$importList[$name] = $path;
+			}
+			$input->importList = $importList;
+			$input->saveImportList();
+			if ($issues->dumpAndCheck()) return;
+		}
+		
+		//Perform the initial analysis for all files.
+		foreach ($inputFiles as $inputFile) {
+			static::debug("analyzing $inputFile");
+			
+			$input = new InputFile($inputFile, $this->buildDir);
+			$input->loadCached();
+			if ($issues->dumpAndCheck()) return;
+			
+			//Load the required interfaces.
+			$imports = array();
+			foreach ($input->let->imports as $import) {
+				$path = $input->importList[strval($import->name)];
+				static::debug("- loading interface $path");
+				$f = new ImportedFile($path, $this->buildDir);
+				$f->load();
 			}
 			if ($issues->dumpAndCheck()) return;
 		}

@@ -9,11 +9,11 @@ class ImportedFile extends SourceFile
 	{
 		$intf = $this->interfacePath();
 		if (!file_exists($intf)) Driver::error("interface '$intf' does not exist");
-		$let = unserialize(file_get_contents($intf));
+		/*$let = unserialize(file_get_contents($intf));
 		$let->bind();
 		$let->reduce();
 		$this->let = $let;
-		file_put_contents($this->interfacePath().".imported.html", \Dump::let($let));
+		file_put_contents($this->interfacePath().".imported.html", \Dump::let($let));*/
 	}
 	
 	public function loadSpecs()

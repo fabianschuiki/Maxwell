@@ -23,16 +23,18 @@ class Entity
 		$absolute = $this->node;
 		file_put_contents($this->letPath(), serialize($absolute));
 		
+		$pth = dirname($this->letPath())."/".str_replace('/', '<fwdslash>', $this->node->details());
+		
 		$temp = new \LET\Root;
 		$temp->scope->add($absolute);
-		file_put_contents($this->letPath().".html", \Dump::let($temp));
+		file_put_contents($pth.".let.html", \Dump::let($temp));
 		
 		$reduced = $this->node->reduceToInterface(new \LET\Scope);
 		file_put_contents($this->interfacePath(), serialize($reduced));
 		
 		$temp = new \LET\Root;
 		$temp->scope->add($reduced);
-		file_put_contents($this->interfacePath().".html", \Dump::let($temp));
+		file_put_contents($pth.".intf.html", \Dump::let($temp));
 	}
 	
 	public function load()

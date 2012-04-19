@@ -11,7 +11,7 @@ abstract class ConcreteType extends Type
 	
 	public function __construct()
 	{
-		$this->id = `uuidgen`;
+		$this->id = trim(`uuidgen`);
 	}
 	
 	public $cached_isSpecific = null;

@@ -10,6 +10,8 @@ class Func_Intf extends Func
 	
 	public function __construct(Scope $scope, Func $func)
 	{
+		parent::__construct();
+		
 		$subscope = $func->subscope->reduceToInterface($scope);
 		$subscope->node = $this;
 		
@@ -26,6 +28,7 @@ class Func_Intf extends Func
 			$outputs[] = $a;
 		}
 		
+		$this->id       = $func->id;
 		$this->name     = strval($func->name());
 		$this->inputs   = $inputs;
 		$this->outputs  = $outputs;

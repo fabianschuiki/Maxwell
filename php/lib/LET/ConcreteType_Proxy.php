@@ -7,10 +7,6 @@ class ConcreteType_Proxy extends ConcreteType
 	{
 		parent::__construct();
 		assert(is_string($id) || is_numeric($id));
-		if (!(is_string($id) || is_numeric($id))) {
-			throw new \RuntimeException("nlablabla");
-		}
-		
 		$this->id = $id;
 	}
 	
@@ -20,4 +16,10 @@ class ConcreteType_Proxy extends ConcreteType
 	public function details() { return "@".$this->id; }
 	
 	public function reduceToAbsolute(Scope $scope) { throw new \RuntimeException("ConcreteType_Proxy should never be asked for absolute reduction"); }
+	
+	public function reduce()
+	{
+		\mwc\debug("type proxy {$this->id} asked to reduce\n");
+		return $this;
+	}
 }

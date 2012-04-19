@@ -93,6 +93,7 @@ class Driver
 		}
 		
 		//Perform the initial analysis for all files.
+		$specs = array();
 		foreach ($inputFiles as $inputFile) {
 			static::debug("analyzing $inputFile");
 			
@@ -102,19 +103,37 @@ class Driver
 			
 			//Load the required interfaces.
 			$imports = array();
+			$nodes = array();
 			foreach ($input->let->imports as $import) {
 				$path = $input->importList[strval($import->name)];
 				static::debug("- loading interface $path");
 				$f = new ImportedFile($path, $this->buildDir);
 				$f->load();
 				$imports[] = $f;
+				foreach ($f->let->children() as $node) $nodes[$node->id] = $node;
 			}
-			$input->importedFiles = $imports;
 			if ($issues->dumpAndCheck()) return;
+			
+			foreach ($nodes as $id => $node) {
+				$node->bind();
+				$node->reduce();
+				if ($issues->dumpAndCheck()) return;
+				static::debug("  - imported $id: {$node->desc()}");
+			}
+			
+			$input->importedFiles = $imports;
 			
 			//Analyze.
 			$input->analyze();
+			$input->saveLET();
+			if ($issues->dumpAndCheck()) return;
+			
+			//Keep the specialization requests for later.
+			foreach ($imports as $import) $specs = array_merge($specs, $import->let->specializations);
 		}
+		
+		//Show the specs.
+		foreach ($specs as $spec) static::debug("- specialization {$spec->details()}");
 	}
 	
 	static public function error($msg) { echo "mwc: $msg\n"; exit(1); }

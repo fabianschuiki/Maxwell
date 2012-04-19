@@ -36,15 +36,15 @@ class ConcreteType_Intf extends ConcreteType
 	
 	public function specialize(MemberConstrainedType $type, array &$specializations)
 	{
-		//if (!$this->specializations) $this->specializations = array();
-		//if (in_array($type, $this->specializations)) return $type;
-		//$this->specializations[] = $type;
-		
 		$root = $this->scope->rootNode();
 		assert($root instanceof Root);
-		\mwc\debug("asked to specialize external type {$type->details()} at ".get_class($root)."\n");
-		//$root->specializations[] = $type->reduceToInterface(new Scope);
-		$root->specializations[] = array($type->id, new MemberConstrainedType(new GenericType, $type->members, array()));
+		
+		$reduced = $type->reduceToAbsolute(new Scope);
+		foreach ($root->specializations as $spec) {
+			if (Type::equalTwo($spec, $reduced)) return $type;
+		}
+		
+		$root->specializations[] = $reduced;
 		return $type;
 	}
 }

@@ -41,14 +41,11 @@ class IssueList implements ArrayAccess
 			echo "$i\n";
 		}
 		$this->issues = array();
-		$this->num_warnings = 0;
-		$this->num_errors = 0;
 	}
 	
 	public function dumpAndCheck()
 	{
-		$fatal = $this->isFatal();
 		$this->dump();
-		return $fatal;
+		return $this->isFatal();
 	}
 }

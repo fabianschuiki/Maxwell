@@ -4,12 +4,18 @@ namespace LET;
 abstract class Func extends TypedNode
 {
 	public $specializations;
+	public $id;
 	
 	abstract function name();
 	abstract function inputs();
 	abstract function outputs();
 	abstract function stmts();
 	abstract function subscope();
+	
+	public function __construct()
+	{
+		$this->id = trim(`uuidgen`);
+	}
 	
 	public function details()
 	{
@@ -134,5 +140,10 @@ abstract class Func extends TypedNode
 	public function reduceToInterface(Scope $scope)
 	{
 		return new Func_Intf($scope, $this);
+	}
+	
+	public function reduceToAbsolute(Scope $scope)
+	{
+		return new Func_Proxy($scope, $this->id);
 	}
 }

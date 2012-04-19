@@ -11,6 +11,8 @@ class Func_AST extends Func
 	
 	public function __construct(Scope $scope, \AST\FuncStmt $node, $thisType = null)
 	{
+		parent::__construct();
+		
 		$inputs  = array();
 		$outputs = array();
 		$subscope = new Scope($scope, $this);

@@ -69,6 +69,8 @@ class MemberConstrainedType extends Type
 	
 	public function reduceToAbsolute(Scope $scope)
 	{
-		return new self($this->type->reduceToAbsolute($scope), array(), array());
+		$type    = $this->type->reduceToAbsolute($scope);
+		$members = array_map(function($m) use ($scope) { return $m->reduceToAbsolute($scope); }, $this->members);
+		return new self($type, $members, array());
 	}
 }

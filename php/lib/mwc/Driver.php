@@ -52,13 +52,16 @@ class Driver
 		$inputFilesLeft = $this->inputFiles;
 		while ($inputFilesLeft) {
 			$inputFile = array_shift($inputFilesLeft);
-			static::debug("parsing $inputFile");
-			
-			//Load the input file.
-			if (!file_exists($inputFile)) static::error("source file '$inputFile' does not exist");
-			$input = new InputFile($inputFile, $this->buildDir);
-			$input->load();
 			$inputFiles[] = $inputFile;
+			
+			//Create the input file instance.
+			$input = new InputFile($inputFile, $this->buildDir);
+			//if ($input->cacheUpToDate()) continue;
+			
+			//Parse the file.
+			static::debug("parsing $inputFile");
+			if (!file_exists($inputFile)) static::error("source file '$inputFile' does not exist");
+			$input->load();
 			if ($issues->dumpAndCheck()) return;
 			
 			//Parse and process.

@@ -34,6 +34,12 @@ class InputFile extends SourceFile
 		assert(is_array($this->importList));
 	}
 	
+	public function cacheUpToDate()
+	{
+		if (!file_exists($this->letPath())) return false;
+		return filemtime($this->path) < filectime($this->letPath());
+	}
+	
 	public function parse()
 	{
 		global $issues;

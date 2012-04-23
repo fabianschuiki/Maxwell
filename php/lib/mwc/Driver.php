@@ -95,9 +95,12 @@ class Driver
 			if ($issues->dumpAndCheck()) return;
 		}
 		
+		return;
+		
 		//Perform the initial analysis for all files.
 		$specs = array();
 		$nodes = array();
+		$nodesToReanalyze = array();
 		foreach ($inputFiles as $inputFile) {
 			static::debug("analyzing $inputFile");
 			
@@ -135,6 +138,9 @@ class Driver
 			
 			//Keep the specialization requests for later.
 			foreach ($imports as $import) $specs = array_merge($specs, $import->let->specializations);
+			if (count($import->let->specializations)) {
+				
+			}
 			
 			//Disassemble the root scope into individual entities.
 			foreach ($input->let->children() as $node) {

@@ -1,5 +1,6 @@
 <html>
 	<head>
+		<title><?php echo array_shift($let->scope->children())->id; ?></title>
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 		<style><?php @include __DIR__.'/let.css'; ?></style>
 		<script type="text/javascript"><?php @include __DIR__.'/let.js'; ?></script>

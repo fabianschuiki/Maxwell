@@ -172,11 +172,11 @@ abstract class TypedNode extends Node
 	
 	public function niceType() { return $this->type()->details(); }
 	
-	public function unbindFromInterfaces()
+	public function unbindFromInterfaces(Root $root)
 	{
 		$this->constraints = null;
 		$this->typeConstraint = new GenericType;
-		$this->lastConfirmedType = $this->type();
-		return parent::unbindFromInterfaces();
+		$this->lastConfirmedType = new GenericType;
+		return parent::unbindFromInterfaces($root);
 	}
 }

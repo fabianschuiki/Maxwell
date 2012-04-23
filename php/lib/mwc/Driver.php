@@ -95,69 +95,31 @@ class Driver
 			if ($issues->dumpAndCheck()) return;
 		}
 		
-		return;
-		
-		//Perform the initial analysis for all files.
-		$specs = array();
-		$nodes = array();
-		$nodesToReanalyze = array();
+		//Split up the input files into their root entities.
+		$nodeIDs = array();
 		foreach ($inputFiles as $inputFile) {
-			static::debug("analyzing $inputFile");
+			static::debug("splitting $inputFile");
 			
 			$input = new InputFile($inputFile, $this->buildDir);
 			$input->loadCached();
 			if ($issues->dumpAndCheck()) return;
 			
-			//Load the required interfaces.
-			$imports = array();
-			$importedNodes = array();
-			foreach ($input->let->imports as $import) {
-				$path = $input->importList[strval($import->name)];
-				static::debug("- loading interface $path");
-				$f = new ImportedFile($path, $this->buildDir);
-				$f->load();
-				$imports[] = $f;
-				foreach ($f->let->children() as $node) $importedNodes[$node->id] = $node;
-			}
-			if ($issues->dumpAndCheck()) return;
-			
-			foreach ($importedNodes as $id => $node) {
-				$node->bindProxies($importedNodes);
-				$node->bind();
-				$node->reduce();
-				if ($issues->dumpAndCheck()) return;
-				static::debug("  - imported $id: {$node->desc()}");
-			}
-			
-			$input->importedFiles = $imports;
-			
-			//Analyze.
-			$input->analyze();
-			$input->saveLET();
-			if ($issues->dumpAndCheck()) return;
-			
-			//Keep the specialization requests for later.
-			foreach ($imports as $import) $specs = array_merge($specs, $import->let->specializations);
-			if (count($import->let->specializations)) {
-				
-			}
-			
-			//Disassemble the root scope into individual entities.
 			foreach ($input->let->children() as $node) {
 				$root = new \LET\Root;
 				$node->scope = $root->scope;
 				$root->scope->add($node);
+				static::debug("- {$node->id}");
 				
 				$e = new Entity($node->id, $this->buildDir);
 				$e->node = $root;
 				$e->save();
-				$nodes[] = $node->id;
+				$nodeIDs[] = $node->id;
 			}
 		}
 		
 		//Show the specs.
-		if (count($specs)) static::debug("specializations:");
-		foreach ($specs as $spec) static::debug("- {$spec->details()}");
+		/*if (count($specs)) static::debug("specializations:");
+		foreach ($specs as $spec) static::debug("- {$spec->details()}");*/
 	}
 	
 	static public function error($msg) { echo "mwc: $msg\n"; exit(1); }

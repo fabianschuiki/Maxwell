@@ -47,10 +47,4 @@ class ConcreteType_Intf extends ConcreteType
 		$root->specializations[] = $reduced;
 		return $type;
 	}
-	
-	public function unbindFromInterfaces()
-	{
-		\mwc\debug("unbinding {$this->name}\n");
-		return new ConcreteType_Proxy($this->id);
-	}
 }

@@ -55,10 +55,10 @@ class Variable extends TypedNode
 		return $this;
 	}
 	
-	public function unbindFromInterfaces()
+	public function unbindFromInterfaces(Root $root)
 	{
-		if ($this->type()) $this->type = $this->type()->unbindFromInterfaces();
-		return parent::unbindFromInterfaces();
+		if ($this->type) $this->type = $this->type->unbindFromInterfaces($root);
+		return parent::unbindFromInterfaces($root);
 	}
 	
 	public function spawnConstraints(array &$constraints)

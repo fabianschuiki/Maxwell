@@ -24,4 +24,9 @@ class PrimitiveBuiltinType extends BuiltinType
 	{
 		return new TypeExpr($scope, new Ident_Impl($scope, $this->name));
 	}
+	
+	public function unbindFromInterfaces(Root $root)
+	{
+		return $this->reduceToAbsolute($root->scope);
+	}
 }

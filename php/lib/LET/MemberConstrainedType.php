@@ -74,9 +74,10 @@ class MemberConstrainedType extends Type
 		return new self($type, $members, array());
 	}
 	
-	public function unbindFromInterfaces()
+	public function unbindFromInterfaces(Root $root)
 	{
-		if ($this->type) $this->type = $this->type->unbindFromInterfaces();
-		return $this;
+		if ($this->type) $this->type = $this->type->unbindFromInterfaces($root);
+		$this->members = array_map(function($m) use ($root) { return $m->unbindFromInterfaces($root); }, $this->members);
+		return parent::unbindFromInterfaces($root);
 	}
 }

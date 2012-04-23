@@ -48,4 +48,10 @@ abstract class FuncArg extends TypedNode
 	{
 		return new FuncArg_Intf($scope, $this);
 	}
+	
+	public function unbindFromInterfaces(Root $root)
+	{
+		if ($this->type) $this->type = $this->type->unbindFromInterfaces($root);
+		return parent::unbindFromInterfaces($root);
+	}
 }

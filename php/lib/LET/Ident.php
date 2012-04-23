@@ -182,12 +182,16 @@ abstract class Ident extends Expr
 		return new Ident_Impl($scope, $this->name());
 	}
 	
-	public function unbindFromInterfaces()
+	public function unbindFromInterfaces(Root $root)
 	{
-		$this->lastConfirmedTypeConstraint = new GenericType;
+		/*$this->lastConfirmedTypeConstraint = new GenericType;
 		if ($this->boundTo) $this->boundTo = $this->boundTo->unbindFromInterfaces();
 		if ($this->boundNodes) $this->boundNodes = array_map(function($n){ return $n->unbindFromInterfaces(); }, $this->boundNodes);
+		$this->boundNodesCommonType = null;*/
+		if ($this->boundTo) $this->boundTo = $this->boundTo->unbindFromInterfaces($root);
+		$this->boundNodes = null;
 		$this->boundNodesCommonType = null;
-		return parent::unbindFromInterfaces();
+		$this->lastConfirmedTypeConstraint = null;
+		return parent::unbindFromInterfaces($root);
 	}
 }

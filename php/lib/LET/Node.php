@@ -127,7 +127,7 @@ abstract class Node
 	/// Nodes that bind to Funcs and ConcreteTypes should implement this.
 	public function reduceToAbsolute() { throw new \RuntimeException("reduceToAbsolute not implemented for ".get_class($this)); }
 	
-	public function unbindFromInterfaces()
+	public function unbindFromInterfaces(Root $root)
 	{
 		$this->__call('unbindFromInterfaces', func_get_args());
 		return $this;

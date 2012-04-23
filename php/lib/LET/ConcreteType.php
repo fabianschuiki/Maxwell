@@ -81,4 +81,10 @@ abstract class ConcreteType extends Type
 	{
 		return new ConcreteType_Proxy($this->id);
 	}
+	
+	public function unbindFromInterfaces(Root $root)
+	{
+		if ($this->root() === $root) continue;
+		return new ConcreteType_Proxy($this->id);
+	}
 }

@@ -19,14 +19,18 @@ class Entity
 	public function save()
 	{
 		$pth = dirname($this->letPath())."/".str_replace('/', '<fwdslash>', array_pop($this->node->children())->details());
+		$i = 0;
+		do {
+			$apth = $pth.".".$i;
+		} while (file_exists($apth.".intf.html") || file_exists($apth.".let.html"));
 		
 		$reduced = $this->node->reduceToInterface(new \LET\Scope);
 		file_put_contents($this->interfacePath(), serialize($reduced));
-		file_put_contents($pth.".intf.html", \Dump::let($reduced));
+		file_put_contents($apth.".intf.html", \Dump::let($reduced));
 		
 		$this->node->unbindFromInterfaces();
 		file_put_contents($this->letPath(), serialize($this->node));
-		file_put_contents($pth.".let.html", \Dump::let($this->node));
+		file_put_contents($apth.".let.html", \Dump::let($this->node));
 	}
 	
 	public function load()

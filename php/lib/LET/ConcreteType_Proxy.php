@@ -10,6 +10,7 @@ class ConcreteType_Proxy extends ConcreteType
 		parent::__construct();
 		assert(is_string($id) || is_numeric($id));
 		$this->id = $id;
+		$this->resolved = $this;
 	}
 	
 	public function name()    { return "<proxy>"; }
@@ -41,7 +42,10 @@ class ConcreteType_Proxy extends ConcreteType
 	public function reduce()
 	{
 		//\mwc\debug("type proxy {$this->id} asked to reduce\n");
-		assert($this->resolved instanceof ConcreteType_Intf);
+		assert($this->resolved instanceof ConcreteType);
+		/*if (!$this->resolved instanceof ConcreteType_Intf) {
+			throw new \RuntimeException("ConcreteType_Proxy asked to reduce without proper ConcreteType_Intf");
+		}*/
 		return $this->resolved;
 	}
 }

@@ -11,6 +11,10 @@ class Func_Proxy extends Func
 	}
 	
 	public function name() { return "<proxy>"; }
+	public function inputs() { return array(); }
+	public function outputs() { return array(); }
+	public function stmts() { return array(); }
+	public function subscope() { return null; }
 	
 	public function details() { return "@".$this->id; }
 	

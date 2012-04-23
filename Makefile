@@ -2,7 +2,7 @@ MWC=php/bin/mwc
 BUILD_DIR=build
 EXEC=${BUILD_DIR}/mwc
 
-compile: ${EXEC}
+compile: strip ${EXEC}
 
 ${EXEC}: ${BUILD_DIR} source/main.mw
 	${MWC} --debug -o ${EXEC} -b ${BUILD_DIR} source/main.mw

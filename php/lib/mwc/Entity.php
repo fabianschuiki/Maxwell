@@ -18,23 +18,15 @@ class Entity
 	
 	public function save()
 	{
-		//TODO: apply some sort of reduction so that all types and function calls are reduced to proxies.
-		//$absolute = $this->node->reduceToAbsolute(new \LET\Scope);
-		$absolute = $this->node;
-		file_put_contents($this->letPath(), serialize($absolute));
-		
-		$pth = dirname($this->letPath())."/".str_replace('/', '<fwdslash>', $this->node->details());
-		
-		$temp = new \LET\Root;
-		$temp->scope->add($absolute);
-		file_put_contents($pth.".let.html", \Dump::let($temp));
+		$pth = dirname($this->letPath())."/".str_replace('/', '<fwdslash>', array_pop($this->node->children())->details());
 		
 		$reduced = $this->node->reduceToInterface(new \LET\Scope);
 		file_put_contents($this->interfacePath(), serialize($reduced));
+		file_put_contents($pth.".intf.html", \Dump::let($reduced));
 		
-		$temp = new \LET\Root;
-		$temp->scope->add($reduced);
-		file_put_contents($pth.".intf.html", \Dump::let($temp));
+		$this->node->unbindFromInterfaces();
+		file_put_contents($this->letPath(), serialize($this->node));
+		file_put_contents($pth.".let.html", \Dump::let($this->node));
 	}
 	
 	public function load()

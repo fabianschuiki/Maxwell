@@ -171,4 +171,12 @@ abstract class TypedNode extends Node
 	}
 	
 	public function niceType() { return $this->type()->details(); }
+	
+	public function unbindFromInterfaces()
+	{
+		$this->constraints = null;
+		$this->typeConstraint = new GenericType;
+		$this->lastConfirmedType = $this->type();
+		return parent::unbindFromInterfaces();
+	}
 }

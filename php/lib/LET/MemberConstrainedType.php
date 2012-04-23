@@ -73,4 +73,10 @@ class MemberConstrainedType extends Type
 		$members = array_map(function($m) use ($scope) { return $m->reduceToAbsolute($scope); }, $this->members);
 		return new self($type, $members, array());
 	}
+	
+	public function unbindFromInterfaces()
+	{
+		if ($this->type) $this->type = $this->type->unbindFromInterfaces();
+		return $this;
+	}
 }

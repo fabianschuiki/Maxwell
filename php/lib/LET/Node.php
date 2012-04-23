@@ -126,4 +126,10 @@ abstract class Node
 	/// has proxy entities in place of them.
 	/// Nodes that bind to Funcs and ConcreteTypes should implement this.
 	public function reduceToAbsolute() { throw new \RuntimeException("reduceToAbsolute not implemented for ".get_class($this)); }
+	
+	public function unbindFromInterfaces()
+	{
+		$this->__call('unbindFromInterfaces', func_get_args());
+		return $this;
+	}
 }

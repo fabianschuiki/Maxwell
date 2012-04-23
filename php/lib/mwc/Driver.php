@@ -138,8 +138,12 @@ class Driver
 			
 			//Disassemble the root scope into individual entities.
 			foreach ($input->let->children() as $node) {
+				$root = new \LET\Root;
+				$node->scope = $root->scope;
+				$root->scope->add($node);
+				
 				$e = new Entity($node->id, $this->buildDir);
-				$e->node = $node;
+				$e->node = $root;
 				$e->save();
 				$nodes[] = $node->id;
 			}

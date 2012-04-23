@@ -104,6 +104,26 @@ class Driver
 			$input->loadCached();
 			if ($issues->dumpAndCheck()) return;
 			
+			$importedRoots = array();
+			$importedNodes = array();
+			foreach ($input->importList as $name => $path) {
+				$import = new ImportedFile($path, $this->buildDir);
+				$import->load();
+				$importedRoots[] = $import->let;
+				foreach ($import->let->children() as $node) $importedNodes[$node->id] = $node;
+			}
+			
+			$input->let->bindProxies($importedNodes);
+			$input->let->reduce();
+			if ($issues->dumpAndCheck()) return;
+			
+			$input->let->importedRoots = $importedRoots;
+			$input->let->bind();
+			$input->let->reduce();
+			if ($issues->dumpAndCheck()) return;
+			
+			$input->saveLET();
+			
 			foreach ($input->let->children() as $node) {
 				$root = new \LET\Root;
 				$node->scope = $root->scope;
@@ -145,12 +165,13 @@ class Driver
 			
 			$input->importedRoots = $imports;
 			$input->node->bindProxies($nodes);
+			$input->node->reduce();
+			if ($issues->dumpAndCheck()) return;
+			
 			$input->node->bind();
 			$input->node->reduce();
 			if ($issues->dumpAndCheck()) return;
 			
-			//$input->node->bind();
-			//$input->node->reduce();
 			$input->save();
 		}
 		

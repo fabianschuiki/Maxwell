@@ -184,11 +184,13 @@ abstract class Ident extends Expr
 	
 	public function unbindFromInterfaces(Root $root)
 	{
+		\mwc\debug("unbindFromInterfaces ident {$this->name()}, ".count($this->boundNodes)." nodes\n");
 		/*$this->lastConfirmedTypeConstraint = new GenericType;
 		if ($this->boundTo) $this->boundTo = $this->boundTo->unbindFromInterfaces();
 		if ($this->boundNodes) $this->boundNodes = array_map(function($n){ return $n->unbindFromInterfaces(); }, $this->boundNodes);
 		$this->boundNodesCommonType = null;*/
 		if ($this->boundTo) $this->boundTo = $this->boundTo->unbindFromInterfaces($root);
+		if ($this->boundNodes) $this->boundNodes = array_map(function($n) use ($root) { return $n->unbindFromInterfaces($root); }, $this->boundNodes);
 		$this->boundNodes = null;
 		$this->boundNodesCommonType = null;
 		$this->lastConfirmedTypeConstraint = null;

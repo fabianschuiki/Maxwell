@@ -11,6 +11,8 @@ class Func_Spec extends Func
 	
 	public function __construct(Func $original, FuncType $type)
 	{
+		parent::__construct();
+		
 		$subscope = new Scope($original->scope, $this);
 		$inputs = array();
 		$outputs = array();

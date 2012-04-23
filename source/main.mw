@@ -6,5 +6,5 @@ func main
 	var int vx = v.x;
 	var int vy = v.y;
 	
-	var sq = v*v;
+	var int sq = v*v;
 }

@@ -48,4 +48,9 @@ class ConcreteType_Proxy extends ConcreteType
 		}*/
 		return $this->resolved;
 	}
+	
+	public function unbindFromInterfaces(Root $root)
+	{
+		return $this;
+	}
 }

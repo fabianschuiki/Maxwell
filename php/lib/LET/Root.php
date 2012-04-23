@@ -6,6 +6,7 @@ class Root extends Node
 	public $imports;
 	public $importedRoots;
 	public $specializations;
+	public $externalNodes;
 	
 	public function __construct($ast = null)
 	{
@@ -53,5 +54,13 @@ class Root extends Node
 		$r->scope    = $scope;
 		$scope->node = $r;
 		return $r;
+	}
+	
+	public function unbindFromInterfaces()
+	{
+		$this->externalNodes = array();
+		parent::unbindFromInterfaces($this);
+		$this->externalNodes = array_unique($this->externalNodes);
+		return $this;
 	}
 }

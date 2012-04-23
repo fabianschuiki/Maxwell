@@ -19,4 +19,9 @@ class Func_Proxy extends Func
 	public function details() { return "@".$this->id; }
 	
 	public function reduceToAbsolute(Scope $scope) { throw new \RuntimeException("Func_Proxy should never be asked for absolute reduction"); }
+	
+	public function unbindFromInterfaces(Root $root)
+	{
+		return $this;
+	}
 }

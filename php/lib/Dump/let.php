@@ -86,5 +86,8 @@
 		endif;
 	?>
 	
-	<body><?php echo dumpScope($let->scope); ?></body>
+	<body>
+		<?php if ($let->externalNodes) foreach ($let->externalNodes as $id) echo "<div><strong>uses</strong> $id</div>"; ?>
+		<?php echo dumpScope($let->scope); ?>
+	</body>
 </html>

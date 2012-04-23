@@ -29,7 +29,7 @@ class Entity
 		file_put_contents($apth.".intf.html", \Dump::let($reduced));
 		file_put_contents($apth.".let-nice.html", \Dump::let($this->node));
 		
-		$this->node->unbindFromInterfaces($this->node);
+		$this->node->unbindFromInterfaces();
 		file_put_contents($this->letPath(), serialize($this->node));
 		file_put_contents($apth.".let.html", \Dump::let($this->node));
 	}

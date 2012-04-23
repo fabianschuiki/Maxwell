@@ -147,4 +147,11 @@ abstract class Func extends TypedNode
 	{
 		return new Func_Proxy($scope, $this->id);
 	}
+	
+	public function unbindFromInterfaces(Root $root)
+	{
+		if ($this->scope->rootNode() === $root) return parent::unbindFromInterfaces($root);
+		$root->externalNodes[] = $this->id;
+		return new Func_Proxy($this->id);
+	}
 }

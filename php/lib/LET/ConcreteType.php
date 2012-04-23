@@ -84,7 +84,8 @@ abstract class ConcreteType extends Type
 	
 	public function unbindFromInterfaces(Root $root)
 	{
-		if ($this->root() === $root) continue;
+		if ($this->scope->rootNode() === $root) return parent::unbindFromInterfaces($root);
+		$root->externalNodes[] = $this->id;
 		return new ConcreteType_Proxy($this->id);
 	}
 }

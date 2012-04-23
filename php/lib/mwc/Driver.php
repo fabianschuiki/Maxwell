@@ -107,6 +107,7 @@ class Driver
 			foreach ($input->let->children() as $node) {
 				$root = new \LET\Root;
 				$node->scope = $root->scope;
+				$node->subscope->parent = $node->scope;
 				$root->scope->add($node);
 				static::debug("- {$node->id}");
 				
@@ -114,7 +115,17 @@ class Driver
 				$e->node = $root;
 				$e->save();
 				$nodeIDs[] = $node->id;
+				foreach ($root->externalNodes as $id) static::debug("  - uses $id");
 			}
+		}
+		
+		//Iterate through the nodes and analyze each.
+		foreach ($nodeIDs as $id) {
+			static::debug("analyzing $id");
+			
+			$input = new Entity($id, $this->buildDir);
+			//$input->load();
+			if ($issues->dumpAndCheck()) return;
 		}
 		
 		//Show the specs.

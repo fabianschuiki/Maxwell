@@ -22,6 +22,7 @@ class Entity
 		$i = 0;
 		do {
 			$apth = $pth.".".$i;
+			$i++;
 		} while (file_exists($apth.".intf.html") || file_exists($apth.".let.html"));
 		
 		$reduced = $this->node->reduceToInterface(new \LET\Scope);
@@ -39,6 +40,14 @@ class Entity
 		$path = $this->letPath();
 		if (!file_exists($path)) Driver::error("parsed LET should exist at '$path', but does not");
 		$this->node = unserialize(file_get_contents($path));
-		assert($this->node instanceof \LET\Func || $this->node instanceof \LET\ConcreteType);
+		assert($this->node instanceof \LET\Root);
+	}
+	
+	public function loadInterface()
+	{
+		$path = $this->interfacePath();
+		if (!file_exists($path)) Driver::error("interface should exist at '$path', but does not");
+		$this->node = unserialize(file_get_contents($path));
+		assert($this->node instanceof \LET\Root);
 	}
 }

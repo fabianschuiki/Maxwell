@@ -124,8 +124,34 @@ class Driver
 			static::debug("analyzing $id");
 			
 			$input = new Entity($id, $this->buildDir);
-			//$input->load();
+			$input->load();
 			if ($issues->dumpAndCheck()) return;
+			
+			$imports = array();
+			$nodes = array();
+			foreach ($input->node->externalNodes as $eid) {
+				static::debug("- importing $eid");
+				$import = new Entity($eid, $this->buildDir);
+				$import->loadInterface();
+				if ($issues->dumpAndCheck()) return;
+				$imports[] = $import->node;
+				$nodes[$eid] = array_pop($import->node->children());
+			}
+			foreach ($imports as $import) {
+				$import->bindProxies($nodes);
+				$import->reduce();
+			}
+			if ($issues->dumpAndCheck()) return;
+			
+			$input->importedRoots = $imports;
+			$input->node->bindProxies($nodes);
+			$input->node->bind();
+			$input->node->reduce();
+			if ($issues->dumpAndCheck()) return;
+			
+			//$input->node->bind();
+			//$input->node->reduce();
+			$input->save();
 		}
 		
 		//Show the specs.

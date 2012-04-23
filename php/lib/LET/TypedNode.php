@@ -174,7 +174,7 @@ abstract class TypedNode extends Node
 	
 	public function unbindFromInterfaces(Root $root)
 	{
-		$this->constraints = null;
+		$this->constraints = array();
 		$this->typeConstraint = new GenericType;
 		$this->lastConfirmedType = new GenericType;
 		return parent::unbindFromInterfaces($root);

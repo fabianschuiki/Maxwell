@@ -97,6 +97,7 @@ class Driver
 		
 		//Split up the input files into their root entities.
 		$nodeIDs = array();
+		$legend = "";
 		foreach ($inputFiles as $inputFile) {
 			static::debug("splitting $inputFile");
 			
@@ -111,6 +112,11 @@ class Driver
 				$import->load();
 				$importedRoots[] = $import->let;
 				foreach ($import->let->children() as $node) $importedNodes[$node->id] = $node;
+			}
+			foreach ($importedRoots as $root) {
+				$root->bindProxies($importedNodes);
+				$root->reduce();
+				if ($issues->dumpAndCheck()) return;
 			}
 			
 			$input->let->bindProxies($importedNodes);
@@ -130,6 +136,7 @@ class Driver
 				$node->subscope->parent = $node->scope;
 				$root->scope->add($node);
 				static::debug("- {$node->id}");
+				$legend .= "{$node->id}  {$node->desc()}\n";
 				
 				$e = new Entity($node->id, $this->buildDir);
 				$e->node = $root;
@@ -138,6 +145,9 @@ class Driver
 				foreach ($root->externalNodes as $id) static::debug("  - uses $id");
 			}
 		}
+		file_put_contents("{$this->buildDir}/legend.txt", $legend);
+		
+		return;
 		
 		//Iterate through the nodes and analyze each.
 		foreach ($nodeIDs as $id) {

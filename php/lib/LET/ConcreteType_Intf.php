@@ -47,4 +47,9 @@ class ConcreteType_Intf extends ConcreteType
 		$root->specializations[] = $reduced;
 		return $type;
 	}
+	
+	public function registerExternal(Root $root)
+	{
+		$root->externalNodes[] = $this->id;
+	}
 }

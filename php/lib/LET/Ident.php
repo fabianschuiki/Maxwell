@@ -20,6 +20,7 @@ abstract class Ident extends Expr
 			\Analyzer::$stat_bindInVain++;
 		$this->lastConfirmedTypeConstraint = $this->typeConstraint;
 		
+		//\mwc\debug("binding {$this->name()}\n");
 		global $issues;
 		$nodes = $this->scope->find($this->name());
 		$unfiltered = $nodes;
@@ -37,7 +38,10 @@ abstract class Ident extends Expr
 			$nodes = array_filter($nodes, function($node) use ($type) { return $node->type() && (Type::intersect($node->type(), $type) != null); });
 			$tc = $type->details();
 		}
-		//if ($type->isSpecific()) {
+		//foreach ($nodes as $node) \mwc\debug("- found {$node->desc()}\n");
+		
+		//TODO: we need some mature selection scheme for selecting the best node. Maybe some sort of score?
+		if ($type->isSpecific()) {
 			$anySpecific = false;
 			foreach ($nodes as $node) {
 				if ($node->isSpecific()) {
@@ -46,7 +50,7 @@ abstract class Ident extends Expr
 				}
 			}
 			if ($anySpecific) $nodes = array_filter($nodes, function($node) { return $node->isSpecific(); });
-		//}
+		}
 		usort($nodes, function($a,$b){ return 0; });
 		//echo "binding identifier {$this->name()} -> ".count($unfiltered)." nodes, ".count($nodes)." ".($anySpecific ? 'specific' : '')." nodes match type $tc.\n";
 		
@@ -184,13 +188,17 @@ abstract class Ident extends Expr
 	
 	public function unbindFromInterfaces(Root $root)
 	{
-		\mwc\debug("unbindFromInterfaces ident {$this->name()}, ".count($this->boundNodes)." nodes\n");
+		//\mwc\debug("unbindFromInterfaces ident {$this->name()}, ".count($this->boundNodes)." nodes\n");
 		/*$this->lastConfirmedTypeConstraint = new GenericType;
 		if ($this->boundTo) $this->boundTo = $this->boundTo->unbindFromInterfaces();
 		if ($this->boundNodes) $this->boundNodes = array_map(function($n){ return $n->unbindFromInterfaces(); }, $this->boundNodes);
 		$this->boundNodesCommonType = null;*/
-		if ($this->boundTo) $this->boundTo = $this->boundTo->unbindFromInterfaces($root);
-		if ($this->boundNodes) $this->boundNodes = array_map(function($n) use ($root) { return $n->unbindFromInterfaces($root); }, $this->boundNodes);
+		/*if ($this->boundTo) $this->boundTo = $this->boundTo->unbindFromInterfaces($root);
+		if ($this->boundNodes) foreach ($this->boundNodes as $bn) $root->externalNodes[] = $bn->id;*/
+		if ($this->boundTo) $this->boundTo->registerExternal($root);
+		if ($this->boundNodes) foreach ($this->boundNodes as $bn) $bn->registerExternal($root);
+		//if ($this->boundNodes) $this->boundNodes = array_map(function($n) use ($root) { return $n->unbindFromInterfaces($root); }, $this->boundNodes);
+		$this->boundto = null;
 		$this->boundNodes = null;
 		$this->boundNodesCommonType = null;
 		$this->lastConfirmedTypeConstraint = null;

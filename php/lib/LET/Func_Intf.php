@@ -43,4 +43,9 @@ class Func_Intf extends Func
 	public function stmts()    { return array(); }
 	
 	public function reduceToInterface() { throw new \RuntimeExcpetion("Func_Intf should never be asked for reduction"); }
+	
+	public function registerExternal(Root $root)
+	{
+		$root->externalNodes[] = $this->id;
+	}
 }

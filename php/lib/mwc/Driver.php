@@ -147,8 +147,6 @@ class Driver
 		}
 		file_put_contents("{$this->buildDir}/legend.txt", $legend);
 		
-		return;
-		
 		//Iterate through the nodes and analyze each.
 		foreach ($nodeIDs as $id) {
 			static::debug("analyzing $id");

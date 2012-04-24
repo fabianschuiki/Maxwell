@@ -172,6 +172,7 @@ abstract class Type extends Node
 		}
 		
 		if ($a instanceof FuncType && $b instanceof FuncType) {
+			\mwc\debug("    - intersect FuncType {$a->details()} and {$b->details()}\n");
 			$in  = static::intersectTwo($a->in(),  $b->in(),  $scope);
 			$out = static::intersectTwo($a->out(), $b->out(), $scope);
 			if (!$in || !$out) return null;
@@ -183,7 +184,10 @@ abstract class Type extends Node
 			if ($a->name() != $b->name()) return null;
 			return $a;
 		}
-		if ($a instanceof ConcreteType && $b instanceof ConcreteType) return ($a === $b ? $a : null);
+		if ($a instanceof ConcreteType && $b instanceof ConcreteType) {
+			\mwc\debug("      - intersect types {$a->desc()} and {$b->desc()}: ".($a === $b)."\n");
+			return ($a === $b ? $a : null);
+		}
 		return null;
 	}
 	

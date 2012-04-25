@@ -96,7 +96,7 @@ abstract class Type extends Node
 			$scope = $a->scope;
 			$s = $b->scope;
 			while ($s) {
-				if ($s == $scope) {
+				if ($s === $scope) {
 					$scope = $b->scope;
 					break;
 				}
@@ -172,7 +172,7 @@ abstract class Type extends Node
 		}
 		
 		if ($a instanceof FuncType && $b instanceof FuncType) {
-			\mwc\debug("    - intersect FuncType {$a->details()} and {$b->details()}\n");
+			//\mwc\debug("    - intersect FuncType {$a->details()} and {$b->details()}\n");
 			$in  = static::intersectTwo($a->in(),  $b->in(),  $scope);
 			$out = static::intersectTwo($a->out(), $b->out(), $scope);
 			if (!$in || !$out) return null;

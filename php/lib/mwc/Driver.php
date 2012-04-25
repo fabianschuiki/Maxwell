@@ -165,8 +165,7 @@ class Driver
 				if ($issues->dumpAndCheck()) return;
 				$imports[] = $import->node;
 				$entity = array_pop($import->node->children());
-				$entity->tag = "imported";
-				static::debug("  {$entity->desc()}");
+				//static::debug("  {$entity->desc()}");
 				$nodes[$eid] = $entity;
 			}
 			foreach ($imports as $import) {

@@ -89,4 +89,10 @@ class TypeTuple extends Type
 		
 		return $pairs;
 	}
+	
+	
+	public function reduceToAbsolute(Scope $scope)
+	{
+		return new TypeTuple($scope, array_map(function($f) use ($scope) { return $f->reduceToAbsolute($scope); }, $this->fields));
+	}
 }

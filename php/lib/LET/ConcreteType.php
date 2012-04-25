@@ -58,7 +58,7 @@ abstract class ConcreteType extends Type
 			$this->specializations = array();
 		}
 		
-		echo "\033[1mspecializing\033[0m {$this->details()} for {$type->details()}\n";
+		echo "\033[1mspecializing\033[0m {$this->desc()} for {$type->details()}\n";
 		
 		foreach ($type->members as $name => $memberType) {
 			if (!$memberType instanceof MemberConstrainedType) continue;

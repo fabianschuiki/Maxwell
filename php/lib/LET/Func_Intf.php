@@ -42,6 +42,20 @@ class Func_Intf extends Func
 	public function subscope() { return $this->subscope; }
 	public function stmts()    { return array(); }
 	
+	public function specialize(FuncType $type, array &$specializations)
+	{
+		$root = $this->scope->rootNode();
+		assert($root instanceof Root);
+		
+		$reduced = $type->reduceToAbsolute(new Scope);
+		foreach ($root->specializations as $spec) {
+			if (Type::equalTwo($spec, $reduced)) return $type;
+		}
+		
+		$root->specializations[] = $reduced;
+		return $type;
+	}
+	
 	public function reduceToInterface() { throw new \RuntimeExcpetion("Func_Intf should never be asked for reduction"); }
 	
 	public function registerExternal(Root $root)

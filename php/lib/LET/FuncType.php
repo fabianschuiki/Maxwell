@@ -32,4 +32,9 @@ class FuncType extends Type
 	
 	public function children()   { return array($this->in, $this->out); }
 	public function isSpecific() { return $this->in->isSpecific() && $this->out->isSpecific(); }
+	
+	public function reduceToAbsolute(Scope $scope)
+	{
+		return new FuncType($scope, $this->in->reduceToAbsolute($scope), $this->out->reduceToAbsolute($scope));
+	}
 }

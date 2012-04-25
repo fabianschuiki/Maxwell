@@ -32,7 +32,7 @@ abstract class Node
 	///Returns a description of this LET node.
 	public function desc()
 	{
-		$str = $this->kind();
+		$str = /*$this->kind()*/get_class($this);
 		if (method_exists($this, 'details')) {
 			$str .= " {$this->details()}";
 		}

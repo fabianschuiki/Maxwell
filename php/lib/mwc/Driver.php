@@ -126,6 +126,7 @@ class Driver
 			$input->let->importedRoots = $importedRoots;
 			$input->let->bind();
 			$input->let->reduce();
+			$input->let->importedRoots = null;
 			if ($issues->dumpAndCheck()) return;
 			
 			$input->saveLET();
@@ -133,7 +134,7 @@ class Driver
 			foreach ($input->let->children() as $node) {
 				$root = new \LET\Root;
 				$node->scope = $root->scope;
-				$node->subscope->parent = $node->scope;
+				$node->subscope->outer = $node->scope;
 				$root->scope->add($node);
 				static::debug("- {$node->id}");
 				$legend .= "{$node->id}  {$node->desc()}\n";
@@ -163,7 +164,10 @@ class Driver
 				$import->loadInterface();
 				if ($issues->dumpAndCheck()) return;
 				$imports[] = $import->node;
-				$nodes[$eid] = array_pop($import->node->children());
+				$entity = array_pop($import->node->children());
+				$entity->tag = "imported";
+				static::debug("  {$entity->desc()}");
+				$nodes[$eid] = $entity;
 			}
 			foreach ($imports as $import) {
 				$import->bindProxies($nodes);
@@ -171,13 +175,14 @@ class Driver
 			}
 			if ($issues->dumpAndCheck()) return;
 			
-			$input->importedRoots = $imports;
 			$input->node->bindProxies($nodes);
 			$input->node->reduce();
 			if ($issues->dumpAndCheck()) return;
 			
+			$input->node->importedRoots = $imports;
 			$input->node->bind();
 			$input->node->reduce();
+			$input->node->importedRoots = null;
 			if ($issues->dumpAndCheck()) return;
 			
 			$input->save();

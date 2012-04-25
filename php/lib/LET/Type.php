@@ -185,7 +185,7 @@ abstract class Type extends Node
 			return $a;
 		}
 		if ($a instanceof ConcreteType && $b instanceof ConcreteType) {
-			\mwc\debug("      - intersect types {$a->desc()} and {$b->desc()}: ".($a === $b)."\n");
+			//\mwc\debug("      - intersect types {$a->desc()} {$a->tag} and {$b->desc()} {$b->tag}\n");
 			return ($a === $b ? $a : null);
 		}
 		return null;

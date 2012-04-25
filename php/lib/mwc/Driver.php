@@ -179,8 +179,12 @@ class Driver
 			if ($issues->dumpAndCheck()) return;
 			
 			$input->node->importedRoots = $imports;
-			$input->node->bind();
-			$input->node->reduce();
+			/*$input->node->bind();
+			$input->node->reduce();*/
+			$analyzer = new \Analyzer;
+			$analyzer->issues = $issues;
+			$analyzer->root   = $input->node;
+			$analyzer->run();
 			$input->node->importedRoots = null;
 			if ($issues->dumpAndCheck()) return;
 			

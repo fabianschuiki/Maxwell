@@ -49,7 +49,7 @@ abstract class Type extends Node
 			foreach ($a->members as $member => $type) if (!static::equalTwo($type, $b->members[$member])) return false;
 			return true; 
 		}
-		return ($a == $b);
+		return ($a === $b);
 	}
 	
 	/// Finds the largest common type (set, tuple, etc.) among a number of types.

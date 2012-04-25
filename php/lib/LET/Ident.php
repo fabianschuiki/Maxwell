@@ -70,10 +70,12 @@ abstract class Ident extends Expr
 		if (count($nodes)) {
 			$in  = new GenericType;
 			$out = new GenericType;
+			\mwc\debug("finding common node type for {$this->name()}\n");
 			foreach ($nodes as $node) {
 				if (!$node instanceof TypedNode) continue;
 				$nodeType = $node->type();
 				if (!$nodeType instanceof FuncType) continue;
+				\mwc\debug("- {$node->type()->desc()}\n");
 				
 				if ($in  && $nodeType->in())  $in  = Type::intersectTwo($in,  $nodeType->in());
 				if ($out && $nodeType->out()) $out = Type::intersectTwo($out, $nodeType->out());
@@ -85,6 +87,7 @@ abstract class Ident extends Expr
 			} else {
 				$this->boundNodesCommonType = new FuncType($this->scope, $in, $out);
 			}
+			$this->boundNodesCommonType = new GenericType;
 		} else {
 			$this->boundNodesCommonType = null;
 		}

@@ -149,6 +149,7 @@ class Driver
 		file_put_contents("{$this->buildDir}/legend.txt", $legend);
 		
 		//Iterate through the nodes and analyze each.
+		$specs = array();
 		foreach ($nodeIDs as $id) {
 			static::debug("analyzing $id");
 			
@@ -190,12 +191,15 @@ class Driver
 			$input->node->importedRoots = null;
 			if ($issues->dumpAndCheck()) return;
 			
+			foreach ($imports as $import) {
+				if ($import->specializations) $specs = array_merge($specs, $import->specializations);
+			}
 			$input->save();
 		}
 		
 		//Show the specs.
-		/*if (count($specs)) static::debug("specializations:");
-		foreach ($specs as $spec) static::debug("- {$spec->details()}");*/
+		if (count($specs)) static::debug("specializations:");
+		foreach ($specs as $spec) static::debug("- {$spec->details()}");
 	}
 	
 	static public function error($msg) { echo "mwc: $msg\n"; exit(1); }

@@ -205,7 +205,10 @@ abstract class Ident extends Expr
 		//if ($this->boundTo) $this->boundTo->registerExternal($root);
 		//if ($this->boundNodes) foreach ($this->boundNodes as $bn) $bn->registerExternal($root);
 		//if ($this->boundNodes) $this->boundNodes = array_map(function($n) use ($root) { return $n->unbindFromInterfaces($root); }, $this->boundNodes);
-		$this->boundTo = null;
+		
+		if ($this->boundTo) $this->boundTo = $this->boundTo->unbindFromInterfaces($root);
+		
+		//$this->boundTo = null;
 		$this->boundNodes = null;
 		$this->boundNodesCommonType = null;
 		$this->lastConfirmedTypeConstraint = null;

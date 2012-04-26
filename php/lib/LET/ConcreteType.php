@@ -88,4 +88,10 @@ abstract class ConcreteType extends Type
 		$root->externalNodes[] = $this->id;
 		return new ConcreteType_Proxy($this->id);
 	}
+	
+	public function gatherExternalNodeIDs(array &$ids)
+	{
+		$ids[] = $this->id;
+		parent::gatherExternalNodeIDs($ids);
+	}
 }

@@ -96,18 +96,18 @@ class Scope
 		}
 		
 		$imported = array();
-		if ($this->node) echo "  - node is ".get_class($this->node)."\n";
+		//if ($this->node) echo "  - node is ".get_class($this->node)."\n";
 		if ($this->node instanceof Root && is_array($this->node->importedRoots)) {
-			echo "  - consulting imported roots\n";
+			//echo "  - consulting imported roots\n";
 			foreach ($this->node->importedRoots as $root) {
 				$imported = array_merge($imported, $root->scope->find($name, true, true));
 			}
-			if ($imported) {
+			/*if ($imported) {
 				\mwc\debug(count($imported)." imported nodes named '$name' found\n");
 				foreach ($imported as $imp) {
 					\mwc\debug("- ".$imp->desc()."\n");
 				}
-			}
+			}*/
 		}
 		
 		$nodes = array_merge(

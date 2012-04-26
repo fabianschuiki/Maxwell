@@ -179,7 +179,6 @@ class Driver
 			if ($issues->dumpAndCheck()) return;
 			
 			$input->node->importedRoots = array_map(function($i){ return $i->node; }, $externalEntities);
-			echo "$id has ".count($input->node->importedRoots)." imported roots\n";
 			$analyzer = new \Analyzer;
 			$analyzer->issues = $issues;
 			$analyzer->root   = $input->node;

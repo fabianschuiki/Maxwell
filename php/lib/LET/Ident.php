@@ -20,7 +20,7 @@ abstract class Ident extends Expr
 			\Analyzer::$stat_bindInVain++;
 		$this->lastConfirmedTypeConstraint = $this->typeConstraint;
 		
-		\mwc\debug("- binding {$this->name()}\n");
+		//\mwc\debug("- binding {$this->name()}\n");
 		global $issues;
 		$nodes = $this->scope->find($this->name());
 		$unfiltered = $nodes;
@@ -35,9 +35,9 @@ abstract class Ident extends Expr
 		$type = $this->typeConstraint;
 		$tc = '?';
 		if ($type) {
-			\mwc\debug("  - with {$type->desc()}\n");
+			//\mwc\debug("  - with {$type->desc()}\n");
 			$nodes = array_filter($nodes, function($node) use ($type) { return $node->type() && (Type::intersect($node->type(), $type) != null); });
-			\mwc\debug("  - ".count($unfiltered)." found, ".count($nodes)." filtered\n");
+			//\mwc\debug("  - ".count($unfiltered)." found, ".count($nodes)." filtered\n");
 			$tc = $type->details();
 		}
 		//foreach ($nodes as $node) \mwc\debug("  - found {$node->desc()}\n");

@@ -29,4 +29,8 @@ class PrimitiveBuiltinType extends BuiltinType
 	{
 		return $this->reduceToAbsolute($root->scope);
 	}
+	
+	public function gatherExternalNodeIDs(array &$ids)
+	{
+	}
 }

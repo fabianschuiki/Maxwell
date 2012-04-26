@@ -127,6 +127,13 @@ abstract class Call extends Expr
 		if ($callee && $callee->boundTo) return $callee->boundTo;
 		return null;
 	}
+	
+	public function gatherExternalNodeIDs(array &$ids)
+	{
+		$callee = $this->callee();
+		assert($callee);
+		if ($callee->boundNodes) foreach ($callee->boundNodes as $func) $func->gatherExternalNodeIDs($ids);
+	}
 }
 
 class CallTypeProxy extends TypedNode

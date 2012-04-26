@@ -88,7 +88,7 @@ class Analyzer
 		
 			//Build the specializations.
 			$specializations = $this->buildSpecializations($this->root->children());
-			mwc\debug("built ".count($specializations)." specializations\n");
+			//mwc\debug("built ".count($specializations)." specializations\n");
 			if ($this->issues->isFatal()) return;
 			//letDumpNPause();
 			
@@ -115,7 +115,7 @@ class Analyzer
 	public function __call($name, $args)
 	{
 		if (count($args) >= 1 && is_array($args[0])) {
-			mwc\debug("-> \033[32;1m{$name}\033[0m\n");
+			//mwc\debug("-> \033[32;1m{$name}\033[0m\n");
 			foreach ($args[0] as $node)	call_user_func_array(array($node, $name), array_slice($args, 1));
 			return;
 		}
@@ -148,7 +148,7 @@ class Analyzer
 	
 	private function inferTypes(array $nodes)
 	{
-		mwc\debug("-> \033[32;1minferTypes\033[0m\n");
+		//mwc\debug("-> \033[32;1minferTypes\033[0m\n");
 		
 		$constraints = $this->spawnConstraints($nodes);
 		//foreach ($constraints as $c) echo "unordered constraint {$c->details()}\n";
@@ -199,7 +199,7 @@ class Analyzer
 	
 	private function buildSpecializations(array $nodes)
 	{
-		mwc\debug("-> \033[32;1mbuildSpecializations\033[0m\n");
+		//mwc\debug("-> \033[32;1mbuildSpecializations\033[0m\n");
 		
 		$specializations = array();
 		foreach ($nodes as $node) {

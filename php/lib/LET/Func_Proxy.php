@@ -49,4 +49,9 @@ class Func_Proxy extends Func
 	{
 		return $this;
 	}
+	
+	public function gatherExternalNodeIDs(array &$ids)
+	{
+		$ids[] = $this->id;
+	}
 }

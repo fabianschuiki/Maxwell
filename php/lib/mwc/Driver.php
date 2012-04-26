@@ -143,7 +143,7 @@ class Driver
 				$e->node = $root;
 				$e->save();
 				$nodeIDs[] = $node->id;
-				foreach ($root->externalNodes as $id) static::debug("  - uses $id");
+				//foreach ($root->externalNodes as $id) static::debug("  - uses $id");
 			}
 		}
 		file_put_contents("{$this->buildDir}/legend.txt", $legend);
@@ -155,46 +155,41 @@ class Driver
 			
 			$input = new Entity($id, $this->buildDir);
 			$input->load();
+			$input->loadExternalNodeIDs();
 			if ($issues->dumpAndCheck()) return;
 			
-			$imports = array();
-			$nodes = array();
-			foreach ($input->node->externalNodes as $eid) {
+			$externalEntities = array();
+			$externalNodes = array();
+			foreach ($input->externalNodeIDs as $eid) {
 				static::debug("- importing $eid");
-				$import = new Entity($eid, $this->buildDir);
-				$import->loadInterface();
-				$import->loadSpecs();
-				$imports[] = $import;
-				
-				$entity = array_pop($import->node->children());
-				//static::debug("  {$entity->desc()}");
-				$nodes[$eid] = $entity;
+				$e = new Entity($eid, $this->buildDir);
+				$e->loadInterface();
+				$e->loadSpecs();
+				$externalEntities[] = $e;
+				$externalNodes[$eid] = array_pop($e->node->children());
 			}
-			foreach ($imports as $import) {
-				$import->node->bindProxies($nodes);
-				$import->node->reduce();
+			foreach ($externalEntities as $entity) {
+				$entity->node->bindProxies($externalNodes);
+				$entity->node->reduce();
 			}
 			if ($issues->dumpAndCheck()) return;
 			
-			$input->node->bindProxies($nodes);
+			$input->node->bindProxies($externalNodes);
 			$input->node->reduce();
 			if ($issues->dumpAndCheck()) return;
 			
-			$input->node->importedRoots = array_map(function($i){ return $i->node; }, $imports);
-			/*$input->node->bind();
-			$input->node->reduce();*/
-			
+			$input->node->importedRoots = array_map(function($i){ return $i->node; }, $externalEntities);
+			echo "$id has ".count($input->node->importedRoots)." imported roots\n";
 			$analyzer = new \Analyzer;
 			$analyzer->issues = $issues;
 			$analyzer->root   = $input->node;
 			$analyzer->run();
-			
 			$input->node->importedRoots = null;
 			if ($issues->dumpAndCheck()) return;
 			
-			foreach ($imports as $import) {
-				$import->saveSpecs();
-				if ($import->node->specializations) $specs = array_merge($specs, $import->node->specializations);
+			foreach ($externalEntities as $entity) {
+				$entity->saveSpecs();
+				if ($entity->node->specializations) $specs = array_merge($specs, $entity->node->specializations);
 			}
 			$input->save();
 		}

@@ -53,4 +53,9 @@ class ConcreteType_Proxy extends ConcreteType
 	{
 		return $this;
 	}
+	
+	public function gatherExternalNodeIDs(array &$ids)
+	{
+		$ids[] = $this->id;
+	}
 }

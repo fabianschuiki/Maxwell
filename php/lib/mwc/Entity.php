@@ -6,19 +6,24 @@ class Entity
 	public $id;
 	public $basePath;
 	public $node;
+	public $externalNodeIDs;
 	
 	public function __construct($id, $buildDir)
 	{
 		$this->id       = $id;
 		$this->basePath = "$buildDir/$id";
+		$this->externalNodeIDs = array();
 	}
 	
 	public function letPath()       { return $this->basePath.".let"; }
 	public function interfacePath() { return $this->basePath.".intf"; }
 	public function specsPath()     { return $this->basePath.".specs"; }
+	public function externalsPath() { return $this->basePath.".extern"; }
 	
 	public function save()
 	{
+		$this->saveExternalNodeIDs();
+		
 		$pth = dirname($this->letPath())."/".str_replace('/', '<fwdslash>', array_pop($this->node->children())->details());
 		$i = 0;
 		do {
@@ -63,5 +68,20 @@ class Entity
 	public function saveSpecs()
 	{
 		file_put_contents($this->specsPath(), serialize($this->node->specializations));
+	}
+	
+	public function saveExternalNodeIDs()
+	{
+		$ids = array();
+		$this->node->gatherExternalNodeIDs($ids);
+		$uids = array_unique($ids);
+		file_put_contents($this->externalsPath(), serialize($uids));
+	}
+	
+	public function loadExternalNodeIDs()
+	{
+		$path = $this->externalsPath();
+		if (!file_exists($path)) return;
+		$this->externalNodeIDs = unserialize(file_get_contents($path));
 	}
 }

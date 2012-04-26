@@ -20,7 +20,7 @@ abstract class Ident extends Expr
 			\Analyzer::$stat_bindInVain++;
 		$this->lastConfirmedTypeConstraint = $this->typeConstraint;
 		
-		//\mwc\debug("- binding {$this->name()}\n");
+		\mwc\debug("- binding {$this->name()}\n");
 		global $issues;
 		$nodes = $this->scope->find($this->name());
 		$unfiltered = $nodes;
@@ -35,9 +35,9 @@ abstract class Ident extends Expr
 		$type = $this->typeConstraint;
 		$tc = '?';
 		if ($type) {
-			//\mwc\debug("  - with {$type->desc()}\n");
+			\mwc\debug("  - with {$type->desc()}\n");
 			$nodes = array_filter($nodes, function($node) use ($type) { return $node->type() && (Type::intersect($node->type(), $type) != null); });
-			//\mwc\debug("  - ".count($unfiltered)." found, ".count($nodes)." filtered\n");
+			\mwc\debug("  - ".count($unfiltered)." found, ".count($nodes)." filtered\n");
 			$tc = $type->details();
 		}
 		//foreach ($nodes as $node) \mwc\debug("  - found {$node->desc()}\n");
@@ -58,9 +58,10 @@ abstract class Ident extends Expr
 		
 		$boundTo = $this->boundTo; //WARNING: this might be an ugly hack. Haven't considered all implications. Should prevent bound identifiers from losing their binding.
 		if (count($nodes) == 0 && count($unfiltered) > 0) {
+			$cands = implode("\n", array_map(function($c){ return $c->details(); }, $unfiltered));
 			$issues[] = new \Issue(
 				'error',
-				"No entity named '{$this->name()}' is of type '{$type->details()}'. Candidates are:",
+				"No entity named '{$this->name()}' is of type '{$type->details()}'. Candidates are:\n$cands",
 				$this,
 				$unfiltered
 			);
@@ -204,10 +205,17 @@ abstract class Ident extends Expr
 		if ($this->boundTo) $this->boundTo->registerExternal($root);
 		if ($this->boundNodes) foreach ($this->boundNodes as $bn) $bn->registerExternal($root);
 		//if ($this->boundNodes) $this->boundNodes = array_map(function($n) use ($root) { return $n->unbindFromInterfaces($root); }, $this->boundNodes);
-		$this->boundto = null;
+		$this->boundTo = null;
 		$this->boundNodes = null;
 		$this->boundNodesCommonType = null;
 		$this->lastConfirmedTypeConstraint = null;
 		return parent::unbindFromInterfaces($root);
 	}
+	
+	/*public function gatherExternalNodeIDs(array &$ids)
+	{
+		echo "gathering for ident {$this->name()}\n";
+		if ($this->boundTo) $this->boundTo->gatherExternalNodeIDs($ids);
+		if ($this->boundNodes) foreach ($this->boundNodes as $bn) $bn->gatherExternalNodeIDs($ids);
+	}*/
 }

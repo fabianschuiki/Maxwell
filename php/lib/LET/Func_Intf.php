@@ -63,4 +63,9 @@ class Func_Intf extends Func
 	{
 		$root->externalNodes[] = $this->id;
 	}
+	
+	public function gatherExternalNodeIDs(array &$ids)
+	{
+		$ids[] = $this->id;
+	}
 }

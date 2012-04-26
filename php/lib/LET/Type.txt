@@ -1,5 +1,0 @@
-Type
-- Concrete (type definition with its members)
-- Tuple
-- Set
-- Func (function type, consisting of two tuples)

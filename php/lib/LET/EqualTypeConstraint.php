@@ -62,7 +62,7 @@ class EqualTypeConstraint extends Constraint
 	
 	public function impose()
 	{
-		\mwc\debug("\033[1;35mconstraint\033[0m {$this->details()} ".($this->isSpecific() ? '<specific!>' : '')."\n");
+		//\mwc\debug("\033[1;35mconstraint\033[0m {$this->details()} ".($this->isSpecific() ? '<specific!>' : '')."\n");
 		
 		$types = array_map(function($node){ return $node->type(); }, $this->nodes);
 		if (in_array(null, $types, true)) {

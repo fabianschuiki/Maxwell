@@ -132,4 +132,7 @@ abstract class Node
 		$this->__call('unbindFromInterfaces', func_get_args());
 		return $this;
 	}
+	
+	/// Entities that use external nodes should fill in the used external node IDs.
+	public function gatherExternalNodeIDs(array &$ids) {	foreach ($this->children() as $node) $node->gatherExternalNodeIDs($ids); }
 }

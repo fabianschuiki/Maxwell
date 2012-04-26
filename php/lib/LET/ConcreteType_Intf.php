@@ -40,11 +40,12 @@ class ConcreteType_Intf extends ConcreteType
 		assert($root instanceof Root);
 		
 		$reduced = $type->reduceToAbsolute(new Scope);
-		foreach ($root->specializations as $spec) {
+		foreach ($root->specializations as $id => $spec) {
 			if (Type::equalTwo($spec, $reduced)) return $type;
 		}
 		
-		$root->specializations[] = $reduced;
+		$id = trim(`uuidgen`);
+		$root->specializations[$id] = $reduced;
 		return $type;
 	}
 	

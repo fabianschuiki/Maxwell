@@ -163,15 +163,16 @@ class Driver
 				static::debug("- importing $eid");
 				$import = new Entity($eid, $this->buildDir);
 				$import->loadInterface();
-				if ($issues->dumpAndCheck()) return;
-				$imports[] = $import->node;
+				$import->loadSpecs();
+				$imports[] = $import;
+				
 				$entity = array_pop($import->node->children());
 				//static::debug("  {$entity->desc()}");
 				$nodes[$eid] = $entity;
 			}
 			foreach ($imports as $import) {
-				$import->bindProxies($nodes);
-				$import->reduce();
+				$import->node->bindProxies($nodes);
+				$import->node->reduce();
 			}
 			if ($issues->dumpAndCheck()) return;
 			
@@ -179,7 +180,7 @@ class Driver
 			$input->node->reduce();
 			if ($issues->dumpAndCheck()) return;
 			
-			$input->node->importedRoots = $imports;
+			$input->node->importedRoots = array_map(function($i){ return $i->node; }, $imports);
 			/*$input->node->bind();
 			$input->node->reduce();*/
 			
@@ -192,14 +193,15 @@ class Driver
 			if ($issues->dumpAndCheck()) return;
 			
 			foreach ($imports as $import) {
-				if ($import->specializations) $specs = array_merge($specs, $import->specializations);
+				$import->saveSpecs();
+				if ($import->node->specializations) $specs = array_merge($specs, $import->node->specializations);
 			}
 			$input->save();
 		}
 		
 		//Show the specs.
 		if (count($specs)) static::debug("specializations:");
-		foreach ($specs as $spec) static::debug("- {$spec->details()}");
+		foreach ($specs as $id => $spec) static::debug("- $id: {$spec->details()}");
 	}
 	
 	static public function error($msg) { echo "mwc: $msg\n"; exit(1); }

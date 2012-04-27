@@ -146,133 +146,140 @@ class Driver
 				//foreach ($root->externalNodes as $id) static::debug("  - uses $id");
 			}
 		}
-		file_put_contents("{$this->buildDir}/legend.txt", $legend);
 		
 		//Iterate through the nodes and analyze each.
-		$specs = array();
-		foreach ($nodeIDs as $id) {
-			static::debug("analyzing $id");
-			
-			$input = new Entity($id, $this->buildDir);
-			$input->load();
-			$input->loadExternalNodeIDs();
-			if ($issues->dumpAndCheck()) return;
-			
-			$externalEntities = array();
-			$externalNodes = array();
-			foreach ($input->externalNodeIDs as $eid) {
-				static::debug("- importing $eid");
-				$e = new Entity($eid, $this->buildDir);
-				$e->loadInterface();
-				$e->loadSpecs();
-				$externalEntities[] = $e;
-				$externalNodes[$eid] = array_pop($e->node->children());
-			}
-			foreach ($externalEntities as $entity) {
-				$entity->node->bindProxies($externalNodes);
-				$entity->node->reduce();
-			}
-			if ($issues->dumpAndCheck()) return;
-			
-			$input->node->bindProxies($externalNodes);
-			$input->node->reduce();
-			if ($issues->dumpAndCheck()) return;
-			
-			$input->node->importedRoots = array_map(function($i){ return $i->node; }, $externalEntities);
-			$analyzer = new \Analyzer;
-			$analyzer->issues = $issues;
-			$analyzer->root   = $input->node;
-			$analyzer->run();
-			$input->node->importedRoots = null;
-			if ($issues->dumpAndCheck()) return;
-			
-			foreach ($externalEntities as $entity) {
-				$entity->saveSpecs();
-				if ($entity->node->specializations) $specs = array_merge($specs, $entity->node->specializations);
-			}
-			$input->save();
-		}
-		
-		//Show the specs.
-		if (count($specs)) static::debug("specializations:");
-		foreach ($specs as $id => $spec) static::debug("- $id: {$spec->details()}");
-		
-		//Sort the specializations according to the type they specialize.
-		$sortedSpecs = array();
-		foreach ($specs as $id => $spec) $sortedSpecs[$spec->originalID][$id] = $spec;
-		
-		//Specialize the required nodes.
-		foreach ($sortedSpecs as $id => $nodeSpecs) {
-			static::say("specializing $id");
-			
-			//This is just a dumb copy of above. This will be merged into the analysis stage.
-			$input = new Entity($id, $this->buildDir);
-			$input->load();
-			$input->loadExternalNodeIDs();
-			if ($issues->dumpAndCheck()) return;
-			
-			//Load additional node IDs that might be required by the specialization.
-			$externalNodeIDs = $input->externalNodeIDs;
-			foreach ($nodeSpecs as $specID => $spec)	$spec->gatherExternalNodeIDs($externalNodeIDs);
-			$externalNodeIDs = array_unique(array_diff($externalNodeIDs, array($id)));
-			
-			//Import external nodes.
-			$externalEntities = array();
-			$externalNodes = array($id => $input->mainNode());
-			foreach ($externalNodeIDs as $eid) {
-				$e = new Entity($eid, $this->buildDir);
-				$e->loadInterface();
-				$externalEntities[] = $e;
-				$externalNodes[$eid] = $e->mainNode();
-				static::debug("- imported $eid  {$e->mainNode()->desc()}");
-			}
-			foreach ($externalEntities as $entity) {
-				$entity->node->bindProxies($externalNodes);
-				$entity->node->reduce();
-			}
-			if ($issues->dumpAndCheck()) return;
-			
-			$input->node->bindProxies($externalNodes);
-			$input->node->reduce();
-			if ($issues->dumpAndCheck()) return;
-			//<- until here
-			
-			//Specialize.
-			$specializedNodes = array();
-			foreach ($nodeSpecs as $specID => $spec) {
-				$spec->bindProxies($externalNodes);
-				$spec->reduce();
+		do {
+			pause();
+			file_put_contents("{$this->buildDir}/legend.txt", $legend);
+			$specs = array();
+			foreach ($nodeIDs as $id) {
+				static::debug("analyzing $id");
+				
+				$input = new Entity($id, $this->buildDir);
+				$input->load();
+				$input->loadExternalNodeIDs();
 				if ($issues->dumpAndCheck()) return;
 				
-				$spec->bind();
-				$spec->reduce();
-				if ($issues->dumpAndCheck()) return;
-				
-				static::debug("- {$spec->details()}  @$specID");
-				$result = null;
-				if ($spec instanceof \LET\MemberConstrainedType) {
-					$result = $input->mainNode()->specialize($spec, $specializedNodes);
-				} else if ($spec instanceof \LET\FuncType) {
-					$result = $input->mainNode()->specialize($spec, $specializedNodes);
-				} else {
-					static::error("specialization ".get_class($spec)." not supported");
+				$externalEntities = array();
+				$externalNodes = array();
+				foreach ($input->externalNodeIDs as $eid) {
+					static::debug("- importing $eid");
+					$e = new Entity($eid, $this->buildDir);
+					$e->loadInterface();
+					$e->loadSpecs();
+					$externalEntities[] = $e;
+					$externalNodes[$eid] = array_pop($e->node->children());
 				}
-				assert($result);
-				$result->id = $specID;
-				static::debug("  => {$result->desc()}");
+				foreach ($externalEntities as $entity) {
+					$entity->node->bindProxies($externalNodes);
+					$entity->node->reduce();
+				}
+				if ($issues->dumpAndCheck()) return;
 				
-				//Create the new node file for the specialization.
-				$root = new \LET\Root;
-				$result->scope = $root->scope;
-				$result->subscope->outer = $result->scope;
-				$root->scope->add($result);
+				$input->node->bindProxies($externalNodes);
+				$input->node->reduce();
+				if ($issues->dumpAndCheck()) return;
 				
-				$e = new Entity($result->id, $this->buildDir);
-				$e->node = $root;
-				$e->save();
-				$nodeIDs[] = $result->id;
+				$input->node->importedRoots = array_map(function($i){ return $i->node; }, $externalEntities);
+				$analyzer = new \Analyzer;
+				$analyzer->issues = $issues;
+				$analyzer->root   = $input->node;
+				$analyzer->run();
+				$input->node->importedRoots = null;
+				if ($issues->dumpAndCheck()) return;
+				
+				foreach ($externalEntities as $entity) {
+					$entity->saveSpecs();
+					if ($entity->node->specializations) $specs = array_merge($specs, $entity->node->specializations);
+				}
+				$input->save();
 			}
-		}
+			
+			//Filter the specializations to exclude the ones that already exist.
+			foreach ($specs as $id => $spec) if (in_array($id, $nodeIDs)) unset($specs[$id]);
+			
+			//Show the specs.
+			if (count($specs)) static::debug("specializations:");
+			foreach ($specs as $id => $spec) static::debug("- $id: {$spec->details()}");
+			
+			//Sort the specializations according to the type they specialize.
+			$sortedSpecs = array();
+			foreach ($specs as $id => $spec) $sortedSpecs[$spec->originalID][$id] = $spec;
+			
+			//Specialize the required nodes.
+			foreach ($sortedSpecs as $id => $nodeSpecs) {
+				static::say("specializing $id");
+				
+				//This is just a dumb copy of above. This will be merged into the analysis stage.
+				$input = new Entity($id, $this->buildDir);
+				$input->load();
+				$input->loadExternalNodeIDs();
+				if ($issues->dumpAndCheck()) return;
+				
+				//Load additional node IDs that might be required by the specialization.
+				$externalNodeIDs = $input->externalNodeIDs;
+				foreach ($nodeSpecs as $specID => $spec)	$spec->gatherExternalNodeIDs($externalNodeIDs);
+				$externalNodeIDs = array_unique(array_diff($externalNodeIDs, array($id)));
+				
+				//Import external nodes.
+				$externalEntities = array();
+				$externalNodes = array($id => $input->mainNode());
+				foreach ($externalNodeIDs as $eid) {
+					$e = new Entity($eid, $this->buildDir);
+					$e->loadInterface();
+					$externalEntities[] = $e;
+					$externalNodes[$eid] = $e->mainNode();
+					static::debug("- imported $eid  {$e->mainNode()->desc()}");
+				}
+				foreach ($externalEntities as $entity) {
+					$entity->node->bindProxies($externalNodes);
+					$entity->node->reduce();
+				}
+				if ($issues->dumpAndCheck()) return;
+				
+				$input->node->bindProxies($externalNodes);
+				$input->node->reduce();
+				if ($issues->dumpAndCheck()) return;
+				//<- until here
+				
+				//Specialize.
+				$specializedNodes = array();
+				foreach ($nodeSpecs as $specID => $spec) {
+					$spec->bindProxies($externalNodes);
+					$spec->reduce();
+					if ($issues->dumpAndCheck()) return;
+					
+					$spec->bind();
+					$spec->reduce();
+					if ($issues->dumpAndCheck()) return;
+					
+					static::debug("- {$spec->details()}  @$specID");
+					$result = null;
+					if ($spec instanceof \LET\MemberConstrainedType) {
+						$result = $input->mainNode()->specialize($spec, $specializedNodes);
+					} else if ($spec instanceof \LET\FuncType) {
+						$result = $input->mainNode()->specialize($spec, $specializedNodes);
+					} else {
+						static::error("specialization ".get_class($spec)." not supported");
+					}
+					assert($result);
+					$result->id = $specID;
+					static::debug("  => {$result->desc()}");
+					
+					//Create the new node file for the specialization.
+					$root = new \LET\Root;
+					$result->scope = $root->scope;
+					$result->subscope->outer = $result->scope;
+					$root->scope->add($result);
+					$legend .= "{$result->id}  {$result->desc()}\n";
+					
+					$e = new Entity($result->id, $this->buildDir);
+					$e->node = $root;
+					$e->save();
+					$nodeIDs[] = $result->id;
+				}
+			}
+		} while (count($specs));
 	}
 	
 	static public function error($msg) { echo "mwc: $msg\n"; exit(1); }
@@ -285,4 +292,9 @@ function debug($msg)
 	global $debugMode;
 	if (!$debugMode) return;
 	echo $msg;
+}
+
+function pause()
+{
+	readline("[\033[36mpaused - press enter to continue\033[0m]");
 }

@@ -35,6 +35,12 @@ class TypeTuple extends Type
 		return true;
 	}
 	
+	public function reduce()
+	{
+		$this->fields = array_map(function($f){ return $f->reduce(); }, $this->fields);
+		return $this;
+	}
+	
 	static public function fieldPairs($a, $b)
 	{
 		$pairs = array();

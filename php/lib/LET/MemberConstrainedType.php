@@ -31,7 +31,8 @@ class MemberConstrainedType extends Type
 	
 	public function reduce()
 	{
-		if ($this->type) $this->type = $this->type->reduce();
+		$this->type = $this->type->reduce();
+		$this->members = array_map(function($m){ return $m->reduce(); }, $this->members);
 		//echo "reducing {$this->desc()} to {$this->type->desc()}\n";
 		if ($this->type instanceof ConcreteType && $this->type->isSpecific()) return $this->type;
 		if ($this->type instanceof ConcreteType) {

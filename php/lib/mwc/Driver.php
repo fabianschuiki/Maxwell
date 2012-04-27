@@ -196,6 +196,60 @@ class Driver
 		//Show the specs.
 		if (count($specs)) static::debug("specializations:");
 		foreach ($specs as $id => $spec) static::debug("- $id: {$spec->details()}");
+		
+		//Sort the specializations according to the type they specialize.
+		$sortedSpecs = array();
+		foreach ($specs as $id => $spec) $sortedSpecs[$spec->originalID][$id] = $spec;
+		
+		//Specialize the required nodes.
+		foreach ($sortedSpecs as $id => $nodeSpecs) {
+			static::say("specializing $id");
+			
+			//This is just a dumb copy of above. This will be merged into the analysis stage.
+			$input = new Entity($id, $this->buildDir);
+			$input->load();
+			$input->loadExternalNodeIDs();
+			if ($issues->dumpAndCheck()) return;
+			
+			//Load additional node IDs that might be required by the specialization.
+			$externalNodeIDs = $input->externalNodeIDs;
+			foreach ($nodeSpecs as $specID => $spec)	$spec->gatherExternalNodeIDs($externalNodeIDs);
+			$externalNodeIDs = array_unique(array_diff($externalNodeIDs, array($id)));
+			
+			//Import external nodes.
+			$externalEntities = array();
+			$externalNodes = array($id => array_pop($input->node->children()));
+			foreach ($externalNodeIDs as $eid) {
+				static::debug("- importing $eid");
+				$e = new Entity($eid, $this->buildDir);
+				$e->loadInterface();
+				$externalEntities[] = $e;
+				$externalNodes[$eid] = array_pop($e->node->children());
+			}
+			foreach ($externalEntities as $entity) {
+				$entity->node->bindProxies($externalNodes);
+				$entity->node->reduce();
+			}
+			if ($issues->dumpAndCheck()) return;
+			
+			$input->node->bindProxies($externalNodes);
+			$input->node->reduce();
+			if ($issues->dumpAndCheck()) return;
+			//<- until here
+			
+			//Bind the specs proxies.
+			foreach ($nodeSpecs as $specID => $spec) {
+				$spec->bindProxies($externalNodes);
+				$spec->reduce();
+				if ($issues->dumpAndCheck()) return;
+				
+				$spec->bind();
+				$spec->reduce();
+				if ($issues->dumpAndCheck()) return;
+				
+				echo "- $specID became {$spec->desc()}\n";
+			}
+		}
 	}
 	
 	static public function error($msg) { echo "mwc: $msg\n"; exit(1); }

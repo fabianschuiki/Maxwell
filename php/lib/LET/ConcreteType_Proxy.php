@@ -36,7 +36,7 @@ class ConcreteType_Proxy extends ConcreteType
 		}
 		
 		$resolved = $nodes[$this->id];
-		assert($resolved instanceof ConcreteType_Intf);
+		assert($resolved instanceof ConcreteType);
 		
 		$this->resolved = $resolved;
 	}

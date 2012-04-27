@@ -48,6 +48,7 @@ class Func_Intf extends Func
 		assert($root instanceof Root);
 		
 		$reduced = $type->reduceToAbsolute(new Scope);
+		$reduced->originalID = $this->id;
 		foreach ($root->specializations as $id => $spec) {
 			if (Type::equalTwo($spec, $reduced)) return $type;
 		}

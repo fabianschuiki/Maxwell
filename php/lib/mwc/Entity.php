@@ -74,7 +74,7 @@ class Entity
 	{
 		$ids = array();
 		$this->node->gatherExternalNodeIDs($ids);
-		$uids = array_unique($ids);
+		$uids = array_unique(array_diff($ids, array($this->id)));
 		file_put_contents($this->externalsPath(), serialize($uids));
 	}
 	

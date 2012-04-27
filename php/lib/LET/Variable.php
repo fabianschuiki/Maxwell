@@ -57,7 +57,8 @@ class Variable extends TypedNode
 	
 	public function unbindFromInterfaces(Root $root)
 	{
-		if ($this->type) $this->type = $this->type->unbindFromInterfaces($root);
+		$type = $this->type();
+		if ($type) $this->type = $type->unbindFromInterfaces($root);
 		return parent::unbindFromInterfaces($root);
 	}
 	

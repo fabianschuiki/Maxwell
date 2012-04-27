@@ -19,6 +19,8 @@ class ConcreteType_Proxy extends ConcreteType
 	public function details()  { return "@".$this->id; }
 	public function children() { return array(); }
 	
+	public function isSpecific() { return false; }
+	
 	public function reduceToAbsolute(Scope $scope) { throw new \RuntimeException("ConcreteType_Proxy should never be asked for absolute reduction"); }
 	
 	public function bindProxies(array $nodes)

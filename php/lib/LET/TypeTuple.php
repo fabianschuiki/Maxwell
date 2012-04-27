@@ -95,4 +95,10 @@ class TypeTuple extends Type
 	{
 		return new TypeTuple($scope, array_map(function($f) use ($scope) { return $f->reduceToAbsolute($scope); }, $this->fields));
 	}
+	
+	public function unbindFromInterfaces(Root $root)
+	{
+		foreach ($this->fields as $name => &$field) $field = $field->unbindFromInterfaces($root);
+		return parent::unbindFromInterfaces($root);
+	}
 }

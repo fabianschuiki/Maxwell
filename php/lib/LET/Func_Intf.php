@@ -47,15 +47,23 @@ class Func_Intf extends Func
 		$root = $this->scope->rootNode();
 		assert($root instanceof Root);
 		
+		foreach (array($type->in(), $type->out()) as $tuple) {
+			foreach ($tuple->fields as $name => $arg) {
+				if (!$arg instanceof MemberConstrainedType || !$arg->type instanceof ConcreteType) continue;
+				$tuple->fields[$name] = $arg->type->specialize($arg, $specializations);
+			}
+		}
+		
 		$reduced = $type->reduceToAbsolute(new Scope);
 		$reduced->originalID = $this->id;
 		foreach ($root->specializations as $id => $spec) {
-			if (Type::equalTwo($spec, $reduced)) return $type;
+			//if (Type::equalTwo($spec, $reduced)) return $type;
+			if ($spec->originalID === $this->id) return new Func_Proxy($id);
 		}
 		
 		$id = trim(`uuidgen`);
 		$root->specializations[$id] = $reduced;
-		return $type;
+		return /*$type*/new Func_Proxy($id);
 	}
 	
 	public function reduceToInterface() { throw new \RuntimeExcpetion("Func_Intf should never be asked for reduction"); }

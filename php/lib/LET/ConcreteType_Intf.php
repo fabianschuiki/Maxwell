@@ -42,12 +42,12 @@ class ConcreteType_Intf extends ConcreteType
 		$reduced = $type->reduceToAbsolute(new Scope);
 		$reduced->originalID = $this->id;
 		foreach ($root->specializations as $id => $spec) {
-			if (Type::equalTwo($spec, $reduced)) return $type;
+			/*if (Type::equalTwo($spec, $reduced))*/if ($spec->originalID === $this->id) return /*$type*/new ConcreteType_Proxy($id);
 		}
 		
 		$id = trim(`uuidgen`);
 		$root->specializations[$id] = $reduced;
-		return $type;
+		return /*$type*/new ConcreteType_Proxy($id);
 	}
 	
 	public function registerExternal(Root $root)

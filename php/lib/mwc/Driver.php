@@ -218,13 +218,13 @@ class Driver
 			
 			//Import external nodes.
 			$externalEntities = array();
-			$externalNodes = array($id => array_pop($input->node->children()));
+			$externalNodes = array($id => $input->mainNode());
 			foreach ($externalNodeIDs as $eid) {
-				static::debug("- importing $eid");
 				$e = new Entity($eid, $this->buildDir);
 				$e->loadInterface();
 				$externalEntities[] = $e;
-				$externalNodes[$eid] = array_pop($e->node->children());
+				$externalNodes[$eid] = $e->mainNode();
+				static::debug("- imported $eid  {$e->mainNode()->desc()}");
 			}
 			foreach ($externalEntities as $entity) {
 				$entity->node->bindProxies($externalNodes);
@@ -237,7 +237,8 @@ class Driver
 			if ($issues->dumpAndCheck()) return;
 			//<- until here
 			
-			//Bind the specs proxies.
+			//Specialize.
+			$specializedNodes = array();
 			foreach ($nodeSpecs as $specID => $spec) {
 				$spec->bindProxies($externalNodes);
 				$spec->reduce();
@@ -247,7 +248,29 @@ class Driver
 				$spec->reduce();
 				if ($issues->dumpAndCheck()) return;
 				
-				echo "- $specID became {$spec->desc()}\n";
+				static::debug("- {$spec->details()}  @$specID");
+				$result = null;
+				if ($spec instanceof \LET\MemberConstrainedType) {
+					$result = $input->mainNode()->specialize($spec, $specializedNodes);
+				} else if ($spec instanceof \LET\FuncType) {
+					$result = $input->mainNode()->specialize($spec, $specializedNodes);
+				} else {
+					static::error("specialization ".get_class($spec)." not supported");
+				}
+				assert($result);
+				$result->id = $specID;
+				static::debug("  => {$result->desc()}");
+				
+				//Create the new node file for the specialization.
+				$root = new \LET\Root;
+				$result->scope = $root->scope;
+				$result->subscope->outer = $result->scope;
+				$root->scope->add($result);
+				
+				$e = new Entity($result->id, $this->buildDir);
+				$e->node = $root;
+				$e->save();
+				$nodeIDs[] = $result->id;
 			}
 		}
 	}

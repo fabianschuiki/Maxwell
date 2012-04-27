@@ -43,6 +43,7 @@ class ConcreteType_Spec extends ConcreteType
 	
 	public function name()     { return $this->original->name(); }
 	public function members()  { return $this->members; }
+	public function children() { return array_merge($this->members, $this->specializedMembers); }
 	
 	public function details()
 	{
@@ -50,9 +51,28 @@ class ConcreteType_Spec extends ConcreteType
 		foreach ($this->specializedMembers as $member) {
 			$type = $member->type();
 			$type = ($type ? $type->details() : '?');
-			$members[] = "{$member->name()}: $type";
+			$members[] = "{$member->name()}:$type";
 		}
-		$members = implode(', ', $members);
+		$members = implode(',', $members);
 		return $this->original->details()."<".$members.">";
+	}
+	
+	/*public function reduce()
+	{
+		$this->original = $this->original->reduce();
+		$red = function($m){ return $m->reduce(); };
+		$this->members = array_map($red, $this->members);
+		$this->specializedMembers = array_map($red, $this->specializedMembers);
+		return $this;
+	}*/
+	
+	public function reduceToInterface(Scope $scope)
+	{
+		$cloned = clone $this;
+		$cloned->original = new ConcreteType_Intf($scope, $this->original);
+		$cloned->subscope = $cloned->subscope->reduceToInterface($scope);
+		$cloned->members = array_map(function($m) use ($cloned) { return $m->reduceToInterface($cloned->subscope); }, $cloned->members);
+		$cloned->specializedMembers = array_map(function($m) use ($cloned) { return $m->reduceToInterface($cloned->subscope); }, $cloned->specializedMembers);
+		return $cloned;
 	}
 }

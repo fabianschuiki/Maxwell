@@ -20,6 +20,8 @@ class Entity
 	public function specsPath()     { return $this->basePath.".specs"; }
 	public function externalsPath() { return $this->basePath.".extern"; }
 	
+	public function mainNode() { return array_pop($this->node->children()); }
+	
 	public function save()
 	{
 		$this->saveExternalNodeIDs();

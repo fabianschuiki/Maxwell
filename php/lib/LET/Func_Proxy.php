@@ -54,4 +54,6 @@ class Func_Proxy extends Func
 	{
 		$ids[] = $this->id;
 	}
+	
+	public function unconstrainedType() { return null; }
 }

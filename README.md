@@ -8,9 +8,9 @@ provide the most basic Maxwell compiling capabilities. The other is written in M
 
 How to try stuff
 ----------------
-The PHP compiler changes rapidly. For debugging the current development, the `debug/debug.mw` file is compiled using `$ php/bin/debug.php debug/debug.mw`. The compiler dumps all its output to `debug/build`. Of particular interest is the `debug/build/debug.let.html` output file that contains a dump of the *Language Entity Tree*, i.e. the entities parsed from the source file along with the type analysis and specializations.
+The PHP compiler changes rapidly. Using `$ make` you may compile the `source/main.mw` file, which is also used to develop new language features. This will output a vast amount of information in the `build` directory. Note that all entities of the source (types, functions, etc.) are split up when compiling. Of particular interest are the `build/*.<highest digit>.let-nice.html` files, which contain a dump of the language entity. The `build/legend.txt` file helps looking up UUIDs of the entities.
 
 About the Source
 ----------------
-The PHP compiler source files are located in `php/lib`. There is a rudimentary driver file in `php/bin/debug.php` that initializes the fundamental components `SourceFile`, `Lexer`, `Parser`, and `Analyzer`, and executes the compilation.
+The PHP compiler is located at `php/bin/mwc`, its source files in `php/lib`.
 

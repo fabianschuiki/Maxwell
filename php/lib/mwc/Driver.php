@@ -149,7 +149,7 @@ class Driver
 		
 		//Iterate through the nodes and analyze each.
 		do {
-			pause();
+			//pause();
 			file_put_contents("{$this->buildDir}/legend.txt", $legend);
 			$specs = array();
 			foreach ($nodeIDs as $id) {
@@ -168,10 +168,13 @@ class Driver
 					$e->loadInterface();
 					$e->loadSpecs();
 					$externalEntities[] = $e;
-					$externalNodes[$eid] = array_pop($e->node->children());
+					$externalNodes[$eid] = $e->mainNode();
 				}
 				foreach ($externalEntities as $entity) {
 					$entity->node->bindProxies($externalNodes);
+					$entity->node->reduce();
+					
+					$entity->node->bind();
 					$entity->node->reduce();
 				}
 				if ($issues->dumpAndCheck()) return;
@@ -186,13 +189,13 @@ class Driver
 				$analyzer->root   = $input->node;
 				$analyzer->run();
 				$input->node->importedRoots = null;
-				if ($issues->dumpAndCheck()) return;
 				
 				foreach ($externalEntities as $entity) {
 					$entity->saveSpecs();
 					if ($entity->node->specializations) $specs = array_merge($specs, $entity->node->specializations);
 				}
 				$input->save();
+				if ($issues->dumpAndCheck()) return;
 			}
 			
 			//Filter the specializations to exclude the ones that already exist.
@@ -233,6 +236,9 @@ class Driver
 				}
 				foreach ($externalEntities as $entity) {
 					$entity->node->bindProxies($externalNodes);
+					$entity->node->reduce();
+					
+					$entity->node->bind();
 					$entity->node->reduce();
 				}
 				if ($issues->dumpAndCheck()) return;

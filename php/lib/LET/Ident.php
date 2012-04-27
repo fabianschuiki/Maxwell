@@ -107,6 +107,9 @@ abstract class Ident extends Expr
 		if ($this->boundTo instanceof TypedNode) {
 			return $this->boundTo->type();
 		}
+		/*if ($this->boundTo instanceof Func) {
+			return $this->boundTo->type();
+		}*/
 		/*if (is_array($this->boundNodes)) {
 			return new GenericType;
 			$in  = new GenericType;
@@ -174,6 +177,7 @@ abstract class Ident extends Expr
 			/*echo "asked to specialize {$this->boundTo->details()} for {$this->type()->details()}\n";
 			echo "  got {$spec->details()}\n";*/
 			$this->boundTo = $spec;
+			$this->boundNodes = array($spec);
 		}
 	}
 	
@@ -207,6 +211,7 @@ abstract class Ident extends Expr
 		//if ($this->boundNodes) $this->boundNodes = array_map(function($n) use ($root) { return $n->unbindFromInterfaces($root); }, $this->boundNodes);
 		
 		if ($this->boundTo) $this->boundTo = $this->boundTo->unbindFromInterfaces($root);
+		//if ($this->boundNodes) $this->boundNodes = array_map(function($m) use ($root) { return $m->unbindFromInterfaces($root); }, $this->boundNodes);
 		
 		//$this->boundTo = null;
 		$this->boundNodes = null;
@@ -214,6 +219,19 @@ abstract class Ident extends Expr
 		$this->lastConfirmedTypeConstraint = null;
 		return parent::unbindFromInterfaces($root);
 	}
+	
+	/*public function bindProxies(array $nodes)
+	{
+		if ($this->boundTo instanceof ConcreteType_Proxy || $this->boundTo instanceof Func_Proxy) {
+			echo "bind proxies {$this->boundTo->id}\n";
+			print_r(array_keys($nodes));
+			$this->boundTo->bindProxies($nodes);
+			$this->boundTo = $this->boundTo->reduce();
+			$this->boundNodes = array($this->boundTo);
+			$this->boundNodesCommonType = new GenericType;
+			echo " -> bound to {$this->boundTo->desc()}\n";
+		}
+	}*/
 	
 	/*public function gatherExternalNodeIDs(array &$ids)
 	{

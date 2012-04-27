@@ -61,10 +61,14 @@
 			$details = ($root ? $node->desc() : $node->details());
 			$str = "<div class=\"node\">".htmlentities($details);
 			$str .= "<div class=\"kind\">{$node->kind()}</div>";
-			if ($node instanceof LET\Ident && !$node->boundTo) {
-				$str .= "<div class=\"unbound\">unbound";
-				if (count($node->boundNodes)) $str .= " #".count($node->boundNodes);
-				$str .= "</div>";
+			if ($node instanceof LET\Ident) {
+				if (!$node->boundTo) {
+					$str .= "<div class=\"unbound\">unbound";
+					if (count($node->boundNodes)) $str .= " #".count($node->boundNodes);
+					$str .= "</div>";
+				} else {
+					$str .= "<div class=\"kind\">[".get_class($node->boundTo)."]</div>";
+				}
 			}
 			if ($node instanceof LET\TypedNode) {
 				$type = $node->type();

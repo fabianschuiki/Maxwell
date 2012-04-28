@@ -3,10 +3,10 @@ namespace mwc;
 
 class Driver
 {
-	private $inputFiles    = array();
-	private $outputPath    = null;
-	private $buildDir      = null;
-	private $dumpStats     = false;
+	public $inputFiles    = array();
+	public $outputPath    = null;
+	public $buildDir      = null;
+	public $dumpStats     = false;
 	
 	public function configure(array $args)
 	{
@@ -299,7 +299,7 @@ class Driver
 		} while (count($specs));
 		
 		//Compile the nodes to C.
-		$compiler = new Compiler();
+		$compiler = new Compiler($this);
 		$compiler->compile($nodeIDs);
 	}
 	

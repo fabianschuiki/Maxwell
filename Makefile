@@ -11,7 +11,7 @@ ${BUILD_DIR}:
 	mkdir -p ${BUILD_DIR}
 
 strip:
-	rm ${BUILD_DIR}/*
+	rm -R ${BUILD_DIR}/*
 
 debug: ${EXEC}
 	${EXEC}

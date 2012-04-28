@@ -1,10 +1,15 @@
-import Vector;
+type A
+{
+	var int a;
+}
+
+type B
+{
+	var int b;
+}
 
 func main
 {
-	var Vector v;
-	var int vx = v.x;
-	var int vy = v.y;
-	
-	var int sq = v*v;
+	var A a;
+	var B b;
 }

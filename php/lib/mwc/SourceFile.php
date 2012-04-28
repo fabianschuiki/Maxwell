@@ -12,7 +12,7 @@ class SourceFile
 		assert(is_string($buildDir));
 		
 		$this->path     = $path;
-		$this->basePath = $buildDir."/".basename($this->path, ".mw");
+		$this->basePath = "$buildDir/input/".basename($this->path, ".mw");
 	}
 	
 	public function interfacePath()  { return $this->basePath.".intf"; }

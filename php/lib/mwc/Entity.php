@@ -11,7 +11,7 @@ class Entity
 	public function __construct($id, $buildDir)
 	{
 		$this->id       = $id;
-		$this->basePath = "$buildDir/$id";
+		$this->basePath = "$buildDir/entities/$id";
 		$this->externalNodeIDs = array();
 	}
 	
@@ -26,12 +26,12 @@ class Entity
 	{
 		$this->saveExternalNodeIDs();
 		
-		$pth = dirname($this->letPath())."/".str_replace('/', '<fwdslash>', array_pop($this->node->children())->details());
-		$i = 0;
+		$apth = dirname($this->basePath)."/../debug/".str_replace('/', '<fwdslash>', array_pop($this->node->children())->details());
+		/*$i = 0;
 		do {
 			$apth = $pth.".".$i;
 			$i++;
-		} while (file_exists($apth.".intf.html") || file_exists($apth.".let.html"));
+		} while (file_exists($apth.".intf.html") || file_exists($apth.".let.html"));*/
 		
 		$reduced = $this->node->reduceToInterface(new \LET\Scope);
 		file_put_contents($this->interfacePath(), serialize($reduced));

@@ -44,6 +44,11 @@ class Driver
 		if (!$this->buildDir)   $this->buildDir   = dirname($this->outputPath);
 		if (!is_dir($this->buildDir)) static::error("build directory '{$this->buildDir}' does not exist");
 		
+		//Create some extra directories if required.
+		static::makeDirectory($this->buildDir."/input");
+		static::makeDirectory($this->buildDir."/entities");
+		static::makeDirectory($this->buildDir."/debug");
+		
 		global $issues;
 		$issues = new \IssueList;
 		
@@ -291,6 +296,12 @@ class Driver
 	static public function error($msg) { echo "mwc: $msg\n"; exit(1); }
 	static public function say($msg)   { echo "mwc: $msg\n"; }
 	static public function debug($msg) { debug("mwc: $msg\n"); }
+	
+	static public function makeDirectory($dir)
+	{
+		if (file_exists($dir)) return;
+		if (!mkdir($dir)) static::error("unable to make directory {$dir}");
+	}
 }
 
 function debug($msg)

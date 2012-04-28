@@ -33,8 +33,12 @@ class ConcreteType_AST extends ConcreteType
 			}
 		}
 		
+		$parent = null;
+		if ($node->parent) $parent = new TypeExpr($scope, Expr::make($scope, $node->parent));
+		
 		$this->asn      = $node;
 		$this->members  = $members;
+		$this->parent   = $parent;
 		$this->scope    = $scope;
 		$this->subscope = $subscope;
 		

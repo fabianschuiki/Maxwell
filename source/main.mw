@@ -3,7 +3,7 @@ type A
 	var int a;
 }
 
-type B
+type B : A
 {
 	var int b;
 }

@@ -5,6 +5,7 @@ abstract class ConcreteType extends Type
 {
 	public $specializations;
 	public $id;
+	public $parent;
 	
 	abstract function name();
 	abstract function members();
@@ -31,6 +32,13 @@ abstract class ConcreteType extends Type
 		return true;
 	}
 	
+	public function desc()
+	{
+		$str = parent::desc();
+		if ($this->parent) $str .= " : {$this->parent->details()}";
+		return $str;
+	}
+	
 	public function details()
 	{
 		return "{$this->name()}";
@@ -38,10 +46,13 @@ abstract class ConcreteType extends Type
 	
 	public function children()
 	{
-		return $this->members();
+		$c = $this->members();
+		if ($this->parent) $c[] = $this->parent;
+		return $c;
 	}
 	
-	public function type() { return $this; }
+	public function type()   { return $this; }
+	public function parent() { return $this->parent; }
 	
 	public function specialize(MemberConstrainedType $type, array &$specializations)
 	{
@@ -93,5 +104,11 @@ abstract class ConcreteType extends Type
 	{
 		$ids[] = $this->id;
 		parent::gatherExternalNodeIDs($ids);
+	}
+	
+	public function reduce()
+	{
+		if ($this->parent) $this->parent = $this->parent->reduce();
+		return parent::reduce();
 	}
 }

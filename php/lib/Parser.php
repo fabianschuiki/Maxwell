@@ -244,33 +244,60 @@ class Parser
 	
 	private function parseTypeStmt(Token $keyword, array &$ts)
 	{
+		if (count($ts) < 2) {
+			$this->issues[] = new Issue(
+				'error',
+				"Type requires at least a name and a body.",
+				$ts,
+				$keyword
+			);
+			return null;
+		}
+		
 		//Type Name
 		$name = array_shift($ts);
 		if (!$name->is('identifier')) {
 			$this->issues[] = new Issue(
 				'error',
-				"type requires a name",
-				$name->range,
-				array($keyword->range)
+				"Type requires a name.",
+				$name,
+				$keyword
 			);
 			return null;
+		}
+		
+		//Parent Type
+		$parent = null;
+		if ($ts[0]->is('symbol', ':')) {
+			$col = array_shift($ts);
+			if ($ts[0]->is('identifier')) {
+				$parent = new AST\IdentExpr(array_shift($ts));
+			} else {
+				$this->issues[] = new Issue(
+					'error',
+					"Type {$name} requires a parent type name after ':'.",
+					$name,
+					$col
+				);
+				return null;
+			}
 		}
 		
 		//Type Body
-		$body = array_shift($ts);
-		if (!$body->is('group', '{}')) {
+		if (!count($ts) || !$ts[0]->is('group', '{}')) {
 			$this->issues[] = new Issue(
 				'error',
 				"Type {$name} requires a body.",
-				$body,
-				array($keyword, $name)
+				$name,
+				(count($ts) ? $ts[0] : null)
 			);
 			return null;
 		}
+		$body = array_shift($ts);
 		$bodyNode = $this->parseBlock($body);
 		
 		if (!$name || !$bodyNode) return null;
-		return new AST\TypeStmt($keyword, $name, $bodyNode);
+		return new AST\TypeStmt($keyword, $name, $parent, $bodyNode);
 	}
 	
 	private function parseIfStmt(Token $keyword, array &$ts)

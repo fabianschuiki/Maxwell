@@ -22,8 +22,12 @@ class ConcreteType_Intf extends ConcreteType
 			$members[] = $member->reduceToInterface($subscope);
 		}
 		
+		$parent = null;
+		if ($type->parent) $parent = $type->parent->reduceToAbsolute($scope);
+		
 		$this->id       = $type->id;
 		$this->name     = strval($type->name());
+		$this->parent   = $parent;
 		$this->members  = $members;
 		$this->subscope = $subscope;
 		$this->scope    = $scope;

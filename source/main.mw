@@ -12,4 +12,8 @@ func main
 {
 	var A a;
 	var B b;
+	
+	a.a = 5;
+	b.b = 5;
+	b.a = 5;
 }

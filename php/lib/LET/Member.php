@@ -73,9 +73,9 @@ abstract class Member extends Expr
 		$this->imposeMemberConstraintOnExpr();
 	}
 	
-	public function complainAboutAmbiguities()
+	public function bind()
 	{
-		parent::complainAboutAmbiguities();
+		parent::bind();
 		
 		if (!$this->typeMember()) {
 			global $issues;

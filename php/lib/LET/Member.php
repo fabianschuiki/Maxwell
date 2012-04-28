@@ -30,7 +30,11 @@ abstract class Member extends Expr
 		$type = $expr->type();
 		if (!$type instanceof ConcreteType) return null;
 		
-		foreach ($type->members() as $member) if ($member->name() == $this->name()) return $member;
+		while ($type) {
+			assert($type instanceof ConcreteType);
+			foreach ($type->members() as $member) if ($member->name() == $this->name()) return $member;
+			$type = $type->parent();
+		}
 		return null;
 	}
 	
@@ -73,15 +77,16 @@ abstract class Member extends Expr
 		$this->imposeMemberConstraintOnExpr();
 	}
 	
-	public function bind()
+	public function reduce()
 	{
-		parent::bind();
+		parent::reduce();
 		
-		if (!$this->typeMember()) {
+		$expr = $this->expr();
+		if ($expr && $expr->type() instanceof ConcreteType && !$this->typeMember()) {
 			global $issues;
 			$issues[] = new \Issue(
 				'error',
-				"{$this->expr()->type()->name()} has no member named '{$this->name()}'.",
+				"Type '{$this->expr()->type()->name()}' has no member named '{$this->name()}'.",
 				$this
 			);
 		}

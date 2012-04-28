@@ -43,12 +43,43 @@ class Entity
 		file_put_contents($apth.".let.html", \Dump::let($this->node));
 	}
 	
-	public function load()
+	public function load(&$externalEntities, &$externalNodes, $additionalExternalNodeIDs = null)
 	{
 		$path = $this->letPath();
 		if (!file_exists($path)) Driver::error("parsed LET should exist at '$path', but does not");
 		$this->node = unserialize(file_get_contents($path));
 		assert($this->node instanceof \LET\Root);
+		global $issues;
+		
+		$this->loadExternalNodeIDs();
+		if ($issues->dumpAndCheck()) return;
+		
+		$externalNodeIDs = $this->externalNodeIDs;
+		if ($additionalExternalNodeIDs) $externalNodeIDs = array_merge($externalNodeIDs, $additionalExternalNodeIDs);
+		$externalNodeIDs = array_unique(array_diff($externalNodeIDs, array($this->id)));
+		
+		//Import external nodes.
+		$externalEntities = array();
+		$externalNodes = array($this->id => $this->mainNode());
+		foreach ($externalNodeIDs as $eid) {
+			$e = new Entity($eid, dirname(dirname($this->basePath)));
+			$e->loadInterface();
+			$externalEntities[] = $e;
+			$externalNodes[$eid] = $e->mainNode();
+			Driver::debug("- imported $eid  {$e->mainNode()->desc()}");
+		}
+		foreach ($externalEntities as $entity) {
+			$entity->node->bindProxies($externalNodes);
+			$entity->node->reduce();
+			
+			$entity->node->bind();
+			$entity->node->reduce();
+		}
+		if ($issues->dumpAndCheck()) return;
+									
+		$this->node->bindProxies($externalNodes);
+		$this->node->reduce();
+		if ($issues->dumpAndCheck()) return;
 	}
 	
 	public function loadInterface()

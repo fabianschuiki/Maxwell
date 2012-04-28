@@ -161,7 +161,8 @@ class Driver
 				static::debug("analyzing $id");
 				
 				$input = new Entity($id, $this->buildDir);
-				$input->load();
+				$input->load($externalEntities, $externalNodes);
+				/*$input->load();
 				$input->loadExternalNodeIDs();
 				if ($issues->dumpAndCheck()) return;
 				
@@ -186,7 +187,7 @@ class Driver
 				
 				$input->node->bindProxies($externalNodes);
 				$input->node->reduce();
-				if ($issues->dumpAndCheck()) return;
+				if ($issues->dumpAndCheck()) return;*/
 				
 				$input->node->importedRoots = array_map(function($i){ return $i->node; }, $externalEntities);
 				$analyzer = new \Analyzer;
@@ -218,9 +219,14 @@ class Driver
 			foreach ($sortedSpecs as $id => $nodeSpecs) {
 				static::say("specializing $id");
 				
+				//Gather external nodes required by the specializations.
+				$additional = array();
+				foreach ($nodeSpecs as $specID => $spec)	$spec->gatherExternalNodeIDs($additional);
+				
 				//This is just a dumb copy of above. This will be merged into the analysis stage.
 				$input = new Entity($id, $this->buildDir);
-				$input->load();
+				$input->load($externalEntities, $externalNodes, $additional);
+				/*$input->load();
 				$input->loadExternalNodeIDs();
 				if ($issues->dumpAndCheck()) return;
 				
@@ -250,7 +256,7 @@ class Driver
 				
 				$input->node->bindProxies($externalNodes);
 				$input->node->reduce();
-				if ($issues->dumpAndCheck()) return;
+				if ($issues->dumpAndCheck()) return;*/
 				//<- until here
 				
 				//Specialize.
@@ -291,6 +297,10 @@ class Driver
 				}
 			}
 		} while (count($specs));
+		
+		//Compile the nodes to C.
+		$compiler = new Compiler();
+		$compiler->compile($nodeIDs);
 	}
 	
 	static public function error($msg) { echo "mwc: $msg\n"; exit(1); }

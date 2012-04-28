@@ -5,8 +5,7 @@ abstract class Node
 {
 	public $scope;
 	public $parent;
-	
-	public function __construct() {}
+	public $id;
 	
 	static public function make(Scope $scope, \AST\Stmt $stmt)
 	{
@@ -17,6 +16,11 @@ abstract class Node
 		if ($stmt instanceof \AST\InlineStmt) return new Inline($scope, $stmt);
 		if ($stmt instanceof \AST\ReturnStmt) return new ReturnStmt_AST($scope, $stmt);
 		return null;
+	}
+	
+	public function __construct()
+	{
+		$this->id = /*trim(`uuidgen`);*/uniqid(); //uniquid is way faster than uuidgen.
 	}
 	
 	///Returns the type of this LET node, which is its class name without the LET namespace.

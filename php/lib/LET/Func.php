@@ -4,7 +4,6 @@ namespace LET;
 abstract class Func extends TypedNode
 {
 	public $specializations;
-	public $id;
 	
 	abstract function name();
 	abstract function inputs();
@@ -15,7 +14,6 @@ abstract class Func extends TypedNode
 	public function __construct()
 	{
 		parent::__construct();
-		$this->id = trim(`uuidgen`);
 	}
 	
 	public function details()

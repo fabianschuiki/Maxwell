@@ -21,12 +21,13 @@ class Entity
 	public function externalsPath() { return $this->basePath.".extern"; }
 	
 	public function mainNode() { return array_pop($this->node->children()); }
+	public function debugPath() { return dirname($this->basePath)."/../debug/".str_replace('/', '<fwdslash>', array_pop($this->node->children())->details()); }
 	
 	public function save()
 	{
 		$this->saveExternalNodeIDs();
 		
-		$apth = dirname($this->basePath)."/../debug/".str_replace('/', '<fwdslash>', array_pop($this->node->children())->details());
+		$apth = $this->debugPath();
 		/*$i = 0;
 		do {
 			$apth = $pth.".".$i;
@@ -43,14 +44,19 @@ class Entity
 		file_put_contents($apth.".let.html", \Dump::let($this->node));
 	}
 	
-	public function load(&$externalEntities, &$externalNodes, $additionalExternalNodeIDs = null)
+	public function load()
 	{
 		$path = $this->letPath();
 		if (!file_exists($path)) Driver::error("parsed LET should exist at '$path', but does not");
 		$this->node = unserialize(file_get_contents($path));
 		assert($this->node instanceof \LET\Root);
+	}
+	
+	public function loadRecursively(&$externalEntities, &$externalNodes, $additionalExternalNodeIDs = null)
+	{
 		global $issues;
 		
+		$this->load();
 		$this->loadExternalNodeIDs();
 		if ($issues->dumpAndCheck()) return;
 		

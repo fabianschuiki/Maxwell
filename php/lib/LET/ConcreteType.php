@@ -4,7 +4,6 @@ namespace LET;
 abstract class ConcreteType extends Type
 {
 	public $specializations;
-	public $id;
 	public $parent;
 	
 	abstract function name();
@@ -13,7 +12,6 @@ abstract class ConcreteType extends Type
 	public function __construct()
 	{
 		parent::__construct();
-		$this->id = trim(`uuidgen`);
 	}
 	
 	public $cached_isSpecific = null;

@@ -47,6 +47,7 @@ class Driver
 		//Create some extra directories if required.
 		static::makeDirectory($this->buildDir."/input");
 		static::makeDirectory($this->buildDir."/entities");
+		static::makeDirectory($this->buildDir."/compiled");
 		static::makeDirectory($this->buildDir."/debug");
 		
 		global $issues;
@@ -161,7 +162,7 @@ class Driver
 				static::debug("analyzing $id");
 				
 				$input = new Entity($id, $this->buildDir);
-				$input->load($externalEntities, $externalNodes);
+				$input->loadRecursively($externalEntities, $externalNodes);
 				/*$input->load();
 				$input->loadExternalNodeIDs();
 				if ($issues->dumpAndCheck()) return;
@@ -225,7 +226,7 @@ class Driver
 				
 				//This is just a dumb copy of above. This will be merged into the analysis stage.
 				$input = new Entity($id, $this->buildDir);
-				$input->load($externalEntities, $externalNodes, $additional);
+				$input->loadRecursively($externalEntities, $externalNodes, $additional);
 				/*$input->load();
 				$input->loadExternalNodeIDs();
 				if ($issues->dumpAndCheck()) return;

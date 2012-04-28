@@ -10,7 +10,7 @@ class Root extends Container
 	{
 		$str = "";
 		foreach ($this->nodes as $node) {
-			assert($node instanceof Func || $node instanceof Type);
+			assert($node instanceof Func || $node instanceof TypeDef);
 			$str .= ($header ? $node->getDeclaration() : $node->getDefinition())."\n";
 		}
 		return $str;

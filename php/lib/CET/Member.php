@@ -22,11 +22,8 @@ class Member extends Node
 	
 	public function generateCode(\C\Container $root)
 	{
-		$expr = $this->node->generateCode($root);
-		echo "generated ".get_class($expr)."\n";
-		
 		$node = new \C\Expr;
-		$node->code = $expr->getExpr().".{$this->member->name()}";
+		$node->code = $this->node->generateCode($root)->getExpr().".{$this->member->name()}";
 		return $node;
 	}
 }

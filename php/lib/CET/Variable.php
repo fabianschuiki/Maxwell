@@ -8,6 +8,8 @@ class Variable extends Node
 	
 	public function __construct(\LET\Variable $node, array &$cet)
 	{
+		parent::__construct();
+		
 		$typeID = $node->type()->id;
 		if (!isset($cet[$typeID])) \mwc\Compiler::error("no CET node found for type of variable {$node->details()}");
 		$type = $cet[$typeID];

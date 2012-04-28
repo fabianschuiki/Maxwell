@@ -34,8 +34,6 @@ class Call extends Node
 	public function generateCode(\C\Container $root)
 	{
 		$arguments = array_map(function($a) use ($root) { return $a->generateCode($root); }, $this->arguments);
-		echo "generated ".count($arguments)." args\n";
-		foreach ($arguments as $id => $a) echo "- ".get_class($a)."\n";
 		
 		$node = new \C\Expr;
 		if ($this->func) {

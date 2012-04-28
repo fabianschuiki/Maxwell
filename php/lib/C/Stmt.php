@@ -5,7 +5,7 @@ class Stmt extends Node
 {
 	public $code;
 	
-	public function __construct($code)
+	public function __construct($code = null)
 	{
 		parent::__construct();
 		$this->code = $code;

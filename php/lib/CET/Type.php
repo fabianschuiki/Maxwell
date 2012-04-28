@@ -19,4 +19,9 @@ class Type extends Node
 	public function process(\LET\ConcreteType $node, array &$cet)
 	{
 	}
+	
+	public function generateCode(\C\Container $root)
+	{
+		
+	}
 }

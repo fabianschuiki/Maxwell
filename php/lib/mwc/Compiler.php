@@ -29,12 +29,11 @@ class Compiler
 		foreach ($nodeIDs as $id) {
 			static::say("compiling $id");
 			$input = new Entity($id, $this->driver->buildDir);
-			$input->load($externalEntities, $externalNodes);
-			$input->loadExternalNodeIDs();
+			$input->loadRecursively($externalEntities, $externalNodes);
 			
 			//Load the required CETs.
 			$cet = array();
-			$ids = $input->externalNodeIDs;
+			$ids = array_map(function($n) { return $n->id; }, $externalEntities);
 			array_unshift($ids, $id);
 			foreach ($ids as $i) {
 				$cet_path = $this->getCETPath($i);
@@ -47,6 +46,13 @@ class Compiler
 			assert(isset($cet[$id]));
 			$cet[$id]->process($input->mainNode(), $cet);
 			$this->dumpCET($input, $cet);
+			
+			//Generate the C code.
+			$code = new \C\Root;
+			$cet[$id]->generateCode($code);
+			$codePath = $input->debugPath();
+			file_put_contents("$codePath.h", $code->getHeader());
+			file_put_contents("$codePath.c", $code->getSource());
 		}
 	}
 	

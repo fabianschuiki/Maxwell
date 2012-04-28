@@ -19,4 +19,15 @@ class Variable extends Node
 	public function name() { return $this->name; }
 	
 	public function details() { return "{$this->type->name()} {$this->name()}"; }
+	
+	public function generateCode(\C\Container $root)
+	{
+		$root->add(new \C\Stmt("{$this->type->name()} {$this->name()}"));
+		return null;
+	}
+	
+	public function getReference()
+	{
+		return new \C\Expr($this->name());
+	}
 }

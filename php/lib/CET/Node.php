@@ -10,6 +10,9 @@ abstract class Node
 		if ($node instanceof \LET\TypeMember_AST)   return $cet[$node->id] = new TypeMember($node, $cet);
 		if ($node instanceof \LET\Variable)         return $cet[$node->id] = new Variable($node, $cet);
 		if ($node instanceof \LET\Call)             return $cet[$node->id] = new Call($node, $cet);
+		if ($node instanceof \LET\Member)           return $cet[$node->id] = new Member($node, $cet);
+		if ($node instanceof \LET\Constant)         return $cet[$node->id] = new Constant($node, $cet);
+		if ($node instanceof \LET\Ident)            return $cet[$node->id] = new Ident($node, $cet);
 		\mwc\Compiler::error("unable to create CET node for ".get_class($node));
 	}
 	

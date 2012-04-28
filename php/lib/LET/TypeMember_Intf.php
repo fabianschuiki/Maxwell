@@ -11,6 +11,7 @@ class TypeMember_Intf extends TypeMember
 		
 		$this->name  = strval($member->name());
 		$this->type  = $member->type()->reduceToAbsolute($scope);
+		$this->id    = $member->id;
 		$this->scope = $scope;
 	}
 	

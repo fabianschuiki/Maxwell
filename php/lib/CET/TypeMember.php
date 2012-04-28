@@ -11,5 +11,7 @@ class TypeMember extends Node
 		$this->name = $node->name();
 	}
 	
-	public function details() { return $this->name; }
+	public function name() { return $this->name; }
+	
+	public function details() { return $this->name(); }
 }

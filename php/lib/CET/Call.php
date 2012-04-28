@@ -4,6 +4,7 @@ namespace CET;
 class Call extends Node
 {
 	public $func;
+	public $arguments;
 	public $operator;
 	
 	public function __construct(\LET\Call $node, array &$cet)
@@ -14,8 +15,12 @@ class Call extends Node
 			$funcID = $node->func()->id;
 			if (!isset($cet[$typeID])) \mwc\Compiler::error("unable to find function $funcID for {$node->desc()}");
 			
-			$this->func = $func= $cet[$funcID];
+			$this->func = $cet[$funcID];
 		}
+		
+		$arguments = array();
+		foreach ($node->args()->fields() as $name => $arg) $arguments[] = Node::make($arg, $cet);
+		$this->arguments = $arguments;
 	}
 	
 	public function details()
@@ -24,5 +29,23 @@ class Call extends Node
 		if ($this->operator) {
 			return "{$this->operator}";
 		}
+	}
+	
+	public function generateCode(\C\Container $root)
+	{
+		$arguments = array_map(function($a) use ($root) { return $a->generateCode($root); }, $this->arguments);
+		echo "generated ".count($arguments)." args\n";
+		foreach ($arguments as $id => $a) echo "- ".get_class($a)."\n";
+		
+		$node = new \C\Expr;
+		if ($this->func) {
+			$node->code = "{$this->func->name()}()";
+		}
+		if ($this->operator) {
+			/*$node->code = "({$arguments[0]->getExpr()}) {$this->operator} ({$arguments[1]->getExpr()})";*/
+			return new \C\Operator($this->operator, $arguments[0], $arguments[1]);
+		}
+		//$root->add($node);
+		return $node;
 	}
 }

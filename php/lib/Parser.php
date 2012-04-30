@@ -142,11 +142,7 @@ class Parser
 			return null;
 		}
 		
-		if (count($ts) >= 1 && $ts[0]->is('group', '()')) {
-			$args_in = $this->parseFuncArgs(array_shift($ts)->tokens);
-		} else {
-			$args_in = array();
-		}
+		$args_in = $this->parseFuncArgsIn($ts);
 		
 		$bodyNode = null;
 		$args_out = null;
@@ -165,12 +161,7 @@ class Parser
 			$bodyNode = $this->parseExpr($sub);
 			$args_out = array();
 		} else {
-			if (count($ts) >= 2 && $ts[0]->is('symbol', '->') && $ts[1]->is('group', '()')) {
-				array_shift($ts);
-				$args_out = $this->parseFuncArgs(array_shift($ts)->tokens);
-			} else {
-				$args_out = array();
-			}
+			$args_out = $this->parseFuncArgsOut($ts);
 			
 			$body = null;
 			if (count($ts) && $ts[0]->is('group', '{}')) $body = array_shift($ts);
@@ -189,18 +180,25 @@ class Parser
 		
 		if (!$name || $args_in === null || $args_out === null || !$bodyNode) return null;
 		return new AST\FuncStmt($keyword, $name, $args_in, $args_out, $bodyNode);
-		
-		/*$f = new Node;
-		$f->kind  = 'def.func';
-		$f->name  = $name;
-		$f->in    = $args_in;
-		$f->out   = $args_out;
-		$f->body  = $bodyNode;
-		$f->nodes = array($f->body);
-		$f->nodes += $f->in;
-		$f->nodes += $f->out;
-		$name->node = $f;
-		return $f;*/
+	}
+	
+	private function parseFuncArgsIn(array &$ts)
+	{
+		if (count($ts) >= 1 && $ts[0]->is('group', '()')) {
+			return $this->parseFuncArgs(array_shift($ts)->tokens);
+		} else {
+			return array();
+		}
+	}
+	
+	private function parseFuncArgsOut(array &$ts)
+	{
+		if (count($ts) >= 2 && $ts[0]->is('symbol', '->') && $ts[1]->is('group', '()')) {
+			array_shift($ts);
+			return $this->parseFuncArgs(array_shift($ts)->tokens);
+		} else {
+			return array();
+		}
 	}
 	
 	private function parseFuncArgs(array &$ts)
@@ -656,5 +654,42 @@ class Parser
 		if (count($sub)) $expr = $this->parseTupleExpr($sub);
 		
 		return new AST\ReturnStmt($keyword, $expr);
+	}
+	
+	private function parseNativeStmt(Token $keyword, array &$ts)
+	{
+		if (!$ts[0]->is('keyword', 'func')) {
+			$this->issues[] = new Issue(
+				'error',
+				"'native' keyword needs to be followed by a function declaration.",
+				$keyword,
+				$ts[0]
+			);
+			return null;
+		}
+		$func = array_shift($ts);
+		
+		if (count($ts) < 1 || !$ts[0]->is('identifier')) {
+			$this->issues[] = new Issue(
+				'error',
+				"Native function requires a name.",
+				array($keyword, $func)
+			);
+			return null;
+		}
+		$name = array_shift($ts);
+		
+		$ins  = $this->parseFuncArgsIn($ts);
+		$outs = $this->parseFuncArgsOut($ts);
+		
+		if (count($ts) < 1 || !$ts[0]->is('symbol', ';')) {
+			$this->issues[] = new Issue(
+				'warning',
+				"Native function declaration needs to be terminated by a ';'.",
+				$name,
+				array($keyword, $func)
+			);
+		}
+		return new AST\NativeFuncStmt($keyword, $name, $ins, $outs);
 	}
 }

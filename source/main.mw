@@ -8,7 +8,8 @@ func main
 	var A a;
 }
 
-func test (A a) -> (int r)
+func test (A a) -> (int r, int t)
 {
 	r = a.a * a.a;
+	t = a.a + a.a;
 }

@@ -14,6 +14,8 @@ abstract class Node
 		if ($node instanceof \LET\Constant)         return $cet[$node->id] = new Constant($node, $cet);
 		if ($node instanceof \LET\Ident)            return $cet[$node->id] = new Ident($node, $cet);
 		if ($node instanceof \LET\FuncArg)          return $cet[$node->id] = new FuncArg($node, $cet);
+		if ($node instanceof \LET\BuiltinType)      return $cet[$node->id] = new BuiltinType($node, $cet);
+		if ($node instanceof \LET\BuiltinBinaryOp)  return $cet[$node->id] = new BuiltinOp($node, $cet);
 		\mwc\Compiler::error("unable to create CET node for ".get_class($node));
 	}
 	

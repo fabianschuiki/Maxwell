@@ -12,7 +12,9 @@ class BuiltinBinaryOp extends Func
 	{
 		parent::__construct();
 		assert(is_string($name));
-		$this->id = "builtin_binop_$name";
+		
+		$ret = ($returnType ? $returnType->name() : $type->name());
+		$this->id = "builtin_binop_{$name}_{$type->name()}_{$ret}";
 		
 		if (!$returnType) $returnType = $type;
 		assert($returnType instanceof Type);

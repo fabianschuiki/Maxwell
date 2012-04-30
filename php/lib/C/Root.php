@@ -11,7 +11,13 @@ class Root extends Container
 		$str = "";
 		foreach ($this->nodes as $node) {
 			assert($node instanceof Func || $node instanceof TypeDef);
-			$str .= ($header ? $node->getDeclaration() : $node->getDefinition())."\n";
+			$d = null;
+			if ($header) {
+				$d = $node->getDeclaration();
+			} else {
+				$d = $node->getDefinition();
+			}
+			if ($d) $str .= "$d\n";
 		}
 		return $str;
 	}

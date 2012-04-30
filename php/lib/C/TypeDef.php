@@ -12,7 +12,7 @@ class TypeDef extends Stmt
 		$this->fields = array();
 	}
 	
-	public function getDefinition() { return ""; }
+	public function getDefinition() { return null; }
 	public function getDeclaration()
 	{
 		$str = "typedef struct {$this->name} {\n";

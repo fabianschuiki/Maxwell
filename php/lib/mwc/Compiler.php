@@ -85,9 +85,8 @@ class Compiler
 	static private function makeBuiltin()
 	{
 		$nodes = \LET\Scope::getBuiltinNodes();
-		foreach ($nodes as $id => $node) {
-			static::debug("make builtin for $id");
-		}
-		static::$builtin = array();
+		$builtin = array();
+		foreach ($nodes as $id => $node) $builtin[$id] = \CET\Node::make($node, $builtin);
+		static::$builtin = $builtin;
 	}
 }

@@ -26,8 +26,9 @@ class Call extends Node
 		if ($this->func instanceof BuiltinOp) {
 			return new \C\Operator($this->func->name(), $arguments[0], $arguments[1]);
 		} else {
+			$args = array_map(function($a) { return $a->getExpr(); }, $arguments);
 			$node = new \C\Expr;
-			$node->code = "{$this->func->name()}()";
+			$node->code = "{$this->func->name()}(".implode(', ', $args).")";
 			return $node;
 		}
 	}

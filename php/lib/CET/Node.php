@@ -17,6 +17,7 @@ abstract class Node
 		if ($node instanceof \LET\BuiltinType)      return $cet[$node->id] = new BuiltinType($node, $cet);
 		if ($node instanceof \LET\BuiltinBinaryOp)  return $cet[$node->id] = new BuiltinOp($node, $cet);
 		if ($node instanceof \LET\NativeType)       return $cet[$node->id] = new NativeType($node, $cet);
+		if ($node instanceof \LET\NativeFunc_AST)   return $cet[$node->id] = new NativeFunc($node, $cet);
 		\mwc\Compiler::error("unable to create CET node for ".get_class($node));
 	}
 	

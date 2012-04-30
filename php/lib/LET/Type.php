@@ -7,6 +7,9 @@ abstract class Type extends Node
 	static public function make(Scope $scope, $expr)
 	{
 		if ($expr) {
+			if ($expr instanceof \AST\NativeTypeExpr) {
+				return new NativeType_AST($scope, $expr);
+			}
 			if ($expr instanceof \AST\Expr) {
 				$expr = Expr::make($scope, $expr);
 			}

@@ -1,15 +1,7 @@
-type A
-{
-	var int a;
-}
+import stdio;
 
 func main
 {
-	var 'const char *' a;
-}
-
-func test (A a) -> (int r, int t)
-{
-	r = a.a * a.a;
-	t = a.a + a.a;
+	putchar(65);
+	putchar(13);
 }

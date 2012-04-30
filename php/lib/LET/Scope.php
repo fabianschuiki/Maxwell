@@ -176,6 +176,13 @@ class Scope
 		static::$builtin = $scope;
 		static::$builtinMap = $map;
 	}
+	
+	static public function getBuiltinNodes()
+	{
+		if (!static::$builtinMap) static::makeBuiltin();
+		return static::$builtinMap;
+	}
+	
 	static public function getBuiltinNode($id)
 	{
 		if (!static::$builtinMap) static::makeBuiltin();

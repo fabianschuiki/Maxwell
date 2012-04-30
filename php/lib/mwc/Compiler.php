@@ -14,6 +14,9 @@ class Compiler
 	{
 		global $issues;
 		
+		//Create the builtin CET if required.
+		if (!static::$builtin) static::makeBuiltin();
+		
 		//Prepare the nodes for compilation, i.e. build some basic information structure.
 		foreach ($nodeIDs as $id) {
 			static::say("preparing $id");
@@ -34,7 +37,7 @@ class Compiler
 			$input->loadRecursively($externalEntities, $externalNodes);
 			
 			//Load the required CETs.
-			$cet = array();
+			$cet = static::$builtin;
 			$ids = array_map(function($n) { return $n->id; }, $externalEntities);
 			array_unshift($ids, $id);
 			foreach ($ids as $i) {
@@ -44,9 +47,9 @@ class Compiler
 			}
 			$this->dumpCET($input, $cet, "base");
 			
-			$input->mainNode()->bind();
+			/*$input->mainNode()->bind();
 			$input->mainNode()->reduce();
-			if ($issues->dumpAndCheck()) return;
+			if ($issues->dumpAndCheck()) return;*/
 			
 			//Process the main node.
 			assert(isset($cet[$id]));
@@ -77,4 +80,14 @@ class Compiler
 	static public function say($msg) { Driver::say("compiler: $msg"); }
 	static public function debug($msg) { Driver::debug("compiler: $msg"); }
 	static public function error($msg) { Driver::error("compiler: $msg"); }
+	
+	static private $builtin = null;
+	static private function makeBuiltin()
+	{
+		$nodes = \LET\Scope::getBuiltinNodes();
+		foreach ($nodes as $id => $node) {
+			static::debug("make builtin for $id");
+		}
+		static::$builtin = array();
+	}
 }

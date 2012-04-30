@@ -433,6 +433,12 @@ class Parser
 		}
 		
 		if (count($ts) >= 3) {
+			if ($ts[0]->is('symbol', "'") && $ts[count($ts)-1]->is('symbol', "'")) {
+				$ap1 = array_shift($ts);
+				$ap2 = array_pop($ts);
+				return new AST\NativeTypeExpr($ts);
+			}
+			
 			foreach (Language::$binaryOperators as $operators) {
 				for ($i = 0; $i < count($ts); $i++) {
 					if ($ts[$i]->is('symbol') && in_array($ts[$i]->text, $operators)) {

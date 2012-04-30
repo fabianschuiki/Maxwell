@@ -24,7 +24,7 @@ class Root extends Node
 				}
 				
 				$n = Node::make($this->scope, $node);
-				if (!$n instanceof Func_AST && !$n instanceof ConcreteType_AST) {
+				if (!$n instanceof Func_AST && !$n instanceof ConcreteType_AST && !$n instanceof NativeFunc_AST) {
 					global $issues;
 					$issues[] = new \Issue(
 						'warning',

@@ -9,6 +9,7 @@ class FuncArg extends Node
 	
 	public function __construct(\LET\FuncArg $node, array &$cet)
 	{
+		parent::__construct();
 		$this->name = $node->name();
 	}
 	
@@ -17,6 +18,8 @@ class FuncArg extends Node
 	
 	public function process(\LET\FuncArg $node, array &$cet)
 	{
+		if ($node->type() instanceof \LET\NativeType) Node::make($node->type(), $cet);
+		
 		$typeID = $node->type()->id;
 		if (!isset($cet[$typeID])) \mwc\Compiler::error("no CET node found for type of function argument {$node->details()}");
 		$this->type = $cet[$typeID];

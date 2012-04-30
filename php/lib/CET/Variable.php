@@ -9,9 +9,10 @@ class Variable extends Node
 	public function __construct(\LET\Variable $node, array &$cet)
 	{
 		parent::__construct();
+		if ($node->type() instanceof \LET\NativeType) Node::make($node->type(), $cet);
 		
 		$typeID = $node->type()->id;
-		if (!isset($cet[$typeID])) \mwc\Compiler::error("no CET node found for type of variable {$node->details()}");
+		if (!isset($cet[$typeID])) \mwc\Compiler::error("unable to find type $typeID for variable {$node->details()}");
 		$type = $cet[$typeID];
 		
 		$this->name = $node->name();

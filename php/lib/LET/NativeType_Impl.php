@@ -7,6 +7,7 @@ class NativeType_Impl extends NativeType
 	
 	public function __construct(Scope $scope, $name)
 	{
+		parent::__construct();
 		$this->name  = $name;
 		$this->scope = $scope;
 	}

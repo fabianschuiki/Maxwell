@@ -47,18 +47,19 @@ class InputFile extends SourceFile
 		$lexer = new \Lexer;
 		$lexer->file = $this->source;
 		$lexer->run();
-		if ($issues->dumpAndCheck()) return;
+		if ($issues->dumpAndCheck()) return false;
 		
 		$parser = new \Parser;
 		$parser->tokens = $lexer->tokens;
 		$parser->issues = $issues;
 		$parser->run();
-		if ($issues->dumpAndCheck()) return;
+		if ($issues->dumpAndCheck()) return false;
 		$this->ast = $parser->nodes;
 		
 		$let = new \LET\Root($parser->nodes);
-		if ($issues->dumpAndCheck()) return;
+		if ($issues->dumpAndCheck()) return false;
 		$this->let = $let;
+		return true;
 	}
 	
 	public function bindLocally()

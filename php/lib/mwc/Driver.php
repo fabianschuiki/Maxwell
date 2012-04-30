@@ -72,6 +72,7 @@ class Driver
 			
 			//Parse and process.
 			$input->parse();
+			if ($issues->dumpAndCheck()) return;
 			$input->bindLocally();
 			if ($issues->dumpAndCheck()) return;
 			

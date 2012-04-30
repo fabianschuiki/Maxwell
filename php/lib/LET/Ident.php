@@ -34,13 +34,24 @@ abstract class Ident extends Expr
 		
 		$type = $this->typeConstraint;
 		$tc = '?';
+		//foreach ($nodes as $node) \mwc\debug("  - found {$node->desc()}\n");
 		if ($type) {
 			//\mwc\debug("  - with {$type->desc()}\n");
 			$nodes = array_filter($nodes, function($node) use ($type) { return $node->type() && (Type::intersect($node->type(), $type) != null); });
 			//\mwc\debug("  - ".count($unfiltered)." found, ".count($nodes)." filtered\n");
 			$tc = $type->details();
 		}
-		//foreach ($nodes as $node) \mwc\debug("  - found {$node->desc()}\n");
+		//foreach ($nodes as $node) \mwc\debug("  - keeping {$node->desc()}\n");
+		
+		//Fill in tuple operation placeholders.
+		/*if ($type instanceof FuncType) {
+			$ins = $type->in()->fields;
+			if (count($ins) == 2 && $ins[0] instanceof TypeTuple && $ins[1] instanceof TypeTuple) {
+				\mwc\debug("chance to fill in implicit tuple operation with type {$type->in()->details()}\n");
+				//For now, the LHS of the operator decides what type the RHS and result will be. This might need to change in the future to make the language actually useful.
+				$nodes[] = new TupleBinaryOp($this->name(), $ins[0]);
+			}
+		}*/
 		
 		//TODO: we need some mature selection scheme for selecting the best node. Maybe some sort of score?
 		if ($type->isSpecific()) {

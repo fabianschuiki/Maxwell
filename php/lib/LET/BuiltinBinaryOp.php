@@ -46,4 +46,8 @@ class BuiltinBinaryOp extends Func
 	public function subscope() { return $this->subscope; }
 	
 	public function nice() { return "Builtin Operator {$this->name}"; }
+	
+	public function gatherExternalNodeIDs(array &$ids)
+	{
+	}
 }

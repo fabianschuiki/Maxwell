@@ -152,4 +152,10 @@ abstract class Func extends TypedNode
 		$root->externalNodes[] = $this->id;
 		return new Func_Proxy($this->id);
 	}
+	
+	public function gatherExternalNodeIDs(array &$ids)
+	{
+		$ids[] = $this->id;
+		parent::gatherExternalNodeIDs($ids);
+	}
 }

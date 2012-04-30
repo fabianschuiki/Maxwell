@@ -39,7 +39,11 @@ class Func extends Node
 			$cet[$stmt->id] = $s;
 		}
 		
-		$this->returnVarName = "ret";
+		if (count($this->outs) == 1) {
+			$this->returnVarName = $this->outs[0]->name();
+		} else {
+			$this->returnVarName = "ret";
+		}
 	}
 	
 	public function getReturnType()

@@ -38,7 +38,8 @@ class Compiler
 			
 			//Load the required CETs.
 			$cet = static::$builtin;
-			$ids = array_map(function($n) { return $n->id; }, $externalEntities);
+			$externalIDs = array_map(function($n) { return $n->id; }, $externalEntities);
+			$ids = $externalIDs;
 			array_unshift($ids, $id);
 			foreach ($ids as $i) {
 				$cet_path = $this->getCETPath($i);
@@ -58,10 +59,14 @@ class Compiler
 			
 			//Generate the C code.
 			$code = new \C\Root;
+			$code->requiredHeaders = array_map(function($id) { return "$id.h"; }, $externalIDs);
 			$cet[$id]->generateCode($code);
-			$codePath = $input->debugPath();
+			$codePath = "{$this->driver->buildDir}/$id";
+			$debugPath = $input->debugPath();
 			file_put_contents("$codePath.h", $code->getHeader());
 			file_put_contents("$codePath.c", $code->getSource());
+			file_put_contents("$debugPath.h", $code->getHeader());
+			file_put_contents("$debugPath.c", $code->getSource());
 		}
 	}
 	

@@ -23,9 +23,8 @@ class TypeSet extends Type
 	
 	public function reduce()
 	{
-		foreach ($this->types as &$type) {
-			$type = $type->reduce();
-		}
+		$this->types = array_map(function($t) { return $t->reduce(); }, $this->types);
+		if (count($this->types) == 1) return $this->types[0];
 		return $this;
 	}
 }

@@ -3,9 +3,10 @@ type A
 	var int a;
 }
 
-func main
+func main (int argc, int argv) -> (int returnCode)
 {
 	var A a;
+	returnCode = 0;
 }
 
 func test (A a) -> (int r, int t)

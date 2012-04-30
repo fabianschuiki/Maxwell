@@ -3,17 +3,12 @@ type A
 	var int a;
 }
 
-type B : A
-{
-	var int b;
-}
-
 func main
 {
 	var A a;
-	var B b;
-	
-	a.a = 5;
-	b.b = 5;
-	b.a = 5;
+}
+
+func test (A a) -> (int r)
+{
+	r = a.a * a.a;
 }

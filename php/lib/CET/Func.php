@@ -28,6 +28,9 @@ class Func extends Node
 	
 	public function process(\LET\Func $node, array &$cet)
 	{
+		foreach ($node->inputs()  as $in)  $cet[$in ->id]->process($in,  $cet);
+		foreach ($node->outputs() as $out) $cet[$out->id]->process($out, $cet);
+		
 		foreach ($node->stmts() as $stmt) {
 			$s = Node::make($stmt, $cet);
 			$this->stmts[] = $s;
@@ -48,10 +51,14 @@ class Func extends Node
 		
 		$node = new \C\Func;
 		$node->signature = "{$this->getReturnType()} {$this->name()}(".implode(", ", $args).")";
+		
+		$node->body->add(new \C\Stmt("{$this->getReturnType()} result"));
+		
 		foreach ($this->stmts as $stmt) {
 			$s = $stmt->generateCode($node->body);
 			if ($s)	$node->body->add($s);
 		}
+		
 		$root->add($node);
 		return null;
 	}

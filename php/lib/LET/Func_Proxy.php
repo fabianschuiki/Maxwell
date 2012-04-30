@@ -24,6 +24,13 @@ class Func_Proxy extends Func
 	
 	public function bindProxies(array $nodes)
 	{
+		$builtin = Scope::getBuiltinNode($this->id);
+		if ($builtin) {
+			\mwc\debug("reduced func proxy {$this->id} to {$builtin->desc()}\n");
+			$this->resolved = $builtin;
+			return;
+		}
+		
 		if (!isset($nodes[$this->id])) {
 			global $issues;
 			$issues[] = new \Issue(
@@ -47,7 +54,7 @@ class Func_Proxy extends Func
 	
 	public function unbindFromInterfaces(Root $root)
 	{
-		return $this;
+		return new self($this->id);
 	}
 	
 	public function gatherExternalNodeIDs(array &$ids)

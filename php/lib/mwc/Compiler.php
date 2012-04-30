@@ -12,6 +12,8 @@ class Compiler
 	
 	public function compile(array $nodeIDs)
 	{
+		global $issues;
+		
 		//Prepare the nodes for compilation, i.e. build some basic information structure.
 		foreach ($nodeIDs as $id) {
 			static::say("preparing $id");
@@ -41,6 +43,10 @@ class Compiler
 				$cet = array_merge($cet, unserialize(file_get_contents($cet_path)));
 			}
 			$this->dumpCET($input, $cet, "base");
+			
+			$input->mainNode()->bind();
+			$input->mainNode()->reduce();
+			if ($issues->dumpAndCheck()) return;
 			
 			//Process the main node.
 			assert(isset($cet[$id]));

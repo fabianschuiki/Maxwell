@@ -12,6 +12,7 @@ class BuiltinBinaryOp extends Func
 	{
 		parent::__construct();
 		assert(is_string($name));
+		$this->id = "builtin_binop_$name";
 		
 		if (!$returnType) $returnType = $type;
 		assert($returnType instanceof Type);
@@ -43,9 +44,4 @@ class BuiltinBinaryOp extends Func
 	public function subscope() { return $this->subscope; }
 	
 	public function nice() { return "Builtin Operator {$this->name}"; }
-	
-	public function unbindFromInterfaces()
-	{
-		return $this;
-	}
 }

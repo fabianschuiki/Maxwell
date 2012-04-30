@@ -85,6 +85,9 @@ class Entity
 									
 		$this->node->bindProxies($externalNodes);
 		$this->node->reduce();
+		
+		/*$this->node->bind(true);
+		$this->node->reduce();*/
 		if ($issues->dumpAndCheck()) return;
 	}
 	

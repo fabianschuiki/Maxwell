@@ -151,6 +151,7 @@ class Scope
 	}
 	
 	static private $builtin = null;
+	static private $builtinMap = null;
 	static private function makeBuiltin()
 	{
 		$scope = new Scope;
@@ -167,7 +168,18 @@ class Scope
 			foreach ($operators     as $operator) new BuiltinBinaryOp($scope, $operator, $type);
 			foreach ($boolOperators as $operator) new BuiltinBinaryOp($scope, $operator, $type, $bool);
 		}
-
+		
+		$map = array();
+		foreach ($scope->types as $type) $map[$type->id] = $type;
+		foreach ($scope->funcs as $func) $map[$func->id] = $func;
+		
 		static::$builtin = $scope;
+		static::$builtinMap = $map;
+	}
+	static public function getBuiltinNode($id)
+	{
+		if (!static::$builtinMap) static::makeBuiltin();
+		if (isset(static::$builtinMap[$id])) return static::$builtinMap[$id];
+		return null;
 	}
 }

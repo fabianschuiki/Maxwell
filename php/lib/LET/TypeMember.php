@@ -17,14 +17,14 @@ abstract class TypeMember extends TypedNode
 	public function children()
 	{
 		$type = $this->type;
-		if (!$type || $type instanceof ConcreteType) return array();
+		if (!$type || ($type instanceof ConcreteType && !$type instanceof ConcreteType_Proxy)) return array();
 		return array($type);
 	}
 	
 	public function reduce()
 	{
 		$type = $this->type;
-		if ($type && !$type instanceof ConcreteType) $this->type = $type->reduce();
+		if ($type && (!$type instanceof ConcreteType || $type instanceof ConcreteType_Proxy)) $this->type = $type->reduce();
 		return $this;
 	}
 	

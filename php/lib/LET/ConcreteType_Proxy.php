@@ -13,7 +13,7 @@ class ConcreteType_Proxy extends ConcreteType
 		$this->resolved = $this;
 	}
 	
-	public function name()    { return "<proxy>"; }
+	public function name()    { return "<type proxy>"; }
 	public function members() { return array(); }
 	
 	public function details()  { return "@".$this->id; }
@@ -25,6 +25,12 @@ class ConcreteType_Proxy extends ConcreteType
 	
 	public function bindProxies(array $nodes)
 	{
+		$builtin = Scope::getBuiltinNode($this->id);
+		if ($builtin) {
+			$this->resolved = $builtin;
+			return;
+		}
+		
 		//\mwc\debug("type proxy {$this->id} asked to bind proxies\n");
 		if (!isset($nodes[$this->id])) {
 			global $issues;
@@ -43,17 +49,13 @@ class ConcreteType_Proxy extends ConcreteType
 	
 	public function reduce()
 	{
-		//\mwc\debug("type proxy {$this->id} asked to reduce\n");
-		assert($this->resolved instanceof ConcreteType);
-		/*if (!$this->resolved instanceof ConcreteType_Intf) {
-			throw new \RuntimeException("ConcreteType_Proxy asked to reduce without proper ConcreteType_Intf");
-		}*/
+		assert($this->resolved instanceof Type);
 		return $this->resolved;
 	}
 	
 	public function unbindFromInterfaces(Root $root)
 	{
-		return $this;
+		return new self($this->id);
 	}
 	
 	public function gatherExternalNodeIDs(array &$ids)

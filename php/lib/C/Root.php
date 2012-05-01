@@ -20,7 +20,7 @@ class Root extends Container
 		}
 		
 		foreach ($this->nodes as $node) {
-			assert($node instanceof Func || $node instanceof TypeDef);
+			assert($node instanceof Func || $node instanceof TypeDef || $node instanceof GlobalVar);
 			$d = null;
 			if ($header) {
 				$d = $node->getDeclaration();

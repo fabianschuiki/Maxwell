@@ -22,6 +22,7 @@ abstract class Constant extends Expr
 				}
 			} break;
 			case 'string': {
+				$type = new TypeExpr($this->scope, new Ident_Impl($this->scope, "String"));
 			} break;
 		}
 		$this->type = $type;

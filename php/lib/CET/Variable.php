@@ -5,6 +5,7 @@ class Variable extends Node
 {
 	public $name;
 	public $type;
+	public $initial;
 	public $pointer;
 	
 	public function __construct(\LET\Variable $node, array &$cet)
@@ -16,8 +17,12 @@ class Variable extends Node
 		if (!isset($cet[$typeID])) \mwc\Compiler::error("unable to find type $typeID for variable {$node->details()}");
 		$type = $cet[$typeID];
 		
+		$initial = null;
+		if ($node->initial) $initial = Node::make($node->initial, $cet);
+		
 		$this->name    = $node->name();
 		$this->type    = $type;
+		$this->initial = $initial;
 		$this->pointer = !$node->type()->keepOnStack();
 	}
 	
@@ -35,7 +40,10 @@ class Variable extends Node
 	
 	public function generateCode(\C\Container $root)
 	{
-		$root->add(new \C\Stmt("{$this->getType()} {$this->name()}"));
+		$def = "{$this->getType()} {$this->name()}";
+		if ($this->initial)	$def .= " = ".$this->initial->generateCode($root)->getExpr();
+		
+		$root->add(new \C\Stmt($def));
 		return null;
 	}
 	

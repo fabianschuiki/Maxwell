@@ -98,7 +98,7 @@ abstract class TypedNode extends Node
 	{
 		\Analyzer::$stat_maybeTypeChanged++;
 		$type = $this->type();
-		if ($type != $this->lastConfirmedType && $this->lastConfirmedType) {
+		if ($this->lastConfirmedType && !Type::equalTwo($type, $this->lastConfirmedType)) {
 			//echo " - type changed {$this->desc()} from {$this->lastConfirmedType->details()}\n";
 			$this->lastConfirmedType = $type;
 			//echo "\033[32;1mtype changed\033[0m: {$this->desc()}".($this->parent ? ' -> propagates to parent' : '')."\n";

@@ -15,8 +15,9 @@ func main
 	var int x;
 	x = 5;
 	
-	var Person me;// = new Person;
+	var Person me = new Person;
 	me.age = 22;
 	me.height = 185;
+	//me.n = new Nationality;
 	me.n.id = 1268746;
 }

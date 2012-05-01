@@ -24,7 +24,10 @@ class Call extends Node
 		$arguments = array_map(function($a) use ($root) { return $a->generateCode($root); }, $this->arguments);
 		
 		if ($this->func instanceof BuiltinOp) {
-			return new \C\Operator($this->func->name(), $arguments[0], $arguments[1]);
+			if ($this->func->name() == 'new') {
+				return new \C\Expr("mw_new(".$arguments[0]->getExpr().")");
+			}
+			return new \C\Operator($this->func->name(), $arguments);
 		} else {
 			$args = array_map(function($a) { return $a->getExpr(); }, $arguments);
 			$node = new \C\Expr;

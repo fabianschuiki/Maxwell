@@ -46,4 +46,9 @@ class Type extends Node
 		}
 		$root->add($node);
 	}
+	
+	public function getReference()
+	{
+		return new \C\Expr($this->name());
+	}
 }

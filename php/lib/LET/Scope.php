@@ -169,6 +169,8 @@ class Scope
 			foreach ($boolOperators as $operator) new BuiltinBinaryOp($scope, $operator, $type, $bool);
 		}
 		
+		new BuiltinUnaryOp($scope, 'new', new GenericType);
+		
 		$map = array();
 		foreach ($scope->types as $type) $map[$type->id] = $type;
 		foreach ($scope->funcs as $func) $map[$func->id] = $func;

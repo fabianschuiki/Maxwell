@@ -1,7 +1,7 @@
 <?php
 namespace LET;
 
-class BuiltinBinaryOp extends Func
+class BuiltinUnaryOp extends Func
 {
 	public $name;
 	public $inputs;
@@ -14,7 +14,7 @@ class BuiltinBinaryOp extends Func
 		assert(is_string($name));
 		
 		$ret = ($returnType ? $returnType->name() : $type->name());
-		$this->id = "builtin_binop_{$name}_{$type->name()}_{$ret}";
+		$this->id = "builtin_unop_{$name}_{$type->name()}_{$ret}";
 		
 		if (!$returnType) $returnType = $type;
 		assert($returnType instanceof Type);
@@ -22,17 +22,14 @@ class BuiltinBinaryOp extends Func
 		$args     = array();
 		$subscope = new Scope($scope, $this);
 		
-		foreach (array('a' => $type, 'b' => $type, 'r' => $returnType) as $argname => $argtype) {
-			$arg = new FuncArg_Impl($subscope, $argtype, $argname);
-			$arg->parent = $this;
-			$args[] = $arg;
-		}
-		$outputs = array(array_pop($args));
-		$inputs  = $args;
+		$in  = new FuncArg_Impl($subscope, $type, 'a');
+		$in ->parent = $this;
+		$out = new FuncArg_Impl($subscope, $returnType, 'r');
+		$out->parent = $this;
 		
 		$this->name     = $name;
-		$this->inputs   = $inputs;
-		$this->outputs  = $outputs;
+		$this->inputs   = array($in);
+		$this->outputs  = array($out);
 		$this->scope    = $scope;
 		$this->subscope = $subscope;
 		
@@ -45,9 +42,14 @@ class BuiltinBinaryOp extends Func
 	public function stmts()    { return array(); }
 	public function subscope() { return $this->subscope; }
 	
-	public function nice() { return "Builtin Binary Operator {$this->name}"; }
+	public function nice() { return "Builtin Unary Operator {$this->name}"; }
 	
 	public function gatherExternalNodeIDs(array &$ids)
 	{
+	}
+	
+	public function specialize()
+	{
+		return $this;
 	}
 }

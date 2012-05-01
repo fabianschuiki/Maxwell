@@ -15,4 +15,9 @@ class GlobalVar extends Node
 	{
 		return "extern {$this->signature};";
 	}
+	
+	public function getStmt()
+	{
+		return $this->getDefinition();
+	}
 }

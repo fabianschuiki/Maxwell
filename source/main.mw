@@ -1,8 +1,12 @@
+type Data
+{
+}
+
 type String
 {
 }
 
 func main
 {
-	var str = "Hello World";
+	/*var str = */"Héllo World";
 }

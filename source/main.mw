@@ -1,7 +1,22 @@
-import stdio;
+type Nationality
+{
+	var int id;
+}
+
+type Person
+{
+	var int age;
+	var int height;
+	var Nationality n;
+}
 
 func main
 {
-	putchar(65);
-	putchar(13);
+	var int x;
+	x = 5;
+	
+	var Person me;// = new Person;
+	me.age = 22;
+	me.height = 185;
+	me.n.id = 1268746;
 }

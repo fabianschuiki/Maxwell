@@ -5,6 +5,7 @@ class Member extends Node
 {
 	public $node;
 	public $member;
+	public $pointer;
 	
 	public function __construct(\LET\Member $node, array &$cet)
 	{
@@ -18,12 +19,15 @@ class Member extends Node
 		$this->node = Node::make($node->expr(), $cet);
 	}
 	
+	public function isPointer() { return $this->member->isPointer(); }
 	public function details() { return "{$this->member->name()}"; }
 	
 	public function generateCode(\C\Container $root)
 	{
-		$node = new \C\Expr;
-		$node->code = $this->node->generateCode($root)->getExpr().".{$this->member->name()}";
-		return $node;
+		$expr  = $this->node->generateCode($root)->getExpr();
+		$expr .= ($this->node->isPointer() ? "->" : ".");
+		$expr .= $this->member->name();
+		
+		return new \C\Expr($expr);
 	}
 }

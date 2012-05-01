@@ -12,6 +12,7 @@ class Ident extends Node
 		$this->target = $cet[$targetID];
 	}
 	
+	public function isPointer() { return $this->target->isPointer(); }
 	public function details() { return "@{$this->target->name()}"; }
 	
 	public function generateCode(\C\Container $root)

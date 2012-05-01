@@ -34,4 +34,6 @@ class PrimitiveBuiltinType extends BuiltinType
 	public function gatherExternalNodeIDs(array &$ids)
 	{
 	}
+	
+	public function keepOnStack() { return true; }
 }

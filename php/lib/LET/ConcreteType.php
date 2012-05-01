@@ -109,4 +109,7 @@ abstract class ConcreteType extends Type
 		if ($this->parent) $this->parent = $this->parent->reduce();
 		return parent::reduce();
 	}
+	
+	/// Return whether instances of this type should be kept on the stack, and copied around.
+	public function keepOnStack() { return false; }
 }

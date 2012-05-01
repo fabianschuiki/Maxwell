@@ -30,6 +30,10 @@ class Type extends Node
 	
 	public function process(\LET\ConcreteType $node, array &$cet)
 	{
+		foreach ($node->members() as $member) {
+			$m = $cet[$member->id];
+			$m->process($member, $cet);
+		}
 	}
 	
 	public function generateCode(\C\Container $root)

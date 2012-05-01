@@ -59,8 +59,9 @@ class ConcreteType_Intf extends ConcreteType
 		$root->externalNodes[] = $this->id;
 	}
 	
-	public function gatherExternalNodeIDs(array &$ids)
+	/*public function gatherExternalNodeIDs(array &$ids)
 	{
 		$ids[] = $this->id;
-	}
+		parent::gatherExternalNodeIDs($ids);
+	}*/
 }

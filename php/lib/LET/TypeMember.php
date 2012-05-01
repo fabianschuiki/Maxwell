@@ -32,4 +32,10 @@ abstract class TypeMember extends TypedNode
 	{
 		return new TypeMember_Intf($scope, $this);
 	}
+	
+	public function gatherExternalNodeIDs(array &$ids)
+	{
+		if ($this->type) $this->type->gatherExternalNodeIDs($ids);
+		parent::gatherExternalNodeIDs($ids);
+	}
 }

@@ -22,8 +22,17 @@ class TypeMember extends Node
 	
 	public function process(\LET\TypeMember $node, array &$cet)
 	{
+		if ($node->type() instanceof \LET\NativeType) Node::make($node->type(), $cet);
+		
 		$typeID = $node->type()->id;
 		if (!isset($cet[$typeID])) \mwc\Compiler::error("no type node $typeID found for member {$node->details()}");
 		$this->type = $cet[$typeID];
+	}
+	
+	public function getType()
+	{
+		$t = $this->type->name();
+		if ($this->pointer) $t .= " *";
+		return $t;
 	}
 }

@@ -48,7 +48,7 @@ class Type extends Node
 		$node->name = $this->name();
 		$node->fields[] = new \C\Stmt("{$this->record->getType()} * isa");
 		foreach ($this->members as $member) {
-			$node->fields[] = new \C\Stmt("int {$member->name()}");
+			$node->fields[] = new \C\Stmt("{$member->getType()} {$member->name()}");
 		}
 		$root->add($node);
 	}

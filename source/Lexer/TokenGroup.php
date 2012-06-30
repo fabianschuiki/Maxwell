@@ -1,20 +1,25 @@
 <?php
 namespace Lexer;
+use Source\Range;
 
 class TokenGroup extends AbstractToken
 {
+	protected $id;
 	protected $startToken;
 	protected $endToken;
 	protected $tokens;
 	
-	public function __construct()
+	public function __construct($id)
 	{
+		assert(is_numeric($id));
+		$this->id = $id;
 		$this->tokens = new TokenList;
 	}
 	
 	public function getStartToken() { return $this->startToken; }
 	public function getEndToken() { return $this->endToken; }
 	
+	public function getID() { return $this->id; }
 	public function getType() { return 'group'; }
 	public function getText() { return $this->startToken->getText() . $this->endToken->getText(); }
 	public function getRange() { return Range::union($this->startToken->getRange(), $this->endToken->getRange()); }

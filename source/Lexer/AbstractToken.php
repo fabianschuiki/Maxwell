@@ -3,6 +3,7 @@ namespace Lexer;
 
 abstract class AbstractToken
 {
+	abstract function getID();
 	abstract function getType();
 	abstract function getText();
 	abstract function getRange();

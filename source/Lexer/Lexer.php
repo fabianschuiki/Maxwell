@@ -21,6 +21,7 @@ class Lexer
 		$contents = $this->file->getContents();
 		$len = strlen($contents);
 		
+		$id = 0;
 		$tokens = array();
 		$tokenType = null;
 		$tokenStart = new Location;
@@ -82,7 +83,7 @@ class Lexer
 					$range = new Range($this->file, $tokenStart, $tokenEnd);
 					$text = substr($contents, $range->getPosition(), $range->getLength());
 					
-					$t = new Token($tokenType, $text, $range);
+					$t = new Token($id++, $tokenType, $text, $range);
 					$tokens[] = $t;
 				}
 				
@@ -105,7 +106,7 @@ class Lexer
 		$groupedTokens = new TokenList;
 		foreach ($tokens as $t) {
 			if ($t->is('symbol') && strchr('([{', $t->getText()) !== false) {
-				$g = new TokenGroup;
+				$g = new TokenGroup($id++);
 				$g->setStartToken($t);
 				if (count($groupStack) == 0)
 					$groupedTokens->add($g);
@@ -148,4 +149,7 @@ class Lexer
 			return 'symbol';
 		return 'identifier';
 	}
+	
+	public function getFile() { return $this->file; }
+	public function getTokens() { return $this->tokens; }
 }

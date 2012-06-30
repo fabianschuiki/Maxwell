@@ -1,4 +1,5 @@
 <?php
+use Source\Range;
 
 class Issue
 {
@@ -14,25 +15,26 @@ class Issue
 		
 		if (is_array($range)) {
 			$total = null;
+			$ranges = array();
 			foreach ($range as $r) {
-				if (!$r instanceof Range && method_exists($r, 'range')) $r = $r->range();
-				if (!$total) {
-					$total = clone $r;
-				} else {
-					$total->combine($r);
-				} 
+				if (!$r instanceof Range && method_exists($r, 'getRange')) $r = $r->getRange();
+				if (!$r instanceof Range)
+					trigger_error(vartype($r)." passed as range is neither a Range nor does it implement the getRange() function", E_USER_ERROR);
+				$ranges[] = $r;
 			}
-			$range = $total;
+			$range = Range::union($ranges);
 		}
-		if (!$range instanceof Range && method_exists($range, 'range')) {
-			$range = $range->range();
+		if (!$range instanceof Range && method_exists($range, 'getRange')) {
+			$range = $range->getRange();
 		}
 		
 		if (!is_array($marked)) {
-			$marked = array($marked);
+			$marked = ($marked != null ? array($marked) : array());
 		}
 		$marked = array_map(function($r){
-			if (!$r instanceof Range && method_exists($r, 'range')) $r = $r->range();
+			if (!$r instanceof Range && method_exists($r, 'getRange')) $r = $r->getRange();
+			if (!$r instanceof Range)
+				trigger_error(vartype($r)." passed as marked range is neither a Range nor does it implement the getRange() function", E_USER_ERROR);
 			return $r;
 		}, $marked);
 		$mb = count($marked);
@@ -52,9 +54,9 @@ class Issue
 		
 		$source = null;
 		if ($this->range) {
-			$source = $this->range->source;
+			$source = $this->range->getFile();
 		} else if (count($this->marked) > 0) {
-			$source = $this->marked[0]->source;
+			$source = $this->marked[0]->getFile();
 		}
 		
 		$t = $this->type.':';
@@ -64,28 +66,28 @@ class Issue
 		$msg = str_replace("\n", "\n    : ", $this->message);
 		$o = "$t $msg";
 		if ($source) {
-			$sfr  = basename($source->path);
+			$sfr  = basename($source->getPath());
 			if ($this->range) {
 				$sfr .= ':';
-				$sfr .= $this->range->start->line.':'.$this->range->start->column;
+				$sfr .= ($this->range->getStart()->getLine()+1).':'.$this->range->getStart()->getColumn();
 			}
 			$o = "$sfr: $o";
 		}
 		
-		$lines = ($this->range ? range($this->range->start->line, $this->range->end->line) : array());
+		$lines = ($this->range ? range($this->range->getStart()->getLine(), $this->range->getEnd()->getLine()) : array());
 		foreach ($this->marked as $r) {
-			if (!$source) $source = $r->source;
-			$lines = array_merge($lines, range($r->start->line, $r->end->line));
+			if (!$source) $source = $r->getFile();
+			$lines = array_merge($lines, range($r->getStart()->getLine(), $r->getEnd()->getLine()));
 		}
 		$lines = array_unique($lines);
 		sort($lines);
 		
 		if (count($lines) > 0) {
-			$ls = explode("\n", $source->content);
+			$ls = explode("\n", $source->getContents());
 			
 			$whitelead_min = null;
 			foreach ($lines as $l) {
-				preg_match('/^\s*/', $ls[$l-1], $match);
+				preg_match('/^\s*/', $ls[$l], $match);
 				$whitelead = strlen(str_replace("\t", "    ", $match[0]));
 				if (!$whitelead_min || $whitelead < $whitelead_min) $whitelead_min = $whitelead;
 			}
@@ -98,7 +100,7 @@ class Issue
 				if ($skipped) $o .= "\r    ~";
 				
 				$pl = $l;
-				$line = $ls[$l-1];
+				$line = $ls[$l];
 				$marks = '';
 				for ($i = 0; $i < strlen($line); $i++) {
 					$mark = ($line[$i] == "\t" ? "\t" : " ");
@@ -118,7 +120,7 @@ class Issue
 				$marks = substr(str_replace("\t", "    ", $marks), $whitelead_min);
 				if ($ENABLE_COLORS) $marks = "\033[0;36m$marks\033[0m";
 			
-				$prefix = sprintf('%4d', $l);
+				$prefix = sprintf('%4d', $l+1);
 				$pad = str_repeat(' ', strlen($prefix));
 				$o .= "\n";
 				$o .= "$prefix| $line\n";

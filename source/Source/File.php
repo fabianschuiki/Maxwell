@@ -1,5 +1,6 @@
 <?php
 namespace Source;
+use IssueList;
 
 class File
 {
@@ -20,7 +21,7 @@ class File
 	public function getContents()
 	{
 		if (!$this->contents) {
-			$this->contents = file_get_contents($this->path);
+			$this->contents = @file_get_contents($this->path);
 			if (!$this->contents)
 				IssueList::add('error', "Source file {$this->path} does not exist");
 		}

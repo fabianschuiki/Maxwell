@@ -6,7 +6,7 @@ $issues->push();
 
 $file = new Source\File(__DIR__."/lexer.mw");
 
-$lexer = new Lexer($file);
+$lexer = new Lexer\Lexer($file);
 $lexer->run();
 
 $issues->pop();

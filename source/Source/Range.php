@@ -10,13 +10,16 @@ class Range
 	public function __construct(File $file, Location $start, Location $end)
 	{
 		$this->file = $file;
-		$this->start = $start;
-		$this->end = $end;
+		$this->start = clone $start;
+		$this->end = clone $end;
 	}
 	
 	public function getFile()  { return $this->file; }
 	public function getStart() { return $this->start; }
 	public function getEnd()   { return $this->end; }
+	
+	public function getPosition() { return $this->start->getOffset(); }
+	public function getLength() { return $this->end->getOffset() - $this->start->getOffset(); }
 	
 	public function contains($line, $column)
 	{
@@ -47,6 +50,6 @@ class Range
 		}
 		
 		if (!$file || !$ls || !$le) return null;
-		return new Range($file, $ls, $le);
+		return new Range($file, clone $ls, clone $le);
 	}
 }

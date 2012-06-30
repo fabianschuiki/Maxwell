@@ -2,28 +2,25 @@
 
 class Lexer
 {
-	public $file;
-	public $tokens;
-	public $flatTokens;
-	public $issues;
+	protected $file;
+	protected $tokens;
+	
+	public function __construct(Source\File $file)
+	{
+		$this->file = $file;
+	}
 	
 	public function run()
 	{
-		assert($this->file);
-		$input = $this->file->content;
+		$input = $this->file->getContents();;
 		
 		$this->tokens = array();
-		$this->flatTokens = array();
-		$this->issues = array();
 		
 		//Accumulation buffer for tokens.
 		$bufferType  = null;
-		$bufferRange = new Range;
-		$bufferRange->source = $this->file;
+		$bufferStart = new Source\Location;
+		$bufferEnd   = new Source\Location;
 		$buffer      = "";
-		
-		//Location tracking.
-		$loc = new Location;
 		
 		//Keep a group stack.
 		$groupStack = array();
@@ -146,7 +143,7 @@ class Lexer
 				//Create the default token and add it to the flat token list.
 				$dt = new Token;
 				$dt->type  = $bufferType;
-				$dt->range = clone $bufferRange;
+				$dt->range = new Source\Range($this->file, $bufferStart, $bufferEnd);
 				$dt->text  = $buffer;
 				$this->flatTokens[] = $dt;
 				
@@ -157,6 +154,7 @@ class Lexer
 						$style = $groupStack[0]->text;
 						if ($style[1] != $buffer) {
 							$this->issues[] = "$bufferRange: symbol $buffer doesn't close previous group $style properly";
+							//IssueList::add('error', "Symbol $buffer is not the appropriate closing bracket for $style", $
 						} else {
 							$groupStack[0]->range->combine($bufferRange);
 							array_shift($groupStack);
@@ -204,21 +202,11 @@ class Lexer
 				$buffer .= $c;
 			}
 			
-			//Increase the location column counter.
-			if ($c == "\n") {
-				$loc->line++;
-				$loc->column = 0;
-			} else {
-				$loc->column++;
-			}
-			$loc->offset++;
-			
-			//Adjust the buffer range's end.
-			$bufferRange->end = clone $loc;
-		}
-		
-		foreach ($this->issues as $i) {
-			echo $i."\n";
+			//Increase the buffer end location.
+			if ($c == "\n")
+				$bufferEnd->addLine();
+			else
+				$bufferEnd->addColumn();
 		}
 	}
 }

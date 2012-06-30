@@ -1,6 +1,7 @@
 <?php
+namespace Source;
 
-class SourceFile
+class File
 {
 	protected $path;
 	protected $contents;

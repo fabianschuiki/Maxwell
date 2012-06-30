@@ -44,7 +44,7 @@ class Issue
 	
 	public function __toString()
 	{
-		global $enableColors;
+		global $ENABLE_COLORS;
 		
 		if (!is_array($this->marked)) {
 			$this->marked = array();
@@ -58,8 +58,8 @@ class Issue
 		}
 		
 		$t = $this->type.':';
-		if ($this->type == 'error' && $enableColors)   $t = "\033[1;31m$t\033[0m";
-		if ($this->type == 'warning' && $enableColors) $t = "\033[1;33m$t\033[0m";
+		if ($this->type == 'error' && $ENABLE_COLORS)   $t = "\033[1;31m$t\033[0m";
+		if ($this->type == 'warning' && $ENABLE_COLORS) $t = "\033[1;33m$t\033[0m";
 		
 		$msg = str_replace("\n", "\n    : ", $this->message);
 		$o = "$t $msg";
@@ -116,7 +116,7 @@ class Issue
 				}
 				$line  = substr(str_replace("\t", "    ", $line),  $whitelead_min);
 				$marks = substr(str_replace("\t", "    ", $marks), $whitelead_min);
-				if ($enableColors) $marks = "\033[0;36m$marks\033[0m";
+				if ($ENABLE_COLORS) $marks = "\033[0;36m$marks\033[0m";
 			
 				$prefix = sprintf('%4d', $l);
 				$pad = str_repeat(' ', strlen($prefix));

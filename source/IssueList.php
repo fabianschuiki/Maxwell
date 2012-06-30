@@ -2,11 +2,39 @@
 
 class IssueList implements ArrayAccess
 {
-	public $issues = array();
-	public $num_warnings = 0;
-	public $num_errors   = 0;
+	static $stack = array();
 	
-	public function add(Issue $i)
+	static public function add($type, $message, $range = null, $marked = null)
+	{
+		assert(count(static::$stack) > 0);
+		$list = static::$stack[count(static::$stack)-1];
+		
+		$i = new Issue($type, $message, $range, $marked);
+		$list->addIssue($i);
+	}
+	
+	protected $issues = array();
+	protected $num_warnings = 0;
+	protected $num_errors   = 0;
+	
+	public function push()
+	{
+		array_push(static::$stack, $this);
+	}
+	
+	public function pop()
+	{
+		$popped = array_pop(static::$stack);
+		assert($popped === $this);
+	}
+	
+	public function report()
+	{
+		$this->dump();
+	}
+	
+	//OLD INTERFACE THAT IS NOW DEPRECATED
+	public function addIssue(Issue $i)
 	{
 		$this->issues[] = $i;
 		if ($i->type == 'warning') $this->num_warnings++;

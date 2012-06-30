@@ -1,0 +1,7 @@
+/* This is some
+ * multiline comment for debugging. */
+int main (int argv, char *argv[])
+{
+	//Return some stuff.
+	return 0;
+}

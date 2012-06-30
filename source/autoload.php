@@ -5,3 +5,5 @@ spl_autoload_register(function($class) {
 	if (!file_exists($path)) return false;
 	require_once $path;
 });
+
+require_once __DIR__."/include.php";

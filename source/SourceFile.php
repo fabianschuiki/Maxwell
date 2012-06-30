@@ -2,14 +2,27 @@
 
 class SourceFile
 {
-	public $path;
-	public $content;
+	protected $path;
+	protected $contents;
 	
-	public function load($path = null)
+	public function __construct($path)
 	{
-		if ($path) {
-			$this->path = $path;
+		assert(is_string($path));
+		$this->path = $path;
+	}
+	
+	public function getPath()
+	{
+		return $this->path;
+	}
+	
+	public function getContents()
+	{
+		if (!$this->contents) {
+			$this->contents = file_get_contents($this->path);
+			if (!$this->contents)
+				IssueList::add('error', "Source file {$this->path} does not exist");
 		}
-		$this->content = file_get_contents($this->path);
+		return $this->contents;
 	}
 }

@@ -63,4 +63,15 @@ class TokenList
 		}
 		return $list;
 	}
+	
+	public function upTo($type, $text = null)
+	{
+		$list = new TokenList;
+		while (!$this->isEmpty()) {
+			if ($this->is($type, $text))
+				break;
+			$list->add($this->consume());
+		}
+		return $list;
+	}
 }

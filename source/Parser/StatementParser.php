@@ -2,12 +2,61 @@
 namespace Parser;
 use AST;
 use Lexer\Token;
+use Lexer\TokenGroup;
 use Lexer\TokenList;
 use IssueList;
 use Language;
 
 class StatementParser
 {
+	static public function parseStmt(TokenList $tokens)
+	{
+		if ($tokens->is('identifier') && in_array($tokens->getText(), Language::$keywords)) {
+			return StatementParser::parseKeywordStmt($tokens->consume(), $tokens);
+		}
+		
+		//Treat this as an expression statement, i.e. an expression followed by a semicolon.
+		$expr_tokens = $tokens->upTo('symbol', ';');
+		if ($expr_tokens->isEmpty()) return null;
+		
+		$semicolon = null;
+		if (!$tokens->is('symbol', ';'))
+			IssueList::add('warning', "Semicolon missing after expression statement. Assuming one is there.", $expr_tokens->getTokens());
+		else
+			$semicolon = $tokens->consume();
+		
+		$expr = ExpressionParser::parseExpr($expr_tokens);
+		if (!$expr) return null;
+		return new AST\Stmt\Expr($expr, $semicolon);
+		
+		//As a last resort, simply consume one token and throw an error.
+		$token = $tokens->consume();
+		IssueList::add('error', "Unable to parse statement starting with {$token->getNice()}.", $token);
+		return null;
+	}
+	
+	static public function parseBlock(TokenGroup $group)
+	{
+		$tokens = $group->getStrippedTokens();
+		$stmts = array();
+		while (!$tokens->isEmpty()) {
+			$stmt = static::parseStmt($tokens);
+			if ($stmt) $stmts[] = $stmt;
+		}
+		return new AST\Block($stmts, $group);
+	}
+	
+	static public function parseBlockOrStmt(TokenList $tokens)
+	{
+		if ($tokens->is('group', '{}')) {
+			return static::parseBlock($tokens->consume());
+		} else {
+			$stmt = static::parseStmt($tokens);
+			if (!$stmt) return null;
+			return new AST\Block(array($stmt));
+		}
+	}
+	
 	static public function parseKeywordStmt(Token $keyword, TokenList $tokens)
 	{
 		switch ($keyword->getText()) {
@@ -31,103 +80,14 @@ class StatementParser
 				return new AST\Stmt\Package($keyword, $tokens->consume(), $tokens->consumeIf('symbol', ';'));
 			} break;
 			
-			case 'func':
-				return static::parseFuncDefStmt($keyword, $tokens);
+			case 'func': return DefinitionParser::parseFuncDefStmt($keyword, $tokens);
 			
-			case 'if': return static::parseIfStmt($keyword, $tokens);
-			case 'else': return static::parseElseStmt($keyword, $tokens);
+			case 'if': return ControlFlowParser::parseIfStmt($keyword, $tokens);
+			case 'else': return ControlFlowParser::parseElseStmt($keyword, $tokens);
 		}
 		
 		//Throw an error if the keyword does not introduce any useful statement.
 		IssueList::add('error', "Keyword '{$keyword->getText()}' does not introduce a statement.", $keyword);
-		return null;
-	}
-	
-	static public function parseFuncDefStmt(Token $keyword, TokenList $tokens)
-	{
-		//Extract the function name.
-		$name = null;
-		if ($tokens->is('identifier')) {
-			$name = $tokens->consume();
-		}
-		else if ($tokens->is('group', '()')) {
-			$g = $tokens->consume();
-			$gts = $g->getStrippedTokens();
-			if ($gts->isEmpty()) {
-				IssueList::add('error', "Operator function requires an operator symbol inside the paranthesis.", $g);
-				goto name_failed;
-			}
-			if (!$gts->is('symbol')) {
-				IssueList::add('error', "Operator function name needs to be a symbol.", $gts->consume());
-				goto name_failed;
-			}
-			$name = $gts->consume();
-			if (!$gts->isEmpty()) {
-				IssueList::add('warning', "Operator function should have only one symbol inside the paranthesis. Ignoring additional tokens.", $gts->getTokens(), $name);
-			}
-		}
-		else {
-			IssueList::add('error', "Function requires a name or an operator symbol after '{$keyword->getText()}'.", $keyword);
-			goto name_failed;
-		}
-		name_failed:
-		
-		//Extract the input arguments.
-		if ($tokens->is('group', '()'))
-			$args_in = static::parseFuncArgs($tokens->consume()->getStrippedTokens());
-		else
-			$args_in = array();
-		
-		//Extract the output arguments.
-		if ($tokens->consumeIf('symbol', '->') && $tokens->is('group', '()', 1))
-			$args_out = static::parseFuncArgs($tokens->consume()->getStrippedTokens());
-		else
-			$args_out = array();
-		
-		//Extract the body.
-		$body = null;
-		if ($tokens->is('group', '{}')) {
-			$body = Parser::parseBlock($tokens->consume());
-		}
-		else {
-			IssueList::add('error', "Function requires a body.", array($keyword, $name));
-			goto body_failed;
-		}
-		body_failed:
-	}
-	
-	static public function parseIfStmt(Token $keyword, TokenList $tokens)
-	{
-		if (!$tokens->is('group', '()')) {
-			IssueList::add('error', "'if' statement requires a condition in paranthesis.", $keyword);
-			return null;
-		}
-		$condition_group = $tokens->consume();
-		$condition = ExpressionParser::parseExpr($condition_group->getStrippedTokens(), $condition_group->getRange());
-		
-		if ($tokens->isEmpty()) {
-			IssueList::add('error', "'if' statement requires a body.", $keyword);
-			return null;
-		}
-		$body = Parser::parseBlockOrStmt($tokens);
-		
-		$else = null;
-		if ($tokens->is('identifier', 'else')) {
-			$else = static::parseElseStmt($tokens->consume(), $tokens);
-		}
-		
-		if (!$condition || !$body) return null;
-		return new AST\Stmt\IfStmt($keyword, $condition, $body, $else);
-	}
-	
-	static public function parseElseStmt(Token $keyword, TokenList $tokens)
-	{
-		if ($tokens->isEmpty()) {
-			IssueList::add('error', "'else' statement requires a body.", $keyword);
-			return null;
-		}
-		$body = Parser::parseBlockOrStmt($tokens);
-		if (!$body) return null;
 		return null;
 	}
 }

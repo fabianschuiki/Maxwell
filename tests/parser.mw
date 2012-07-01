@@ -20,4 +20,7 @@ func main
 
 func debug (x,y) -> (r)
 {
+	[a,b,c]; //inline array
+	{a,b,c}; //inline set
+	{A: a, "B": b, 16: c, 19.5: d}; //inline map
 }

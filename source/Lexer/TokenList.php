@@ -20,10 +20,15 @@ class TokenList
 		return ($index >= 0 && $index < count($this->tokens));
 	}
 	
-	public function is($index, $type, $text = null)
+	public function is($type, $text = null, $index = 0)
 	{
 		if (!$this->isIndexValid($index)) return false;
 		return $this->tokens[$index]->is($type, $text);
+	}
+	
+	public function count()
+	{
+		return count($this->tokens);
 	}
 	
 	public function getText($index = 0)
@@ -42,7 +47,7 @@ class TokenList
 	
 	public function consumeIf($type, $text)
 	{
-		if ($this->is(0, $type, $text))
+		if ($this->is($type, $text))
 			return $this->consume();
 		return null;
 	}

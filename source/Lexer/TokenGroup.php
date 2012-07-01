@@ -26,6 +26,7 @@ class TokenGroup extends AbstractToken
 	public function getFile() { return $this->startToken->getFile(); }
 	
 	public function getTokens() { return $this->tokens; }
+	public function getStrippedTokens() { return $this->tokens->getStripped(); }
 	
 	//Only to be used by the Lexer:
 	public function setStartToken(Token $t) { $this->startToken = $t; }

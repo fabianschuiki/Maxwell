@@ -17,6 +17,7 @@ class Issue
 			$total = null;
 			$ranges = array();
 			foreach ($range as $r) {
+				if ($r == null) continue;
 				if (!$r instanceof Range && method_exists($r, 'getRange')) $r = $r->getRange();
 				if (!$r instanceof Range)
 					trigger_error(vartype($r)." passed as range is neither a Range nor does it implement the getRange() function", E_USER_ERROR);

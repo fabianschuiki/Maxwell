@@ -135,6 +135,9 @@ class Lexer
 					end($groupStack)->getTokens()->add($t);
 			}
 		}
+		foreach ($groupStack as $g) {
+			IssueList::add('error', "Opening symbol '{$g->getStartToken()->getText()}' is missing its closing counterpart '{$g->getRequiredEndSymbol()}'.", $g->getStartToken()->getRange());
+		}
 		
 		$this->tokens = $groupedTokens;
 	}

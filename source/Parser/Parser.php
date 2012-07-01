@@ -2,6 +2,7 @@
 namespace Parser;
 use AST;
 use Lexer\Token;
+use Lexer\TokenGroup;
 use Lexer\TokenList;
 use IssueList;
 use Language;
@@ -27,10 +28,10 @@ class Parser
 		$this->nodes = $nodes;
 	}
 	
-	static protected function parseStmt(TokenList $tokens)
+	static public function parseStmt(TokenList $tokens)
 	{
-		if ($tokens->is(0, 'identifier') && in_array($tokens->getText(), Language::$keywords)) {
-			return static::parseKeywordStmt($tokens->consume(), $tokens);
+		if ($tokens->is('identifier') && in_array($tokens->getText(), Language::$keywords)) {
+			return StatementParser::parseKeywordStmt($tokens->consume(), $tokens);
 		}
 		
 		//As a last resort, simply consume one token and throw an error.
@@ -39,32 +40,14 @@ class Parser
 		return null;
 	}
 	
-	static protected function parseKeywordStmt(Token $keyword, TokenList $tokens)
+	static public function parseBlock(TokenGroup $group)
 	{
-		switch ($keyword->getText()) {
-			case 'import': {
-				$names = array();
-				do {
-					if (!$tokens->is(0, 'identifier')) {
-						IssueList::add('error', "Imported entity name must be an identifier.", $tokens->consume());
-						return null;
-					}
-					$names[] = $tokens->consume();
-				} while ($tokens->is(0, 'symbol', ',') && $tokens->consume());
-				return new AST\Stmt\Import($keyword, $names, $tokens->consumeIf('symbol', ';'));
-			} break;
-			
-			case 'package': {
-				if (!$tokens->is(0, 'identifier')) {
-					IssueList::add('error', "Package name required after keyword 'package'.", $keyword);
-					return null;
-				}
-				return new AST\Stmt\Package($keyword, $tokens->consume(), $tokens->consumeIf('symbol', ';'));
-			} break;
+		$tokens = $group->getStrippedTokens();
+		$stmts = array();
+		while (!$tokens->isEmpty()) {
+			$stmt = static::parseStmt($tokens);
+			if ($stmt) $stmts[] = $stmt;
 		}
-		
-		//Throw an error if the keyword does not introduce any useful statement.
-		IssueList::add('error', "Keyword '{$keyword->getText()}' does not introduce a statement.", $keyword);
-		return null;
+		return new AST\Block($group, $stmts);
 	}
 }

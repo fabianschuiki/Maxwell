@@ -9,3 +9,8 @@ import Array, Tokenizer, Scanner
 func main
 {
 }
+
+//Some operator.
+func (+) {}
+func (- /* with comment */) {}
+func (*) {}

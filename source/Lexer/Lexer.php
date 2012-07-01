@@ -48,6 +48,10 @@ class Lexer
 						$charType = 'string';
 						$context = 'string';
 					}
+					else if ($c == '`') {
+						$charType = 'backtick';
+						$context = 'backtick';
+					}
 					
 					//Numbers consume certain non-numeric characters such as '.', 'e', 'E', etc.
 					if ($tokenType == 'number' && strchr('.eE', $c) !== false)
@@ -74,6 +78,12 @@ class Lexer
 					if ($pc != '\\' && $c == '"')
 						$context = 'normal';
 					$charType = 'string';
+				} break;
+				
+				case 'backtick': {
+					if ($pc != '\\' && $c == '`')
+						$context = 'normal';
+					$charType = 'backtick';
 				} break;
 			}
 			

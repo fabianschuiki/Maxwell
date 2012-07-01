@@ -12,6 +12,18 @@ The following AST nodes need to be implemented (parser and AST class):
 - call expression
 - member access operator `.`
 
+Things to do with the parser in general:
+
+- update func statement parsing to use backtick operator notation instead of ()
+
+
+Unfinished Parser Code
+----------------------
+
+- parseVarExpr
+- parseNewExpr
+- parseCallExpr
+
 
 General Notes
 =============

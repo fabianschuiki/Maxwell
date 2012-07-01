@@ -16,21 +16,19 @@ class DefinitionParser
 		if ($tokens->is('identifier')) {
 			$name = $tokens->consume();
 		}
-		else if ($tokens->is('group', '()')) {
-			$g = $tokens->consume();
-			$gts = $g->getStrippedTokens();
-			if ($gts->isEmpty()) {
-				IssueList::add('error', "Operator function requires an operator symbol inside the paranthesis.", $g);
+		else if ($tokens->is('backtick')) {
+			$b = $tokens->consume();
+			$symbol = $b->getText();
+			if (!$symbol) {
+				IssueList::add('error', "Operator function requires an operator symbol inside backticks (`<op>`).", $b);
 				goto name_failed;
 			}
-			if (!$gts->is('symbol')) {
-				IssueList::add('error', "Operator function name needs to be a symbol.", $gts->consume());
+			if (!in_array($symbol, Language::$operators)) {
+				$symbols = implode("  ", Language::$operators);
+				IssueList::add('error', "Name of operator function '$symbol' is not an operator. Valid operators are:\n$symbols", $b);
 				goto name_failed;
 			}
-			$name = $gts->consume();
-			if (!$gts->isEmpty()) {
-				IssueList::add('warning', "Operator function should have only one symbol inside the paranthesis. Ignoring additional tokens.", $gts->getTokens(), $name);
-			}
+			$name = $b;
 		}
 		else {
 			IssueList::add('error', "Function requires a name or an operator symbol after '{$keyword->getText()}'.", $keyword);

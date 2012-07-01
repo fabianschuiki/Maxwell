@@ -21,7 +21,7 @@ class TokenGroup extends AbstractToken
 	
 	public function getID() { return $this->id; }
 	public function getType() { return 'group'; }
-	public function getText() { return $this->startToken->getText() . $this->endToken->getText(); }
+	public function getRawText() { return $this->startToken->getText() . $this->endToken->getText(); }
 	public function getRange() { return Range::union($this->startToken->getRange(), $this->endToken->getRange()); }
 	public function getFile() { return $this->startToken->getFile(); }
 	
@@ -34,15 +34,15 @@ class TokenGroup extends AbstractToken
 	
 	public function getRequiredEndSymbol()
 	{
-		return static::closingSymbolFor($this->startToken->getText());
+		return static::closingSymbolFor($this->startToken->getRawText());
 	}
 	
 	
-	static private $symbolSequence = "()[]{}";
+	static private $symbolSequence = "()[]{}``";
 	
 	static public function closingSymbolFor($opening)
 	{
-		for ($i = 0; $i < strlen(static::$symbolSequence)-1; $i++)
+		for ($i = 0; $i < strlen(static::$symbolSequence)-1; $i += 2)
 			if (static::$symbolSequence[$i] == $opening)
 				return static::$symbolSequence[$i+1];
 		return null;
@@ -50,7 +50,7 @@ class TokenGroup extends AbstractToken
 	
 	static public function openingSymbolFor($closing)
 	{
-		for ($i = 1; $i < strlen(static::$symbolSequence); $i++)
+		for ($i = 1; $i < strlen(static::$symbolSequence); $i += 2)
 			if (static::$symbolSequence[$i] == $closing)
 				return static::$symbolSequence[$i-1];
 		return null;

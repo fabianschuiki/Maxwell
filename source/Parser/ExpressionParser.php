@@ -16,6 +16,14 @@ class ExpressionParser
 			return static::parseKeywordExpr($tokens->consume(), $tokens);
 		}
 		
+		if ($tokens->count() >= 3) {
+			if ($tokens->backIs('symbol', '.', 1)) return static::parseMemberAccessExpr($tokens->backConsume(), $tokens->backConsume(), $tokens);
+		}
+		
+		if ($tokens->count() >= 2) {
+			if ($tokens->backIs('group', '()')) return static::parseCallExpr($tokens->backConsume(), $tokens);
+		}
+		
 		if ($tokens->count() == 1) {
 			if ($tokens->is('identifier')) return new AST\Expr\Identifier($tokens->consume());
 			if ($tokens->is('group', '[]')) return static::parseInlineArray($tokens->consume());
@@ -105,8 +113,10 @@ class ExpressionParser
 	
 	static public function parseKeywordExpr(Token $keyword, TokenList $tokens)
 	{
-		switch ($keyword->getText()) {
-			case 'var': return static::parseVarExpr($keyword, $tokens);
+		//Try to call the parse<keyword>Expr function if one exists.
+		$name = "parse".ucfirst($keyword->getText())."Expr";
+		if (method_exists(__CLASS__, $name)) {
+			return call_user_func(array(__CLASS__, $name), $keyword, $tokens);
 		}
 		
 		//We don't know what to do with this keyword, so throw an error.
@@ -154,5 +164,35 @@ class ExpressionParser
 		}
 		
 		return null;
+	}
+	
+	static public function parseNewExpr(Token $keyword, TokenList $tokens)
+	{
+		return null;
+	}
+	
+	static public function parseCallExpr(TokenGroup $args_group, TokenList $tokens)
+	{
+		//Parse the callee.
+		$callee = static::parseExpr($tokens);
+		if (!$callee) return null;
+		
+		//Parse the arguments.
+		$args = array();
+		//TODO
+		
+		return null;
+	}
+	
+	static public function parseMemberAccessExpr(Token $name, Token $period, TokenList $tokens)
+	{
+		//Parse the expression.
+		$expr = static::parseExpr($tokens);
+		if (!$expr) return null;
+		
+		return null;
+		
+		//Wrap up.
+		return new AST\Expr\MemberAccess($name, $expr);
 	}
 }

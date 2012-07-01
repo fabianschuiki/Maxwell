@@ -14,10 +14,10 @@ class Language
 		'var', 'func', 'type', 'primitive', 'if', 'else', 'for', 'return', 'inline', 'import', 'native', 'package', 'new',
 	);
 	
+	static public $operators;
 	static public $unaryOperators = array(
-		array('-', '!', 'new'),
+		array('-', '!'),
 	);
-	
 	static public $binaryOperators = array(
 		array('=', ':='),
 		array('==', '!=', '<', '>', '<=', '>='),
@@ -34,8 +34,7 @@ Language::$symbols = array_merge(
 	range(0x7B, 0x7E)
 );
 
-Language::$symbolCombinations = array_unique(array_reduce(array_merge(
-		array(Language::$symbolCombinations),
+Language::$operators = array_unique(array_reduce(array_merge(
 		Language::$unaryOperators,
 		Language::$binaryOperators
 	),
@@ -44,3 +43,5 @@ Language::$symbolCombinations = array_unique(array_reduce(array_merge(
 	},
 	array()
 ));
+
+Language::$symbolCombinations = array_unique(array_merge(Language::$symbolCombinations, Language::$operators));

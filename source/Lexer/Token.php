@@ -18,9 +18,17 @@ class Token extends AbstractToken
 		$this->range = $range;
 	}
 	
-	public function getID()    { return $this->id; }
-	public function getType()  { return $this->type; }
-	public function getText()  { return $this->text; }
+	public function getID() { return $this->id; }
+	public function getType() { return $this->type; }
+	public function getRawText() { return $this->text; }
 	public function getRange() { return $this->range; }
-	public function getFile()  { return $this->range->getFile(); }
+	public function getFile() { return $this->range->getFile(); }
+	
+	public function getText()
+	{
+		if ($this->type != 'string' && $this->type != 'backtick')
+			return $this->text;
+		else
+			return substr($this->text, 1, -1);
+	}
 }

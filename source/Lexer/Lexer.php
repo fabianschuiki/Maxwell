@@ -145,7 +145,7 @@ class Lexer
 			return 'whitespace';
 		else if (ord($c) >= 0x30 && ord($c) <= 0x39)
 			return 'number';
-		else if (in_array($c, Language::$symbols))
+		else if (in_array(ord($c), Language::$symbols))
 			return 'symbol';
 		return 'identifier';
 	}

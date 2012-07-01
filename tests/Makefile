@@ -1,4 +1,4 @@
-all: test.lexer.php
+all: test.parser.php
 
 .PHONY: *.php
 *.php:

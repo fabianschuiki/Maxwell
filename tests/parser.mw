@@ -1,0 +1,11 @@
+/*
+ * Some test file for debugging the parser.
+ */
+package parser
+import String
+import Array, Tokenizer, Scanner
+
+//Main function of the program.
+func main
+{
+}

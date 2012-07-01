@@ -30,6 +30,12 @@ class Range
 		return true;
 	}
 	
+	public function toString()
+	{
+		$loc2str = function(Location $l) { return "{$l->getOffset()}:{$l->getLine()}:{$l->getColumn()}"; };
+		return $loc2str($this->start)."-".$loc2str($this->end);
+	}
+	
 	static public function union($ranges)
 	{
 		$file = null;

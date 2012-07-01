@@ -11,7 +11,7 @@ class Language
 	static public $identifierSymbols = array("~");
 	
 	static public $keywords = array(
-		'var', 'func', 'type', 'primitive', 'if', 'else', 'for', 'return', 'inline', 'import', 'native',
+		'var', 'func', 'type', 'primitive', 'if', 'else', 'for', 'return', 'inline', 'import', 'native', 'package',
 	);
 	
 	static public $unaryOperators = array(
@@ -31,8 +31,7 @@ Language::$symbols = array_merge(
 	range(0x21, 0x2F),
 	range(0x3A, 0x3F),
 	range(0x5B, 0x5E),
-	range(0x7B, 0x7E),
-	array('(',')', '[',']', '{','}')
+	range(0x7B, 0x7E)
 );
 
 Language::$symbolCombinations = array_unique(array_reduce(array_merge(

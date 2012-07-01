@@ -11,4 +11,6 @@ abstract class AbstractToken
 	
 	public function is($type, $text = null) { return ($this->getType() == $type && (!$text || $this->getText() == $text)); }
 	public function isSymbol($text = null) { return $this->is('symbol', $text); }
+	
+	public function getNice() { return "{$this->getType()} '{$this->getText()}'"; }
 }

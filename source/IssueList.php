@@ -33,6 +33,11 @@ class IssueList implements ArrayAccess
 		$this->dump();
 	}
 	
+	public function reportAndExitIfFatal()
+	{
+		$this->exitIfFatal();
+	}
+	
 	//OLD INTERFACE THAT IS NOW DEPRECATED
 	public function addIssue(Issue $i)
 	{
@@ -60,7 +65,7 @@ class IssueList implements ArrayAccess
 	{
 		if (!$this->isFatal()) return;
 		$this->dump();
-		exit(-1);
+		exit(1);
 	}
 	
 	public function dump()

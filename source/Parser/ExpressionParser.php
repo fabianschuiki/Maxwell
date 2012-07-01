@@ -12,6 +12,10 @@ class ExpressionParser
 {
 	static public function parseExpr(TokenList $tokens, Range $range = null)
 	{
+		if ($tokens->is('identifier') && in_array($tokens->getText(), Language::$keywords)) {
+			return static::parseKeywordExpr($tokens->consume(), $tokens);
+		}
+		
 		if ($tokens->count() == 1) {
 			if ($tokens->is('identifier')) return new AST\Expr\Identifier($tokens->consume());
 			if ($tokens->is('group', '[]')) return static::parseInlineArray($tokens->consume());
@@ -97,5 +101,58 @@ class ExpressionParser
 			$pairs[] = new AST\Expr\InlineMapPair($key, $value);
 		}
 		return new AST\Expr\InlineMap($pairs, $group);
+	}
+	
+	static public function parseKeywordExpr(Token $keyword, TokenList $tokens)
+	{
+		switch ($keyword->getText()) {
+			case 'var': return static::parseVarExpr($keyword, $tokens);
+		}
+		
+		//We don't know what to do with this keyword, so throw an error.
+		IssueList::add('error', "Keyword '{$keyword->getText()}' cannot be used in an expression.", $keyword, $tokens->getTokens());
+		return null;
+	}
+	
+	static public function parseVarExpr(Token $keyword, TokenList $tokens)
+	{
+		if ($tokens->isEmpty()) {
+			IssueList::add('warning', "Ignoring gratuitous keyword '{$keyword->getText()}'.", $keyword);
+			return null;
+		}
+		
+		//Separate the variable at the '=' (or the end of the token list).
+		$var_tokens = $tokens->upTo('symbol', '=');
+		if ($var_tokens->isEmpty()) {
+			IssueList::add('error', "Variable needs at least a name before '='.", $keyword, $stmt_tokens->tryConsume());
+			return null;
+		}
+		
+		//Extract name.
+		$name = $var_tokens->backConsume();
+		if (!$name->is('identifier')) {
+			IssueList::add('error', "Variable needs an identifier as name, got {$name->getNice()} instead.", $name, $keyword);
+			return null;
+		}
+		
+		//Extract type (optional).
+		$type = null;
+		if (!$var_tokens->isEmpty()) {
+			$type = ExpressionParser::parseExpr($var_tokens);
+			if (!$type) return null;
+		}
+		
+		//Extract initial value (optional).
+		$initial = null;
+		if ($assign = $tokens->consumeIf('symbol', '=')) {
+			if ($tokens->isEmpty()) {
+				IssueList::add('error', "Variable needs either an initial expression after '=', or no '=' at all.", $assign, array($keyword, $name));
+				return null;
+			}
+			$initial = ExpressionParser::parseExpr($tokens);
+			if ($initial) return null;
+		}
+		
+		return null;
 	}
 }

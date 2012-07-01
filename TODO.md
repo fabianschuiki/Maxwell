@@ -9,6 +9,8 @@ The following AST nodes need to be implemented (parser and AST class):
 - unary operator
 - binary operator
 - array element accessor `[]`
+- call expression
+- member access operator `.`
 
 
 General Notes

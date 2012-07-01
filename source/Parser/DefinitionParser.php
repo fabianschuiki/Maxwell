@@ -45,7 +45,7 @@ class DefinitionParser
 			$args_in = array();
 		
 		//Extract the output arguments.
-		if ($tokens->consumeIf('symbol', '->') && $tokens->is('group', '()', 1))
+		if ($tokens->consumeIf('symbol', '->') && $tokens->is('group', '()'))
 			$args_out = static::parseFuncArgs($tokens->consume()->getStrippedTokens());
 		else
 			$args_out = array();
@@ -60,5 +60,41 @@ class DefinitionParser
 			goto body_failed;
 		}
 		body_failed:
+		
+		if (!$name || $args_in === null || $args_out === null || !$body) return null;
+		return new AST\Stmt\FuncDef($keyword, $name, $args_in, $args_out, $body);
+	}
+	
+	static public function parseFuncArgs(TokenList $tokens)
+	{
+		$args = array();
+		while (!$tokens->isEmpty()) {
+			$arg_tokens = $tokens->upTo('symbol', ',');
+			$comma = $tokens->consumeIf('symbol', ',');
+			if ($arg_tokens->isEmpty()) {
+				IssueList::add('warning', "Ignoring gratuitous comma. Mabye you forgot to type a function argument?", $comma);
+				continue;
+			}
+			$arg = static::parseFuncArg($arg_tokens);
+			if ($arg) $args[] = $arg;
+		}
+		return $args;
+	}
+	
+	static public function parseFuncArg(TokenList $tokens)
+	{
+		if (!$tokens->backIs('identifier')) {
+			IssueList::add('error', "Function argument requires a name.", $tokens->getTokens());
+			return null;
+		}
+		$name = $tokens->backConsume();
+		
+		$type = null;
+		if (!$tokens->isEmpty()) {
+			$type = ExpressionParser::parseExpr($tokens);
+			if (!$type) return null;
+		}
+		
+		return new AST\Stmt\FuncArg($type, $name);
 	}
 }

@@ -18,7 +18,6 @@ func main
 	abcd //try adding/removing the semicolon to provoke a warning
 }
 
-//Some operator.
-func (+) {}
-func (- /* with comment */) {}
-func (*) {}
+func debug (x,y) -> (r)
+{
+}

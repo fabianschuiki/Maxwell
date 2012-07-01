@@ -77,9 +77,12 @@ class Lexer
 				} break;
 			}
 			
+			//Allow symbols to combine (e.g. -> or == or !=).
 			$wrapUp = false;
-			if ($tokenType == 'symbol')
-				$wrapUp = true;
+			if ($tokenType == 'symbol' && $charType == 'symbol') {
+				$combined = substr($contents, $tokenStart->getOffset(), $tokenEnd->getOffset() - $tokenStart->getOffset() + 1);
+				$wrapUp = !in_array($combined, Language::$symbolCombinations);
+			}
 			
 			//If the char type does not fit the token type anymore, wrap up the token and start a new one.
 			if ($tokenType != $charType || $wrapUp) {

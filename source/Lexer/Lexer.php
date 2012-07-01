@@ -52,6 +52,10 @@ class Lexer
 					//Numbers consume certain non-numeric characters such as '.', 'e', 'E', etc.
 					if ($tokenType == 'number' && strchr('.eE', $c) !== false)
 						$charType = 'number';
+					
+					//Identifiers consume numbers.
+					if ($tokenType == 'identifier' && $charType == 'number')
+						$charType = 'identifier';
 				} break;
 				
 				case 'comment.single': {

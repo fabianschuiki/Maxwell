@@ -33,6 +33,9 @@ class StatementParser
 			
 			case 'func':
 				return static::parseFuncDefStmt($keyword, $tokens);
+			
+			case 'if': return static::parseIfStmt($keyword, $tokens);
+			case 'else': return static::parseElseStmt($keyword, $tokens);
 		}
 		
 		//Throw an error if the keyword does not introduce any useful statement.
@@ -91,5 +94,40 @@ class StatementParser
 			goto body_failed;
 		}
 		body_failed:
+	}
+	
+	static public function parseIfStmt(Token $keyword, TokenList $tokens)
+	{
+		if (!$tokens->is('group', '()')) {
+			IssueList::add('error', "'if' statement requires a condition in paranthesis.", $keyword);
+			return null;
+		}
+		$condition_group = $tokens->consume();
+		$condition = ExpressionParser::parseExpr($condition_group->getStrippedTokens(), $condition_group->getRange());
+		
+		if ($tokens->isEmpty()) {
+			IssueList::add('error', "'if' statement requires a body.", $keyword);
+			return null;
+		}
+		$body = Parser::parseBlockOrStmt($tokens);
+		
+		$else = null;
+		if ($tokens->is('identifier', 'else')) {
+			$else = static::parseElseStmt($tokens->consume(), $tokens);
+		}
+		
+		if (!$condition || !$body) return null;
+		return new AST\Stmt\IfStmt($keyword, $condition, $body, $else);
+	}
+	
+	static public function parseElseStmt(Token $keyword, TokenList $tokens)
+	{
+		if ($tokens->isEmpty()) {
+			IssueList::add('error', "'else' statement requires a body.", $keyword);
+			return null;
+		}
+		$body = Parser::parseBlockOrStmt($tokens);
+		if (!$body) return null;
+		return null;
 	}
 }

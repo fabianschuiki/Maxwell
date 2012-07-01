@@ -48,6 +48,17 @@ class Parser
 			$stmt = static::parseStmt($tokens);
 			if ($stmt) $stmts[] = $stmt;
 		}
-		return new AST\Block($group, $stmts);
+		return new AST\Block($stmts, $group);
+	}
+	
+	static public function parseBlockOrStmt(TokenList $tokens)
+	{
+		if ($tokens->is('group', '{}')) {
+			return static::parseBlock($tokens->consume());
+		} else {
+			$stmt = static::parseStmt($tokens);
+			if (!$stmt) return null;
+			return new AST\Block(array($stmt));
+		}
 	}
 }

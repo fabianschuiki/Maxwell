@@ -8,6 +8,12 @@ import Array, Tokenizer, Scanner
 //Main function of the program.
 func main
 {
+	if (abcd) {
+	}
+	else if (zw436r) {
+	}
+	else {
+	}
 }
 
 //Some operator.

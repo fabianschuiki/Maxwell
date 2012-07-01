@@ -7,7 +7,7 @@ class Block extends Node
 	protected $group;
 	protected $stmts;
 	
-	public function __construct(TokenGroup $group, array $stmts)
+	public function __construct(array $stmts, TokenGroup $group = null)
 	{
 		foreach ($stmts as $s) assert($s instanceof Stmt\Stmt);
 		$this->group = $group;

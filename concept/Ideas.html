@@ -3,6 +3,8 @@
 <head>
 	<title>Maxwell – Ideas</title>
 	<meta charset="utf-8"/>
+	<script src="http://code.jquery.com/jquery-1.6.2.min.js" type="text/javascript"></script>
+	<script src="Ideas.js" type="text/javascript"></script>
 	<link rel="stylesheet" href="Ideas.css" type="text/css" />
 </head>
 <body>
@@ -13,7 +15,7 @@
 
 <h2>Implications</h2>
 <p>One implication of option types is that it allows for very rigorous type checking. If <em>String</em> has a function <code>getLength()</code> and <em>Error</em> a function <code>getMessage()</code>, the statement…</p>
-<code>r.getLength();
+<code>r.getLength(5, 5.2, ab42, "test");
 r.getMessage();</code>
 <p>…will throw an error, since neither of the two functions is supported by both types. In case there is some powerful assumption logic in place, the following would work:</p>
 <code>if (r isa String) {

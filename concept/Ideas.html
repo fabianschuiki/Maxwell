@@ -15,7 +15,7 @@
 
 <h2>Implications</h2>
 <p>One implication of option types is that it allows for very rigorous type checking. If <em>String</em> has a function <code>getLength()</code> and <em>Error</em> a function <code>getMessage()</code>, the statement…</p>
-<code>r.getLength(5, 5.2, ab42, "test");
+<code>r.getLength();
 r.getMessage();</code>
 <p>…will throw an error, since neither of the two functions is supported by both types. In case there is some powerful assumption logic in place, the following would work:</p>
 <code>if (r isa String) {
@@ -26,6 +26,39 @@ if (r isa Error) {
 	//In this scope, r is of type Error.
 	r.getMessage();
 }</code>
+
+
+
+<h1>String Formatting</h1>
+<p>In general, there should be a function that allows a string to be formatted by replacing special template characters (e.g. <em>%s</em>) with appropriate values from a value map or array. Syntactic sugar should be available to make this process as easy as possible:</p>
+<code>var int x = 1;
+var float y = 1.2345;
+var String text = "We have an int %{x}, some float %{y} and a float as int %i{x}.";
+</code>
+<p>The last line of the snippet should automatically be converted to:</p>
+<code>var String text = "We have an int %i, some float %f and a float as int %i.".format([x, y, x]);</code>
+
+
+
+<h1>Nullable Types</h1>
+<p>Variables with an object type should not automatically accept <code>null</code> or <code>nil</code> as a value, even if the C backend has nullable pointers for free. This enables the programmer to clearly distinguish functions that always return a value and those that may return null.</p>
+<code>func loadWebsite -> (<span class="type">String|null</span>) { ... } //This function returns the contents of the website on success, or null if an error occurred.
+
+var String google = loadWebsite(); //Fails to compile, since the variable mustn't be null.
+var String|null google = loadWebsite(); //Works.</code>
+
+<h2>Implications</h2>
+<p>Combined with type inferrence and some powerful assumption logic, this allows for some nice error checking that may catch a lot of the classic <em>null-pointer dereferencing</em> issues at compile time:</p>
+<code>//loadWebsite() as above
+var any google = loadWebsite(); //Type detected to be String|null.
+
+//The following will fail and prevent a null-dereferencing segfault…
+var int length = google.length(); //…since no functions can be called on null.
+
+//The following will work…
+if (google == null)
+	return;
+var int length = google.length(); //…since the compiler assumes the variable to be of type String after the if-statement.</code>
 
 </body>
 </html>

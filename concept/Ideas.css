@@ -1,7 +1,7 @@
 @import url(http://yui.yahooapis.com/2.9.0/build/reset/reset-min.css);
 
 /* Load the required fonts. */
-@import url(http://fonts.googleapis.com/css?family=Lato:500,300,700,400);
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400,300italic,400italic);
 @import url(http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic,700italic);
 
 /* Basic body. */
@@ -15,12 +15,16 @@ body {
 }
 
 code {
-	white-space: pre;
+	white-space: pre-wrap;
 	font: 14px/1.2 Ubuntu Mono, monospace;
 	background-color: #2e3436;
 	display: block;
 	padding: 0.75em 1em;
 	color: white;
+}
+
+em {
+	font-style: italic;
 }
 
 p > code {

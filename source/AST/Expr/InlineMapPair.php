@@ -2,13 +2,14 @@
 namespace AST\Expr;
 use Lexer\Token;
 
-class InlineMapPair extends Expr
+class InlineMapPair extends \AST\Node
 {
 	protected $key;
 	protected $value;
 	
 	public function __construct(Token $key, \AST\Expr\Expr $value)
 	{
+		parent::__construct();
 		$this->key = $key;
 		$this->value = $value;
 	}

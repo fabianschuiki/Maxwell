@@ -1,3 +1,10 @@
+General
+=======
+The following needs to be written:
+
+- Coder: Classes to serialize stuff into an object hierarchy that is then automatically synthesized into XML, YAML or whatever. Special visitor classes (like `TokenSerializer`) should then walk through Tokens or AST Nodes and serialize them into the Coder. The Coder may then be dumped to an XML file.
+
+
 Syntax
 ======
 The following AST nodes need to be implemented (parser and AST class):
@@ -9,20 +16,13 @@ The following AST nodes need to be implemented (parser and AST class):
 - unary operator
 - binary operator
 - array element accessor `[]`
-- call expression
-- member access operator `.`
-
-Things to do with the parser in general:
-
-- update func statement parsing to use backtick operator notation instead of ()
+- return statement
 
 
 Unfinished Parser Code
 ----------------------
 
-- parseVarExpr
 - parseNewExpr
-- parseCallExpr
 
 
 General Notes

@@ -9,6 +9,7 @@ class Block extends Node
 	
 	public function __construct(array $stmts, TokenGroup $group = null)
 	{
+		parent::__construct();
 		foreach ($stmts as $s) assert($s instanceof Stmt\Stmt);
 		$this->group = $group;
 		$this->stmts = $stmts;

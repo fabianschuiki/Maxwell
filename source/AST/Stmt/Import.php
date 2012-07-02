@@ -8,6 +8,7 @@ class Import extends Keyword
 	
 	public function __construct(Token $keyword, array $names, Token $semicolon = null)
 	{
+		parent::__construct();
 		foreach ($names as $n) assert($n instanceof Token);
 		$this->keyword = $keyword;
 		$this->names = $names;

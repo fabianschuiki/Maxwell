@@ -9,6 +9,7 @@ class InlineArray extends Expr
 
 	public function __construct(array $exprs, TokenGroup $group)
 	{
+		parent::__construct();
 		foreach ($exprs as $e) assert($e instanceof Expr);
 		$this->exprs = $exprs;
 		$this->group = $group;

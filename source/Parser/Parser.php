@@ -19,6 +19,9 @@ class Parser
 	
 	public function run()
 	{
+		$ids = new \IDProvider;
+		$ids->push();
+		
 		$nodes = array();
 		$tokens = $this->tokens->getStripped();
 		while (!$tokens->isEmpty()) {
@@ -26,5 +29,7 @@ class Parser
 			if ($stmt) $nodes[] = $stmt;
 		}
 		$this->nodes = $nodes;
+		
+		$ids->pop();
 	}
 }

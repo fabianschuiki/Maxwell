@@ -9,6 +9,7 @@ class InlineMap extends Expr
 	
 	public function __construct(array $pairs, TokenGroup $group)
 	{
+		parent::__construct();
 		foreach ($pairs as $p) assert($p instanceof InlineMapPair);
 		$this->pairs = $pairs;
 		$this->group = $group;

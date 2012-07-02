@@ -37,6 +37,10 @@ func main
 	//Manually calling an operator should be possible as well.
 	issues.`+`(1,2);
 	
+	//Normal calls and named calls.
+	myFunction(1, 2, 3);
+	myFunction(a: 1, c: 3, b: 2);
+	
 	abcd; //try adding/removing the semicolon to provoke a warning
 }
 

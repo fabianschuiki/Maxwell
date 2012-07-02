@@ -12,6 +12,7 @@ class IfStmt extends Keyword
 	
 	public function __construct(Token $keyword, Expr $condition, Block $body, ElseStmt $else = null)
 	{
+		parent::__construct();
 		$this->keyword = $keyword;
 		$this->condition = $condition;
 		$this->body = $body;

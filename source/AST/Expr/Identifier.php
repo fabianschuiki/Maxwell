@@ -8,6 +8,7 @@ class Identifier extends Expr
 	
 	public function __construct(Token $ident)
 	{
+		parent::__construct();
 		$this->ident = $ident;
 	}
 	

@@ -8,6 +8,7 @@ class Expr extends Stmt
 	
 	public function __construct(\AST\Expr\Expr $expr, Token $semicolon = null)
 	{
+		parent::__construct();
 		$this->expr = $expr;
 		$this->semicolon = $semicolon;
 	}

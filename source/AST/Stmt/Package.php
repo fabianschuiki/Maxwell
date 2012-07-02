@@ -8,6 +8,7 @@ class Package extends Stmt
 	
 	public function __construct(Token $keyword, Token $name, Token $semicolon = null)
 	{
+		parent::__construct();
 		$this->keyword = $keyword;
 		$this->name = $name;
 		$this->semicolon = $semicolon;

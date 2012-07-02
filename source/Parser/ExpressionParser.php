@@ -26,6 +26,7 @@ class ExpressionParser
 		
 		if ($tokens->count() == 1) {
 			if ($tokens->is('identifier')) return new AST\Expr\Identifier($tokens->consume());
+			if ($tokens->is('number') || $tokens->is('string')) return new AST\Expr\Constant($tokens->consume());
 			if ($tokens->is('group', '[]')) return static::parseInlineArray($tokens->consume());
 			if ($tokens->is('group', '{}')) return static::parseInlineSetOrMap($tokens->consume());
 		}
@@ -179,20 +180,43 @@ class ExpressionParser
 		
 		//Parse the arguments.
 		$args = array();
-		//TODO
+		$args_tokens = $args_group->getStrippedTokens();
+		while (!$args_tokens->isEmpty()) {
+			$arg_tokens = $args_tokens->upTo('symbol', ',');
+			$comma = $args_tokens->consumeIf('symbol', ',');
+			if ($arg_tokens->isEmpty()) {
+				IssueList::add('warning', "Ignoring gratuitous comma. Maybe you forgot to type a call argument?", $comma);
+				continue;
+			}
+			
+			$name = null;
+			$colon = null;
+			if ($arg_tokens->is('symbol', ':', 1)) {
+				$name = $arg_tokens->consume();
+				$colon = $arg_tokens->consume();
+				if (!$name->is('identifier')) {
+					IssueList::add('error', "Call argument needs an identifier as name, got {$name->getNice()} instead.", $name, $arg_tokens->getTokens());
+					continue;
+				}
+			}
+			
+			if ($arg_tokens->isEmpty()) {
+				IssueList::add('error', "Call argument needs an expression after the name and ':'.", array($name, $colon));
+				continue;
+			}
+			$expr = static::parseExpr($arg_tokens);
+			if (!$expr) continue;
+			
+			$args[] = new AST\Expr\CallArg($expr, $name);
+		}
 		
-		return null;
+		return new AST\Expr\Call($callee, $args);
 	}
 	
 	static public function parseMemberAccessExpr(Token $name, Token $period, TokenList $tokens)
 	{
-		//Parse the expression.
 		$expr = static::parseExpr($tokens);
 		if (!$expr) return null;
-		
-		return null;
-		
-		//Wrap up.
-		return new AST\Expr\MemberAccess($name, $expr);
+		return new AST\Expr\MemberAccess($expr, $name);
 	}
 }

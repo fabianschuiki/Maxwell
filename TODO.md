@@ -3,6 +3,10 @@ General
 The following needs to be written:
 
 - Coder: Classes to serialize stuff into an object hierarchy that is then automatically synthesized into XML, YAML or whatever. Special visitor classes (like `TokenSerializer`) should then walk through Tokens or AST Nodes and serialize them into the Coder. The Coder may then be dumped to an XML file.
+- update Token Serializer
+- AST Serializer
+- LET Serializer
+- Token, AST and LET Store classes
 
 
 Syntax

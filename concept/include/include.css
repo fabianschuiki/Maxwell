@@ -72,6 +72,9 @@ code > .number {
 code > .string {
 	color: #fcaf3e;
 }
+code > .constant {
+	color: #ad7fa8;
+}
 
 p > code > .keyword,
 p > code > .type,

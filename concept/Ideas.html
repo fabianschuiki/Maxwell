@@ -9,6 +9,49 @@
 </head>
 <body>
 
+<h1>If Expression</h1>
+<p>It should be possible to have complex if statements as expressions, similar to how cases are notated in mathematics.</p>
+<code>a.doSomethingWith({0 if x == "null", 1 otherwise});</code>
+<p>Or, in a more elaborate case:</p>
+<code>var int x = getUserInput();
+var String b = {
+	"0" if x == 0,
+	"1" if x == 1,
+	">1" otherwise };</code>
+
+
+<h1>"incase" Statement/Expression</h1>
+<p>The <em>incase</em> keyword should introduce a construct that implements and extends the well-known <em>switch and case</em> statement. The keyword may be used as a statement, taking statements or blocks as case arguments; or as an expression, taking any expressions as case arguments. The construct allows a sequence of binary operator expressions with the same left hand side operand and optionally the same operator to be written in a compact manner.</p>
+<code>var int x = getUserInput();
+if (x == 0)
+	doA();
+if (x == 1)
+	doB();
+if (x == 2)
+	doC();
+</code>
+<p>In the preceding code, all <em>if</em> statements share the same LHS operand and operator, namely <code>x ==</code>. Using the <code>incase</code> keword, these statements may be simplified to:</p>
+<code>incase x == 0: doA(), 1: doB(), 2: doC();
+
+// or easier to read on multiple lines
+incase x ==
+	0: doA(),
+	1: doB(),
+	2: doC();</code>
+
+<p>In case the LHS is the same but the operator changes:</p>
+<code>incase x == 0: doA(), &lt;= -1: doB(), &gt;= 1: doC();
+
+// or easier to read on multiple lines
+incase x
+	== 0: doA(),
+	&lt;= 1: doB(),
+	&gt;= 1: doC();</code>
+
+<p>To make it possible to contract <em>if/else if/else</em> constructs, the <code>otherwise</code> keyword allows for the <em>else</em> part:</p>
+<code>incase x == 0: doA(), 1: doB(), otherwise: doC();</code>
+
+
 <h1>Option Types</h1>
 <p>The planned type inferrence strongly suggests the support of option types, i.e. a special type that is a set of actual types. This allows a variable to be expressed as being either of type "A or B".</p>
 <code>var String|Error r = getUserInput();</code>

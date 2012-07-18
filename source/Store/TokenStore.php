@@ -31,8 +31,7 @@ class TokenStore
 		$this->serializeTokens($tokens, $root);
 		
 		//Persist the tokens.
-		$name = preg_replace('/\.mw$/i', '.tokens', $file->getPath());
-		$path = "{$this->dir}/$name";
+		$path = $this->getPathToTokens($file);
 		$dir = dirname($path);
 		if (!file_exists($dir))	mkdir(dirname($dir), 0777, true);
 		
@@ -47,7 +46,20 @@ class TokenStore
 		return $tokens;
 	}
 	
+	public function isFileOutdated(File $file)
+	{
+		$path = $this->getPathToTokens($file);
+		if (!file_exists($path)) return true;
+		return filemtime($path) < filemtime($file->getPath());
+	}
 	
+	
+	
+	private function getPathToTokens(File $file)
+	{
+		$name = preg_replace('/\.mw$/i', '.tokens', $file->getPath());
+		return "{$this->dir}/$name";
+	}
 	
 	private function serializeTokens(TokenList $tokens, Coder\Element $parent)
 	{

@@ -6,16 +6,19 @@ $issues->push();
 
 $manager = new Store\Manager("$TEST_OUTPUT_DIR/stores");
 $manager->push();
+$tokenStore = $manager->getTokenStore();
 
 
 $file = $manager->getSourceFileAtPath("$TEST_DIR/parser.mw");
 
-$lexer = new Lexer\Lexer($file);
-$lexer->run();
-$issues->reportAndExitIfFatal();
-$manager->getTokenStore()->setTokensForFile($lexer->getTokens(), $lexer->getFile());
+if (true || $tokenStore->isFileOutdated($file)) {
+	$lexer = new Lexer\Lexer($file);
+	$lexer->run();
+	$issues->reportAndExitIfFatal();
+	$tokenStore->setTokensForFile($lexer->getTokens(), $lexer->getFile());
+}
 
-$parser = new Parser\Parser($lexer->getTokens());
+$parser = new Parser\Parser($tokenStore->getTokensForFile($file));
 $parser->run();
 $issues->reportAndExitIfFatal();
 

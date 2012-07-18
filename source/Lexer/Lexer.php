@@ -20,8 +20,8 @@ class Lexer
 	{
 		$contents = $this->file->getContents();
 		$len = strlen($contents);
+		$store = \Store\Manager::get()->getTokenStore();
 		
-		$id = 0;
 		$tokens = array();
 		$tokenType = null;
 		$tokenStart = new Location;
@@ -100,7 +100,7 @@ class Lexer
 					$range = new Range($this->file, $tokenStart, $tokenEnd);
 					$text = substr($contents, $range->getPosition(), $range->getLength());
 					
-					$t = new Token($id++, $tokenType, $text, $range);
+					$t = new Token($store->allocateId(), $tokenType, $text, $range);
 					$tokens[] = $t;
 				}
 				
@@ -123,7 +123,7 @@ class Lexer
 		$groupedTokens = new TokenList;
 		foreach ($tokens as $t) {
 			if ($t->is('symbol') && strchr('([{', $t->getText()) !== false) {
-				$g = new TokenGroup($id++);
+				$g = new TokenGroup($store->allocateId());
 				$g->setStartToken($t);
 				if (count($groupStack) == 0)
 					$groupedTokens->add($g);

@@ -1,4 +1,4 @@
-all: test.coder.php
+all: test.stores.php
 
 .PHONY: *.php
 *.php:

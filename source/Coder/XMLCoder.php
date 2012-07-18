@@ -10,17 +10,23 @@ class XMLCoder
 		return $output;
 	}
 	
-	protected function encodeElement(Element $e)
+	public function encodeToFile(Element $root, $file)
+	{
+		file_put_contents($file, $this->encode($root));
+	}
+	
+	protected function encodeElement(Element $e, $indent = 0)
 	{
 		$output = "<{$e->getName()}";
 		foreach ($e->getAttributes() as $name => $value) {
 			$output .= " $name=\"".htmlspecialchars($value)."\"";
 		}
+		$tabs = str_repeat("\t", $indent);
 		if ($e->hasElements()) {
-			$output .= ">\n";
+			$output .= ">\n$tabs";
 			foreach ($e->getElements() as $c) {
-				$co = $this->encodeElement($c);
-				$output .= "\t".str_replace("\n", "\n\t", $co)."\n";
+				$co = $this->encodeElement($c, $indent + 1);
+				$output .= "\t"./*str_replace("\n", "\n\t", */$co/*)*/."\n$tabs";
 			}
 			$output .= "</{$e->getName()}>";
 		} else {

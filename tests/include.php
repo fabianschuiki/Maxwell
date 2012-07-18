@@ -5,3 +5,5 @@ error_reporting(E_ALL);
 $TEST_OUTPUT_DIR = __DIR__."/../build/tests";
 if (!file_exists($TEST_OUTPUT_DIR))
 	mkdir($TEST_OUTPUT_DIR);
+
+$TEST_DIR = dirname($argv[0]);

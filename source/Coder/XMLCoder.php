@@ -15,18 +15,21 @@ class XMLCoder
 		file_put_contents($file, $this->encode($root));
 	}
 	
-	protected function encodeElement(Element $e, $indent = 0)
+	protected function encodeElement(Element $e)
 	{
+		$unsafe = "\n\r\t";
 		$output = "<{$e->getName()}";
 		foreach ($e->getAttributes() as $name => $value) {
-			$output .= " $name=\"".htmlspecialchars($value)."\"";
+			$safe = htmlspecialchars($value);
+			for ($i = 0; $i < strlen($unsafe); $i++)
+				$safe = str_replace($unsafe[$i], "&#".ord($unsafe[$i]).";", $safe);
+			$output .= " $name=\"".$safe."\"";
 		}
-		$tabs = str_repeat("\t", $indent);
 		if ($e->hasElements()) {
-			$output .= ">\n$tabs";
+			$output .= ">\n";
 			foreach ($e->getElements() as $c) {
-				$co = $this->encodeElement($c, $indent + 1);
-				$output .= "\t"./*str_replace("\n", "\n\t", */$co/*)*/."\n$tabs";
+				$co = $this->encodeElement($c);
+				$output .= "\t".str_replace("\n", "\n\t", $co)."\n";
 			}
 			$output .= "</{$e->getName()}>";
 		} else {

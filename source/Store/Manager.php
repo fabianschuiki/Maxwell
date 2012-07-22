@@ -56,6 +56,8 @@ class Manager
 		if (!$this->nextId)
 			$this->nextId = 1;
 		$i = $this->nextId++;
+		$dir = dirname($path);
+		if (!file_exists($dir))	mkdir($dir, 0777, true);
 		file_put_contents($path, $this->nextId);
 		return $i;
 	}

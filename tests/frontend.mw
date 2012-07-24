@@ -1,0 +1,14 @@
+/*
+ * Some test file for debugging the frontend.
+ */
+package parser
+
+//Main function of the program.
+func main
+{
+}
+
+//Some additional function.
+func whatever
+{
+}

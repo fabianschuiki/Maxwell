@@ -1,4 +1,4 @@
-all: test.stores.php
+all: test.frontend.php
 
 .PHONY: *.php
 *.php:

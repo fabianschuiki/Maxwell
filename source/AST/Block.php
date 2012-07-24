@@ -17,4 +17,6 @@ class Block extends Node
 	
 	public function getGroup() { return $this->group; }
 	public function getStmts() { return $this->stmts; }
+	
+	public function getRange() { return $this->getGroup()->getRange(); }
 }

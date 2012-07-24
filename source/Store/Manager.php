@@ -30,7 +30,7 @@ class Manager
 	protected $sourceFiles;
 	protected $tokenStore;
 	protected $astStore;
-	protected $letStore;
+	protected $entityStore;
 	
 	public function __construct($dir)
 	{
@@ -86,10 +86,10 @@ class Manager
 		return $this->astStore;
 	}
 	
-	public function getLETStore()
+	public function getEntityStore()
 	{
-		if (!$this->letStore)
-			$this->letStore = new LETStore($this);
-		return $this->letStore;
+		if (!$this->entityStore)
+			$this->entityStore = new EntityStore($this);
+		return $this->entityStore;
 	}
 }

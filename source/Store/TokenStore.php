@@ -33,7 +33,7 @@ class TokenStore
 		//Persist the tokens.
 		$path = $this->getPathToTokens($file);
 		$dir = dirname($path);
-		if (!file_exists($dir))	mkdir($dir, 0777, true);
+		if (!file_exists($dir)) @mkdir($dir, 0777, true);
 		
 		$xml = new Coder\XMLCoder;
 		$xml->encodeToFile($root, $path);

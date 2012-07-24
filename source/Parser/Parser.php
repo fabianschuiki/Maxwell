@@ -32,4 +32,6 @@ class Parser
 		
 		$ids->pop();
 	}
+	
+	public function getNodes() { return $this->nodes; }
 }

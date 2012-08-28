@@ -103,5 +103,87 @@ if (google == null)
 	return;
 var int length = google.length(); //…since the compiler assumes the variable to be of type String after the if-statement.</code>
 
+
+
+<h1>Interfaces / Typeclasses</h1>
+<p>Due to its generic nature, Maxwell only imposes those constraints on entity types that are vital for the program's integrity. Consider the following snippet of code:</p>
+<code>func describeWeight(thing) {
+	if (thing.weight &lt; 20)
+		return "light";
+	else
+		return "heavy";
+}</code>
+
+<p>When compiling, Maxwell would infer the type of <code>thing</code> to be anything that has a <code>weight</code> property. Typeclasses allow the programmer to explicitly restrict a generic type to meet a minimal standard of functionality that is required. The function above may be written more explicitly:</p>
+<code>//define a "weighable" object as something that has a weight assigned
+typeclass #weighable { var any weight; };
+
+//our function now describes the weight of something that is weighable
+func describeWeight(thing #weighable) { ... }</code>
+
+<p>Typeclasses look like a Twitter hashtag as they categorize an entity. Other definition syntaxes might look like:</p>
+<code>typeclass colored { ... }
+typeclass #colored { ... }
+
+tag colored { ... }
+tag #colored { ... }
+
+interface colored { ... }
+interface #colored { ... }</code>
+
+<h2>Simple Example</h2>
+<p>Having these hashtags helps improve the readability of Maxwell code and simplifies the task of analyzing what a certain snippet of code is doing. Consider the following snippet of code. For this section of the code, it is not important that <code>connection.receive()</code> returns a set of packets, but rather that it supports the <code>count()</code> and <code>get(var i)</code> functions, as they're required for the iteration.</p>
+<code>//we've setup a network connection where we receive packets
+var any packets #countable = connection.receive();
+
+//we don't care that these are packets, we just want to iterate over them
+for (var i = 0; i &lt; packets.count(); i++) {
+	var any packet = packets.get(i);
+	//... do something with it
+}</code>
+
+<h2>Nested Tags</h2>
+<p>Tags become even more useful if they may be nested and defined across multiple hierarchy levels. Consider the following example, in which <code>list</code> may be any collection whose objects are <code>#named</code>:</p>
+<code>typeclass #named { var name; }
+
+//we want to process an collection of objects whose name we're going to require
+var any list [#named] = connection.receive();
+for (var obj in list) {
+	console.print("received something called %{obj.name}\n");
+	//...
+}</code>
+
+<p>Or the following example with objects:</p>
+<code>typeclass #rgb { var r; var g; var b; }
+typeclass #colored { var color; }
+
+var any mesh #{color #rgb} = engine.getMesh();
+mesh.color.r = 1.0;
+mesh.color.g = 0.5;
+mesh.color.b = 0.0;
+
+//or more Maxwell-like:
+{ c.r = 1.0; c.g = 0.5; c.b = 0.0; } where c = mesh.color;
+
+//or even more Maxwell-like:
+mesh.color.(r,g,b) = (1.0, 0.5, 0.0);</code>
+
+
+
+<h1>In-case-null abbreviation</h1>
+<p>In C and C++ you tend to do things like:</p>
+<code>Person *p = fetchPerson();
+return (p ? p->getName() : "unknown");</code>
+
+<p>In Maxwell the following should be possible as an abbreviation, with the latter form to be preferred as it describes its operation better:</p>
+<code>return (fetchPerson() ?? "unknown");
+return (fetchPerson() or "unknown");</code>
+
+
+
+
+<h1>Units</h1>
+<p>Maybe adding units support for values would be nice?</p>
+
 </body>
 </html>

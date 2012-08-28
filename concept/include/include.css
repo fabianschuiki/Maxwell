@@ -75,6 +75,9 @@ code > .string {
 code > .constant {
 	color: #ad7fa8;
 }
+code > .tag {
+	color: #e9b96e;
+}
 
 p > code > .keyword,
 p > code > .type,

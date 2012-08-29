@@ -182,8 +182,122 @@ return (fetchPerson() or "unknown");</code>
 
 
 
-<h1>Units</h1>
-<p>Maybe adding units support for values would be nice?</p>
+<h1>Random Code Snippets</h1>
+
+<h2>Errors/Exceptions</h2>
+<code>type Shader
+{
+	var path;
+	var shader;
+	
+	func compile
+	{
+		//Open the file containing the shader code.
+		var f = File.open(path);
+		defer f.close();
+		
+		//Read the entire data.
+		var code = f.read();
+		var size = code.size;
+		
+		//Assign the code to the shader and compile.
+		glShaderSource(shader, 1, code, size);
+		glCompileShader(shader);
+		
+		//Check whether compilation went well.
+		var compiled;
+		glGetShaderiv(shader, GL_COMPILE_STATUS, compiled);
+		
+		//Throw an error if not.
+		if (!compiled) {
+			var l = 0;
+			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, l);
+			var GLchar[l] msg;
+			glGetShaderInfoLog(shader, l, l, msg);
+			throw Error (msg);
+		}
+		
+		//In case we encounter an error.
+		error {
+			throw Error ("Unable to compile shader %{path.name}.");
+		}
+	}
+}</code>
+
+<p>Running the above code with a path that does not point to a file (e.g. <code>"nowhere/test.frag"</code>), the <code>File.open()</code> factory will throw an error <code>"File nowhere/test.frag does not exist."</code>. Once this happens, the error handler will get called, with the file-not-found error stored in the <em>environment</em>. The error handler creates another Error object which will use the existing error in the environment as its <em>underlying error</em>. Converting the new error to text would yield <code>"Unable to compile shader test.frag. File nowhere/test.frag does not exist."</code>.</p>
+
+
+<h2>Error Handling in Files</h2>
+<p>When trying to open a file that does not exist, the <code>File</code> factory may either return <code>null</code> or throw an error, depending on what you're requested return type is:</p>
+<code>//The following will throw an error if the file doesn't exist:
+var f = File.open("test.txt"); //f inferred to be of type "File"
+f.read();
+
+//The following will return null if the file doesn't exist:
+var f = File.open("test.txt"); //f inferred to be of type "File|null"
+if (f == nil) return "failed!";
+f.read();</code>
+
+<p>Implementation of <code>File.open</code>:</p>
+<code>type File
+{
+	func open (path) -> (r)
+	{
+		if (!File.exists(path)) {
+			if (r maybe nil) {
+				return nil;
+			} else {
+				throw Error ("File %{path} does not exist.");
+			}
+		}
+	}
+}</code>
+<p>The <code>maybe</code> operator returns <code>true</code> if the expression on the left hand side may be of the type on the right hand side. In case of <code>File</code> it would return <code>false</code>, in case of <code>File|null</code> it would return <code>true</code>.</p>
+
+
+<h2>Deferred Statements</h2>
+<p>Inspired by the Go language, the <code>defer</code> keyword introduces a statement that is executed when the function is about to be terminated, either due to a <code>return</code> or a <code>throw</code>.</p>
+<code>func read
+{
+	var f = File.open("test.txt");
+	defer f.close();
+	
+	if (f.size &lt; 100) {
+		throw Error ("File %{f.path} too small.");
+		//f.close() will be executed here
+	}
+	
+	return f.read(100);
+	//f.close() will be executed here
+}</code>
+
+
+<h2>Factories vs. Constructors</h2>
+<p>Instead of constructors as in C++ it would be more convenient to have factory functions for types. This would make code more readable and the code inside the factory would not have the restrictions that apply to C++ constructors (e.g. no virtual function calls, etc.).</p>
+
+<code>type Vector
+{
+	var x;
+	var y;
+	var otherStuff;
+	
+	func new
+	{
+		var same v;
+		v.x = 0;
+		v.y = 0;
+		v.otherStuff = nil;
+		return v;
+	}
+	
+	func new (x,y)
+	{
+		var same v = new(); //does basic initialization
+		v.x = x;
+		v.y = y;
+		return v;
+	}
+}</code>
 
 </body>
 </html>

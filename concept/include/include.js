@@ -8,7 +8,7 @@ $(document).ready(function(){
 		code = code.replace(/(var\s+|isa\s+)([\w|]+)/g, "$1<span class=\"type\">$2</span>");
 		code = code.replace(/(\w+)\(/g, "<span class=\"function\">$1</span>(");
 		code = code.replace(/(^|[^\w\"])(null|nil|true|false)([^\w\"]|$)/g, "$1<span class=\"constant\">$2</span>$3");
-		code = code.replace(/(^|[^\w\"])(var|if|else|isa|func|type|return|for|incase|otherwise|typeclass|interface|tag|where|or)([^\w\"]|$)/g, "$1<span class=\"keyword\">$2</span>$3");
+		code = code.replace(/(^|[^\w\"])(var|if|else|isa|func|type|return|for|incase|otherwise|typeclass|interface|tag|where|or|throw|defer|error)([^\w\"]|$)/g, "$1<span class=\"keyword\">$2</span>$3");
 		code = code.replace(/(\/\/.*?$|\/\*.*?\*\/)/mg, "<span class=\"comment\">$1</span>");
 		
 		$(this).html(code);

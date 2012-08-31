@@ -1,5 +1,5 @@
 <?php
-$ENABLE_COLORS = (`tput colors` > 2);
+$ENABLE_COLORS = isset($_ENV["TERM"]) && (`tput colors` > 2);
 
 function vartype($v)
 {

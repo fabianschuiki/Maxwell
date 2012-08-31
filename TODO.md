@@ -1,3 +1,13 @@
+Random TODOs
+============
+
+- Try to assign a "path" to each entity based upon which the entity IDs may be reused. E.g. "type A { func foo { ... } }" would result in `A/foo()` as foo's path.
+
+- Implement entity decoding.
+
+- When recompiling a file, load all of the file's entities, remove the entity files and then recompile. This will get rid of old, unused IDs.
+
+
 General
 =======
 The following needs to be written:

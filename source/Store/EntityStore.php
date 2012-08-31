@@ -34,8 +34,7 @@ class EntityStore
 		$this->entities[$id] = $entity;
 		
 		//Transform the tokens into an encodable representation.
-		$root = new Coder\Element("root");
-		$this->serializeRootEntity($entity, $root);
+		$root = static::serializeRootEntity($entity);
 		
 		//Persist the tokens.
 		$path = $this->getPathToEntity($id);
@@ -59,21 +58,25 @@ class EntityStore
 		return "{$this->dir}/$id";
 	}
 	
-	private function serializeRootEntity(\Entity\RootEntity $entity, Coder\Element $root)
+	static private function serializeRootEntity(\Entity\RootEntity $entity)
 	{
-		foreach ($entity->getSiblingEntities() as $sibling) {
-			$e = $root->makeElement('sibling');
-			$e->setAttribute('id', $sibling->getID());
+		if ($entity instanceof \Entity\FunctionDefinition) {
+			$root = new Coder\Element("function");
+			$root->setAttribute('id', $entity->getID());
+			$root->setAttribute('range', $entity->getRange()->toString());
+			$root->setAttribute('humanRange', $entity->getHumanRange()->toString());
+			$root->setAttribute('file', $entity->getRange()->getFile()->getPath());
+			$root->setAttribute('name', $entity->getName());
 		}
 		
-		if ($entity instanceof \Entity\FunctionDefinition) {
-			$e = $root->makeElement('function');
-			$e->setAttribute('id', $entity->getID());
-			$e->setAttribute('range', $entity->getRange()->toString());
-			$e->setAttribute('humanRange', $entity->getHumanRange()->toString());
-			$e->setAttribute('file', $entity->getRange()->getFile()->getPath());
-			$e->setAttribute('name', $entity->getName());
+		if ($root) {
+			foreach ($entity->getSiblingEntities() as $sibling) {
+				$e = $root->makeElement('sibling');
+				$e->setAttribute('id', $sibling->getID());
+			}
 		}
+		
+		return $root;
 	}
 	
 	/*private function serializeTokens(TokenList $tokens, Coder\Element $parent)

@@ -27,8 +27,7 @@ class TokenStore
 		$this->tokens[$file->getPath()] = $tokens;
 		
 		//Transform the tokens into an encodable representation.
-		$root = new Coder\Element("tokens");
-		$this->serializeTokens($tokens, $root);
+		$root = static::serializeTokens($tokens);
 		
 		//Persist the tokens.
 		$path = $this->getPathToTokens($file);
@@ -61,7 +60,15 @@ class TokenStore
 		return "{$this->dir}/$name";
 	}
 	
-	private function serializeTokens(TokenList $tokens, Coder\Element $parent)
+	
+	static public function serializeTokens(TokenList $tokens)
+	{
+		$root = new Coder\Element("tokens");
+		static::_serializeTokens($tokens, $root);
+		return $root;
+	}
+	
+	static private function _serializeTokens(TokenList $tokens, Coder\Element $parent)
 	{
 		foreach ($tokens->getTokens() as $t) {
 			$e = $parent->makeElement($t->getType());
@@ -69,7 +76,7 @@ class TokenStore
 			$e->setAttribute('text', $t->getText());
 			$e->setAttribute('range', $t->getRange()->toString());
 			if ($t->is('group'))
-				$this->serializeTokens($t->getTokens(), $e);
+				static::_serializeTokens($t->getTokens(), $e);
 		}
 	}
 }

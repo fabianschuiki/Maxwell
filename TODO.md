@@ -1,6 +1,10 @@
 Random TODOs
 ============
 
+- Work on Entitializer to not only create root entities, but also their child entities.
+
+- Add `registerWithScope` to all entities, so that after entitializing, the scope may be built.
+
 - Implement entity decoding.
 
 - When recompiling a file, load all of the file's entities, remove the entity files and then recompile. This will get rid of old, unused IDs.

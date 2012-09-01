@@ -11,7 +11,7 @@ class StatementParser
 {
 	static public function parseStmt(TokenList $tokens)
 	{
-		if ($tokens->is('identifier') && in_array($tokens->getText(), Language::$keywords)) {
+		if ($tokens->is('identifier') && in_array($tokens->getText(), Language::$statementKeywords)) {
 			return StatementParser::parseKeywordStmt($tokens->consume(), $tokens);
 		}
 		

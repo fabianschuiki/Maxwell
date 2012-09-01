@@ -10,8 +10,12 @@ class Language
 	
 	static public $identifierSymbols = array("~");
 	
-	static public $keywords = array(
-		'var', 'func', 'type', 'primitive', 'if', 'else', 'for', 'return', 'inline', 'import', 'native', 'package', 'new',
+	static public $keywords;
+	static public $statementKeywords = array(
+		'func', 'type', 'primitive', 'if', 'else', 'for', 'return', 'inline', 'import', 'native', 'package',
+	);
+	static public $expressionKeywords = array(
+		'var', 'new',
 	);
 	
 	static public $operators;
@@ -33,6 +37,8 @@ Language::$symbols = array_merge(
 	range(0x5B, 0x5E),
 	range(0x7B, 0x7E)
 );
+
+Language::$keywords = array_merge(Language::$statementKeywords, Language::$expressionKeywords);
 
 Language::$operators = array_unique(array_reduce(array_merge(
 		Language::$unaryOperators,

@@ -15,6 +15,7 @@ class Element
 		$this->elements = array();
 	}
 	
+	public function setName($n) { $this->name = $n; }
 	public function getName() { return $this->name;	}
 	public function getAttributes() { return $this->attributes; }
 	public function hasElements() { return count($this->elements) > 0; }

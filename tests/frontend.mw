@@ -6,6 +6,7 @@ package parser
 //Main function of the program.
 func main
 {
+	var int x = 0;
 }
 
 //Some additional function.

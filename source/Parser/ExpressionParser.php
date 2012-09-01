@@ -12,7 +12,7 @@ class ExpressionParser
 {
 	static public function parseExpr(TokenList $tokens, Range $range = null)
 	{
-		if ($tokens->is('identifier') && in_array($tokens->getText(), Language::$keywords)) {
+		if ($tokens->is('identifier') && in_array($tokens->getText(), Language::$expressionKeywords)) {
 			return static::parseKeywordExpr($tokens->consume(), $tokens);
 		}
 		
@@ -161,10 +161,10 @@ class ExpressionParser
 				return null;
 			}
 			$initial = ExpressionParser::parseExpr($tokens);
-			if ($initial) return null;
+			if (!$initial) return null;
 		}
 		
-		return null;
+		return new AST\Expr\VarDef($type, $name, $initial);
 	}
 	
 	static public function parseNewExpr(Token $keyword, TokenList $tokens)

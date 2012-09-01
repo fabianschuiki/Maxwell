@@ -106,10 +106,8 @@ class EntityStore
 			$root->setAttribute('humanRange', $entity->getHumanRange()->toString());
 			$root->setAttribute('file', $entity->getRange()->getFile()->getPath());
 			$root->setAttribute('name', $entity->getName());
-			
-			$body = static::serializeEntity($entity->getBody());
-			$body->setName('body');
-			$root->addElement($body);
+			$root->setAttribute('body', $entity->getBody()->getID());
+			static::serializeEntity($entity->getBody(), $root);
 		}
 		
 		if ($root) {
@@ -122,64 +120,57 @@ class EntityStore
 		return $root;
 	}
 	
-	static private function serializeEntity(\Entity\Entity $entity)
+	static private function serializeEntity(\Entity\Entity $entity, Coder\Element $root)
 	{
 		if ($entity instanceof \Entity\Block) {
-			$e = new Coder\Element("block");
-			$e->setAttribute('id', $entity->getID());
-			$e->setAttribute('range', $entity->getRange()->toString());
+			$e = $root->makeElement("block");
 			foreach ($entity->getStmts() as $s) {
-				$e->addElement(static::serializeStmtEntity($s));
+				static::serializeStmtEntity($s, $root);
+				$sr = $e->makeElement('stmt');
+				$sr->setAttribute('id', $s->getID());
 			}
-			return $e;
 		}
-		return null;
+		$e->setAttribute('id', $entity->getID());
+		$e->setAttribute('range', $entity->getRange()->toString());
 	}
 	
-	static private function serializeStmtEntity(\Entity\Stmt\Stmt $stmt)
+	static private function serializeStmtEntity(\Entity\Stmt\Stmt $stmt, Coder\Element $root)
 	{
 		if ($stmt instanceof \Entity\Stmt\Expr) {
-			$e = new Coder\Element("expr");
-			$e->setAttribute('id', $stmt->getID());
-			$e->setAttribute('range', $stmt->getRange()->toString());
-			$e->addElement(static::serializeExprEntity($stmt->getExpr()));
-			return $e;
+			$e = $root->makeElement("expr-stmt");
+			$e->setAttribute('expr', $stmt->getExpr()->getID());
+			static::serializeExprEntity($stmt->getExpr(), $root);
 		}
-		return null;
+		$e->setAttribute('id', $stmt->getID());
+		$e->setAttribute('range', $stmt->getRange()->toString());
 	}
 	
-	static private function serializeExprEntity(\Entity\Expr\Expr $expr)
+	static private function serializeExprEntity(\Entity\Expr\Expr $expr, Coder\Element $root)
 	{
-		$e = null;
 		if ($expr instanceof \Entity\Expr\Constant) {
-			$e = new Coder\Element("constant");
+			$e = $root->makeElement("constant");
 			$e->setAttribute('type', $expr->getType());
 			$e->setAttribute('value', $expr->getValue());
 		}
 		if ($expr instanceof \Entity\Expr\Identifier) {
-			$e = new Coder\Element("identifier");
+			$e = $root->makeElement("identifier");
 			$e->setAttribute('name', $expr->getName());
 		}
 		if ($expr instanceof \Entity\Expr\VarDef) {
-			$e = new Coder\Element("var");
+			$e = $root->makeElement("var");
 			$e->setAttribute('name', $expr->getName());
 			if ($expr->getType()) {
-				$t = new Coder\Element("type");
-				$t->addElement(static::serializeExprEntity($expr->getType()));
-				$e->addElement($t);
+				static::serializeExprEntity($expr->getType(), $root);
+				$e->setAttribute('type', $expr->getType()->getID());
 			}
 			if ($expr->getInitial()) {
-				$i = new Coder\Element("initial");
-				$i->addElement(static::serializeExprEntity($expr->getInitial()));
-				$e->addElement($i);
+				static::serializeExprEntity($expr->getInitial(), $root);
+				$e->setAttribute('initial', $expr->getInitial()->getID());
 			}
 		}
 		
-		if ($e) {
-			$e->setAttribute('id', $expr->getID());
-			$e->setAttribute('range', $expr->getRange()->toString());
-		}
-		return $e;
+		$e->setAttribute('id', $expr->getID());
+		$e->setAttribute('range', $expr->getRange()->toString());
 	}
 	
 	

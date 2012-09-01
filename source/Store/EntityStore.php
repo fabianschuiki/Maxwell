@@ -8,12 +8,14 @@ class EntityStore
 	protected $manager;
 	protected $dir;
 	protected $entities;
+	protected $entityIDsInFile;
 	
 	public function __construct(Manager $manager)
 	{
 		$this->manager = $manager;
 		$this->dir = $manager->getDirectory()."/entities";
 		$this->entities = array();
+		$this->entityIDsInFile = array();
 	}
 	
 	public function allocateId()
@@ -23,26 +25,27 @@ class EntityStore
 	
 	public function clearEntitiesInFile(\Source\File $file)
 	{
+		//Load the IDs that are in this file.
+		$ids = $this->getEntityIDsInFile($file->getPath());
+		if (!$ids) return;
 		
+		//Get rid of the entities.
+		foreach ($ids as $id)
+			$this->unpersistEntity($id);
+		unset($this->entityIDsInFile[$file->getPath()]);
 	}
 	
 	public function setEntity(\Entity\RootEntity $entity)
 	{
 		$id = $entity->getID();
 		if ($id <= 0) throw new \exception("setting entity ".vartype($entity)." with no ID");
+		$path = $entity->getRange()->getFile()->getPath();
 		
 		$this->entities[$id] = $entity;
+		$this->entityIDsInFile[$path][] = $id;
 		
-		//Transform the tokens into an encodable representation.
-		$root = static::serializeRootEntity($entity);
-		
-		//Persist the tokens.
-		$path = $this->getPathToEntity($id);
-		$dir = dirname($path);
-		if (!file_exists($dir)) @mkdir($dir, 0777, true);
-		
-		$xml = new Coder\XMLCoder;
-		$xml->encodeToFile($root, $path);
+		$this->persistEntity($id);
+		$this->persistEntityIDsInFile($path);
 	}
 	
 	public function getEntity($id)
@@ -52,10 +55,46 @@ class EntityStore
 		return $e;
 	}
 	
-	
-	private function getPathToEntity($id)
+	public function getEntityIDsInFile($path)
 	{
-		return "{$this->dir}/$id";
+		$ids = @$this->entityIDsInFile[$path];
+		if (!$ids) {
+			$this->fetchEntityIDsInFile($path);
+			$ids = @$this->entityIDsInFile[$path];
+		}
+		return $ids;
+	}
+	
+	
+	/*
+	 * Entities
+	 */
+	
+	private function persistEntity($id)
+	{
+		$entity = $this->entities[$id];
+		
+		//Transform the tokens into an encodable representation.
+		$root = static::serializeRootEntity($entity);
+		
+		//Persist the entity.
+		$path = $this->getPathToEntity($id);
+		static::ensureDirExists($path);
+		
+		$xml = new Coder\XMLCoder;
+		$xml->encodeToFile($root, $path);
+	}
+	
+	private function unpersistEntity($id)
+	{
+		$entity = @$this->entities[$id];
+		
+		//Remove the entity from our structures.
+		if ($entity) unset($this->entities[$id]);
+		
+		//Get rid of the entity file.
+		$path = $this->getPathToEntity($id);
+		if (file_exists($path)) unlink($path);
 	}
 	
 	static private function serializeRootEntity(\Entity\RootEntity $entity)
@@ -79,15 +118,56 @@ class EntityStore
 		return $root;
 	}
 	
-	/*private function serializeTokens(TokenList $tokens, Coder\Element $parent)
+	
+	/*
+	 * Identity IDs in File
+	 */
+	
+	private function persistEntityIDsInFile($file)
 	{
-		foreach ($tokens->getTokens() as $t) {
-			$e = $parent->makeElement($t->getType());
-			$e->setAttribute('id', $t->getID());
-			$e->setAttribute('text', $t->getText());
-			$e->setAttribute('range', $t->getRange()->toString());
-			if ($t->is('group'))
-				$this->serializeTokens($t->getTokens(), $e);
-		}
-	}*/
+		$ids = array_unique($this->entityIDsInFile[$file]);
+		
+		//Serialize the IDs.
+		sort($ids);
+		$text = implode("\n", $ids);
+		
+		//Store the entity IDs.
+		$path = $this->getPathToEntityIDsInFile($file);
+		static::ensureDirExists($path);
+		file_put_contents($path, $text);
+	}
+	
+	private function fetchEntityIDsInFile($file)
+	{
+		//Read the list of entities.
+		$path = $this->getPathToEntityIDsInFile($file);
+		if (!file_exists($path)) return;
+		$text = file_get_contents($path);
+		
+		//Decode the IDs and store them.
+		$ids = explode("\n", trim($text));
+		$this->entityIDsInFile[$file] = $ids;
+	}
+	
+	
+	/*
+	 * Paths
+	 */
+	
+	private function getPathToEntity($id)
+	{
+		return "{$this->dir}/$id";
+	}
+	
+	private function getPathToEntityIDsInFile($path)
+	{
+		$name = preg_replace('/\.mw$/i', '.entities', $path);
+		return "{$this->dir}/$name";
+	}
+	
+	static private function ensureDirExists($path)
+	{
+		$dir = dirname($path);
+		if (!file_exists($dir)) @mkdir($dir, 0777, true);
+	}
 }

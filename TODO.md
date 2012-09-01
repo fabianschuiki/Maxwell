@@ -1,11 +1,11 @@
 Random TODOs
 ============
 
-- Try to assign a "path" to each entity based upon which the entity IDs may be reused. E.g. "type A { func foo { ... } }" would result in `A/foo()` as foo's path.
-
 - Implement entity decoding.
 
 - When recompiling a file, load all of the file's entities, remove the entity files and then recompile. This will get rid of old, unused IDs.
+
+- The `EntityStore` now persists everything to disk as soon as something changes. This is pretty slow. Better use some persist queue and a function that finally flushes things to disk. This flush function might be registered with PHP to be executed whenever the script terminates.
 
 
 General

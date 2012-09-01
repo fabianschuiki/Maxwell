@@ -25,6 +25,7 @@ $entitializer = new Entitializer($parser->getNodes(), $lexer->getFile());
 $entitializer->run();
 $issues->reportAndExitIfFatal();
 
+$entityStore->clearEntitiesInFile($file);
 $entities = $entitializer->getEntities();
 foreach ($entities as $e) {
 	$entityStore->setEntity($e);

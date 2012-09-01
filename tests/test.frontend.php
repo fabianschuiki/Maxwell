@@ -28,6 +28,7 @@ $issues->reportAndExitIfFatal();
 $entityStore->clearEntitiesInFile($file);
 $entities = $entitializer->getEntities();
 foreach ($entities as $e) {
+	$e->initScope();
 	$entityStore->setEntity($e);
 }
 

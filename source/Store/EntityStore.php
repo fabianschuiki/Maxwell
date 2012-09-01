@@ -107,7 +107,9 @@ class EntityStore
 			$root->setAttribute('file', $entity->getRange()->getFile()->getPath());
 			$root->setAttribute('name', $entity->getName());
 			$root->setAttribute('body', $entity->getBody()->getID());
+			$root->setAttribute('scope', $entity->getScope()->getID());
 			static::serializeEntity($entity->getBody(), $root);
+			static::serializeScope($entity->getScope(), $root);
 		}
 		
 		if ($root) {
@@ -124,6 +126,14 @@ class EntityStore
 	{
 		if ($entity instanceof \Entity\Block) {
 			$e = $root->makeElement("block");
+			
+			$headScope = $entity->getHeadScope();
+			$tailScope = $entity->getTailScope();
+			$e->setAttribute('scope-head', $headScope->getID());
+			$e->setAttribute('scope-tail', $tailScope->getID());
+			static::serializeScope($headScope, $root);
+			if ($headScope != $tailScope) static::serializeScope($tailScope, $root);
+			
 			foreach ($entity->getStmts() as $s) {
 				static::serializeStmtEntity($s, $root);
 				$sr = $e->makeElement('stmt');
@@ -143,6 +153,7 @@ class EntityStore
 		}
 		$e->setAttribute('id', $stmt->getID());
 		$e->setAttribute('range', $stmt->getRange()->toString());
+		if ($stmt->getHumanRange()) $e->setAttribute('humanRange', $stmt->getHumanRange()->toString());
 	}
 	
 	static private function serializeExprEntity(\Entity\Expr\Expr $expr, Coder\Element $root)
@@ -155,10 +166,12 @@ class EntityStore
 		if ($expr instanceof \Entity\Expr\Identifier) {
 			$e = $root->makeElement("identifier");
 			$e->setAttribute('name', $expr->getName());
+			$e->setAttribute('scope', $expr->getScope()->getID());
 		}
 		if ($expr instanceof \Entity\Expr\VarDef) {
 			$e = $root->makeElement("var");
 			$e->setAttribute('name', $expr->getName());
+			$e->setAttribute('scope', $expr->getScope()->getID());
 			if ($expr->getType()) {
 				static::serializeExprEntity($expr->getType(), $root);
 				$e->setAttribute('type', $expr->getType()->getID());
@@ -171,6 +184,22 @@ class EntityStore
 		
 		$e->setAttribute('id', $expr->getID());
 		$e->setAttribute('range', $expr->getRange()->toString());
+		if ($expr->getHumanRange()) $e->setAttribute('humanRange', $expr->getHumanRange()->toString());
+	}
+	
+	static private function serializeScope(\Entity\Scope\Scope $scope, Coder\Element $root)
+	{
+		if ($scope instanceof \Entity\Scope\ScopeDeclaration) {
+			$e = $root->makeElement('scope-declaration');
+			$e->setAttribute('declares', $scope->getDeclares()->getID());
+		}
+		else {
+			$e = $root->makeElement('scope');
+		}
+		
+		$e->setAttribute('id', $scope->getID());
+		if ($scope->getOuter()) $e->setAttribute('outer', $scope->getOuter()->getID());
+		if ($scope->getUpper()) $e->setAttribute('upper', $scope->getUpper()->getID());
 	}
 	
 	

@@ -1,7 +1,7 @@
 <?php
 namespace Entity\Stmt;
+use Entity\Scope\Scope;
 use Source\Range;
-use Entity\Entity;
 
 class Expr extends Stmt
 {
@@ -24,4 +24,9 @@ class Expr extends Stmt
 	
 	public function setExpr(\Entity\Expr\Expr $e) { $this->expr = $e; }
 	public function getExpr() { return $this->expr; }
+	
+	public function initScope(Scope &$scope)
+	{
+		$this->expr->initScope($scope);
+	}
 }

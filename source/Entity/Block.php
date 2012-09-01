@@ -20,7 +20,27 @@ class Block extends Entity
 	}
 	
 	protected $stmts;
+	protected $headScope;
+	protected $tailScope;
 	
 	public function setStmts($s) { $this->stmts = $s; }
 	public function getStmts() { return $this->stmts; }
+	
+	public function setHeadScope(Scope\Scope $s) { $this->headScope = $s; }
+	public function getHeadScope() { return $this->headScope; }
+	
+	public function setTailScope(Scope\Scope $s) { $this->tailScope = $s; }
+	public function getTailScope() { return $this->tailScope; }
+	
+	public function initScope(Scope\Scope &$outer)
+	{
+		$scope = new Scope\Scope;
+		$scope->generateID();
+		$scope->setOuter($outer);
+		$this->setHeadScope($scope);
+		foreach ($this->getStmts() as $stmt) {
+			$stmt->initScope($scope);
+		}
+		$this->setTailScope($scope);
+	}
 }

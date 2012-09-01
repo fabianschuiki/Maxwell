@@ -1,5 +1,7 @@
 <?php
 namespace Entity\Expr;
+use Entity\Scope\Scope;
+use Entity\Scope\ScopeDeclaration;
 use Source\Range;
 
 class VarDef extends Expr
@@ -28,4 +30,23 @@ class VarDef extends Expr
 	
 	public function setInitial(Expr $i) { $this->initial = $i; }
 	public function getInitial() { return $this->initial; }
+	
+	
+	protected $scope;
+	
+	public function setScope(Scope $s) { $this->scope = $s; }
+	public function getScope() { return $this->scope; }
+	
+	public function initScope(Scope &$scope)
+	{
+		if ($this->type) $this->type->initScope($scope);
+		if ($this->initial) $this->initial->initScope($scope);
+		
+		$s = new ScopeDeclaration;
+		$s->generateID();
+		$s->setUpper($scope);
+		$s->setDeclares($this);
+		$scope = $s;
+		$this->setScope($s);
+	}
 }

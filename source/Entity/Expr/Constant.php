@@ -12,7 +12,6 @@ class Constant extends Expr
 		$v = $const->getValue();
 		
 		$e->setRange($v->getRange());
-		$e->setHumanRange($v->getRange());
 		$e->setType($v->getType());
 		$e->setValue($v->getText());
 		return $e;

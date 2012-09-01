@@ -1,5 +1,6 @@
 <?php
 namespace Entity\Expr;
+use Entity\Scope\Scope;
 use Source\Range;
 
 class Identifier extends Expr
@@ -10,7 +11,6 @@ class Identifier extends Expr
 		$e->generateID();
 		$i = $ident->getIdent();
 		$e->setRange($i->getRange());
-		$e->setHumanRange($i->getRange());
 		$e->setName($i->getText());
 		return $e;
 	}
@@ -19,4 +19,15 @@ class Identifier extends Expr
 	
 	public function setName($n) { $this->name = $n; }
 	public function getName() { return $this->name; }
+	
+	
+	protected $scope;
+	
+	public function setScope(Scope $s) { $this->scope = $s; }
+	public function getScope() { return $this->scope; }
+	
+	public function initScope(Scope &$scope)
+	{
+		$this->setScope($scope);
+	}
 }

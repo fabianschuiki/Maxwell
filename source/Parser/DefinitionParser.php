@@ -95,4 +95,61 @@ class DefinitionParser
 		
 		return new AST\Stmt\FuncArg($type, $name);
 	}
+	
+	
+	
+	static public function parseTypeDefStmt(Token $keyword, TokenList $tokens)
+	{
+		$name = null;
+		if ($tokens->is('identifier')) {
+			$name = $tokens->consume();
+		} else {
+			IssueList::add('error', "Type requires a name after '{$keyword->getText()}'.", $keyword);
+		}
+		
+		//Extract the supertype.
+		if ($tokens->consumeIf('symbol', ':') && $tokens->is('identifier')) {
+			$super = $tokens->consume();
+		} else {
+			$super = null;
+		}
+		
+		//Extract the body.
+		$body = null;
+		if ($tokens->is('group', '{}')) {
+			$body = static::parseTypeBody($tokens->consume());
+		}
+		else {
+			IssueList::add('error', "Type requires a body.", array($keyword, $name));
+		}
+		
+		if (!$name || !$body) return null;
+		return new AST\Stmt\TypeDef($keyword, $name, $super, $body);
+	}
+	
+	static public function parseTypeBody(TokenGroup $group)
+	{
+		$tokens = $group->getStrippedTokens();
+		$stmts = array();
+		while (!$tokens->isEmpty()) {
+			$stmt = static::parseTypeBodyStmt($tokens);
+			if ($stmt) $stmts[] = $stmt;
+		}
+		return new AST\Block($stmts, $group);
+	}
+	
+	static public function parseTypeBodyStmt(TokenList $tokens)
+	{
+		if ($keyword = $tokens->consumeIf('identifier', 'func'))
+			return static::parseFuncDefStmt($keyword, $tokens);
+		if ($keyword = $tokens->consumeIf('identifier', 'type'))
+			return static::parseTypeDefStmt($keyword, $tokens);
+		if ($tokens->is('identifier', 'var'))
+			return StatementParser::parseStmt($tokens);
+		
+		$ignored = $tokens->upTo('symbol', ';');
+		$tokens->consumeIf('symbol', ';');
+		IssueList::add('error', "Only function, type and member definitions allowed inside type body.", $ignored->getTokens());
+		return null;
+	}
 }

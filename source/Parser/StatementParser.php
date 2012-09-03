@@ -76,24 +76,15 @@ class StatementParser
 			} break;
 			
 			case 'func': return DefinitionParser::parseFuncDefStmt($keyword, $tokens);
+			case 'type': return DefinitionParser::parseTypeDefStmt($keyword, $tokens);
 			
 			case 'if': return ControlFlowParser::parseIfStmt($keyword, $tokens);
 			case 'else': return ControlFlowParser::parseElseStmt($keyword, $tokens);
 		}
 		
-		//Treat this as an expression statement, i.e. an expression followed by a semicolon.
-		$expr_tokens = $tokens->upTo('symbol', ';');
-		$semicolon = $tokens->consumeIf('symbol', ';');
-		if ($expr_tokens->isEmpty()) {
-			IssueList::add('warning', "Ignoring gratuitous keyword '{$keyword->getText()}'. Maybe you accidentally typed the semicolon?", $keyword, $semicolon);
-			return null;
-		}
-		
-		if (!$semicolon)
-			IssueList::add('warning', "Semicolon missing after expression statement. Assuming one is there.", $expr_tokens->getTokens());
-		
-		$expr = ExpressionParser::parseKeywordExpr($keyword, $expr_tokens);
-		if (!$expr) return null;
-		return new AST\Stmt\Expr($expr, $semicolon);
+		IssueList::add('error', "Keyword '{$keyword->getText()}' cannot be used in a statement.", $keyword);
+		$tokens->upTo('symbol', ';');
+		$tokens->consumeIf('symbol', ';');
+		return null;
 	}
 }

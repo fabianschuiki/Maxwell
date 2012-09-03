@@ -3,6 +3,18 @@
  */
 package parser
 
+type Vector
+{
+	var int x;
+	var int y;
+	
+	func test (float x) -> (float r)
+	{
+	}
+	
+	type Unit { var t; }
+}
+
 //Main function of the program.
 func main
 {

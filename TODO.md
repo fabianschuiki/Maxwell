@@ -1,6 +1,10 @@
 Random TODOs
 ============
 
+- It might be better to give root entities huge IDs, around 10^6 and make all the entities within this root entity lie between `0..10^6-1` offset from the root's ID. This allows easy identification of where an ID originates from later on, which will be required when specializing. Double check whether 10^6 IDs are enough. Don't use the least significant 6 digits of the root IDs for their filename, so `1,2,...` instead of `1000000,2000000,...`. Maybe we could also get rid of the limit on entity counts by using a compound ID like `5.843` for subentities.
+- Use the existing `entities` directory to determine new entity IDs. Try to reuse old IDs.
+- Assign token and AST node IDs on a per-file level.
+- In the Entitializer, feedback the entity IDs to the AST and/or tokens that spawned the entity. Use this information when storing the `.tokens` file. This faciliates writing of IDEs and even some command line tools.
 - Work on Entitializer to not only create root entities, but also their child entities.
 - Create an `Entity\TypeDef` class that wraps around an `AST\Stmt\TypeDef`. It should contain an identifier to its superclass which may be bound later.
 - Add raw C types to the language, possibly through a prefix like `@` or `$`. These should become obsolete as the language evolves. Later on it might even be possible to recognize a C type without special indicator.
@@ -19,6 +23,11 @@ Random TODOs
 - Put public declarations from the compiler nodes into `.h` files, private declarations and the actual definitions into `.c` files. Either each entity generates one pair of files (i.e. `89.h` and `89.c`), or the entities are gathered according to their original files (i.e. `frontend.h` and `frontend.c`).
 - Call GCC with all relevant `.c` files to generate the executable.
 - The `EntityStore` now persists everything to disk as soon as something changes. This is pretty slow. Better use some persist queue and a function that finally flushes things to disk. This flush function might be registered with PHP to be executed whenever the script terminates.
+
+- In a git manner, add the possibility for a project to have a `.mwc` directory that contains the Maxwell compiler configuration files. This will also allow the intermediate build directory to be placed there. This will then allow the user to call `mwc build` and have the compiler find the `.mwc/config` file by itself. This also allows the easy generation of documentation and information lookups.
+- With the `.mwc` directory in place, it should be possible to call `mwc info main.mw:6 x` to ask the compiler what `x` is on line 6 of `main.mw`. If `x` is in scope, the compiler should spit out everything it knows about it, i.e. type, value range, assumptions, etc..
+- Add compiler options to output error messages in XML and HTML, as well as the currently existing colored command line output.
+- Generate documentation.
 
 
 General
@@ -39,11 +48,11 @@ The following AST nodes need to be implemented (parser and AST class):
 - for loop
 - return statement
 - env statement
-- variable declaration
 - unary operator
 - binary operator
 - array element accessor `[]`
 - return statement
+- type definition
 
 
 Unfinished Parser Code

@@ -106,7 +106,7 @@ class Issue
 				for ($i = 0; $i < strlen($line); $i++) {
 					$mark = ($line[$i] == "\t" ? "\t" : " ");
 					if ($this->range && $this->range->contains($l, $i)) {
-						$mark = '^';
+						$mark = ($mark == "\t" ? "    " : "^");
 					} else {
 						foreach ($this->marked as $r) {
 							if ($r->contains($l, $i)) {

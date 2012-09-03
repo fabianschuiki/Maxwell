@@ -99,20 +99,32 @@ class EntityStore
 	
 	static private function serializeRootEntity(\Entity\RootEntity $entity)
 	{
+		$root = null;
+		
 		if ($entity instanceof \Entity\FunctionDefinition) {
 			$root = new Coder\Element("function");
-			$root->setAttribute('id', $entity->getID());
-			$root->setAttribute('range', $entity->getRange()->toString());
-			$root->setAttribute('humanRange', $entity->getHumanRange()->toString());
-			$root->setAttribute('file', $entity->getRange()->getFile()->getPath());
 			$root->setAttribute('name', $entity->getName());
 			$root->setAttribute('body', $entity->getBody()->getID());
 			$root->setAttribute('scope', $entity->getScope()->getID());
 			static::serializeEntity($entity->getBody(), $root);
 			static::serializeScope($entity->getScope(), $root);
 		}
+		if ($entity instanceof \Entity\TypeDefinition) {
+			$root = new Coder\Element("type");
+			$root->setAttribute('name', $entity->getName());
+			$root->setAttribute('scope', $entity->getScope()->getID());
+			static::serializeScope($entity->getScope(), $root);
+			if ($entity->getSuperType()) {
+				$root->setAttribute('superType', $entity->getSuperType()->getID());
+				static::serializeEntity($entity->getSuperType(), $root);
+			}
+		}
 		
 		if ($root) {
+			$root->setAttribute('id', $entity->getID());
+			$root->setAttribute('range', $entity->getRange()->toString());
+			$root->setAttribute('humanRange', $entity->getHumanRange()->toString());
+			$root->setAttribute('file', $entity->getRange()->getFile()->getPath());
 			foreach ($entity->getSiblingEntities() as $sibling) {
 				$e = $root->makeElement('sibling');
 				$e->setAttribute('id', $sibling->getID());

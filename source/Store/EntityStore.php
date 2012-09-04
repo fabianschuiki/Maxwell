@@ -34,13 +34,13 @@ class EntityStore
 			$this->allocatedRootIDs[] = $id;
 			return $id;
 		} else {
-			$ids = $this->getEntityIDsInRootEntity($root);
-			if (!$ids) $ids = array();
+			$ids = @$this->entityIDsInRootEntity[$root];
+			if (!$ids)
+				$ids = array();
 			$id = 1;
 			while (in_array($id, $ids))
 				$id++;
 			$this->entityIDsInRootEntity[$root][] = $id;
-			//$this->persistEntityIDsInRootEntity($root); //not required
 			return $root.".".$id;
 		}
 	}
@@ -102,16 +102,6 @@ class EntityStore
 		if (!$ids) {
 			$this->fetchEntityIDsInFile($path);
 			$ids = @$this->entityIDsInFile[$path];
-		}
-		return $ids;
-	}
-	
-	public function getEntityIDsInRootEntity($id)
-	{
-		$ids = @$this->entityIDsInRootEntity[$id];
-		if (!$ids) {
-			$this->fetchEntityIDsInRootEntity($id);
-			$ids = @$this->entityIDsInRootEntity[$id];
 		}
 		return $ids;
 	}
@@ -296,37 +286,6 @@ class EntityStore
 	
 	
 	/*
-	 * Entity IDs in Root Entity
-	 */
-	
-	private function persistEntityIDsInRootEntity($id)
-	{
-		$ids = array_unique($this->entityIDsInRootEntity[$id]);
-		
-		//Serialize the IDs.
-		sort($ids);
-		$text = implode("\n", $ids);
-		
-		//Store the entity IDs.
-		$path = $this->getPathToEntityIDsInRootEntity($id);
-		static::ensureDirExists($path);
-		file_put_contents($path, $text);
-	}
-	
-	private function fetchEntityIDsInRootEntity($id)
-	{
-		//Read the list of entities.
-		$path = $this->getPathToEntityIDsInRootEntity($id);
-		if (!file_exists($path)) return;
-		$text = file_get_contents($path);
-		
-		//Decode the IDs and store them.
-		$ids = explode("\n", trim($text));
-		$this->entityIDsInRootEntity[$id] = $ids;
-	}
-	
-	
-	/*
 	 * Paths
 	 */
 	
@@ -337,13 +296,8 @@ class EntityStore
 	
 	private function getPathToEntityIDsInFile($path)
 	{
-		$name = preg_replace('/\.mw$/i', '.root', $path);
+		$name = preg_replace('/\.mw$/i', '.entities', $path);
 		return "{$this->dir}/$name";
-	}
-	
-	private function getPathToEntityIDsInRootEntity($id)
-	{
-		return "{$this->dir}/$id.entities";
 	}
 	
 	static private function ensureDirExists($path)

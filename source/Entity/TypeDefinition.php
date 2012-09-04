@@ -1,6 +1,7 @@
 <?php
 namespace Entity;
 use Source\Range;
+use Lexer\Token;
 use Entity\Scope\Scope;
 
 class TypeDefinition extends RootEntity
@@ -9,6 +10,7 @@ class TypeDefinition extends RootEntity
 	{
 		$e = new self;
 		$e->generateID();
+		$e->pushID();
 		$e->setRange(Range::union($def->getKeyword()->getRange(), $def->getBody()->getRange()));
 		
 		if ($def->getSuperType())
@@ -19,7 +21,9 @@ class TypeDefinition extends RootEntity
 		
 		$e->setName($def->getName()->getText());
 		if ($def->getSuperType())
-			$e->setSuperType(Expr\Expr::makeFromSyntaxNode($e->getSuperType()));
+			$e->setSuperType($def->getSuperType());
+		
+		$e->popID();
 		return $e;
 	}
 	
@@ -30,7 +34,7 @@ class TypeDefinition extends RootEntity
 	public function setName($n) { $this->name = $n; }
 	public function getName() { return $this->name; }
 	
-	public function setSuperType(Expr\Expr $s) { $this->superType = $s; }
+	public function setSuperType(Token $s) { $this->superType = $s; }
 	public function getSuperType() { return $this->superType; }
 	
 	public function setScope(Scope $s) { $this->scope = $s; }

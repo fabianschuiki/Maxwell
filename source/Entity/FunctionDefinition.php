@@ -9,10 +9,12 @@ class FunctionDefinition extends RootEntity
 	{
 		$e = new self;
 		$e->generateID();
+		$e->pushID();
 		$e->setRange(Range::union($def->getKeyword()->getRange(), $def->getBody()->getRange()));
 		$e->setHumanRange(Range::union($def->getKeyword()->getRange(), $def->getName()->getRange()));
 		$e->setName($def->getName()->getText());
 		$e->setBody(Block::makeFromSyntaxNode($def->getBody()));
+		$e->popID();
 		return $e;
 	}
 	

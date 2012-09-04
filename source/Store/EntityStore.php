@@ -9,6 +9,9 @@ class EntityStore
 	protected $dir;
 	protected $entities;
 	protected $entityIDsInFile;
+	protected $rootIDs;
+	protected $allocatedRootIDs;
+	protected $entityIDsInRootEntity;
 	
 	public function __construct(Manager $manager)
 	{
@@ -16,11 +19,49 @@ class EntityStore
 		$this->dir = $manager->getDirectory()."/entities";
 		$this->entities = array();
 		$this->entityIDsInFile = array();
+		$this->rootIDs = array();
+		$this->allocatedRootIDs = array();
+		$this->entityIDsInRootEntity = array();
 	}
 	
 	public function allocateId()
 	{
-		return $this->manager->allocateId();
+		$root = $this->getRootID();
+		if (!$root) {
+			$id = 1;
+			while (file_exists($this->getPathToEntity($id)) || in_array($id, $this->allocatedRootIDs))
+				$id++;
+			$this->allocatedRootIDs[] = $id;
+			return $id;
+		} else {
+			$ids = $this->getEntityIDsInRootEntity($root);
+			if (!$ids) $ids = array();
+			$id = 1;
+			while (in_array($id, $ids))
+				$id++;
+			$this->entityIDsInRootEntity[$root][] = $id;
+			//$this->persistEntityIDsInRootEntity($root); //not required
+			return $root.".".$id;
+		}
+	}
+	
+	public function pushRootID($id)
+	{
+		array_push($this->rootIDs, $id);
+	}
+	
+	public function popRootID($id)
+	{
+		$p = array_pop($this->rootIDs);
+		if ($p != $id)
+			throw new \excpetion("Trying to pop root ID '$id', but '$p' was on top of the stack.");
+	}
+	
+	public function getRootID()
+	{
+		if (count($this->rootIDs))
+			return $this->rootIDs[count($this->rootIDs)-1];
+		return null;
 	}
 	
 	public function clearEntitiesInFile(\Source\File $file)
@@ -61,6 +102,16 @@ class EntityStore
 		if (!$ids) {
 			$this->fetchEntityIDsInFile($path);
 			$ids = @$this->entityIDsInFile[$path];
+		}
+		return $ids;
+	}
+	
+	public function getEntityIDsInRootEntity($id)
+	{
+		$ids = @$this->entityIDsInRootEntity[$id];
+		if (!$ids) {
+			$this->fetchEntityIDsInRootEntity($id);
+			$ids = @$this->entityIDsInRootEntity[$id];
 		}
 		return $ids;
 	}
@@ -114,10 +165,8 @@ class EntityStore
 			$root->setAttribute('name', $entity->getName());
 			$root->setAttribute('scope', $entity->getScope()->getID());
 			static::serializeScope($entity->getScope(), $root);
-			if ($entity->getSuperType()) {
-				$root->setAttribute('superType', $entity->getSuperType()->getID());
-				static::serializeEntity($entity->getSuperType(), $root);
-			}
+			if ($entity->getSuperType())
+				$root->setAttribute('superType', $entity->getSuperType()->getText());
 		}
 		
 		if ($root) {
@@ -216,7 +265,7 @@ class EntityStore
 	
 	
 	/*
-	 * Identity IDs in File
+	 * Entity IDs in File
 	 */
 	
 	private function persistEntityIDsInFile($file)
@@ -247,6 +296,37 @@ class EntityStore
 	
 	
 	/*
+	 * Entity IDs in Root Entity
+	 */
+	
+	private function persistEntityIDsInRootEntity($id)
+	{
+		$ids = array_unique($this->entityIDsInRootEntity[$id]);
+		
+		//Serialize the IDs.
+		sort($ids);
+		$text = implode("\n", $ids);
+		
+		//Store the entity IDs.
+		$path = $this->getPathToEntityIDsInRootEntity($id);
+		static::ensureDirExists($path);
+		file_put_contents($path, $text);
+	}
+	
+	private function fetchEntityIDsInRootEntity($id)
+	{
+		//Read the list of entities.
+		$path = $this->getPathToEntityIDsInRootEntity($id);
+		if (!file_exists($path)) return;
+		$text = file_get_contents($path);
+		
+		//Decode the IDs and store them.
+		$ids = explode("\n", trim($text));
+		$this->entityIDsInRootEntity[$id] = $ids;
+	}
+	
+	
+	/*
 	 * Paths
 	 */
 	
@@ -257,8 +337,13 @@ class EntityStore
 	
 	private function getPathToEntityIDsInFile($path)
 	{
-		$name = preg_replace('/\.mw$/i', '.entities', $path);
+		$name = preg_replace('/\.mw$/i', '.root', $path);
 		return "{$this->dir}/$name";
+	}
+	
+	private function getPathToEntityIDsInRootEntity($id)
+	{
+		return "{$this->dir}/$id.entities";
 	}
 	
 	static private function ensureDirExists($path)

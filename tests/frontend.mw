@@ -3,7 +3,7 @@
  */
 package parser
 
-type Vector
+type Vector : Container
 {
 	var int x;
 	var int y;

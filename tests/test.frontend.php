@@ -11,6 +11,7 @@ $entityStore = $manager->getEntityStore();
 
 
 $file = $manager->getSourceFileAtPath("$TEST_DIR/frontend.mw");
+$entityStore->clearEntitiesInFile($file);
 
 $lexer = new Lexer\Lexer($file);
 $lexer->run();
@@ -25,10 +26,11 @@ $entitializer = new Entitializer($parser->getNodes(), $lexer->getFile());
 $entitializer->run();
 $issues->reportAndExitIfFatal();
 
-$entityStore->clearEntitiesInFile($file);
 $entities = $entitializer->getEntities();
 foreach ($entities as $e) {
+	$e->pushID();
 	$e->initScope();
+	$e->popID();
 	$entityStore->setEntity($e);
 }
 

@@ -15,4 +15,7 @@ class RootEntity extends Entity
 	
 	public function setSiblingEntities(array $entities) { $this->siblingEntities = $entities; }
 	public function getSiblingEntities() { return $this->siblingEntities; }
+	
+	public function pushID() { \Store\Manager::get()->getEntityStore()->pushRootID($this->getID()); }
+	public function popID() { \Store\Manager::get()->getEntityStore()->popRootID($this->getID()); }
 }

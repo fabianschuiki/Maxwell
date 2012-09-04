@@ -3,6 +3,7 @@ Random TODOs
 
 - It might be better to give root entities huge IDs, around 10^6 and make all the entities within this root entity lie between `0..10^6-1` offset from the root's ID. This allows easy identification of where an ID originates from later on, which will be required when specializing. Double check whether 10^6 IDs are enough. Don't use the least significant 6 digits of the root IDs for their filename, so `1,2,...` instead of `1000000,2000000,...`. Maybe we could also get rid of the limit on entity counts by using a compound ID like `5.843` for subentities.
 - Use the existing `entities` directory to determine new entity IDs. Try to reuse old IDs.
+- Storing the entity IDs per root entity is not required if, when loading a root entity, all entity ids are registered with the entity store.
 - Assign token and AST node IDs on a per-file level.
 - In the Entitializer, feedback the entity IDs to the AST and/or tokens that spawned the entity. Use this information when storing the `.tokens` file. This faciliates writing of IDEs and even some command line tools.
 - Work on Entitializer to not only create root entities, but also their child entities.

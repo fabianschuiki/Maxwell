@@ -58,10 +58,10 @@ class StatementParser
 			case 'import': {
 				$names = array();
 				do {
-					if (!$tokens->is('identifier')) {
+					/*if (!$tokens->is('identifier')) {
 						IssueList::add('error', "Imported entity name must be an identifier.", $tokens->consume());
 						return null;
-					}
+					}*/
 					$names[] = $tokens->consume();
 				} while ($tokens->is('symbol', ',') && $tokens->consume());
 				return new AST\Stmt\Import($keyword, $names, $tokens->consumeIf('symbol', ';'));

@@ -34,6 +34,10 @@ class EntitySerializer
 				$e = $root->makeElement('sibling');
 				$e->setAttribute('id', $sibling->getID());
 			}
+			foreach ($entity->getKnownEntities() as $known) {
+				$e = $root->makeElement('known');
+				$e->setAttribute('id', $known->getID());
+			}
 		}
 		else {
 			throw new \exception("Unable to serialize root entity ".vartype($entity).".");

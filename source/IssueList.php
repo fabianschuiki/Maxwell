@@ -4,18 +4,11 @@ class IssueList implements ArrayAccess
 {
 	static $stack = array();
 	
-	static public function add($type, $message, $range = null, $marked = null)
+	static public function get()
 	{
 		assert(count(static::$stack) > 0);
-		$list = static::$stack[count(static::$stack)-1];
-		
-		$i = new Issue($type, $message, $range, $marked);
-		$list->addIssue($i);
+		return static::$stack[count(static::$stack)-1];
 	}
-	
-	protected $issues = array();
-	protected $num_warnings = 0;
-	protected $num_errors   = 0;
 	
 	public function push()
 	{
@@ -27,6 +20,18 @@ class IssueList implements ArrayAccess
 		$popped = array_pop(static::$stack);
 		assert($popped === $this);
 	}
+	
+	static public function add($type, $message, $range = null, $marked = null)
+	{
+		$list = static::get();
+		
+		$i = new Issue($type, $message, $range, $marked);
+		$list->addIssue($i);
+	}
+	
+	protected $issues = array();
+	protected $num_warnings = 0;
+	protected $num_errors   = 0;
 	
 	public function report()
 	{

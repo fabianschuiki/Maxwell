@@ -31,6 +31,8 @@ class Entitializer
 			else if ($node instanceof AST\Stmt\Package) {
 				$context['package'] = $node->getName();
 			}
+			else if ($node instanceof AST\Stmt\Import) {
+			}
 			else {
 				IssueList::add('warning', "Unable to wrap statement into a language entity.", $node->getRange());
 			}

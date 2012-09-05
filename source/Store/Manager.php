@@ -29,7 +29,7 @@ class Manager
 	protected $nextId;
 	protected $sourceFiles;
 	protected $tokenStore;
-	protected $astStore;
+	protected $syntaxStore;
 	protected $entityStore;
 	
 	public function __construct($dir)
@@ -79,11 +79,11 @@ class Manager
 		return $this->tokenStore;
 	}
 	
-	public function getASTStore()
+	public function getSyntaxStore()
 	{
-		if (!$this->astStore)
-			$this->astStore = new ASTStore($this);
-		return $this->astStore;
+		if (!$this->syntaxStore)
+			$this->syntaxStore = new SyntaxStore($this);
+		return $this->syntaxStore;
 	}
 	
 	public function getEntityStore()

@@ -6,33 +6,10 @@ $issues->push();
 
 $manager = new Store\Manager("$TEST_OUTPUT_DIR/frontend");
 $manager->push();
-$tokenStore = $manager->getTokenStore();
-$entityStore = $manager->getEntityStore();
 
-
-$file = $manager->getSourceFileAtPath("$TEST_DIR/frontend.mw");
-$entityStore->clearEntitiesInFile($file);
-
-$lexer = new Lexer\Lexer($file);
-$lexer->run();
-$issues->reportAndExitIfFatal();
-$tokenStore->setTokensForFile($lexer->getTokens(), $lexer->getFile());
-
-$parser = new Parser\Parser($tokenStore->getTokensForFile($file));
-$parser->run();
-$issues->reportAndExitIfFatal();
-
-$entitializer = new Entitializer($parser->getNodes(), $lexer->getFile());
-$entitializer->run();
-$issues->reportAndExitIfFatal();
-
-$entities = $entitializer->getEntities();
-foreach ($entities as $e) {
-	$e->pushID();
-	$e->initScope();
-	$e->popID();
-	$entityStore->setEntity($e);
-}
+$frontend = new Driver\Frontend;
+$frontend->addFile("$TEST_DIR/frontend.mw");
+$frontend->run();
 
 $manager->pop();
 

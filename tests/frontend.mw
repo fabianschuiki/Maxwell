@@ -2,6 +2,7 @@
  * Some test file for debugging the frontend.
  */
 package parser
+import "aux/aux"
 
 type Vector : Container
 {

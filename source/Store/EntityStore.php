@@ -111,7 +111,7 @@ class EntityStore
 	 * Entities
 	 */
 	
-	private function persistEntity($id)
+	public function persistEntity($id)
 	{
 		$entity = $this->entities[$id];
 		

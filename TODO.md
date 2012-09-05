@@ -1,19 +1,11 @@
 Random TODOs
 ============
 
-- Storing the entity IDs per root entity is not required if, when loading a root entity, all entity ids are registered with the entity store.
-
-- Assign token and AST node IDs on a per-file level.
-
-- In the Entitializer, feedback the entity IDs to the AST and/or tokens that spawned the entity. Use this information when storing the `.tokens` file. This faciliates writing of IDEs and even some command line tools.
-
-- Work on Entitializer to not only create root entities, but also their child entities.
-
-- Create an `Entity\TypeDef` class that wraps around an `AST\Stmt\TypeDef`. It should contain an identifier to its superclass which may be bound later.
+- Implement the `Driver\Frontend` class that performs the basic driver procedure.
 
 - Add raw C types to the language, possibly through a prefix like `@` or `$`. These should become obsolete as the language evolves. Later on it might even be possible to recognize a C type without special indicator.
 
-- Implement entity reading and decoding. Maybe it's best to read the file and create the bare objects and assign their IDs. Then in a second pass initialize the objects and setup object relationships.
+- Implement entity reading and decoding. Maybe it's best to read the file and create the bare objects and assign their IDs. Then in a second pass initialize the objects and setup object relationships. Make sure to keep track of all the entity IDs that are contained in the file.
 
 - Implement binding. Maybe there should be an `Analysis\Node` that may be assigned to each entity which holds all the information the analyzer gathers. This way, identifiers would get an `Analysis\Ident` object that contains the binding results.
 
@@ -26,6 +18,8 @@ Random TODOs
 - Calculate the type of each expression. Maybe this should be stored in an `Analysis\Expr` object (superclass of `Analysis\Ident` and the like).
 
 - Identifiers of function calls have bound to multiple functions. Filter them according to the type information calculated before. Throw errors where types don't match.
+
+- In the Entitializer, feedback the entity IDs to the AST and/or tokens that spawned the entity. Use this information when storing the `.tokens` file. This faciliates writing of IDEs and even some command line tools.
 
 - Add a `Compiler\Node` class that holds basic compilation information for entities. Each entity should then have such a compiler node.
 

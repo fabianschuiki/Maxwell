@@ -20,7 +20,9 @@ class Lexer
 	{
 		$contents = $this->file->getContents();
 		$len = strlen($contents);
-		$store = \Store\Manager::get()->getTokenStore();
+		
+		$ids = new \IDProvider;
+		$ids->push();
 		
 		$tokens = array();
 		$tokenType = null;
@@ -100,7 +102,7 @@ class Lexer
 					$range = new Range($this->file, $tokenStart, $tokenEnd);
 					$text = substr($contents, $range->getPosition(), $range->getLength());
 					
-					$t = new Token($store->allocateId(), $tokenType, $text, $range);
+					$t = new Token(\IDProvider::makeID(), $tokenType, $text, $range);
 					$tokens[] = $t;
 				}
 				
@@ -123,7 +125,7 @@ class Lexer
 		$groupedTokens = new TokenList;
 		foreach ($tokens as $t) {
 			if ($t->is('symbol') && strchr('([{', $t->getText()) !== false) {
-				$g = new TokenGroup($store->allocateId());
+				$g = new TokenGroup(\IDProvider::makeID());
 				$g->setStartToken($t);
 				if (count($groupStack) == 0)
 					$groupedTokens->add($g);
@@ -156,6 +158,7 @@ class Lexer
 			IssueList::add('error', "Opening symbol '{$g->getStartToken()->getText()}' is missing its closing counterpart '{$g->getRequiredEndSymbol()}'.", $g->getStartToken()->getRange());
 		}
 		
+		$ids->pop();
 		$this->tokens = $groupedTokens;
 	}
 	

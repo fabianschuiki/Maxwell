@@ -36,6 +36,17 @@ class Range
 		return $loc2str($this->start)."-".$loc2str($this->end);
 	}
 	
+	static public function fromString($str, File $file)
+	{
+		$str2loc = function($s) {
+			$c = explode(":", $s);
+			assert(count($c) == 3);
+			return Location::make($c[1], $c[2], $c[0]);
+		};
+		list($s,$e) = explode("-", $str);
+		return new self($file, $str2loc($s), $str2loc($e));
+	}
+	
 	static public function union($ranges)
 	{
 		$file = null;

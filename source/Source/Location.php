@@ -28,4 +28,13 @@ class Location
 	{
 		return "{$this->line}:{$this->column}";
 	}
+	
+	static public function make($line, $column, $offset)
+	{
+		$l = new self;
+		$l->line   = $line;
+		$l->column = $column;
+		$l->offset = $offset;
+		return $l;
+	}
 }

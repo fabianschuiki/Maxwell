@@ -96,6 +96,7 @@ class EntityStore
 			$path = $this->getPathToEntity($id);
 			if (!file_exists($path))
 				throw new \exception("No entity $id exists at $path.");
+			echo "loading entity '$path'\n";
 			
 			$xml = new Coder\XMLCoder;
 			$root = $xml->decodeFromFile($path);
@@ -103,6 +104,9 @@ class EntityStore
 			//Transform the decodable representation into entities.
 			$e = EntitySerializer::decodeRootEntity($root);
 			$this->entities[$id] = $e;
+			
+			//Load the siblings.
+			EntitySerializer::decodeRootEntityExternals($e, $root, $this);
 		}
 		return $e;
 	}

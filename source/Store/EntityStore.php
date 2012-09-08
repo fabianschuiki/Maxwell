@@ -99,7 +99,6 @@ class EntityStore
 			
 			$xml = new Coder\XMLCoder;
 			$root = $xml->decodeFromFile($path);
-			print_r($root);
 			
 			//Transform the decodable representation into entities.
 			$e = EntitySerializer::decodeRootEntity($root);

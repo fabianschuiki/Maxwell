@@ -38,7 +38,30 @@ class XMLCoder
 		return $output;
 	}
 	
-	public function decode()
+	public function decode($xml_string)
 	{
+		$xml = new \SimpleXMLElement($xml_string);
+		if (!$xml) return null;
+		return $this->decodeElement($xml);
+	}
+	
+	public function decodeFromFile($file)
+	{
+		$e = $this->decode(file_get_contents($file));
+		if (!$e)
+			throw new \exception("Unable to parse file '$file'.");
+		return $e;
+	}
+	
+	protected function decodeElement(\SimpleXMLElement $xml)
+	{
+		$e = new Element($xml->getName());
+		foreach ($xml->attributes() as $attribute => $value) {
+			$e->setAttribute(strval($attribute), strval($value));
+		}
+		foreach ($xml->children() as $name => $child) {
+			$e->addElement($this->decodeElement($child));
+		}
+		return $e;
 	}
 }

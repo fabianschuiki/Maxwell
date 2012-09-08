@@ -4,6 +4,13 @@
 package parser
 import "aux/aux"
 
+//Main function of the program.
+func main
+{
+	var int x = 0;
+	x;
+}
+
 type Vector : Container
 {
 	var int x;
@@ -14,13 +21,6 @@ type Vector : Container
 	}
 	
 	type Unit { var t; }
-}
-
-//Main function of the program.
-func main
-{
-	var int x = 0;
-	x;
 }
 
 //Some additional function.

@@ -92,7 +92,19 @@ class EntityStore
 	public function getEntity($id)
 	{
 		$e = @$this->entities[$id];
-		if (!$e) trigger_error("Entity decoding not implemented yet", E_USER_ERROR);
+		if (!$e) {
+			$path = $this->getPathToEntity($id);
+			if (!file_exists($path))
+				throw new \exception("No entity $id exists at $path.");
+			
+			$xml = new Coder\XMLCoder;
+			$root = $xml->decodeFromFile($path);
+			print_r($root);
+			
+			//Transform the decodable representation into entities.
+			$e = EntitySerializer::decodeRootEntity($root);
+			$this->entities[$id] = $e;
+		}
 		return $e;
 	}
 	
@@ -115,7 +127,7 @@ class EntityStore
 	{
 		$entity = $this->entities[$id];
 		
-		//Transform the tokens into an encodable representation.
+		//Transform the entities into an encodable representation.
 		$root = EntitySerializer::serializeRootEntity($entity);
 		
 		//Persist the entity.

@@ -233,6 +233,9 @@ class EntitySerializer
 			$entity->setScope($entities[$root->getAttribute('scope')]);
 			$entity->setFile($file);
 		}
+		else if ($entity instanceof \Entity\TypeDefinition) {
+			$entity->setName($root->getAttribute('name'));
+		}
 		else if ($entity instanceof \Entity\Block) {
 			$entity->setHeadScope($entities[$root->getAttribute('scope-head')]);
 			$entity->setTailScope($entities[$root->getAttribute('scope-tail')]);

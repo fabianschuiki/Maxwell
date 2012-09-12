@@ -6,7 +6,11 @@ use Source\Range;
 
 class EntitySerializer
 {
-	static public function serializeRootEntity(\Entity\RootEntity $entity)
+	/*
+	 * ENCODING
+	 */
+	 
+	static public function encodeRootEntity(\Entity\RootEntity $entity)
 	{
 		$root = null;
 		
@@ -15,14 +19,14 @@ class EntitySerializer
 			$root->setAttribute('name', $entity->getName());
 			$root->setAttribute('body', $entity->getBody()->getID());
 			$root->setAttribute('scope', $entity->getScope()->getID());
-			static::serializeEntity($entity->getBody(), $root);
-			static::serializeScope($entity->getScope(), $root);
+			static::encodeEntity($entity->getBody(), $root);
+			static::encodeScope($entity->getScope(), $root);
 		}
 		if ($entity instanceof \Entity\TypeDefinition) {
 			$root = new Coder\Element("type");
 			$root->setAttribute('name', $entity->getName());
 			$root->setAttribute('scope', $entity->getScope()->getID());
-			static::serializeScope($entity->getScope(), $root);
+			static::encodeScope($entity->getScope(), $root);
 			if ($entity->getSuperType())
 				$root->setAttribute('superType', $entity->getSuperType()->getText());
 		}
@@ -42,13 +46,13 @@ class EntitySerializer
 			}
 		}
 		else {
-			throw new \exception("Unable to serialize root entity ".vartype($entity).".");
+			throw new \exception("Unable to encode root entity ".vartype($entity).".");
 		}
 		
 		return $root;
 	}
 	
-	static private function serializeEntity(\Entity\Entity $entity, Coder\Element $root)
+	static private function encodeEntity(\Entity\Entity $entity, Coder\Element $root)
 	{
 		if ($entity instanceof \Entity\Block) {
 			$e = $root->makeElement("block");
@@ -57,11 +61,11 @@ class EntitySerializer
 			$tailScope = $entity->getTailScope();
 			$e->setAttribute('scope-head', $headScope->getID());
 			$e->setAttribute('scope-tail', $tailScope->getID());
-			static::serializeScope($headScope, $root);
-			if ($headScope != $tailScope) static::serializeScope($tailScope, $root);
+			static::encodeScope($headScope, $root);
+			if ($headScope != $tailScope) static::encodeScope($tailScope, $root);
 			
 			foreach ($entity->getStmts() as $s) {
-				static::serializeStmtEntity($s, $root);
+				static::encodeStmtEntity($s, $root);
 				$sr = $e->makeElement('stmt');
 				$sr->setAttribute('id', $s->getID());
 			}
@@ -72,16 +76,16 @@ class EntitySerializer
 			$e->setAttribute('range', $entity->getRange()->toString());
 		}
 		else {
-			throw new \exception("Unable to serialize entity ".vartype($entity).".");
+			throw new \exception("Unable to encode entity ".vartype($entity).".");
 		}
 	}
 	
-	static private function serializeStmtEntity(\Entity\Stmt\Stmt $stmt, Coder\Element $root)
+	static private function encodeStmtEntity(\Entity\Stmt\Stmt $stmt, Coder\Element $root)
 	{
 		if ($stmt instanceof \Entity\Stmt\Expr) {
 			$e = $root->makeElement("expr-stmt");
 			$e->setAttribute('expr', $stmt->getExpr()->getID());
-			static::serializeExprEntity($stmt->getExpr(), $root);
+			static::encodeExprEntity($stmt->getExpr(), $root);
 		}
 		
 		if ($e) {
@@ -90,11 +94,11 @@ class EntitySerializer
 			if ($stmt->getHumanRange()) $e->setAttribute('humanRange', $stmt->getHumanRange()->toString());
 		}
 		else {
-			throw new \exception("Unable to serialize statement entity ".vartype($stmt).".");
+			throw new \exception("Unable to encode statement entity ".vartype($stmt).".");
 		}
 	}
 	
-	static private function serializeExprEntity(\Entity\Expr\Expr $expr, Coder\Element $root)
+	static private function encodeExprEntity(\Entity\Expr\Expr $expr, Coder\Element $root)
 	{
 		if ($expr instanceof \Entity\Expr\Constant) {
 			$e = $root->makeElement("constant");
@@ -111,11 +115,11 @@ class EntitySerializer
 			$e->setAttribute('name', $expr->getName());
 			$e->setAttribute('scope', $expr->getScope()->getID());
 			if ($expr->getType()) {
-				static::serializeExprEntity($expr->getType(), $root);
+				static::encodeExprEntity($expr->getType(), $root);
 				$e->setAttribute('type', $expr->getType()->getID());
 			}
 			if ($expr->getInitial()) {
-				static::serializeExprEntity($expr->getInitial(), $root);
+				static::encodeExprEntity($expr->getInitial(), $root);
 				$e->setAttribute('initial', $expr->getInitial()->getID());
 			}
 		}
@@ -126,11 +130,11 @@ class EntitySerializer
 			if ($expr->getHumanRange()) $e->setAttribute('humanRange', $expr->getHumanRange()->toString());
 		}
 		else {
-			throw new \exception("Unable to serialize expression entity ".vartype($expr).".");
+			throw new \exception("Unable to encode expression entity ".vartype($expr).".");
 		}
 	}
 	
-	static private function serializeScope(\Entity\Scope\Scope $scope, Coder\Element $root)
+	static private function encodeScope(\Entity\Scope\Scope $scope, Coder\Element $root)
 	{
 		if ($scope instanceof \Entity\Scope\ScopeDeclaration) {
 			$e = $root->makeElement('scope-declaration');
@@ -146,7 +150,7 @@ class EntitySerializer
 			if ($scope->getUpper()) $e->setAttribute('upper', $scope->getUpper()->getID());
 		}
 		else {
-			throw new \exception("Unable to serialize scope ".vartype($scope).".");
+			throw new \exception("Unable to encode scope ".vartype($scope).".");
 		}
 	}
 	

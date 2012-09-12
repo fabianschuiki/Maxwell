@@ -131,7 +131,7 @@ class EntityStore
 		$entity = $this->entities[$id];
 		
 		//Transform the entities into an encodable representation.
-		$root = EntitySerializer::serializeRootEntity($entity);
+		$root = EntitySerializer::encodeRootEntity($entity);
 		
 		//Persist the entity.
 		$path = $this->getPathToEntity($id);

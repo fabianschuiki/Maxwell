@@ -1,8 +1,6 @@
 Random TODOs
 ============
 
-- Implement entity reading and decoding. Maybe it's best to read the file and create the bare objects and assign their IDs. Then in a second pass initialize the objects and setup object relationships. Make sure to keep track of all the entity IDs that are contained in the file.
-
 - Add raw C types to the language, possibly through a prefix like `@` or `$`. These should become obsolete as the language evolves. Later on it might even be possible to recognize a C type without special indicator.
 
 - Implement binding. Maybe there should be an `Analysis\Node` that may be assigned to each entity which holds all the information the analyzer gathers. This way, identifiers would get an `Analysis\Ident` object that contains the binding results.

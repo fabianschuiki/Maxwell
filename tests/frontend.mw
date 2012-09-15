@@ -8,7 +8,7 @@ import "aux/aux"
 func main
 {
 	var int x = 0;
-	x;
+	x = 9 + 15 * x;
 }
 
 type Vector : Container
@@ -26,4 +26,8 @@ type Vector : Container
 //Some additional function.
 func whatever
 {
+	var x;
+	var y;
+	
+	k := x*y;
 }

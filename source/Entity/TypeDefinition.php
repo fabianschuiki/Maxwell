@@ -21,7 +21,7 @@ class TypeDefinition extends RootEntity
 		
 		$e->setName($def->getName()->getText());
 		if ($def->getSuperType())
-			$e->setSuperType($def->getSuperType());
+			$e->setSuperType($def->getSuperType()->getText());
 		
 		$e->popID();
 		return $e;
@@ -34,7 +34,7 @@ class TypeDefinition extends RootEntity
 	public function setName($n) { $this->name = $n; }
 	public function getName() { return $this->name; }
 	
-	public function setSuperType(Token $s) { $this->superType = $s; }
+	public function setSuperType($s) { $this->superType = $s; }
 	public function getSuperType() { return $this->superType; }
 	
 	public function setScope(Scope $s) { $this->scope = $s; }

@@ -18,6 +18,18 @@ class ExpressionParser
 		
 		if ($tokens->count() >= 3) {
 			if ($tokens->backIs('symbol', '.', 1)) return static::parseMemberAccessExpr($tokens->backConsume(), $tokens->backConsume(), $tokens);
+			
+			//Binary Operators.
+			foreach (Language::$binaryOperators as $operators) {
+				for ($i = 0; $i < $tokens->count(); $i++) {
+					if ($tokens->is('symbol', null, $i) && in_array($tokens->getText($i), $operators)) {
+						$lhs = $tokens->upTo('symbol', $tokens->getText($i));
+						$op  = $tokens->consume();
+						$rhs = $tokens;
+						return static::parseBinaryOperator($lhs, $op, $rhs);
+					}
+				}
+			}
 		}
 		
 		if ($tokens->count() >= 2) {
@@ -218,5 +230,16 @@ class ExpressionParser
 		$expr = static::parseExpr($tokens);
 		if (!$expr) return null;
 		return new AST\Expr\MemberAccess($expr, $name);
+	}
+	
+	static public function parseBinaryOperator(TokenList $lhs, Token $operator, TokenList $rhs)
+	{
+		//Parse the left and right hand side.
+		$lhs_expr = static::parseExpr($lhs);
+		$rhs_expr = static::parseExpr($rhs);
+		if (!$lhs_expr || !$rhs_expr) return null;
+		
+		//Wrap up.
+		return new AST\Expr\Operator\Binary($lhs_expr, $operator, $rhs_expr);
 	}
 }

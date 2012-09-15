@@ -28,7 +28,7 @@ class EntitySerializer
 			$root->setAttribute('scope', $entity->getScope()->getID());
 			static::encodeScope($entity->getScope(), $root);
 			if ($entity->getSuperType())
-				$root->setAttribute('superType', $entity->getSuperType()->getText());
+				$root->setAttribute('superType', $entity->getSuperType());
 		}
 		
 		if ($root) {
@@ -54,6 +54,7 @@ class EntitySerializer
 	
 	static private function encodeEntity(\Entity\Entity $entity, Coder\Element $root)
 	{
+		$e = null;
 		if ($entity instanceof \Entity\Block) {
 			$e = $root->makeElement("block");
 			
@@ -82,6 +83,7 @@ class EntitySerializer
 	
 	static private function encodeStmtEntity(\Entity\Stmt\Stmt $stmt, Coder\Element $root)
 	{
+		$e = null;
 		if ($stmt instanceof \Entity\Stmt\Expr) {
 			$e = $root->makeElement("expr-stmt");
 			$e->setAttribute('expr', $stmt->getExpr()->getID());
@@ -100,6 +102,7 @@ class EntitySerializer
 	
 	static private function encodeExprEntity(\Entity\Expr\Expr $expr, Coder\Element $root)
 	{
+		$e = null;
 		if ($expr instanceof \Entity\Expr\Constant) {
 			$e = $root->makeElement("constant");
 			$e->setAttribute('type', $expr->getType());
@@ -122,6 +125,14 @@ class EntitySerializer
 				static::encodeExprEntity($expr->getInitial(), $root);
 				$e->setAttribute('initial', $expr->getInitial()->getID());
 			}
+		}
+		if ($expr instanceof \Entity\Expr\Operator\Binary) {
+			$e = $root->makeElement("binary-op");
+			$e->setAttribute('operator', $expr->getOperator());
+			static::encodeExprEntity($expr->getLHS(), $root);
+			static::encodeExprEntity($expr->getRHS(), $root);
+			$e->setAttribute('lhs', $expr->getLHS()->getID());
+			$e->setAttribute('rhs', $expr->getRHS()->getID());
 		}
 		
 		if ($e) {
@@ -235,6 +246,8 @@ class EntitySerializer
 		}
 		else if ($entity instanceof \Entity\TypeDefinition) {
 			$entity->setName($root->getAttribute('name'));
+			$entity->setScope($entities[$root->getAttribute('scope')]);
+			if ($s = $root->getAttribute('superType')) $entity->setSuperType($s);
 		}
 		else if ($entity instanceof \Entity\Block) {
 			$entity->setHeadScope($entities[$root->getAttribute('scope-head')]);

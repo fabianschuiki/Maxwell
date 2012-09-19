@@ -38,7 +38,8 @@ class Analyzer
 	/** Recursively creates the initial analysis nodes for the given entity where they are missing. */
 	public function initAnalysisNodes(Entity\Entity $entity)
 	{
-		if ($entity instanceof Entity\Expr) {
+		echo "initAnalysisNodes(".vartype($entity).")\n";
+		if ($entity instanceof Entity\Expr\Expr) {
 			echo "would init analysis node on ".vartype($entity)."\n";
 		}
 		
@@ -48,6 +49,9 @@ class Analyzer
 		else if ($entity instanceof Entity\Block) {
 			foreach ($entity->getStmts() as $stmt)
 				$this->initAnalysisNodes($stmt);
+		}
+		else if ($entity instanceof Entity\Stmt\Expr) {
+			$this->initAnalysisNodes($entity->getExpr());
 		}
 	}
 }

@@ -254,6 +254,12 @@ class EntitySerializer
 		else if ($entity instanceof \Entity\Block) {
 			$entity->setHeadScope($entities[$root->getAttribute('scope-head')]);
 			$entity->setTailScope($entities[$root->getAttribute('scope-tail')]);
+			$stmts = array();
+			foreach ($root->getElements() as $element) {
+				if ($element->getName() == 'stmt')
+					$stmts[] = $entities[$element->getAttribute('id')];
+			}
+			$entity->setStmts($stmts);
 		}
 		else if ($entity instanceof \Entity\Scope\Scope) {
 			if ($o = $root->getAttribute('outer')) $entity->setOuter($entities[$o]);

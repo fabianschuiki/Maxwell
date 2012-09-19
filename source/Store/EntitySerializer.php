@@ -117,6 +117,7 @@ class EntitySerializer
 			$e = $root->makeElement("var");
 			$e->setAttribute('name', $expr->getName());
 			$e->setAttribute('scope', $expr->getScope()->getID());
+			static::encodeScope($expr->getScope(), $root);
 			if ($expr->getType()) {
 				static::encodeExprEntity($expr->getType(), $root);
 				$e->setAttribute('type', $expr->getType()->getID());
@@ -186,6 +187,7 @@ class EntitySerializer
 			case 'var': $e = new \Entity\Expr\VarDef; break;
 			case 'identifier': $e = new \Entity\Expr\Identifier; break;
 			case 'constant': $e = new \Entity\Expr\Constant; break;
+			case 'binary-op': $e = new \Entity\Expr\Operator\Binary; break;
 		}
 		if ($e) {
 			if ($id = $element->getAttribute('id'))
@@ -273,6 +275,11 @@ class EntitySerializer
 		else if ($entity instanceof \Entity\Expr\Constant) {
 			$entity->setType($root->getAttribute('type'));
 			$entity->setValue($root->getAttribute('value'));
+		}
+		else if ($entity instanceof \Entity\Expr\Operator\Binary) {
+			$entity->setOperator($root->getAttribute('operator'));
+			$entity->setLHS($entities[$root->getAttribute('lhs')]);
+			$entity->setRHS($entities[$root->getAttribute('rhs')]);
 		}
 		else {
 			throw new \exception("Don't know how to decode ".vartype($entity).".");

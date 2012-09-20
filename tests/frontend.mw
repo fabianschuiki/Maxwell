@@ -8,6 +8,7 @@ import "aux/aux"
 func main
 {
 	var int x = 0;
+	var flint y = 6;
 	x = 9 + 15 * x;
 }
 

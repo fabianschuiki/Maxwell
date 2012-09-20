@@ -49,4 +49,9 @@ class VarDef extends Expr
 		$scope = $s;
 		$this->setScope($s);
 	}
+	
+	public function getChildEntities()
+	{
+		return array_filter(array($this->type, $this->initial));
+	}
 }

@@ -30,4 +30,6 @@ class Identifier extends Expr
 	{
 		$this->setScope($scope);
 	}
+	
+	public function getChildEntities() { return array(); }
 }

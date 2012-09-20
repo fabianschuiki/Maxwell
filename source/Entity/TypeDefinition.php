@@ -46,4 +46,9 @@ class TypeDefinition extends RootEntity
 		$scope->generateID();
 		$this->setScope($scope);
 	}
+	
+	public function getChildEntities()
+	{
+		return array();
+	}
 }

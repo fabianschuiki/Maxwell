@@ -29,4 +29,9 @@ class Expr extends Stmt
 	{
 		$this->expr->initScope($scope);
 	}
+	
+	public function getChildEntities()
+	{
+		return array($this->expr);
+	}
 }

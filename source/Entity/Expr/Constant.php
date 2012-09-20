@@ -25,4 +25,6 @@ class Constant extends Expr
 	
 	public function setValue($v) { $this->value = $v; }
 	public function getValue() { return $this->value; }
+	
+	public function getChildEntities() { return array(); }
 }

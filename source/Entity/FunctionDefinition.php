@@ -38,4 +38,9 @@ class FunctionDefinition extends RootEntity
 		$this->setScope($scope);
 		$this->body->initScope($scope);
 	}
+	
+	public function getChildEntities()
+	{
+		return array($this->body);
+	}
 }

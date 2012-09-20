@@ -1,7 +1,7 @@
 <?php
 namespace Entity;
 
-class RootEntity extends Entity
+abstract class RootEntity extends Entity
 {
 	protected $file;
 	protected $packageName;

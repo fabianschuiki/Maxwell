@@ -43,4 +43,9 @@ class Block extends Entity
 		}
 		$this->setTailScope($scope);
 	}
+	
+	public function getChildEntities()
+	{
+		return $this->stmts;
+	}
 }

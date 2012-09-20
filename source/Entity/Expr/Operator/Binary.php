@@ -42,4 +42,9 @@ class Binary extends Expr
 		$this->lhs->initScope($scope);
 		$this->rhs->initScope($scope);
 	}
+	
+	public function getChildEntities()
+	{
+		return array($this->lhs, $this->rhs);
+	}
 }

@@ -1,7 +1,7 @@
 <?php
 namespace Entity;
 
-class Entity extends Node
+abstract class Entity extends Node
 {
 	/** The portion of the source file covered by this entity. */
 	protected $range;
@@ -15,6 +15,14 @@ class Entity extends Node
 	public function setHumanRange(\Source\Range $r) { $this->humanRange = $r; }
 	public function getHumanRange() { return $this->humanRange; }
 	
+	public function getHumanRangeIfPossible()
+	{
+		if ($this->humanRange)
+			return $this->humanRange;
+		return $this->range;
+	}
+	
 	//subclass responsibilities
 	public function initScope(Scope\Scope $scope) {}
+	abstract public function getChildEntities();
 }

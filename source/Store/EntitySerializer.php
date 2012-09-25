@@ -63,7 +63,7 @@ class EntitySerializer
 			$e->setAttribute('scope-head', $headScope->getID());
 			$e->setAttribute('scope-tail', $tailScope->getID());
 			static::encodeScope($headScope, $root);
-			if ($headScope != $tailScope) static::encodeScope($tailScope, $root);
+			//if ($headScope != $tailScope) static::encodeScope($tailScope, $root);
 			
 			foreach ($entity->getStmts() as $s) {
 				static::encodeStmtEntity($s, $root);
@@ -140,6 +140,9 @@ class EntitySerializer
 			$e->setAttribute('id', $expr->getID());
 			$e->setAttribute('range', $expr->getRange()->toString());
 			if ($expr->getHumanRange()) $e->setAttribute('humanRange', $expr->getHumanRange()->toString());
+			if ($expr->analysis) {
+				static::encodeAnalysis($expr->analysis, $e, $root);
+			}
 		}
 		else {
 			throw new \exception("Unable to encode expression entity ".vartype($expr).".");
@@ -150,6 +153,9 @@ class EntitySerializer
 	{
 		if ($scope instanceof \Entity\Scope\ScopeDeclaration) {
 			$e = $root->makeElement('scope-declaration');
+			if (!$scope->getDeclares()) {
+				throw new \exception(vartype($scope)." does not declare anything");
+			}
 			$e->setAttribute('declares', $scope->getDeclares()->getID());
 		}
 		else {
@@ -163,6 +169,15 @@ class EntitySerializer
 		}
 		else {
 			throw new \exception("Unable to encode scope ".vartype($scope).".");
+		}
+	}
+	
+	static private function encodeAnalysis(\Analysis\Node\Node $node, Coder\Element $e, Coder\Element $root)
+	{
+		echo "encoding analysis ".vartype($node)."\n";
+		if ($node instanceof \Analysis\Node\Expr) {
+			$type = $node->type;
+			if ($i = $type->initial) $e->setAttribute('analysis-type-initial', $i->getID());
 		}
 	}
 	
@@ -264,6 +279,9 @@ class EntitySerializer
 		else if ($entity instanceof \Entity\Scope\Scope) {
 			if ($o = $root->getAttribute('outer')) $entity->setOuter($entities[$o]);
 			if ($u = $root->getAttribute('upper')) $entity->setUpper($entities[$u]);
+			if ($entity instanceof \Entity\Scope\ScopeDeclaration) {
+				$entity->setDeclares($entities[$root->getAttribute('declares')]);
+			}
 		}
 		else if ($entity instanceof \Entity\Stmt\Expr) {
 			$entity->setExpr($entities[$root->getAttribute('expr')]);

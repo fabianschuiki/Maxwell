@@ -21,18 +21,22 @@ class Analyzer
 	public function run()
 	{
 		$manager = Manager::get();
+		$entityStore = $manager->getEntityStore();
 		
 		$issues = new IssueList;
 		$issues->push();
 		
 		//Fetch the entity we're supposed to analyze.
 		$entityID = array_shift($this->entityIDs);
-		$entity = $manager->getEntityStore()->getEntity($entityID);
+		$entity = $entityStore->getEntity($entityID);
 		echo "loaded ".vartype($entity)."\n";
 		
 		//Bind all identifiers within type expressions and calculate the initial types of the entities.
 		$this->bindIdentsInTypeExprs($entity);
 		$this->calculateInitialType($entity);
+		
+		//Store the entity back to disk.
+		$entityStore->persistEntity($entityID);
 		
 		$issues->pop();
 		$issues->report();
@@ -101,12 +105,13 @@ class Analyzer
 			$t = $entity->getType();
 			if (!$t) {
 				$entity->analysis->type->initial = new \Type\Generic;
+				static::show("variable", $entity, "has generic initial type");
 			}
 			else if ($t instanceof Entity\Expr\Identifier) {
 				$tt = $t->analysis->binding->target;
 				if ($tt instanceof \Type\Type) {
 					$entity->analysis->type->initial = $tt;
-					static::show("variable ", $entity, "has initial type", $tt);
+					static::show("variable", $entity, "has initial type", $tt);
 				}
 				else {
 					IssueList::add('error', "Type '{$t->getName()}' is unknown.", $t->getRange());

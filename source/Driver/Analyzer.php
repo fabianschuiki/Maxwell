@@ -29,6 +29,7 @@ class Analyzer
 		//Fetch the entity we're supposed to analyze.
 		$entityID = array_shift($this->entityIDs);
 		$entity = $entityStore->getEntity($entityID);
+		$entityStore->pushRootID($entityID);
 		echo "loaded ".vartype($entity)."\n";
 		
 		//Bind all identifiers within type expressions and calculate the initial types of the entities.
@@ -36,6 +37,7 @@ class Analyzer
 		$this->calculateInitialType($entity);
 		
 		//Store the entity back to disk.
+		$entityStore->popRootID($entityID);
 		$entityStore->persistEntity($entityID);
 		
 		$issues->pop();
@@ -104,7 +106,7 @@ class Analyzer
 		if ($entity instanceof Entity\Expr\VarDef) {
 			$t = $entity->getType();
 			if (!$t) {
-				$entity->analysis->type->initial = new \Type\Generic;
+				$entity->analysis->type->initial = \Type\Generic::make();
 				static::show("variable", $entity, "has generic initial type");
 			}
 			else if ($t instanceof Entity\Expr\Identifier) {

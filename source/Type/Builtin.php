@@ -8,6 +8,7 @@ class Builtin extends Type
 	static public function makeWithName($name)
 	{
 		$b = new self;
+		$b->generateId();
 		$b->setName($name);
 		return $b;
 	}

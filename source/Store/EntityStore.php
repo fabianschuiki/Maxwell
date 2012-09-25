@@ -38,10 +38,12 @@ class EntityStore
 			if (!$ids)
 				$ids = array();
 			$id = 1;
-			while (in_array($id, $ids))
+			do {
+				$cid = "$root.$id";
 				$id++;
-			$this->entityIDsInRootEntity[$root][] = $id;
-			return $root.".".$id;
+			} while (in_array($cid, $ids));
+			$this->entityIDsInRootEntity[$root][] = $cid;
+			return $cid;
 		}
 	}
 	
@@ -102,8 +104,10 @@ class EntityStore
 			$root = $xml->decodeFromFile($path);
 			
 			//Transform the decodable representation into entities.
-			$e = EntitySerializer::decodeRootEntity($root);
+			$ids = array();
+			$e = EntitySerializer::decodeRootEntity($root, $ids);
 			$this->entities[$id] = $e;
+			$this->entityIDsInRootEntity[$id] = $ids;
 			
 			//Load the siblings.
 			EntitySerializer::decodeRootEntityExternals($e, $root, $this);

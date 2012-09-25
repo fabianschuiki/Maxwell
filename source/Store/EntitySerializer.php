@@ -174,7 +174,6 @@ class EntitySerializer
 	
 	static private function encodeAnalysis(\Analysis\Node\Node $node, Coder\Element $e, Coder\Element $root)
 	{
-		echo "encoding analysis ".vartype($node)."\n";
 		if ($node instanceof \Analysis\Node\Expr) {
 			$type = $node->type;
 			if ($i = $type->initial) $e->setAttribute('analysis-type-initial', $i->getID());
@@ -215,7 +214,7 @@ class EntitySerializer
 		return $e;
 	}
 	
-	static public function decodeRootEntity(Coder\Element $root)
+	static public function decodeRootEntity(Coder\Element $root, array &$ids)
 	{
 		$entity = static::decodeScaffolding($root);
 		if (!$entity) return null;
@@ -228,6 +227,7 @@ class EntitySerializer
 			$e = static::decodeScaffolding($element);
 			$entities[$e->getID()] = $e;
 			$elements[$e->getID()] = $element;
+			$ids[] = $e->getID();
 		}
 		
 		//Decode the child entities.

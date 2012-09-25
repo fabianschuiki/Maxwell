@@ -2,7 +2,6 @@
 namespace Type;
 
 /** Base class for all type information. */
-class Type
+class Type extends \Entity\Node
 {
-	
 }

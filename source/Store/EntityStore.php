@@ -81,7 +81,7 @@ class EntityStore
 	public function setEntity(\Entity\RootEntity $entity)
 	{
 		$id = $entity->getID();
-		if ($id <= 0) throw new \exception("setting entity ".vartype($entity)." with no ID");
+		if ($id <= 0) throw new \exception("Setting entity ".vartype($entity)." with no ID.");
 		$path = $entity->getRange()->getFile()->getPath();
 		
 		$this->entities[$id] = $entity;
@@ -98,7 +98,6 @@ class EntityStore
 			$path = $this->getPathToEntity($id);
 			if (!file_exists($path))
 				throw new \exception("No entity $id exists at $path.");
-			echo "loading entity '$path'\n";
 			
 			$xml = new Coder\XMLCoder;
 			$root = $xml->decodeFromFile($path);

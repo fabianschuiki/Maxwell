@@ -141,7 +141,8 @@ class EntitySerializer
 			$e->setAttribute('range', $expr->getRange()->toString());
 			if ($expr->getHumanRange()) $e->setAttribute('humanRange', $expr->getHumanRange()->toString());
 			if ($expr->analysis) {
-				static::encodeAnalysis($expr->analysis, $e, $root);
+				static::encodeAnalysis($expr->analysis, $root);
+				$e->setAttribute('analysis', $expr->analysis->getID());
 			}
 		}
 		else {
@@ -172,11 +173,11 @@ class EntitySerializer
 		}
 	}
 	
-	static private function encodeAnalysis(\Analysis\Node\Node $node, Coder\Element $e, Coder\Element $root)
+	static private function encodeAnalysis(\Analysis\Node\Node $analysis, Coder\Element $root)
 	{
-		if ($node instanceof \Analysis\Node\Expr) {
-			$type = $node->type;
-			if ($i = $type->initial) $e->setAttribute('analysis-type-initial', $i->getID());
+		if ($analysis instanceof \Analysis\Node\Expr) {
+			/*$type = $analysis->type;
+			if ($i = $type->initial) $e->setAttribute('analysis-type-initial', $i->getID());*/
 		}
 	}
 	

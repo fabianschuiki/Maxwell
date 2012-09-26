@@ -3,7 +3,7 @@ namespace Type;
 
 class Builtin extends Type
 {
-	static public $names = array('int', 'float');
+	static public $names = array('int', 'float', 'Type');
 	
 	static public function makeWithName($name)
 	{

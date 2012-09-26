@@ -123,5 +123,14 @@ class Analyzer
 				IssueList::add('error', "Not a valid type expression.", $t->getHumanRangeIfPossible());
 			}
 		}
+		if ($entity instanceof Entity\Expr\Identifier) {
+			if ($entity->analysis->binding->target) {
+				if ($entity->analysis->binding->target instanceof \Type\Type) {
+					$entity->analysis->type->initial = \Type\Builtin::makeWithName("Type");
+				} else {
+					//use the target entity's type.
+				}
+			}
+		}
 	}
 }

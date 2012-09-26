@@ -141,8 +141,7 @@ class EntitySerializer
 			$e->setAttribute('range', $expr->getRange()->toString());
 			if ($expr->getHumanRange()) $e->setAttribute('humanRange', $expr->getHumanRange()->toString());
 			if ($expr->analysis) {
-				static::encodeAnalysis($expr->analysis, $root);
-				$e->setAttribute('analysis', $expr->analysis->getID());
+				static::encodeAnalysis($expr->analysis, $e);
 			}
 		}
 		else {
@@ -173,12 +172,38 @@ class EntitySerializer
 		}
 	}
 	
-	static private function encodeAnalysis(\Analysis\Node\Node $analysis, Coder\Element $root)
+	static private function encodeAnalysis(\Analysis\Node\Node $analysis, Coder\Element $element)
 	{
 		if ($analysis instanceof \Analysis\Node\Expr) {
-			/*$type = $analysis->type;
-			if ($i = $type->initial) $e->setAttribute('analysis-type-initial', $i->getID());*/
+			$e = $element->makeElement("analysis-type");
+			if ($i = $analysis->type->initial) static::encodeType($i, $e)->setAttribute('rel', 'initial');
 		}
+		if ($analysis instanceof \Analysis\Node\Identifier) {
+			$e = $element->makeElement("analysis-binding");
+			if ($t = $analysis->binding->target) {
+				if ($t instanceof \Type\Type) {
+					if (!$t instanceof \Type\Builtin) throw new \exception("Identifier can only bind to builtin types.");
+					$e->setAttribute('target', "builtin:{$t->getName()}");
+				} else {
+					$e->setAttribute('target', $t->getID());
+				}
+			}
+		}
+	}
+	
+	static private function encodeType(\Type\Type $type, Coder\Element $element)
+	{
+		$e = null;
+		if ($type instanceof \Type\Generic) {
+			$e = $element->makeElement("type-generic");
+		}
+		if ($type instanceof \Type\Builtin) {
+			$e = $element->makeElement("type-builtin");
+			$e->setAttribute('name', $type->getName());
+		}
+		
+		if (!$e) throw new \exception("Unable to encode type ".vartype($type).".");
+		return $e;
 	}
 	
 	

@@ -36,6 +36,9 @@ class Analyzer
 		$this->bindIdentsInTypeExprs($entity);
 		$this->calculateInitialType($entity);
 		
+		//Bind all identifiers that are left.
+		$this->bindIdents($entity);
+		
 		//Store the entity back to disk.
 		$entityStore->popRootID($entityID);
 		$entityStore->persistEntity($entityID);
@@ -73,9 +76,34 @@ class Analyzer
 	public function bindIdents(Entity\Entity $entity)
 	{
 		if ($entity instanceof Entity\Expr\Identifier) {
+			//Try to bind the identifier to a builtin type.
 			if (in_array($entity->getName(), \Type\Builtin::$names)) {
 				$entity->analysis->binding->target = \Type\Builtin::makeWithName($entity->getName());
 				static::show("identifier", $entity, "bound to builtin type");
+			}
+			
+			//Try to bind the identifier to something in scope.
+			else {
+				$scope = $entity->getScope();
+				$result = null;
+				while ($scope) {
+					if ($scope instanceof Entity\Scope\ScopeDeclaration && $scope->getDeclares()->getName() == $entity->getName()) {
+						$result = $scope->getDeclares();
+						break;
+					}
+					
+					//Jump to the previous scope, or the outer scope if we're at the beginning.
+					if ($s = $scope->getUpper())
+						$scope = $s;
+					else
+						$scope = $scope->getOuter();
+				}
+				
+				if ($result) {
+					$entity->analysis->binding->target = $result;
+				} else {
+					IssueList::add('error', "Entity with name '{$entity->getName()}' is unknown.", $entity);
+				}
 			}
 		}
 		else {

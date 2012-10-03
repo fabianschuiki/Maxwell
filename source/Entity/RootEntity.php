@@ -8,9 +8,12 @@ abstract class RootEntity extends Entity
 	protected $siblingEntities;
 	protected $knownEntities;
 	
+	public $analysis;
+	
 	public function __construct()
 	{
 		$this->knownEntities = array();
+		$this->analysis = \Analysis\Node\Node::makeForEntity($this);
 	}
 	
 	public function setFile(\Source\File $file) { $this->file = $file; }

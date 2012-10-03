@@ -39,6 +39,9 @@ class Analyzer
 		//Bind all identifiers that are left.
 		$this->bindIdents($entity);
 		
+		//Spawn type constraints for the entities.
+		$this->spawnTypeConstraints($entity, $entity);
+		
 		//Store the entity back to disk.
 		$entityStore->popRootID($entityID);
 		$entityStore->persistEntity($entityID);
@@ -76,33 +79,35 @@ class Analyzer
 	public function bindIdents(Entity\Entity $entity)
 	{
 		if ($entity instanceof Entity\Expr\Identifier) {
-			//Try to bind the identifier to a builtin type.
-			if (in_array($entity->getName(), \Type\Builtin::$names)) {
-				$entity->analysis->binding->target = \Type\Builtin::makeWithName($entity->getName());
-				static::show("identifier", $entity, "bound to builtin type");
-			}
-			
-			//Try to bind the identifier to something in scope.
-			else {
-				$scope = $entity->getScope();
-				$result = null;
-				while ($scope) {
-					if ($scope instanceof Entity\Scope\ScopeDeclaration && $scope->getDeclares()->getName() == $entity->getName()) {
-						$result = $scope->getDeclares();
-						break;
-					}
-					
-					//Jump to the previous scope, or the outer scope if we're at the beginning.
-					if ($s = $scope->getUpper())
-						$scope = $s;
-					else
-						$scope = $scope->getOuter();
+			if (!$entity->analysis->binding->target) {
+				//Try to bind the identifier to a builtin type.
+				if (in_array($entity->getName(), \Type\Builtin::$names)) {
+					$entity->analysis->binding->target = \Type\Builtin::makeWithName($entity->getName());
+					static::show("identifier", $entity, "bound to builtin type");
 				}
 				
-				if ($result) {
-					$entity->analysis->binding->target = $result;
-				} else {
-					IssueList::add('error', "Entity with name '{$entity->getName()}' is unknown.", $entity);
+				//Try to bind the identifier to something in scope.
+				else {
+					$scope = $entity->getScope();
+					$result = null;
+					while ($scope) {
+						if ($scope instanceof Entity\Scope\ScopeDeclaration && $scope->getDeclares()->getName() == $entity->getName()) {
+							$result = $scope->getDeclares();
+							break;
+						}
+						
+						//Jump to the previous scope, or the outer scope if we're at the beginning.
+						if ($s = $scope->getUpper())
+							$scope = $s;
+						else
+							$scope = $scope->getOuter();
+					}
+					
+					if ($result) {
+						$entity->analysis->binding->target = $result;
+					} else {
+						IssueList::add('error', "Entity with name '{$entity->getName()}' is unknown.", $entity);
+					}
 				}
 			}
 		}
@@ -156,7 +161,31 @@ class Analyzer
 				if ($entity->analysis->binding->target instanceof \Type\Type) {
 					$entity->analysis->type->initial = \Type\Builtin::makeWithName("Type");
 				} else {
-					//use the target entity's type.
+					$entity->analysis->type->initial = \Type\Generic::make();
+				}
+			} else {
+				$entity->analysis->type->initial = \Type\Generic::make();
+			}
+		}
+	}
+	
+	public function spawnTypeConstraints(Entity\RootEntity $root, Entity\Entity $entity)
+	{
+		foreach ($entity->getChildEntities() as $e)
+			$this->spawnTypeConstraints($root, $e);
+		
+		//Variable definitions have a type constraint between the initial expression and the type of the variable itself.
+		if ($entity instanceof Entity\Expr\VarDef) {
+			if ($i = $entity->getInitial()) {
+				$root->analysis->constraints->add(\Analysis\Constraint::make($entity, $i));
+			}
+		}
+		
+		//Identifiers are supposed to have the same type as their target variable definitions.
+		if ($entity instanceof Entity\Expr\Identifier) {
+			if ($t = $entity->analysis->binding->target) {
+				if ($t instanceof Entity\Expr\VarDef) {
+					$root->analysis->constraints->add(\Analysis\Constraint::make($entity, $t));
 				}
 			}
 		}

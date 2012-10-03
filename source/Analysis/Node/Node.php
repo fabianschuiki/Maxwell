@@ -2,7 +2,7 @@
 namespace Analysis\Node;
 
 /** Root class for analysis nodes assigned to entities. */
-class Node extends \Entity\Node
+class Node
 {
 	static public function makeForEntity(\Entity\Entity $e)
 	{
@@ -12,7 +12,6 @@ class Node extends \Entity\Node
 		else if ($e instanceof \Entity\RootEntity) $n = new RootEntity;
 		
 		if (!$n) throw new \exception("No analysis node exists for ".vartype($e));
-		$n->generateId();
 		return $n;
 	}
 }

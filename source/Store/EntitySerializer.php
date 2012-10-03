@@ -44,6 +44,9 @@ class EntitySerializer
 				$e = $root->makeElement('known');
 				$e->setAttribute('id', $known->getID());
 			}
+			if ($entity->analysis) {
+				static::encodeAnalysis($entity->analysis, $root);
+			}
 		}
 		else {
 			throw new \exception("Unable to encode root entity ".vartype($entity).".");
@@ -189,6 +192,16 @@ class EntitySerializer
 				}
 			}
 		}
+		if ($analysis instanceof \Analysis\Node\RootEntity) {
+			$e = $element->makeElement("analysis-type-constraints");
+			foreach ($analysis->constraints->getConstraints() as $c) {
+				$ce = $e->makeElement("constraint");
+				foreach ($c->getEntities() as $ent) {
+					$entel = $ce->makeElement("entity");
+					$entel->setAttribute('id', $ent->getID());
+				}
+			}
+		}
 	}
 	
 	static private function encodeType(\Type\Type $type, Coder\Element $element)
@@ -249,7 +262,7 @@ class EntitySerializer
 		$entities = array();
 		$elements = array();
 		foreach ($root->getElements() as $element) {
-			if ($element->getName() == 'sibling' || $element->getName() == 'known') continue;
+			if ($element->getName() == 'sibling' || $element->getName() == 'known' || strpos($element->getName(), 'analysis-') === 0) continue;
 			$e = static::decodeScaffolding($element);
 			$entities[$e->getID()] = $e;
 			$elements[$e->getID()] = $element;

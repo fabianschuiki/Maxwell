@@ -13,6 +13,10 @@ $analyzer = new Driver\Analyzer;
 $analyzer->addEntityIDs($ids);
 $analyzer->run();
 
+$dumper = new Dumper\DebugHTML;
+$dumper->addEntityIDs($ids);
+$dumper->run();
+
 $manager->pop();
 
 $issues->pop();

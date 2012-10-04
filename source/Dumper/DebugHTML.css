@@ -1,0 +1,31 @@
+@import url(http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700);
+@import url(http://fonts.googleapis.com/css?family=Ubuntu:400,700);
+
+body {
+	font-family: Ubuntu, sans-serif;
+	font-size: 11px;
+}
+
+pre {
+	font-family: "Ubuntu Mono", monospace;
+	font-size: 13px;
+}
+
+.entity {
+	clear: right;
+}
+
+.entity-info {
+	font-family: Ubuntu, sans-serif;
+	font-size: 11px;
+	right: 0;
+	float: right;
+	text-align: left;
+}
+.entity-info .name {
+	font-weight: bold;
+}
+.entity-info .name .class {
+	color: hsl(0, 0%, 70%);
+	font-weight: normal;
+}

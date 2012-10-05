@@ -17,12 +17,12 @@ function deactivate(humanSpan)
 
 function showInfo()
 {
-	activate($(this));
+	$(this).parent().toggleClass("active", true);
 }
 
 function hideInfo()
 {
-	deactivate($(this));
+	$(this).parent().toggleClass("active", false);
 }
 
 //Initialize stuff.

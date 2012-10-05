@@ -49,9 +49,11 @@ class DebugHTML
 				$info .= "<div class=\"name\">{$entity->getID()} <span class=\"class\">".vartype($entity)."</span></div>";
 				$info .= "</div>";
 				
+				$tag = "<div class=\"entity-tag\">{$entity->getID()}</div>";
+				
 				$r = $entity->getRange();
 				$wrappers[] = array('r' => $r, 'a' => "<span id=\"e{$entity->getID()}\" class=\"$classes\">", 'b' => "</span>");
-				$wrappers[] = array('r' => $entity->getHumanRangeIfPossible(), 'a' => "<span class=\"human\">", 'b' => "$info</span>");
+				$wrappers[] = array('r' => $entity->getHumanRangeIfPossible(), 'a' => "<span class=\"human\">$tag", 'b' => "$info</span>");
 			}
 			
 			$range = $root->getRange();

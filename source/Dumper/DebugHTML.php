@@ -44,7 +44,7 @@ class DebugHTML
 		$body  = "";
 		
 		foreach ($this->entityIDs as $entityID) {
-			$html = "<h1>Entity $entityID</h1>";
+			$html = "";
 			$root = $entityStore->getEntity($entityID);
 			
 			$wrappers = array();
@@ -54,7 +54,13 @@ class DebugHTML
 				$entity = array_shift($stack);
 				$stack = array_merge($stack, $entity->getChildEntities());
 				
-				$classes = implode(" ", explode("\\", strtolower(vartype($entity))));
+				$class_paths = array();
+				foreach (explode("\\", strtolower(vartype($entity))) as $cls) {
+					if (count($class_paths))
+						$cls = $class_paths[count($class_paths)-1] . "-$cls";
+					$class_paths[] = $cls;
+				}
+				$classes = implode(" ", $class_paths);
 				
 				$attrs = "";
 				$info = "<div class=\"entity-info\">";

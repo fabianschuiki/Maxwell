@@ -6,6 +6,11 @@ body {
 	font-size: 11px;
 }
 
+h1 {
+	font-size: 1.25em;
+	margin-top: 2em;
+}
+
 pre {
 	font-family: "Ubuntu Mono", monospace;
 	font-size: 13px;
@@ -18,11 +23,15 @@ pre {
 	position: relative;
 }
 
-.entity.expr.active > .human {
+.entity-expr.active {
 	background-color: hsla(200, 100%, 50%, 0.1);
 	border-bottom: 1px solid hsla(200, 100%, 50%, 0.2);
 }
-.entity.expr.referred > .human {
+.entity-expr.active > .human {
+	background-color: hsla(200, 100%, 50%, 0.4);
+	border-bottom: 1px solid hsla(200, 100%, 50%, 0.8);
+}
+.entity-expr.referred > .human {
 	background-color: hsla(45, 100%, 50%, 0.4);
 	border-bottom: 1px solid hsla(45, 100%, 50%, 0.8);
 }

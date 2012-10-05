@@ -27,8 +27,9 @@ class DebugHTML
 		$entityStore = $manager->getEntityStore();
 		
 		$title = "Entity ".implode(", ", $this->entityIDs);
-		$head  = "<style>".file_get_contents(__DIR__."/DebugHTML.css")."</style>";
-		$head .= "<script type=\"text/javascript\">".file_get_contents(__DIR__."/DebugHTML.js")."</script>";
+		$head  = "<style>".file_get_contents(__DIR__."/DebugHTML.css")."</style>\n";
+		$head .= "<script src=\"http://code.jquery.com/jquery-1.8.2.min.js\" type=\"text/javascript\"></script>\n";
+		$head .= "<script type=\"text/javascript\">".file_get_contents(__DIR__."/DebugHTML.js")."</script>\n";
 		$body  = "";
 		
 		foreach ($this->entityIDs as $entityID) {

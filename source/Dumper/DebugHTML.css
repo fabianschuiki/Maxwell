@@ -12,20 +12,33 @@ pre {
 }
 
 .entity {
-	clear: right;
+	position: relative;
+}
+.entity.active > .human {
+	background-color: hsla(200, 100%, 50%, 0.1);
+	border-bottom: 1px solid hsla(200, 100%, 50%, 0.2);
 }
 
-.entity-info {
-	font-family: Ubuntu, sans-serif;
-	font-size: 11px;
-	right: 0;
-	float: right;
-	text-align: left;
+.entity .entity-info {
+	color: hsl(0, 0%, 90%);
+	position: absolute;
+	left: 0;
+	top: 20px;
+	display: none;
+	padding: 5px;
+	border-radius: 5px;
+	background-color: hsla(0, 0%, 0%, 0.85);
+	border: 2px solid white;
+	box-shadow: 0 1px 10px hsla(0, 0%, 0%, 0.3);
+	font: 11px Ubuntu, sans-serif;
+	z-index: 2;
+}
+.entity.active > .human > .entity-info {
+	display: inherit;
 }
 .entity-info .name {
 	font-weight: bold;
 }
 .entity-info .name .class {
-	color: hsl(0, 0%, 70%);
 	font-weight: normal;
 }

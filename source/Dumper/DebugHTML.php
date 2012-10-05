@@ -21,6 +21,17 @@ class DebugHTML
 		$this->entityIDs = array_merge($this->entityIDs, $ids);
 	}
 	
+	static private function entityInfo(\Entity\Node $entity = null)
+	{
+		if (!$entity) return "&lt;nothing&gt;";
+		return $entity->getID()." ".vartype($entity);
+	}
+	
+	static private function idify(\Entity\Node $entity)
+	{
+		return "entity-".str_replace(".", "-", $entity->getID());
+	}
+	
 	public function run()
 	{
 		$manager = Manager::get();
@@ -45,14 +56,22 @@ class DebugHTML
 				
 				$classes = implode(" ", explode("\\", strtolower(vartype($entity))));
 				
+				$attrs = "";
 				$info = "<div class=\"entity-info\">";
 				$info .= "<div class=\"name\">{$entity->getID()} <span class=\"class\">".vartype($entity)."</span></div>";
+				if (isset($entity->analysis) && isset($entity->analysis->binding)) {
+					$info .= "<h1>Binding</h1>\n";
+					$t = $entity->analysis->binding->target;
+					$info .= "<div>Target: ".static::entityInfo($t)."</div>\n";
+					if ($t) $attrs .= " data-bindingTarget=\"".static::idify($t)."\"";
+				}
 				$info .= "</div>";
 				
 				$tag = "<div class=\"entity-tag\">{$entity->getID()}</div>";
 				
+				
 				$r = $entity->getRange();
-				$wrappers[] = array('r' => $r, 'a' => "<span id=\"e{$entity->getID()}\" class=\"$classes\">", 'b' => "</span>");
+				$wrappers[] = array('r' => $r, 'a' => "<span id=\"".static::idify($entity)."\" class=\"$classes\" $attrs>", 'b' => "</span>");
 				$wrappers[] = array('r' => $entity->getHumanRangeIfPossible(), 'a' => "<span class=\"human\">$tag", 'b' => "$info</span>");
 			}
 			

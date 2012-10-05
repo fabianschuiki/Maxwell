@@ -1,4 +1,4 @@
-var active = null;
+/*var active = null;
 
 function activate(humanSpan)
 {
@@ -13,16 +13,23 @@ function deactivate(humanSpan)
 	if (humanSpan != active) return;
 	if (active) active.parent().toggleClass("active", false);
 	active = null;
+}*/
+
+function toggle(humanSpan, onoff)
+{
+	var p = $(humanSpan).parent();
+	p.toggleClass("active", onoff);
+	$("#"+p.attr("data-bindingTarget")).toggleClass("referred", onoff);
 }
 
 function showInfo()
 {
-	$(this).parent().toggleClass("active", true);
+	toggle(this, true);
 }
 
 function hideInfo()
 {
-	$(this).parent().toggleClass("active", false);
+	toggle(this, false);
 }
 
 //Initialize stuff.

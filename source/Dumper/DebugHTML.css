@@ -22,6 +22,10 @@ pre {
 	background-color: hsla(200, 100%, 50%, 0.1);
 	border-bottom: 1px solid hsla(200, 100%, 50%, 0.2);
 }
+.entity.expr.referred > .human {
+	background-color: hsla(45, 100%, 50%, 0.4);
+	border-bottom: 1px solid hsla(45, 100%, 50%, 0.8);
+}
 
 .entity .entity-tag {
 	position: absolute;
@@ -53,6 +57,7 @@ pre {
 	box-shadow: 0 1px 10px hsla(0, 0%, 0%, 0.3);
 	font: 11px Ubuntu, sans-serif;
 	z-index: 2;
+	white-space: normal;
 }
 .entity.active > .human > .entity-info {
 	display: inherit;
@@ -62,4 +67,12 @@ pre {
 }
 .entity-info .name .class {
 	font-weight: normal;
+}
+.entity-info h1 {
+	font-size: 1em;
+	margin: 0;
+	margin-bottom: 2px;
+	margin-top: 5px;
+	border-bottom: 1px solid hsla(0, 0%, 100%, 0.3);
+	padding-bottom: 2px;
 }

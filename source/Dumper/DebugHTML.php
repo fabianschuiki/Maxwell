@@ -27,6 +27,15 @@ class DebugHTML
 		return $entity->getID()." ".vartype($entity);
 	}
 	
+	static private function typeInfo(\Type\Type $type = null)
+	{
+		if (!$type) return "&lt;unknown&gt;";
+		if ($type instanceof \Type\Generic) return "*";
+		if ($type instanceof \Type\Builtin) return "builtin {$type->getName()}";
+		if ($type instanceof \Type\Defined) return $type->getName();
+		throw new \exception("unable to generate type info for ".vartype($type));
+	}
+	
 	static private function idify(\Entity\Node $entity)
 	{
 		return "entity-".str_replace(".", "-", $entity->getID());
@@ -65,11 +74,17 @@ class DebugHTML
 				$attrs = "";
 				$info = "<div class=\"entity-info\">";
 				$info .= "<div class=\"name\">{$entity->getID()} <span class=\"class\">".vartype($entity)."</span></div>";
-				if (isset($entity->analysis) && isset($entity->analysis->binding)) {
-					$info .= "<h1>Binding</h1>\n";
-					$t = $entity->analysis->binding->target;
-					$info .= "<div>Target: ".static::entityInfo($t)."</div>\n";
-					if ($t) $attrs .= " data-bindingTarget=\"".static::idify($t)."\"";
+				if (isset($entity->analysis)) {
+					if (isset($entity->analysis->binding)) {
+						$info .= "<h1>Binding</h1>\n";
+						$t = $entity->analysis->binding->target;
+						$info .= "<div>Target: ".static::entityInfo($t)."</div>\n";
+						if ($t) $attrs .= " data-bindingTarget=\"".static::idify($t)."\"";
+					}
+					if (isset($entity->analysis->type)) {
+						$info .= "<h1>Type</h1>\n";
+						$info .= "<div>Initial: ".static::typeInfo($entity->analysis->type->initial)."</div>";
+					}
 				}
 				$info .= "</div>";
 				

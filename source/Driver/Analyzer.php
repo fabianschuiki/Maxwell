@@ -26,33 +26,36 @@ class Analyzer
 		$issues = new IssueList;
 		$issues->push();
 		
-		//Fetch the entity we're supposed to analyze.
-		$entityID = array_shift($this->entityIDs);
-		$entity = $entityStore->getEntity($entityID);
-		$entityStore->pushRootID($entityID);
-		echo "loaded ".vartype($entity)."\n";
-		
-		//Bind all identifiers within type expressions and calculate the initial types of the entities.
-		$this->bindIdentsInTypeExprs($entity);
-		$this->calculateInitialType($entity);
-		
-		//Bind all identifiers that are left.
-		$this->bindIdents($entity);
-		if ($issues->isFatal()) return false;
-		
-		//Don't spawn any constraints for now.
-		//Spawn type constraints for the entities.
-		//$this->spawnTypeConstraints($entity, $entity);
-		
-		//Calculate the required type.
-		//$this->calculateRequiredType($entity);
-		
-		//Calculate the inferred types.
-		$this->calculateInferredType($entity);
-		
-		//Store the entity back to disk.
-		$entityStore->popRootID($entityID);
-		$entityStore->persistEntity($entityID);
+		while (count($this->entityIDs) && !$issues->isFatal())
+		{
+			//Fetch the entity we're supposed to analyze.
+			$entityID = array_shift($this->entityIDs);
+			$entity = $entityStore->getEntity($entityID);
+			$entityStore->pushRootID($entityID);
+			echo "loaded ".vartype($entity)."\n";
+			
+			//Bind all identifiers within type expressions and calculate the initial types of the entities.
+			$this->bindIdentsInTypeExprs($entity);
+			$this->calculateInitialType($entity);
+			
+			//Bind all identifiers that are left.
+			$this->bindIdents($entity);
+			if ($issues->isFatal()) break;
+			
+			//Don't spawn any constraints for now.
+			//Spawn type constraints for the entities.
+			//$this->spawnTypeConstraints($entity, $entity);
+			
+			//Calculate the required type.
+			//$this->calculateRequiredType($entity);
+			
+			//Calculate the inferred types.
+			$this->calculateInferredType($entity);
+			
+			//Store the entity back to disk.
+			$entityStore->popRootID($entityID);
+			$entityStore->persistEntity($entityID);
+		}
 		
 		$issues->pop();
 		$issues->report();

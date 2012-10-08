@@ -29,20 +29,29 @@ class Compiler
 		$issues = new IssueList;
 		$issues->push();
 		
-		//Fetch the entity we're supposed to analyze.
-		$entityID = array_shift($this->entityIDs);
-		$entity = $entityStore->getEntity($entityID);
-		echo "compiling ".vartype($entity)."\n";
-		
-		//Generate code.
-		$pair = $this->generateRootCode($entity);
-		$codeStore->persistCode($entityID, $pair);
-				
-		//Store the entity back to disk.
-		//$entityStore->persistEntity($entityID);
+		while (count($this->entityIDs) && !$issues->isFatal())
+		{
+			//Fetch the entity we're supposed to analyze.
+			$entityID = array_shift($this->entityIDs);
+			$entity = $entityStore->getEntity($entityID);
+			echo "compiling ".vartype($entity)."\n";
+			
+			//Generate code.
+			$pair = $this->generateRootCode($entity);
+			$codeStore->persistCode($entityID, $pair);
+					
+			//Store the entity back to disk.
+			//$entityStore->persistEntity($entityID);
+		}
 		
 		$issues->pop();
 		$issues->report();
+	}
+	
+	/** Decides the name of individual entities, as it will appear in the C file. */
+	private function decideName(Entity\Entity $entity)
+	{
+		
 	}
 	
 	static public function indent($str)
@@ -62,7 +71,17 @@ class Compiler
 			$block = $this->generateBlockCode($entity->getBody());
 			
 			$snippet->publicHeader .= "$declaration;\n";
-			$snippet->source .= "$declaration\n{\n".static::indent(trim($block->stmts))."\n}\n";
+			$snippet->stmts .= "$declaration\n{\n".static::indent(trim($block->stmts))."\n}\n";
+		}
+		if ($entity instanceof Entity\TypeDefinition) {
+			$declaration = "typedef struct ";
+			$declaration .= $entity->getName();
+			$declaration .= " {\n";
+			$declaration .= "} ";
+			$declaration .= $entity->getName();
+			$declaration .= "_t;\n";
+			
+			$snippet->publicHeader = $declaration;
 		}
 		
 		//Generate the header/source pair with the appropriate surroundings.
@@ -78,7 +97,7 @@ class Compiler
 		if ($snippet->privateHeader) {
 			$pair->source .= $snippet->privateHeader."\n";
 		}
-		$pair->source .= $snippet->source;
+		$pair->source .= $snippet->stmts;
 		
 		return $pair;
 	}

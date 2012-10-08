@@ -2,7 +2,6 @@
  * Some test file for debugging the frontend.
  */
 package parser
-import "aux/aux"
 
 //Main function of the program.
 func main
@@ -12,7 +11,7 @@ func main
 	x = 9 + 15 * y;
 }
 
-type Vector : Container
+type Vector
 {
 	var int x;
 	var int y;
@@ -22,13 +21,4 @@ type Vector : Container
 	}
 	
 	type Unit { var t; }
-}
-
-//Some additional function.
-func whatever
-{
-	var x;
-	var y;
-	
-	k := x*y;
 }

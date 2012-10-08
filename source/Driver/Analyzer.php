@@ -39,8 +39,12 @@ class Analyzer
 		//Bind all identifiers that are left.
 		$this->bindIdents($entity);
 		
+		//Don't spawn any constraints for now.
 		//Spawn type constraints for the entities.
-		$this->spawnTypeConstraints($entity, $entity);
+		//$this->spawnTypeConstraints($entity, $entity);
+		
+		//Calculate the inferred types.
+		$this->calculateInferredType($entity);
 		
 		//Store the entity back to disk.
 		$entityStore->popRootID($entityID);
@@ -83,7 +87,6 @@ class Analyzer
 				//Try to bind the identifier to a builtin type.
 				if (in_array($entity->getName(), \Type\Builtin::$names)) {
 					$entity->analysis->binding->target = \Type\Builtin::makeWithName($entity->getName());
-					static::show("identifier", $entity, "bound to builtin type");
 				}
 				
 				//Try to bind the identifier to something in scope.
@@ -136,35 +139,64 @@ class Analyzer
 		foreach ($entity->getChildEntities() as $e)
 			$this->calculateInitialType($e);
 		
-		if ($entity instanceof Entity\Expr\VarDef) {
-			$t = $entity->getType();
-			if (!$t) {
-				$entity->analysis->type->initial = \Type\Generic::make();
-				static::show("variable", $entity, "has generic initial type");
-			}
-			else if ($t instanceof Entity\Expr\Identifier) {
-				$tt = $t->analysis->binding->target;
-				if ($tt instanceof \Type\Type) {
-					$entity->analysis->type->initial = $tt;
-					static::show("variable", $entity, "has initial type", $tt);
+		if (isset($entity->analysis->type) && !$entity->analysis->type->initial) {
+			if ($entity instanceof Entity\Expr\VarDef) {
+				$t = $entity->getType();
+				if (!$t) {
+					/*$entity->analysis->type->initial = \Type\Generic::make();
+					static::show("variable", $entity, "has generic initial type");*/
+					
+					//For now, infer the type of the VarDef from its initial expression.
+					if ($i = $entity->getInitial()) {
+						if ($i->analysis->type->initial) {
+							$entity->analysis->type->initial = $i->analysis->type->initial;
+							//TODO: don't just reuse the type, actually make a copy of the type so now dependency arises.
+						} else {
+							IssueList::add('error', "Type of initial value of variable '{$entity->getName()}' cannot be inferred.", $i, $entity);
+						}
+					} else {
+						IssueList::add('error', "Type of variable '{$entity->getName()}' cannot be inferred without an initial value.", $entity);
+					}
+				}
+				else if ($t instanceof Entity\Expr\Identifier) {
+					$tt = $t->analysis->binding->target;
+					if ($tt instanceof \Type\Type) {
+						$entity->analysis->type->initial = $tt;
+					}
+					else {
+						IssueList::add('error', "Type '{$t->getName()}' is unknown.", $t->getRange());
+					}
 				}
 				else {
-					IssueList::add('error', "Type '{$t->getName()}' is unknown.", $t->getRange());
+					IssueList::add('error', "Not a valid type expression.", $t->getHumanRangeIfPossible());
 				}
 			}
-			else {
-				IssueList::add('error', "Not a valid type expression.", $t->getHumanRangeIfPossible());
-			}
-		}
-		if ($entity instanceof Entity\Expr\Identifier) {
-			if ($entity->analysis->binding->target) {
-				if ($entity->analysis->binding->target instanceof \Type\Type) {
-					$entity->analysis->type->initial = \Type\Builtin::makeWithName("Type");
+			
+			if ($entity instanceof Entity\Expr\Identifier) {
+				if ($entity->analysis->binding->target) {
+					if ($entity->analysis->binding->target instanceof \Type\Type) {
+						$entity->analysis->type->initial = \Type\Builtin::makeWithName("Type");
+					} else {
+						$entity->analysis->type->initial = \Type\Generic::make();
+					}
 				} else {
 					$entity->analysis->type->initial = \Type\Generic::make();
 				}
-			} else {
-				$entity->analysis->type->initial = \Type\Generic::make();
+			}
+			
+			if ($entity instanceof Entity\Expr\Constant) {
+				switch ($entity->getType()) {
+					case 'number': {
+						$v = $entity->getValue();
+						if (preg_match('/[.e]/', $v))
+							$entity->analysis->type->initial = \Type\Builtin::makeWithName("float");
+						else
+							$entity->analysis->type->initial = \Type\Builtin::makeWithName("int");
+					} break;
+					case 'string': {
+						$entity->analysis->type->initial = \Type\Builtin::makeWithName("String");
+					} break;
+				}
 			}
 		}
 	}
@@ -189,5 +221,14 @@ class Analyzer
 				}
 			}
 		}
+	}
+	
+	/** Recursively calculates the inferred type of the entity, based on constraints and the initial type. */
+	public function calculateInferredType(Entity\Entity $entity)
+	{
+		foreach ($entity->getChildEntities() as $e)
+			$this->calculateInferredType($e);
+		
+		
 	}
 }

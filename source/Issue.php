@@ -18,12 +18,16 @@ class Issue
 			$ranges = array();
 			foreach ($range as $r) {
 				if ($r == null) continue;
+				if (!$r instanceof Range && method_exists($r, 'getHumanRangeIfPossible')) $r = $r->getHumanRangeIfPossible();
 				if (!$r instanceof Range && method_exists($r, 'getRange')) $r = $r->getRange();
 				if (!$r instanceof Range)
 					trigger_error(vartype($r)." passed as range is neither a Range nor does it implement the getRange() function", E_USER_ERROR);
 				$ranges[] = $r;
 			}
 			$range = Range::union($ranges);
+		}
+		if (!$range instanceof Range && method_exists($range, 'getHumanRangeIfPossible')) {
+			$range = $range->getHumanRangeIfPossible();
 		}
 		if (!$range instanceof Range && method_exists($range, 'getRange')) {
 			$range = $range->getRange();
@@ -33,6 +37,7 @@ class Issue
 			$marked = ($marked != null ? array($marked) : array());
 		}
 		$marked = array_map(function($r){
+			if (!$r instanceof Range && method_exists($r, 'getHumanRangeIfPossible')) $r = $r->getHumanRangeIfPossible();
 			if (!$r instanceof Range && method_exists($r, 'getRange')) $r = $r->getRange();
 			if (!$r instanceof Range)
 				trigger_error(vartype($r)." passed as marked range is neither a Range nor does it implement the getRange() function", E_USER_ERROR);

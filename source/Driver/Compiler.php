@@ -74,14 +74,10 @@ class Compiler
 			$snippet->stmts .= "$declaration\n{\n".static::indent(trim($block->stmts))."\n}\n";
 		}
 		if ($entity instanceof Entity\TypeDefinition) {
-			$declaration = "typedef struct ";
-			$declaration .= $entity->getName();
-			$declaration .= " {\n";
-			$declaration .= "} ";
-			$declaration .= $entity->getName();
-			$declaration .= "_t;\n";
-			
-			$snippet->publicHeader = $declaration;
+			$structName = "struct {$entity->getName()}";
+			$snippet->publicHeader = "typedef $structName {$entity->getName()}_t;\n";
+			$snippet->privateHeader = "$structName;\n";
+			$snippet->stmts .= "$structName {\n};\n";
 		}
 		
 		//Generate the header/source pair with the appropriate surroundings.

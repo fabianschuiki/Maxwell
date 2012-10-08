@@ -9,7 +9,7 @@ func main
 {
 	var int x = 0;
 	var y = 6;
-	x = 9 + 15 * x;
+	x = 9 + 15 * y;
 }
 
 type Vector : Container

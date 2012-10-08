@@ -38,10 +38,14 @@ class Analyzer
 		
 		//Bind all identifiers that are left.
 		$this->bindIdents($entity);
+		if ($issues->isFatal()) return false;
 		
 		//Don't spawn any constraints for now.
 		//Spawn type constraints for the entities.
 		//$this->spawnTypeConstraints($entity, $entity);
+		
+		//Calculate the required type.
+		//$this->calculateRequiredType($entity);
 		
 		//Calculate the inferred types.
 		$this->calculateInferredType($entity);
@@ -229,6 +233,30 @@ class Analyzer
 		foreach ($entity->getChildEntities() as $e)
 			$this->calculateInferredType($e);
 		
-		
+		if (isset($entity->analysis->type)) {
+			$entity->analysis->type->inferred = $entity->analysis->type->initial;
+			
+			if ($entity instanceof Entity\Expr\Identifier) {
+				$t = $entity->analysis->binding->target;
+				if (isset($t->analysis->type)) {
+					if ($tt = $t->analysis->type->inferred) {
+						$entity->analysis->type->inferred = $tt;
+					} else {
+						IssueList::add('error', "Entity referenced by '{$entity->getName()}' has no valid type.", $t, $entity);
+					}
+				}
+			}
+			if ($entity instanceof Entity\Expr\Operator\Binary) {
+				$lt = $entity->getLHS()->analysis->type->inferred;
+				$rt = $entity->getRHS()->analysis->type->inferred;
+				if ($lt && $rt) {
+					if (\Type\Type::equal($lt, $rt)) {
+						$entity->analysis->type->inferred = $lt;
+					} else {
+						IssueList::add('error', "Binary operator requires both operands to be of same type. Left operand is {$lt->toHumanReadableString()}, right operand is {$rt->toHumanReadableString()}.", $entity, array($entity->getLHS(), $entity->getRHS()));
+					}
+				}
+			}
+		}
 	}
 }

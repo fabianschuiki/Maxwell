@@ -1,4 +1,4 @@
-all: test.analyzer.php
+all: test.compiler.php
 
 .PHONY: *.php
 *.php:

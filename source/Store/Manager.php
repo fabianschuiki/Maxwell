@@ -31,6 +31,7 @@ class Manager
 	protected $tokenStore;
 	protected $syntaxStore;
 	protected $entityStore;
+	protected $codeStore;
 	
 	public function __construct($dir)
 	{
@@ -91,5 +92,12 @@ class Manager
 		if (!$this->entityStore)
 			$this->entityStore = new EntityStore($this);
 		return $this->entityStore;
+	}
+	
+	public function getCodeStore()
+	{
+		if (!$this->codeStore)
+			$this->codeStore = new CodeStore($this);
+		return $this->codeStore;
 	}
 }

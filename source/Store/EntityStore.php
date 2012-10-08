@@ -56,7 +56,7 @@ class EntityStore
 	{
 		$p = array_pop($this->rootIDs);
 		if ($p != $id)
-			throw new \excpetion("Trying to pop root ID '$id', but '$p' was on top of the stack.");
+			throw new \exception("Trying to pop root ID '$id', but '$p' was on top of the stack.");
 	}
 	
 	public function getRootID()

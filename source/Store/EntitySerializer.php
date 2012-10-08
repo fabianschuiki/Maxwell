@@ -179,7 +179,9 @@ class EntitySerializer
 	{
 		if ($analysis instanceof \Analysis\Node\Expr) {
 			$e = $element->makeElement("analysis-type");
-			if ($i = $analysis->type->initial) static::encodeType($i, $e)->setAttribute('rel', 'initial');
+			if ($i = $analysis->type->initial)  static::encodeType($i, $e)->setAttribute('rel', 'initial');
+			if ($i = $analysis->type->inferred) static::encodeType($i, $e)->setAttribute('rel', 'inferred');
+			if ($i = $analysis->type->required) static::encodeType($i, $e)->setAttribute('rel', 'required');
 		}
 		if ($analysis instanceof \Analysis\Node\Identifier) {
 			$e = $element->makeElement("analysis-binding");
@@ -351,5 +353,35 @@ class EntitySerializer
 		//Decode the ranges where appropriate.
 		if ($r = $root->getAttribute('range'))      $entity->setRange(Range::fromString($r, $file));
 		if ($r = $root->getAttribute('humanRange')) $entity->setHumanRange(Range::fromString($r, $file));
+		
+		//Decode the analysis where appropriate.
+		foreach ($root->getElements() as $e) {
+			if ($e->getName() == "analysis-binding") {
+				if ($tid = $e->getAttribute('target')) {
+					$target = $tid;
+					if (preg_match('/^builtin:(.*)/', $target, $matches)) {
+						$entity->analysis->binding->target = \Type\Builtin::makeWithName($matches[1]);
+					} else {
+						$entity->analysis->binding->target = $entities[$target];
+					}
+				}
+			}
+			if ($e->getName() == "analysis-type") {
+				foreach ($e->getElements() as $te) {
+					$type = static::decodeType($te);
+					$rel = $te->getAttribute('rel');
+					if ($rel == "initial")  $entity->analysis->type->initial  = $type;
+					if ($rel == "inferred") $entity->analysis->type->inferred = $type;
+					if ($rel == "required") $entity->analysis->type->required = $type;
+				}
+			}
+		}
+	}
+	
+	static public function decodeType(Coder\Element $root)
+	{
+		if ($root->getName() == "type-builtin") return \Type\Builtin::makeWithName($root->getAttribute('name'));
+		if ($root->getName() == "type-generic") return \Type\Generic::make();
+		return null;
 	}
 }

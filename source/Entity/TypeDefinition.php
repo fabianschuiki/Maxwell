@@ -3,6 +3,7 @@ namespace Entity;
 use Source\Range;
 use Lexer\Token;
 use Entity\Scope\Scope;
+use Entity\Scope\ScopeDeclaration;
 
 class TypeDefinition extends RootEntity
 {
@@ -42,9 +43,11 @@ class TypeDefinition extends RootEntity
 	
 	public function initScope()
 	{
-		$scope = new Scope;
-		$scope->generateID();
-		$this->setScope($scope);
+		$s = new ScopeDeclaration;
+		$s->generateID();
+		$s->setDeclares($this);
+		$scope = $s;
+		$this->setScope($s);
 	}
 	
 	public function getChildEntities()

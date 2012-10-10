@@ -176,12 +176,16 @@ class ExpressionParser
 			if (!$initial) return null;
 		}
 		
-		return new AST\Expr\VarDef($type, $name, $initial);
+		return new AST\Expr\VarDef($keyword, $type, $name, $initial);
 	}
 	
 	static public function parseNewExpr(Token $keyword, TokenList $tokens)
 	{
-		return null;
+		//Parse the type expression.
+		$expr = static::parseExpr($tokens);
+		if (!$expr) return null;
+		
+		return new AST\Expr\NewOp($keyword, $expr);
 	}
 	
 	static public function parseCallExpr(TokenGroup $args_group, TokenList $tokens)

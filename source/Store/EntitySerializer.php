@@ -138,6 +138,17 @@ class EntitySerializer
 			$e->setAttribute('lhs', $expr->getLHS()->getID());
 			$e->setAttribute('rhs', $expr->getRHS()->getID());
 		}
+		if ($expr instanceof \Entity\Expr\MemberAccess) {
+			$e = $root->makeElement("member-access");
+			$e->setAttribute('name', $expr->getName());
+			static::encodeExprEntity($expr->getExpr(), $root);
+			$e->setAttribute('expr', $expr->getExpr()->getID());
+		}
+		if ($expr instanceof \Entity\Expr\NewOp) {
+			$e = $root->makeElement("new");
+			static::encodeExprEntity($expr->getExpr(), $root);
+			$e->setAttribute('expr', $expr->getExpr()->getID());
+		}
 		
 		if ($e) {
 			$e->setAttribute('id', $expr->getID());
@@ -243,6 +254,8 @@ class EntitySerializer
 			case 'identifier': $e = new \Entity\Expr\Identifier; break;
 			case 'constant': $e = new \Entity\Expr\Constant; break;
 			case 'binary-op': $e = new \Entity\Expr\Operator\Binary; break;
+			case 'member-access': $e = new \Entity\Expr\MemberAccess; break;
+			case 'new': $e = new \Entity\Expr\NewOp; break;
 		}
 		if ($e) {
 			if ($id = $element->getAttribute('id'))
@@ -345,6 +358,13 @@ class EntitySerializer
 			$entity->setOperator($root->getAttribute('operator'));
 			$entity->setLHS($entities[$root->getAttribute('lhs')]);
 			$entity->setRHS($entities[$root->getAttribute('rhs')]);
+		}
+		else if ($entity instanceof \Entity\Expr\MemberAccess) {
+			$entity->setName($root->getAttribute('name'));
+			$entity->setExpr($entities[$root->getAttribute('expr')]);
+		}
+		else if ($entity instanceof \Entity\Expr\NewOp) {
+			$entity->setExpr($entities[$root->getAttribute('expr')]);
 		}
 		else {
 			throw new \exception("Don't know how to decode ".vartype($entity).".");

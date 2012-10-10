@@ -299,5 +299,20 @@ f.read();</code>
 	}
 }</code>
 
+
+<h2>Function Argument "Don't Care" Order</h2>
+<p>For certain functions, function argument order is irrelevant, i.e. <code>add(a,b)</code> and <code>add(b,a)</code> is equivalent. It should be possible to tell the compiler about this when defining a function.</p>
+
+<code>func multiply (Vector v', float f') -> (Vector r)
+{
+	r = v*f;
+}
+
+//allows the following code to work
+var Vector v;
+var float f;
+multiply(v,f);
+multiply(f,v);</code>
+
 </body>
 </html>

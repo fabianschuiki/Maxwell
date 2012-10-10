@@ -36,7 +36,9 @@ class Analyzer
 			
 			//Bind all identifiers within type expressions and calculate the initial types of the entities.
 			$this->bindIdentsInTypeExprs($entity);
+			if ($issues->isFatal()) break;
 			$this->calculateInitialType($entity);
+			if ($issues->isFatal()) break;
 			
 			//Bind all identifiers that are left.
 			$this->bindIdents($entity);

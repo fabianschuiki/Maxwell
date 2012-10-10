@@ -9,16 +9,15 @@ func main
 	var int x = 0;
 	var y = 6;
 	x = 9 + 15 * y;
+	
+	//First tests with types and their members.
+	var Vector v = new Vector;
+	v.x = 9;
+	v.y = 34;
 }
 
 type Vector
 {
 	var int x;
 	var int y;
-	
-	func test (float x) -> (float r)
-	{
-	}
-	
-	type Unit { var t; }
 }

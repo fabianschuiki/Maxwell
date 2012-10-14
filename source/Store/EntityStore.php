@@ -103,13 +103,15 @@ class EntityStore
 			$root = $xml->decodeFromFile($path);
 			
 			//Transform the decodable representation into entities.
-			$ids = array();
-			$e = EntitySerializer::decodeRootEntity($root, $ids);
-			$this->entities[$id] = $e;
-			$this->entityIDsInRootEntity[$id] = $ids;
+			$decoder = new EntitySerializer;
+			$decoder->decodeRootEntityScaffolding($root);
 			
-			//Load the siblings.
-			EntitySerializer::decodeRootEntityExternals($e, $root, $this);
+			$e = $decoder->entity;
+			$this->entities[$id] = $e;
+			$this->entityIDsInRootEntity[$id] = $decoder->ids;
+			
+			$decoder->decodeRootEntityExternals($root, $this);
+			$decoder->decodeRootEntity($root);
 		}
 		return $e;
 	}
@@ -134,7 +136,8 @@ class EntityStore
 		$entity = $this->entities[$id];
 		
 		//Transform the entities into an encodable representation.
-		$root = EntitySerializer::encodeRootEntity($entity);
+		$encoder = new EntitySerializer;
+		$root = $encoder->encodeRootEntity($entity);
 		
 		//Persist the entity.
 		$path = $this->getPathToEntity($id);

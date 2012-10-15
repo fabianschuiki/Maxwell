@@ -6,6 +6,7 @@ class VarDef extends Node
 	public function __construct(\Entity\Expr\VarDef $entity)
 	{
 		parent::__construct($entity);
+		//$this->type = new \Compiler\Type;
 	}
 	
 	protected $name;
@@ -24,4 +25,7 @@ class VarDef extends Node
 	
 	public function setCType($t) { $this->cType = $t; }
 	public function getCType() { return $this->cType; }
+	
+	//TODO: change stuff so that this class has a public member "type" that points to a generic compiled type information structure.
+	//public $type;
 }

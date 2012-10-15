@@ -62,8 +62,8 @@ class Range
 				$le = $r->getEnd();
 			if ($file === null)
 				$file = $r->getFile();
-			else
-				assert($file === $r->getFile());
+			else if ($file !== $r->getFile())
+				throw new \exception("Trying to union ranges of different files");
 		}
 		
 		if (!$file || !$ls || !$le) return null;

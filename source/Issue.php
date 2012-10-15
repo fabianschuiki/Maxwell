@@ -58,38 +58,76 @@ class Issue
 			$this->marked = array();
 		}
 		
-		$source = null;
-		if ($this->range) {
-			$source = $this->range->getFile();
-		} else if (count($this->marked) > 0) {
-			$source = $this->marked[0]->getFile();
+		//Make a list of source files this issue references.
+		$sourceFiles = array();
+		$sourceFiles[] = $this->range->getFile();
+		foreach ($this->marked as $m) {
+			$f = $m->getFile();
+			if (!in_array($f, $sourceFiles, true)) {
+				$sourceFiles[] = $f;
+			}
 		}
 		
-		$t = $this->type.':';
-		if ($this->type == 'error' && $ENABLE_COLORS)   $t = "\033[1;31m$t\033[0m";
-		if ($this->type == 'warning' && $ENABLE_COLORS) $t = "\033[1;33m$t\033[0m";
+		//Decide the main source file, which essentially is the range's source file.
+		if (count($sourceFiles)) {
+			$source = $sourceFiles[0];
+		} else {
+			$source = null;
+		}
 		
-		$msg = str_replace("\n", "\n    : ", $this->message);
-		$o = "$t $msg";
+		//Assemble a list of marked ranges per source file.
+		$markedPerFile = array();
+		foreach ($this->marked as $m) {
+			$markedPerFile[$m->getFile()->getPath()][] = $m;
+		}
+		
+		//Assemble the message
+		$msg = $this->type.':';
+		if ($this->type == 'error' && $ENABLE_COLORS)   $msg = "\033[1;31m$msg\033[0m";
+		if ($this->type == 'warning' && $ENABLE_COLORS) $msg = "\033[1;33m$msg\033[0m";
+		$msg .= " ".str_replace("\n", "\n    : ", $this->message);
+		
+		//If this issue has a main range, prefix the message with that range.
 		if ($source) {
-			$sfr  = basename($source->getPath());
+			$sfr = basename($source->getPath());
 			if ($this->range) {
 				$sfr .= ':';
 				$sfr .= ($this->range->getStart()->getLine()+1).':'.$this->range->getStart()->getColumn();
 			}
-			$o = "$sfr: $o";
+			$msg = "$sfr: $msg";
 		}
 		
-		$lines = ($this->range ? range($this->range->getStart()->getLine(), $this->range->getEnd()->getLine()) : array());
-		foreach ($this->marked as $r) {
-			if (!$source) $source = $r->getFile();
+		//Iterate through all the source files and dump the required code snippet.
+		$output = $msg;
+		foreach ($sourceFiles as $file) {
+			$output .= "\n";
+			if ($file !== $source) {
+				$output .= "- see ".basename($file->getPath()).":\n";
+			}
+			$output .= $this->getMarkedFileSnippet($file, ($this->range->getFile() === $file ? $this->range : null), @$markedPerFile[$file->getPath()]);
+		}
+		
+		return $output;
+	}
+	
+	private function getMarkedFileSnippet(Source\File $file, Source\Range $range = null, array $marked = null)
+	{
+		global $ENABLE_COLORS;
+		
+		$output = "";
+		if (!$marked) {
+			$marked = array();
+		}
+		
+		$lines = ($range ? range($range->getStart()->getLine(), $range->getEnd()->getLine()) : array());
+		foreach ($marked as $r) {
 			$lines = array_merge($lines, range($r->getStart()->getLine(), $r->getEnd()->getLine()));
 		}
 		$lines = array_unique($lines);
 		sort($lines);
 		
 		if (count($lines) > 0) {
-			$ls = explode("\n", $source->getContents());
+			$ls = explode("\n", $file->getContents());
 			
 			$whitelead_min = null;
 			foreach ($lines as $l) {
@@ -100,7 +138,7 @@ class Issue
 			if (!$whitelead_min) $whitelead_min = 0;
 			
 			$pl = $lines[0]-1;
-			$o .= "";
+			$output .= "";
 			foreach ($lines as $l) {
 				$skipped = ($l != $pl+1);
 				if ($skipped) $o .= "\r    ~";
@@ -110,10 +148,10 @@ class Issue
 				$marks = '';
 				for ($i = 0; $i < strlen($line); $i++) {
 					$mark = ($line[$i] == "\t" ? "\t" : " ");
-					if ($this->range && $this->range->contains($l, $i)) {
+					if ($range && $range->contains($l, $i)) {
 						$mark = ($mark == "\t" ? "    " : "^");
 					} else {
-						foreach ($this->marked as $r) {
+						foreach ($marked as $r) {
 							if ($r->contains($l, $i)) {
 								$mark = '~';
 								break;
@@ -128,12 +166,12 @@ class Issue
 			
 				$prefix = sprintf('%4d', $l+1);
 				$pad = str_repeat(' ', strlen($prefix));
-				$o .= "\n";
-				$o .= "$prefix| $line\n";
-				$o .= "$pad| $marks";
+				if (strlen($output)) $output .= "\n";
+				$output .= "$prefix| $line\n";
+				$output .= "$pad| $marks";
 			}
 		}
 		
-		return $o;
+		return $output;
 	}
 }

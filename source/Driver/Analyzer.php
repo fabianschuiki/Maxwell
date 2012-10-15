@@ -103,9 +103,21 @@ class Analyzer
 					$scope = $entity->getScope();
 					$result = null;
 					while ($scope) {
-						if ($scope instanceof Entity\Scope\ScopeDeclaration && $scope->getDeclares()->getName() == $entity->getName()) {
-							$result = $scope->getDeclares();
-							break;
+						if ($scope instanceof Entity\Scope\ScopeDeclaration) {
+							if ($scope->getDeclares()->getName() == $entity->getName()) {
+								$result = $scope->getDeclares();
+								break;
+							}
+						}
+						if ($scope instanceof Entity\Scope\ScopeRoot) {
+							foreach ($scope->getRootEntity()->getKnownEntities() as $e) {
+								if ($e->getName() == $entity->getName()) {
+									echo "resolving \"{$entity->getName()}\" to external entity {$e->getID()}\n";
+									$result = $e;
+									break;
+								}
+							}
+							if ($result) break;
 						}
 						
 						//Jump to the previous scope, or the outer scope if we're at the beginning.

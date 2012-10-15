@@ -1,7 +1,6 @@
 <?php
 namespace Entity;
 use Source\Range;
-use Entity\Scope\Scope;
 
 class FunctionDefinition extends RootEntity
 {
@@ -28,15 +27,22 @@ class FunctionDefinition extends RootEntity
 	public function setBody(Block $b) { $this->body = $b; }
 	public function getBody() { return $this->body; }
 	
-	public function setScope(Scope $s) { $this->scope = $s; }
+	public function setScope(Scope\Scope $s) { $this->scope = $s; }
 	public function getScope() { return $this->scope; }
 	
-	public function initScope()
+	public function initScope(Scope\Scope $scope = null)
 	{
-		$scope = new Scope;
-		$scope->generateID();
-		$this->setScope($scope);
-		$this->body->initScope($scope);
+		if ($scope) {
+			$s = new Scope\ScopeDeclaration;
+			$s->setUpper($scope);
+			$s->setDeclares($this);
+		} else {
+			$s = new Scope\ScopeRoot;
+			$s->setRootEntity($this);
+		}
+		$s->generateID();
+		$this->setScope($s);
+		$this->body->initScope($s);
 	}
 	
 	public function getChildEntities()

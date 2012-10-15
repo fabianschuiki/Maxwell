@@ -2,8 +2,6 @@
 namespace Entity;
 use Source\Range;
 use Lexer\Token;
-use Entity\Scope\Scope;
-use Entity\Scope\ScopeDeclaration;
 
 class TypeDefinition extends RootEntity
 {
@@ -38,15 +36,20 @@ class TypeDefinition extends RootEntity
 	public function setSuperType($s) { $this->superType = $s; }
 	public function getSuperType() { return $this->superType; }
 	
-	public function setScope(Scope $s) { $this->scope = $s; }
+	public function setScope(Scope\Scope $s) { $this->scope = $s; }
 	public function getScope() { return $this->scope; }
 	
-	public function initScope()
+	public function initScope(Scope\Scope $scope = null)
 	{
-		$s = new ScopeDeclaration;
+		if ($scope) {
+			$s = new Scope\ScopeDeclaration;
+			$s->setUpper($scope);
+			$s->setDeclares($this);
+		} else {
+			$s = new Scope\ScopeRoot;
+			$s->setRootEntity($this);
+		}
 		$s->generateID();
-		$s->setDeclares($this);
-		$scope = $s;
 		$this->setScope($s);
 	}
 	

@@ -76,7 +76,7 @@ class Frontend
 		$es = $manager->getEntityStore();
 		foreach ($entitializer->getEntities() as $e) {
 			$e->pushID();
-			$e->initScope();
+			$e->initScope(null);
 			$e->popID();
 			$es->setEntity($e);
 		}

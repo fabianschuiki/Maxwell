@@ -171,10 +171,11 @@ class EntitySerializer
 	{
 		if ($scope instanceof \Entity\Scope\ScopeDeclaration) {
 			$e = $root->makeElement('scope-declaration');
-			if (!$scope->getDeclares()) {
-				throw new \exception(vartype($scope)." does not declare anything");
-			}
 			$e->setAttribute('declares', $scope->getDeclares()->getID());
+		}
+		else if ($scope instanceof \Entity\Scope\ScopeRoot) {
+			$e = $root->makeElement('scope-root');
+			$e->setAttribute('entity', $scope->getRootEntity()->getID());
 		}
 		else {
 			$e = $root->makeElement('scope');
@@ -263,6 +264,7 @@ class EntitySerializer
 			case 'block':    $e = new \Entity\Block; break;
 			case 'scope':    $e = new \Entity\Scope\Scope; break;
 			case 'scope-declaration': $e = new \Entity\Scope\ScopeDeclaration; break;
+			case 'scope-root': $e = new \Entity\Scope\ScopeRoot; break;
 			
 			case 'expr-stmt': $e = new \Entity\Stmt\Expr; break;
 			case 'var': $e = new \Entity\Expr\VarDef; break;
@@ -352,6 +354,9 @@ class EntitySerializer
 			if ($u = $root->getAttribute('upper')) $entity->setUpper($this->getEntity($u));
 			if ($entity instanceof \Entity\Scope\ScopeDeclaration) {
 				$entity->setDeclares($this->getEntity($root->getAttribute('declares')));
+			}
+			if ($entity instanceof \Entity\Scope\ScopeRoot) {
+				$entity->setRootEntity($this->getEntity($root->getAttribute('entity')));
 			}
 		}
 		else if ($entity instanceof \Entity\Stmt\Expr) {

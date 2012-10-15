@@ -23,6 +23,6 @@ abstract class Entity extends Node
 	}
 	
 	//subclass responsibilities
-	public function initScope(Scope\Scope $scope) {}
+	public function initScope(Scope\Scope $scope = null) {}
 	abstract public function getChildEntities();
 }

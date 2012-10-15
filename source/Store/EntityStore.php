@@ -12,6 +12,7 @@ class EntityStore
 	protected $rootIDs;
 	protected $allocatedRootIDs;
 	protected $entityIDsInRootEntity;
+	protected $protocol;
 	
 	public function __construct(Manager $manager)
 	{
@@ -22,6 +23,7 @@ class EntityStore
 		$this->rootIDs = array();
 		$this->allocatedRootIDs = array();
 		$this->entityIDsInRootEntity = array();
+		$this->protocol = new EntitySerializer\Protocol;
 	}
 	
 	public function allocateId()
@@ -136,8 +138,8 @@ class EntityStore
 		$entity = $this->entities[$id];
 		
 		//Transform the entities into an encodable representation.
-		$encoder = new EntitySerializer;
-		$root = $encoder->encodeRootEntity($entity);
+		$encoder = new EntitySerializer\Encoder($this->protocol);
+		$root = $encoder->encode($entity);
 		
 		//Persist the entity.
 		$path = $this->getPathToEntity($id);

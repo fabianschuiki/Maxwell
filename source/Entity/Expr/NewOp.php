@@ -9,20 +9,20 @@ class NewOp extends Expr
 		$e = new self;
 		$e->generateID();
 		$e->setHumanRange($op->getKeyword()->getRange());
-		$e->setExpr(Expr::makeFromSyntaxNode($op->getExpr()));
+		$e->setType(Type::makeFromSyntaxNode($op->getExpr()));
 		$e->setRange($op->getRange());
 		return $e;
 	}
 	
-	protected $expr;
+	protected $type;
 	
-	public function setExpr(Expr $e) { $this->expr = $e; }
-	public function getExpr() { return $this->expr; }
+	public function setType(Type $e) { $this->type = $e; }
+	public function getType() { return $this->type; }
 	
 	public function initScope(Scope &$scope)
 	{
-		$this->expr->initScope($scope);
+		$this->type->initScope($scope);
 	}
 	
-	public function getChildEntities() { return array($this->expr); }
+	public function getChildEntities() { return array($this->type); }
 }

@@ -14,7 +14,7 @@ class VarDef extends Expr
 		$e->setHumanRange($def->getName()->getRange());
 		$e->setName($def->getName()->getText());
 		echo "generating var def {$e->getName()}\n";
-		if ($def->getType()) $e->setType(Expr::makeFromSyntaxNode($def->getType()));
+		if ($def->getType()) $e->setType(Type::makeFromSyntaxNode($def->getType()));
 		if ($def->getInitial()) $e->setInitial(Expr::makeFromSyntaxNode($def->getInitial()));
 		return $e;
 	}
@@ -26,7 +26,7 @@ class VarDef extends Expr
 	public function setName($n) { $this->name = $n; }
 	public function getName() { return $this->name; }
 	
-	public function setType(Expr $t) { $this->type = $t; }
+	public function setType(Type $t) { $this->type = $t; }
 	public function getType() { return $this->type; }
 	
 	public function setInitial(Expr $i) { $this->initial = $i; }

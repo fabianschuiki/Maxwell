@@ -150,8 +150,13 @@ class EntitySerializer
 		}
 		if ($expr instanceof \Entity\Expr\NewOp) {
 			$e = $root->makeElement("new");
-			$this->encodeExprEntity($expr->getExpr(), $root);
+			$this->encodeExprEntity($expr->getType(), $root);
+			$e->setAttribute('type', $expr->getType()->getID());
+		}
+		if ($expr instanceof \Entity\Expr\Type) {
+			$e = $root->makeElement("type-expr");
 			$e->setAttribute('expr', $expr->getExpr()->getID());
+			$this->encodeExprEntity($expr->getExpr(), $root);
 		}
 		
 		if ($e) {
@@ -279,6 +284,7 @@ class EntitySerializer
 			case 'binary-op': $e = new \Entity\Expr\Operator\Binary; break;
 			case 'member-access': $e = new \Entity\Expr\MemberAccess; break;
 			case 'new': $e = new \Entity\Expr\NewOp; break;
+			case 'type-expr': $e = new \Entity\Expr\Type; break;
 		}
 		if ($e) {
 			if ($id = $element->getAttribute('id'))
@@ -392,6 +398,9 @@ class EntitySerializer
 			$entity->setExpr($this->getEntity($root->getAttribute('expr')));
 		}
 		else if ($entity instanceof \Entity\Expr\NewOp) {
+			$entity->setType($this->getEntity($root->getAttribute('type')));
+		}
+		else if ($entity instanceof \Entity\Expr\Type) {
 			$entity->setExpr($this->getEntity($root->getAttribute('expr')));
 		}
 		else {

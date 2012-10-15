@@ -254,7 +254,7 @@ class EntitySerializer
 		if ($e) return $e;
 		foreach ($this->entity->getKnownEntities() as $k) {
 			if ($k->getID() == $id) {
-				return $e;
+				return $k;
 			}
 		}
 		throw new \exception("Entity with ID $id is not known.");
@@ -430,6 +430,7 @@ class EntitySerializer
 	{
 		if ($root->getName() == "type-builtin") return \Type\Builtin::makeWithName($root->getAttribute('name'));
 		if ($root->getName() == "type-generic") return \Type\Generic::make();
-		return null;
+		if ($root->getName() == "type-defined") return \Type\Defined::makeWithDefinition($this->getEntity($root->getAttribute('definition')));
+		throw new \exception("Unable to decode type \"{$root->getName()}\"");
 	}
 }

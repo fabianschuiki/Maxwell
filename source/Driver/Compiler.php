@@ -124,7 +124,10 @@ class Compiler
 	{
 		$snippet = new Snippet;
 		if ($expr instanceof Entity\Expr\VarDef) {
-			$stmt = "{$expr->analysis->type->inferred->getName()} {$expr->getName()}";
+			$type = $expr->analysis->type->inferred;
+			if ($type instanceof \Type\Defined)
+				$type = $type->getDefinition();
+			$stmt = "{$type->getName()} {$expr->getName()}";
 			if ($i = $expr->getInitial()) {
 				$is = $this->generateExprCode($i);
 				$stmt .= " = {$is->expr}";

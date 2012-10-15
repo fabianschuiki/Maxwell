@@ -152,6 +152,18 @@ class Compiler
 		if ($expr instanceof Entity\Expr\Identifier) {
 			$snippet->expr = $expr->analysis->binding->target->getName();
 		}
+		if ($expr instanceof Entity\Expr\MemberAccess) {
+			$e = $this->generateExprCode($expr->getExpr());
+			$snippet->stmts .= $e->stmts;
+			$snippet->expr = "{$e->expr}->{$expr->getName()}";
+		}
+		if ($expr instanceof Entity\Expr\NewOp) {
+			$type = $expr->analysis->type->inferred;
+			if ($type instanceof \Type\Defined)
+				$type = $type->getDefinition();
+			$snippet->expr = "malloc(sizeof {$type->getName()})";
+			$snippet->exprRequired = true;
+		}
 		return $snippet;
 	}
 }

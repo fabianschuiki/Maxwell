@@ -147,6 +147,9 @@ class Analyzer
 			if ($t = $entity->getType())    $this->bindIdents($t);
 			if ($i = $entity->getInitial()) $this->bindIdentsInTypeExprs($i);
 		}
+		else if ($entity instanceof Entity\Expr\NewOp) {
+			$this->bindIdents($entity->getExpr());
+		}
 		else {
 			foreach ($entity->getChildEntities() as $e)
 				$this->bindIdentsInTypeExprs($e);
@@ -275,6 +278,10 @@ class Analyzer
 						IssueList::add('error', "Binary operator requires both operands to be of same type. Left operand is {$lt->toHumanReadableString()}, right operand is {$rt->toHumanReadableString()}.", $entity, array($entity->getLHS(), $entity->getRHS()));
 					}
 				}
+			}
+			if ($entity instanceof Entity\Expr\NewOp) {
+				$t = $entity->getExpr()->analysis->type->initial;
+				$entity->analysis->type->inferred = $t;
 			}
 		}
 	}

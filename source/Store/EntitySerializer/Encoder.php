@@ -105,9 +105,42 @@ class Encoder
 		}
 	}
 	
-	protected function encodeAnalysis(\Analysis\Node $analysis)
+	protected function encodeAnalysis(\Analysis\Node\Node $analysis)
 	{
-		echo "encoding analysis for entity {$analysis->entity->getID()}\n";
+		$entity = $analysis->entity;
+		if (!$entity) {
+			throw new \exception("No entity associated with analysis ".vartype($analysis));
+		}
+		
+		if (isset($analysis->binding)) {
+			$element = $this->getAnalysis()->makeElement("binding");
+			$element->setAttribute("id", $entity->getID());
+			$this->encodeAnalysisBinding($analysis->binding, $element);
+		}
+		if (isset($analysis->type)) {
+			$element = $this->getAnalysis()->makeElement("type");
+			$element->setAttribute("id", $entity->getID());
+			$this->encodeAnalysisType($analysis->type, $element);
+		}
+	}
+	
+	protected function encodeAnalysisBinding(\Analysis\Binding $binding, Coder\Element $element)
+	{
+		if ($t = $binding->target) {
+			if ($t instanceof \Type\Type) {
+				if (!$t instanceof \Type\Builtin) throw new \exception("Identifier can only bind to builtin types.");
+				$element->setAttribute('target', "builtin:{$t->getName()}");
+			} else {
+				$element->setAttribute('target', $t->getID());
+			}
+		}
+	}
+	
+	protected function encodeAnalysisType(\Analysis\Type $type, Coder\Element $element)
+	{
+		if ($i = $type->initial)  $this->encodeAnalysisTypeType($i, $element)->setAttribute('rel', 'initial');
+		if ($i = $type->inferred) $this->encodeAnalysisTypeType($i, $element)->setAttribute('rel', 'inferred');
+		if ($i = $type->required) $this->encodeAnalysisTypeType($i, $element)->setAttribute('rel', 'required');
 	}
 	
 	protected function encodeEntityBlock(\Entity\Block $entity, Coder\Element $element)

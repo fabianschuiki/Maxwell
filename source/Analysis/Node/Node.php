@@ -6,12 +6,17 @@ class Node
 {
 	static public function makeForEntity(\Entity\Entity $e)
 	{
-		$n = null;
-		if ($e instanceof \Entity\Expr\Identifier) $n = new Identifier;
-		else if ($e instanceof \Entity\Expr\Expr) $n = new Expr;
-		else if ($e instanceof \Entity\RootEntity) $n = new RootEntity;
+		if ($e instanceof \Entity\Expr\Identifier) return new Identifier($e);
+		else if ($e instanceof \Entity\Expr\Expr)  return new Expr($e);
+		else if ($e instanceof \Entity\RootEntity) return new RootEntity($e);
 		
-		if (!$n) throw new \exception("No analysis node exists for ".vartype($e));
-		return $n;
+		throw new \exception("Unable to make analysis node for ".vartype($e));
+	}
+	
+	public $entity;
+	
+	public function __construct(\Entity\Entity $entity)
+	{
+		$this->entity = $entity;
 	}
 }

@@ -6,9 +6,9 @@ class Identifier extends Expr
 {
 	public $binding;
 	
-	public function __construct()
+	public function __construct(\Entity\Entity $entity)
 	{
-		parent::__construct();
+		parent::__construct($entity);
 		$this->binding = new \Analysis\Binding;
 	}
 }

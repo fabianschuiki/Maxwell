@@ -37,6 +37,8 @@ class Analyzer
 			//Bind all identifiers within type expressions and calculate the initial types of the entities.
 			$this->bindIdentsInTypeExprs($entity);
 			if ($issues->isFatal()) break;
+			$this->evaluateTypeExprs($entity);
+			if ($issues->isFatal()) break;
 			$this->calculateInitialType($entity);
 			if ($issues->isFatal()) break;
 			
@@ -143,17 +145,40 @@ class Analyzer
 	/** Recursively binds all identifiers within type expressions like VarDefs. */
 	public function bindIdentsInTypeExprs(Entity\Entity $entity)
 	{
-		if ($entity instanceof Entity\Expr\VarDef) {
-			if ($t = $entity->getType())    $this->bindIdents($t);
-			if ($i = $entity->getInitial()) $this->bindIdentsInTypeExprs($i);
-		}
-		else if ($entity instanceof Entity\Expr\NewOp) {
+		if ($entity instanceof Entity\Expr\Type) {
 			$this->bindIdents($entity->getExpr());
 		}
 		else {
 			foreach ($entity->getChildEntities() as $e)
 				$this->bindIdentsInTypeExprs($e);
 		}	
+	}
+	
+	public function evaluateTypeExprs(Entity\Entity $entity)
+	{
+		if ($entity instanceof Entity\Expr\Type) {
+			$expr = $entity->getExpr();
+			if ($expr instanceof Entity\Expr\Identifier) {
+				$t = $expr->analysis->binding->target;
+				if ($t instanceof \Type\Type) {
+					$entity->setType($t);
+				}
+				else if ($t instanceof \Entity\TypeDefinition) {
+					$entity->setType(\Type\Defined::makeWithDefinition($t));
+				}
+				else {
+					IssueList::add('error', "Type '{$expr->getName()}' is unknown.", $expr->getRange());
+				}
+			}
+			else {
+				IssueList::add('error', "Invalid type expression.", $expr->getHumanRangeIfPossible());
+			}
+		}
+		else {
+			foreach ($entity->getChildEntities() as $e) {
+				$this->evaluateTypeExprs($e);
+			}
+		}
 	}
 	
 	/** Recursively calculates the initial type for each entity that does not yet have one set. */
@@ -166,9 +191,6 @@ class Analyzer
 			if ($entity instanceof Entity\Expr\VarDef) {
 				$t = $entity->getType();
 				if (!$t) {
-					/*$entity->analysis->type->initial = \Type\Generic::make();
-					static::show("variable", $entity, "has generic initial type");*/
-					
 					//For now, infer the type of the VarDef from its initial expression.
 					if ($i = $entity->getInitial()) {
 						if ($i->analysis->type->initial) {
@@ -180,21 +202,25 @@ class Analyzer
 					} else {
 						IssueList::add('error', "Type of variable '{$entity->getName()}' cannot be inferred without an initial value.", $entity);
 					}
-				}
-				else if ($t instanceof Entity\Expr\Identifier) {
-					$tt = $t->analysis->binding->target;
-					if ($tt instanceof \Type\Type) {
-						$entity->analysis->type->initial = $tt;
-					}
-					else if ($tt instanceof \Entity\TypeDefinition) {
-						$entity->analysis->type->initial = \Type\Defined::makeWithDefinition($tt);
-					}
-					else {
-						IssueList::add('error', "Type '{$t->getName()}' is unknown.", $t->getRange());
+				} else {
+					$tt = $t->getType();
+					$entity->analysis->type->initial = $tt;
+					if (!$tt) {
+						IssueList::add('error', "Variable '{$entity->getName()}' has invalid type expression.", $t, $entity);
 					}
 				}
-				else {
-					IssueList::add('error', "Not a valid type expression.", $t->getHumanRangeIfPossible());
+			}
+			
+			if ($entity instanceof Entity\Expr\NewOp) {
+				$t = $entity->getType();
+				if ($t) {
+					$tt = $t->getType();
+					$entity->analysis->type->initial = $tt;
+					if (!$tt) {
+						IssueList::add('error', "New operator has invalid type expression.", $t, $entity);
+					}
+				} else {
+					throw new \exception("NewOp {$entity->getID()} has no type expression.");
 				}
 			}
 			
@@ -278,10 +304,6 @@ class Analyzer
 						IssueList::add('error', "Binary operator requires both operands to be of same type. Left operand is {$lt->toHumanReadableString()}, right operand is {$rt->toHumanReadableString()}.", $entity, array($entity->getLHS(), $entity->getRHS()));
 					}
 				}
-			}
-			if ($entity instanceof Entity\Expr\NewOp) {
-				$t = $entity->getExpr()->analysis->type->initial;
-				$entity->analysis->type->inferred = $t;
 			}
 		}
 	}

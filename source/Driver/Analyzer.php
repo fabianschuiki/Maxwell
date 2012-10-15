@@ -112,7 +112,6 @@ class Analyzer
 						if ($scope instanceof Entity\Scope\ScopeRoot) {
 							foreach ($scope->getRootEntity()->getKnownEntities() as $e) {
 								if ($e->getName() == $entity->getName()) {
-									echo "resolving \"{$entity->getName()}\" to external entity {$e->getID()}\n";
 									$result = $e;
 									break;
 								}
@@ -183,6 +182,9 @@ class Analyzer
 					$tt = $t->analysis->binding->target;
 					if ($tt instanceof \Type\Type) {
 						$entity->analysis->type->initial = $tt;
+					}
+					else if ($tt instanceof \Entity\TypeDefinition) {
+						$entity->analysis->type->initial = \Type\Defined::makeWithDefinition($tt);
 					}
 					else {
 						IssueList::add('error', "Type '{$t->getName()}' is unknown.", $t->getRange());

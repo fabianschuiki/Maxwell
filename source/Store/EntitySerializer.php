@@ -232,6 +232,10 @@ class EntitySerializer
 			$e = $element->makeElement("type-builtin");
 			$e->setAttribute('name', $type->getName());
 		}
+		if ($type instanceof \Type\Defined) {
+			$e = $element->makeElement("type-defined");
+			$e->setAttribute('definition', $type->getDefinition()->getID());
+		}
 		
 		if (!$e) throw new \exception("Unable to encode type ".vartype($type).".");
 		return $e;
@@ -248,9 +252,11 @@ class EntitySerializer
 		if ($id == $this->entity->getID()) return $this->entity;
 		$e = @$this->entities[$id];
 		if ($e) return $e;
-		$a = $this->entity->getKnownEntities();
-		$e = @$a[$id];
-		if ($e) return $e;
+		foreach ($this->entity->getKnownEntities() as $k) {
+			if ($k->getID() == $id) {
+				return $e;
+			}
+		}
 		throw new \exception("Entity with ID $id is not known.");
 	}
 	

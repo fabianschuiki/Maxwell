@@ -1,10 +1,18 @@
 <?php
-namespace Type
+namespace Type;
 
 class Defined extends Type
 {
-	protected $typeDef;
+	static public function makeWithDefinition(\Entity\TypeDefinition $d)
+	{
+		$b = new self;
+		$b->generateId();
+		$b->setDefinition($d);
+		return $b;
+	}
 	
-	public function setTypeDef(\Entity\TypeDefinition $d) { $this->typeDef = $d; }
-	public function getTypeDef() { return $this->typeDef; }
+	protected $definition;
+	
+	public function setDefinition(\Entity\TypeDefinition $d) { $this->definition = $d; }
+	public function getDefinition() { return $this->definition; }
 }

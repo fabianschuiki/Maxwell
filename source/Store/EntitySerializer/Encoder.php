@@ -143,6 +143,25 @@ class Encoder
 		if ($i = $type->required) $this->encodeAnalysisTypeType($i, $element)->setAttribute('rel', 'required');
 	}
 	
+	protected function encodeAnalysisTypeType(\Type\Type $type, Coder\Element $element)
+	{
+		$e = null;
+		if ($type instanceof \Type\Generic) {
+			$e = $element->makeElement("type-generic");
+		}
+		if ($type instanceof \Type\Builtin) {
+			$e = $element->makeElement("type-builtin");
+			$e->setAttribute('name', $type->getName());
+		}
+		if ($type instanceof \Type\Defined) {
+			$e = $element->makeElement("type-defined");
+			$e->setAttribute('definition', $type->getDefinition()->getID());
+		}
+		
+		if (!$e) throw new \exception("Unable to encode type ".vartype($type));
+		return $e;
+	}
+	
 	protected function encodeEntityBlock(\Entity\Block $entity, Coder\Element $element)
 	{
 		foreach ($entity->getStmts() as $stmt) {

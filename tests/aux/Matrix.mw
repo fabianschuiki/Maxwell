@@ -1,9 +1,0 @@
-/* Some stuff */
-
-type Matrix
-{
-	var int n;
-	var int m;
-	
-	//other stuff
-}

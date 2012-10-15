@@ -2,7 +2,6 @@
  * Some test file for debugging the frontend.
  */
 package parser
-import "aux/Matrix"
 
 //Main function of the program.
 func main
@@ -12,7 +11,7 @@ func main
 	x = 9 + 15 * y;
 	
 	//First tests with types and their members.
-	var Matrix v = new Matrix;
+	var Vector v = new Vector;
 	v.x = 9;
 	v.y = 34;
 }

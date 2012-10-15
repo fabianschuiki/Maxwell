@@ -63,7 +63,14 @@ class Issue
 		$sourceFiles[] = $this->range->getFile();
 		foreach ($this->marked as $m) {
 			$f = $m->getFile();
-			if (!in_array($f, $sourceFiles, true)) {
+			$found = false;
+			foreach ($sourceFiles as $sf) {
+				if ($sf->getPath() == $f->getPath()) {
+					$found = true;
+					break;
+				}
+			}
+			if (!$found) {
 				$sourceFiles[] = $f;
 			}
 		}
@@ -141,7 +148,7 @@ class Issue
 			$output .= "";
 			foreach ($lines as $l) {
 				$skipped = ($l != $pl+1);
-				if ($skipped) $o .= "\r    ~";
+				if ($skipped) $output .= "\r    ~";
 				
 				$pl = $l;
 				$line = $ls[$l];

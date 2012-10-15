@@ -51,6 +51,15 @@ class Protocol
 		return $schemes;
 	}
 	
+	public function getClassForTagName($tagName)
+	{
+		foreach ($this->schemes as $s) {
+			if ($s->tagName == $tagName)
+				return $s->className;
+		}
+		return null;
+	}
+	
 	protected function register($className, $tagName, array $fields = array())
 	{
 		$s = new CodingScheme("\\Entity\\$className", $tagName, $fields);

@@ -29,19 +29,29 @@ class Compiler
 		$issues = new IssueList;
 		$issues->push();
 		
-		while (count($this->entityIDs) && !$issues->isFatal())
+		$precompileIDs = $this->entityIDs;
+		while (count($precompileIDs) && !$issues->isFatal())
 		{
-			//Fetch the entity we're supposed to analyze.
-			$entityID = array_shift($this->entityIDs);
+			//Fetch the entity we're supposed to precompile.
+			$entityID = array_shift($precompileIDs);
+			$entity = $entityStore->getEntity($entityID);
+			echo "precompiling ".vartype($entity)."\n";
+			
+			//Decide the entity names.
+			$this->decideEntityNames($entity);
+		}
+		
+		$compileIDs = $this->entityIDs;
+		while (count($compileIDs) && !$issues->isFatal())
+		{
+			//Fetch the entity we're supposed to compile.
+			$entityID = array_shift($compileIDs);
 			$entity = $entityStore->getEntity($entityID);
 			echo "compiling ".vartype($entity)."\n";
 			
 			//Generate code.
 			$pair = $this->generateRootCode($entity);
 			$codeStore->persistCode($entityID, $pair);
-					
-			//Store the entity back to disk.
-			//$entityStore->persistEntity($entityID);
 		}
 		
 		$issues->pop();
@@ -49,9 +59,35 @@ class Compiler
 	}
 	
 	/** Decides the name of individual entities, as it will appear in the C file. */
-	private function decideName(Entity\Entity $entity)
+	private function decideEntityNames(Entity\Entity $entity)
 	{
+		foreach ($entity->getChildEntities() as $c) {
+			$this->decideEntityNames($c);
+		}
 		
+		if ($entity instanceof Entity\Expr\VarDef) {
+			$compiler = $entity->compiler;
+			
+			$type = $entity->analysis->type->inferred;
+			$compiler->setName($entity->getName());
+			$compiler->setType($type);
+			
+			//Decide what type of reference to use for this variable.
+			if ($type instanceof \Type\Builtin) {
+				$compiler->setRefType("local");
+			}
+			else if ($type instanceof \Type\Defined) {
+				$compiler->setRefType("dynamic");
+			}
+			else {
+				IssueList::add('error', "Variable '{$entity->getName()}' is of a type that cannot be compiled.", $entity);
+			}
+		}
+		if ($entity instanceof Entity\TypeDefinition) {
+			$compiler = $entity->compiler;
+			$compiler->setLocalName("struct ".$entity->getName());
+			$compiler->setName($entity->getName()."_t");
+		}
 	}
 	
 	static public function indent($str)
@@ -74,8 +110,8 @@ class Compiler
 			$snippet->stmts .= "$declaration\n{\n".static::indent(trim($block->stmts))."\n}\n";
 		}
 		if ($entity instanceof Entity\TypeDefinition) {
-			$structName = "struct {$entity->getName()}";
-			$snippet->publicHeader = "typedef $structName {$entity->getName()}_t;\n";
+			$structName = $entity->compiler->getLocalName();
+			$snippet->publicHeader = "typedef $structName {$entity->compiler->getName()};\n";
 			$snippet->privateHeader = "$structName;\n";
 			$snippet->stmts .= "$structName {\n};\n";
 		}
@@ -124,10 +160,19 @@ class Compiler
 	{
 		$snippet = new Snippet;
 		if ($expr instanceof Entity\Expr\VarDef) {
-			$type = $expr->analysis->type->inferred;
-			if ($type instanceof \Type\Defined)
-				$type = $type->getDefinition();
-			$stmt = "{$type->getName()} {$expr->getName()}";
+			$type = $expr->compiler->getType();
+			if ($type instanceof \Type\Builtin) {
+				$typeName = $type->getName();
+			}
+			else if ($type instanceof \Type\Defined) {
+				$typeName = $type->getDefinition()->compiler->getName();
+			}
+			if ($expr->compiler->getRefType() == "dynamic") {
+				$typeName .= "*";
+			}
+			$expr->compiler->setCType($typeName);
+			
+			$stmt = "{$typeName} {$expr->compiler->getName()}";
 			if ($i = $expr->getInitial()) {
 				$is = $this->generateExprCode($i);
 				$stmt .= " = {$is->expr}";
@@ -135,7 +180,7 @@ class Compiler
 			}
 			$stmt .= ";\n";
 			$snippet->stmts .= $stmt;
-			$snippet->expr = "{$expr->getName()}";
+			$snippet->expr = "{$expr->compiler->getName()}";
 		}
 		if ($expr instanceof Entity\Expr\Operator\Binary) {
 			$ls = $this->generateExprCode($expr->getLHS());
@@ -150,7 +195,7 @@ class Compiler
 			$snippet->expr = $expr->getValue();
 		}
 		if ($expr instanceof Entity\Expr\Identifier) {
-			$snippet->expr = $expr->analysis->binding->target->getName();
+			$snippet->expr = $expr->analysis->binding->target->compiler->getName();
 		}
 		if ($expr instanceof Entity\Expr\MemberAccess) {
 			$e = $this->generateExprCode($expr->getExpr());

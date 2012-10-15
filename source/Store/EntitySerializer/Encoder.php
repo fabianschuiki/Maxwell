@@ -103,6 +103,11 @@ class Encoder
 		if (isset($entity->analysis)) {
 			$this->encodeAnalysis($entity->analysis);
 		}
+		
+		//Encode the compiler data if applicable.
+		if (isset($entity->compiler)) {
+			$this->encodeCompiler($entity->compiler);
+		}
 	}
 	
 	protected function encodeAnalysis(\Analysis\Node\Node $analysis)

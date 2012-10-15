@@ -87,6 +87,24 @@ class DebugHTML
 						$info .= "<div>Inferred: ".static::typeInfo($entity->analysis->type->inferred)."</div>";
 						$info .= "<div>Required: ".static::typeInfo($entity->analysis->type->required)."</div>";
 					}
+					if (isset($entity->compiler)) {
+						$info .= "<h1>Compiler</h1>\n";
+						$compiler = $entity->compiler;
+						$fields = array();
+						if ($compiler instanceof \Compiler\Node\TypeDefinition) {
+							$fields["Name"] = $compiler->getName();
+							$fields["Local Name"] = $compiler->getLocalName();
+						}
+						if ($compiler instanceof \Compiler\Node\VarDef) {
+							$fields["Name"] = $compiler->getName();
+							$fields["Type"] = static::typeInfo($compiler->getType());
+							$fields["RefType"] = $compiler->getRefType();
+							$fields["C Type"] = $compiler->getCType();
+						}
+						foreach ($fields as $name => $str) {
+							$info .= "<div>$name: $str</div>\n";
+						}
+					}
 				}
 				$info .= "</div>";
 				

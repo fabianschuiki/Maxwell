@@ -9,11 +9,13 @@ abstract class RootEntity extends Entity
 	protected $knownEntities;
 	
 	public $analysis;
+	public $compiler;
 	
 	public function __construct()
 	{
 		$this->knownEntities = array();
 		$this->analysis = \Analysis\Node\Node::makeForEntity($this);
+		$this->compiler = \Compiler\Node\Node::makeForEntity($this);
 	}
 	
 	public function setFile(\Source\File $file) { $this->file = $file; }

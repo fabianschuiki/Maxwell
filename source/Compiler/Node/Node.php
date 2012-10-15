@@ -8,6 +8,7 @@ class Node
 		if ($entity instanceof \Entity\FunctionDefinition) return new FunctionDefinition($entity);
 		if ($entity instanceof \Entity\TypeDefinition) return new TypeDefinition($entity);
 		if ($entity instanceof \Entity\Expr\VarDef) return new VarDef($entity);
+		if ($entity instanceof \Entity\Expr\Expr) return new Expr($entity);
 		throw new \exception("No compiler node available for ".vartype($entity));
 	}
 	

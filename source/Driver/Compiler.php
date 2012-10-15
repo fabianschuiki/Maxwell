@@ -38,7 +38,7 @@ class Compiler
 			echo "precompiling ".vartype($entity)."\n";
 			
 			//Decide the entity names.
-			$this->decideEntityNames($entity);
+			$this->calculateEntityNames($entity);
 		}
 		
 		$compileIDs = $this->entityIDs;
@@ -49,6 +49,9 @@ class Compiler
 			$entity = $entityStore->getEntity($entityID);
 			echo "compiling ".vartype($entity)."\n";
 			
+			//Prepare entity type information.
+			$this->calculateEntityTypes($entity);
+			
 			//Generate code.
 			$pair = $this->generateRootCode($entity);
 			$codeStore->persistCode($entityID, $pair);
@@ -58,35 +61,44 @@ class Compiler
 		$issues->report();
 	}
 	
-	/** Decides the name of individual entities, as it will appear in the C file. */
-	private function decideEntityNames(Entity\Entity $entity)
+	/** Calculates the name of individual entities, as it will appear in the C file. */
+	private function calculateEntityNames(Entity\Entity $entity)
 	{
 		foreach ($entity->getChildEntities() as $c) {
-			$this->decideEntityNames($c);
+			$this->calculateEntityNames($c);
 		}
 		
 		if ($entity instanceof Entity\Expr\VarDef) {
-			$compiler = $entity->compiler;
-			
-			$type = $entity->analysis->type->inferred;
-			$compiler->setName($entity->getName());
-			$compiler->setType($type);
-			
-			//Decide what type of reference to use for this variable.
-			if ($type instanceof \Type\Builtin) {
-				$compiler->setRefType("local");
-			}
-			else if ($type instanceof \Type\Defined) {
-				$compiler->setRefType("dynamic");
-			}
-			else {
-				IssueList::add('error', "Variable '{$entity->getName()}' is of a type that cannot be compiled.", $entity);
-			}
+			$entity->compiler->setName($entity->getName());
 		}
 		if ($entity instanceof Entity\TypeDefinition) {
 			$compiler = $entity->compiler;
 			$compiler->setLocalName("struct ".$entity->getName());
 			$compiler->setName($entity->getName()."_t");
+		}
+	}
+	
+	private function calculateEntityTypes(Entity\Entity $entity)
+	{
+		foreach ($entity->getChildEntities() as $c) {
+			$this->calculateEntityTypes($c);
+		}
+		
+		if ($entity instanceof Entity\Expr\Expr) {
+			$compiler = $entity->compiler;
+			$type = $entity->analysis->type->inferred;
+			
+			if ($type instanceof \Type\Builtin) {
+				$compiler->type->setName($type->getName());
+				$compiler->type->setPointerLevel(0);
+			}
+			else if ($type instanceof \Type\Defined) {
+				$compiler->type->setName($type->getDefinition()->compiler->getName());
+				$compiler->type->setPointerLevel(1);
+			}
+			else {
+				throw new \exception("Type of ".vartype($entity)." cannot be compiled");
+			}
 		}
 	}
 	
@@ -160,19 +172,7 @@ class Compiler
 	{
 		$snippet = new Snippet;
 		if ($expr instanceof Entity\Expr\VarDef) {
-			$type = $expr->compiler->getType();
-			if ($type instanceof \Type\Builtin) {
-				$typeName = $type->getName();
-			}
-			else if ($type instanceof \Type\Defined) {
-				$typeName = $type->getDefinition()->compiler->getName();
-			}
-			if ($expr->compiler->getRefType() == "dynamic") {
-				$typeName .= "*";
-			}
-			$expr->compiler->setCType($typeName);
-			
-			$stmt = "{$typeName} {$expr->compiler->getName()}";
+			$stmt = "{$expr->compiler->type->getCType()} {$expr->compiler->getName()}";
 			if ($i = $expr->getInitial()) {
 				$is = $this->generateExprCode($i);
 				$stmt .= " = {$is->expr}";

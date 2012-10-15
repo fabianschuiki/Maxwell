@@ -226,7 +226,7 @@ class Analyzer
 			
 			if ($entity instanceof Entity\Expr\Identifier) {
 				if ($entity->analysis->binding->target) {
-					if ($entity->analysis->binding->target instanceof \Type\Type) {
+					if ($entity->analysis->binding->target instanceof \Type\Type || $entity->analysis->binding->target instanceof \Entity\TypeDefinition) {
 						$entity->analysis->type->initial = \Type\Builtin::makeWithName("Type");
 					} else {
 						$entity->analysis->type->initial = \Type\Generic::make();
@@ -249,6 +249,10 @@ class Analyzer
 						$entity->analysis->type->initial = \Type\Builtin::makeWithName("String");
 					} break;
 				}
+			}
+			
+			if ($entity instanceof Entity\Expr\Type) {
+				$entity->analysis->type->initial = \Type\Builtin::makeWithName("Type");
 			}
 		}
 	}
@@ -310,7 +314,7 @@ class Analyzer
 				if ($t instanceof \Type\Defined) {
 					$def = $t->getDefinition();
 					//check whether type actually has this member
-					IssueList::add('error', "Type '{$def->getName()}' has no member '{$entity->getName()}'.", $entity, $def);
+					//IssueList::add('error', "Type '{$def->getName()}' has no member '{$entity->getName()}'.", $entity, $def);
 				} else {
 					IssueList::add('error', "Only user-defined types have accessible members.", $entity);
 				}

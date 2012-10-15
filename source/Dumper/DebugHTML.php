@@ -97,9 +97,11 @@ class DebugHTML
 						}
 						if ($compiler instanceof \Compiler\Node\VarDef) {
 							$fields["Name"] = $compiler->getName();
-							$fields["Type"] = static::typeInfo($compiler->getType());
-							$fields["RefType"] = $compiler->getRefType();
-							$fields["C Type"] = $compiler->getCType();
+						}
+						if (isset($compiler->type)) {
+							$fields["Type Name"] = $compiler->type->getName();
+							$fields["Pointer Level"] = $compiler->type->getPointerLevel();
+							$fields["C Type"] = $compiler->type->getCType();
 						}
 						foreach ($fields as $name => $str) {
 							$info .= "<div>$name: $str</div>\n";

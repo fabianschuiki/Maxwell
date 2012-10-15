@@ -5,10 +5,12 @@ use Entity\Entity;
 abstract class Expr extends Entity
 {
 	public $analysis;
+	public $compiler;
 	
 	public function __construct()
 	{
 		$this->analysis = \Analysis\Node\Node::makeForEntity($this);
+		$this->compiler = \Compiler\Node\Node::makeForEntity($this);
 	}
 	
 	static public function makeFromSyntaxNode(\AST\Expr\Expr $node)

@@ -167,6 +167,10 @@ class Encoder
 		return $e;
 	}
 	
+	protected function encodeCompiler(\Compiler\Node\Node $compiler)
+	{
+	}
+	
 	protected function encodeEntityBlock(\Entity\Block $entity, Coder\Element $element)
 	{
 		foreach ($entity->getStmts() as $stmt) {

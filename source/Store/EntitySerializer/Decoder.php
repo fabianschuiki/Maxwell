@@ -171,6 +171,36 @@ class Decoder
 	
 	protected function decodeAnalysis(\Analysis\Node\Node $analysis, Coder\Element $element)
 	{
+		switch ($element->getName()) {
+			case "binding": {
+				if ($t = $element->getAttribute("target")) {
+					if (preg_match('/^builtin:(.*)/', $t, $matches)) {
+						$analysis->binding->target = \Type\Builtin::makeWithName($matches[1]);
+					} else {
+						$analysis->binding->target = $this->findEntity($t);
+					}
+				}
+			} break;
+			case "type": {
+				foreach ($element->getElements() as $e) {
+					$type = $this->decodeAnalysisType($e);
+					$rel = $e->getAttribute('rel');
+					if ($rel == "initial")  $analysis->type->initial  = $type;
+					if ($rel == "inferred") $analysis->type->inferred = $type;
+					if ($rel == "required") $analysis->type->required = $type;
+				}
+			} break;
+		}
+	}
+	
+	public function decodeAnalysisType(Coder\Element $element)
+	{
+		switch ($element->getName()) {
+			case "type-builtin": return \Type\Builtin::makeWithName($element->getAttribute('name')); break;
+			case "type-generic": return \Type\Generic::make(); break;
+			case "type-defined": return \Type\Defined::makeWithDefinition($this->findEntity($element->getAttribute('definition'))); break;
+		}
+		throw new \exception("Unable to decode type \"{$element->getName()}\"");
 	}
 	
 	protected function decodeEntityBlock(\Entity\Block $entity, Coder\Element $element)

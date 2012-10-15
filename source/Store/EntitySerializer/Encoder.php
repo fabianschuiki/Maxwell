@@ -26,10 +26,12 @@ class Encoder
 		
 		//Keep track of the known entities as well as the entity's siblings.
 		foreach ($rootEntity->getSiblingEntities() as $sibling) {
+			if ($sibling == $rootEntity) continue;
 			$e = $this->root->makeElement('sibling');
 			$e->setAttribute('id', $sibling->getID());
 		}
 		foreach ($rootEntity->getKnownEntities() as $known) {
+			if ($known == $rootEntity) continue;
 			$e = $this->root->makeElement('known');
 			$e->setAttribute('id', $known->getID());
 		}
@@ -70,15 +72,50 @@ class Encoder
 			}
 		}
 		
+		//Perform the encoding according to the schemes.
+		foreach ($schemes as $scheme) {
+			foreach ($scheme->fields as $field) {
+				$func  = "get".strtoupper($field->name);
+				if (!method_exists($entity, $func)) {
+					throw new \exception(vartype($entity)." does not support function $func as defined by {$scheme->tagName}.{$field->name}");
+				}
+				$value = $entity->$func();
+				if ($value) {
+					if ($field->type == "&") {
+						$element->setAttribute($field->tag, $value);
+					} else {
+						$element->setAttribute($field->tag, $value->getID());
+						if ($field->type == "@") {
+							$this->encodeEntity($value);
+						}
+					}
+				}
+			}
+		}
+		
 		//Perform specific encoding for this entity if applicable.
 		$specificName = "encode".str_replace("\\", "", get_class($entity));
 		if (method_exists($this, $specificName)) {
 			$this->$specificName($entity, $element);
 		}
+		
+		//Encode the analysis if applicable.
+		if (isset($entity->analysis)) {
+			$this->encodeAnalysis($entity->analysis);
+		}
 	}
 	
-	protected function encodeEntityFunctionDefinition(\Entity\FunctionDefinition $entity, Coder\Element $element)
+	protected function encodeAnalysis(\Analysis\Node $analysis)
 	{
-		$element->setAttribute("rulez", "verymuchsir");
+		echo "encoding analysis for entity {$analysis->entity->getID()}\n";
+	}
+	
+	protected function encodeEntityBlock(\Entity\Block $entity, Coder\Element $element)
+	{
+		foreach ($entity->getStmts() as $stmt) {
+			$this->encodeEntity($stmt);
+			$e = $element->makeElement('stmt');
+			$e->setAttribute('id', $stmt->getID());
+		}
 	}
 }

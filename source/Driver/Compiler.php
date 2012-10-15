@@ -97,7 +97,7 @@ class Compiler
 				$compiler->type->setPointerLevel(1);
 			}
 			else {
-				throw new \exception("Type of ".vartype($entity)." cannot be compiled");
+				//throw new \exception("Type of ".vartype($entity)." cannot be compiled");
 			}
 		}
 	}
@@ -199,14 +199,12 @@ class Compiler
 		}
 		if ($expr instanceof Entity\Expr\MemberAccess) {
 			$e = $this->generateExprCode($expr->getExpr());
+			$op = ($expr->getExpr()->compiler->type->getPointerLevel() > 0 ? "->" : ".");
 			$snippet->stmts .= $e->stmts;
-			$snippet->expr = "{$e->expr}->{$expr->getName()}";
+			$snippet->expr = "{$e->expr}$op{$expr->getName()}";
 		}
 		if ($expr instanceof Entity\Expr\NewOp) {
-			$type = $expr->analysis->type->inferred;
-			if ($type instanceof \Type\Defined)
-				$type = $type->getDefinition();
-			$snippet->expr = "malloc(sizeof {$type->getName()})";
+			$snippet->expr = "malloc(sizeof *({$expr->compiler->type->getCType()}))";
 			$snippet->exprRequired = true;
 		}
 		return $snippet;

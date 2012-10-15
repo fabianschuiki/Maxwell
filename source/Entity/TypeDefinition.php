@@ -22,12 +22,31 @@ class TypeDefinition extends RootEntity
 		if ($def->getSuperType())
 			$e->setSuperType($def->getSuperType()->getText());
 		
+		//Disassemble the body containing the members.
+		$members = array();
+		foreach ($def->getBody()->getStmts() as $stmt) {
+			if ($stmt instanceof \AST\Stmt\Expr) {
+				$expr = $stmt->getExpr();
+				if ($expr instanceof \AST\Expr\VarDef) {
+					$members[] = Type\Member::makeFromSyntaxNode($expr);
+				}
+				else {
+					throw new \exception(vartype($expr)." makes no sense as a statement inside a type definition. Replace this with a proper issue!");
+				}
+			}
+			else {
+				throw new \exception(vartype($stmt)." not allowed inside type definition. Replace this with a proper issue!");
+			}
+		}
+		$e->setMembers($members);
+		
 		$e->popID();
 		return $e;
 	}
 	
 	protected $name;
 	protected $superType;
+	protected $members;
 	protected $scope;
 	
 	public function setName($n) { $this->name = $n; }
@@ -35,6 +54,9 @@ class TypeDefinition extends RootEntity
 	
 	public function setSuperType($s) { $this->superType = $s; }
 	public function getSuperType() { return $this->superType; }
+	
+	public function setMembers(array $m) { $this->members = $m; }
+	public function getMembers() { return $this->members; }
 	
 	public function setScope(Scope\Scope $s) { $this->scope = $s; }
 	public function getScope() { return $this->scope; }
@@ -53,8 +75,5 @@ class TypeDefinition extends RootEntity
 		$this->setScope($s);
 	}
 	
-	public function getChildEntities()
-	{
-		return array();
-	}
+	public function getChildEntities() { return $this->members; }
 }

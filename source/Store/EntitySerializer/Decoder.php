@@ -203,6 +203,22 @@ class Decoder
 		throw new \exception("Unable to decode type \"{$element->getName()}\"");
 	}
 	
+	protected function decodeEntityTypeDefinition(\Entity\TypeDefinition $entity, Coder\Element $element)
+	{
+		$members = array();
+		foreach ($element->getElements() as $member) {
+			if ($member->getName() != "member") {
+				throw new \exception("Only 'member' tags are supported within a type definition");
+			}
+			if ($id = $member->getAttribute("id")) {
+				$members[] = $this->findEntity($id);
+			} else {
+				throw new \exception("Type member has no ID");
+			}
+		}
+		$entity->setMembers($members);
+	}
+	
 	protected function decodeEntityBlock(\Entity\Block $entity, Coder\Element $element)
 	{
 		$stmts = array();

@@ -13,6 +13,8 @@ class Protocol
 		$this->register("FunctionDefinition", "function", array("&name", "@body", "@scope"));
 		$this->register("TypeDefinition", "type", array("&name", "@scope"));
 		
+		$this->register('Type\Member', "type-member", array("&name", "@type", "*scope"));
+		
 		//Statements
 		$this->register("Block", "block", array("@headScope", "*tailScope"));
 		$this->register('Stmt\Expr', "expr-stmt", array("@expr"));

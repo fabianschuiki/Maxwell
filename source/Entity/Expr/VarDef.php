@@ -18,14 +18,6 @@ class VarDef extends Expr
 		return $e;
 	}
 	
-	public $compiler;
-	
-	public function __construct()
-	{
-		parent::__construct();
-		$this->compiler = \Compiler\Node\Node::makeForEntity($this);
-	}
-	
 	protected $name;
 	protected $type;
 	protected $initial;

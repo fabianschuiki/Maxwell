@@ -171,6 +171,15 @@ class Encoder
 	{
 	}
 	
+	protected function encodeEntityTypeDefinition(\Entity\TypeDefinition $entity, Coder\Element $element)
+	{
+		foreach ($entity->getMembers() as $member) {
+			$this->encodeEntity($member);
+			$e = $element->makeElement("member");
+			$e->setAttribute("id", $member->getID());
+		}
+	}
+	
 	protected function encodeEntityBlock(\Entity\Block $entity, Coder\Element $element)
 	{
 		foreach ($entity->getStmts() as $stmt) {

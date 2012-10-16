@@ -23,17 +23,30 @@ pre {
 	position: relative;
 }
 
-.entity-expr.active {
+.entity.active {
 	background-color: hsla(200, 100%, 50%, 0.1);
 	border-bottom: 1px solid hsla(200, 100%, 50%, 0.2);
 }
-.entity-expr.active > .human {
+.entity.active > .human {
 	background-color: hsla(200, 100%, 50%, 0.4);
 	border-bottom: 1px solid hsla(200, 100%, 50%, 0.8);
 }
-.entity-expr.referred > .human {
+.entity.referred > .human {
 	background-color: hsla(45, 100%, 50%, 0.4);
 	border-bottom: 1px solid hsla(45, 100%, 50%, 0.8);
+}
+
+.entity-functiondefinition.active,
+.entity-typedefinition.active,
+.entity-block.active,
+.entity-stmt.active {
+	background-color: inherit;
+	border-bottom: inherit;
+}
+.entity-block.active > .human,
+.entity-stmt.active > .human {
+	background-color: inherit;
+	border-bottom: inherit;
 }
 
 .entity .entity-tag {

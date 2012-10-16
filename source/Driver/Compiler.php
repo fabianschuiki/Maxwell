@@ -190,6 +190,15 @@ class Compiler
 			if ($s->expr && $s->exprRequired) $snippet->stmts .= $s->expr.";\n";
 			$snippet->outerStmts = $s->outerStmts;
 		}
+		else if ($stmt instanceof Entity\Stmt\IfStmt) {
+			$condition = $this->generateExprCode($stmt->getCondition());
+			$block = $this->generateBlockCode($stmt->getBody());
+			$snippet->stmts = $condition->stmts;
+			$snippet->stmts .= "if ({$condition->expr}) {\n".static::indent(trim($block->stmts))."\n}\n";
+		}
+		else {
+			throw new \exception("Unable to generate statement code for ".vartype($stmt));
+		}
 		return $snippet;
 	}
 	
@@ -207,7 +216,7 @@ class Compiler
 			$snippet->stmts .= $stmt;
 			$snippet->expr = "{$expr->compiler->getName()}";
 		}
-		if ($expr instanceof Entity\Expr\Operator\Binary) {
+		else if ($expr instanceof Entity\Expr\Operator\Binary) {
 			$ls = $this->generateExprCode($expr->getLHS());
 			$rs = $this->generateExprCode($expr->getRHS());
 			$snippet->stmts .= $ls->stmts;
@@ -216,21 +225,24 @@ class Compiler
 			if ($expr->getOperator() == '=')
 				$snippet->exprRequired = true;
 		}
-		if ($expr instanceof Entity\Expr\Constant) {
+		else if ($expr instanceof Entity\Expr\Constant) {
 			$snippet->expr = $expr->getValue();
 		}
-		if ($expr instanceof Entity\Expr\Identifier) {
+		else if ($expr instanceof Entity\Expr\Identifier) {
 			$snippet->expr = $expr->analysis->binding->target->compiler->getName();
 		}
-		if ($expr instanceof Entity\Expr\MemberAccess) {
+		else if ($expr instanceof Entity\Expr\MemberAccess) {
 			$e = $this->generateExprCode($expr->getExpr());
 			$op = ($expr->getExpr()->compiler->type->getPointerLevel() > 0 ? "->" : ".");
 			$snippet->stmts .= $e->stmts;
 			$snippet->expr = "{$e->expr}$op{$expr->getName()}";
 		}
-		if ($expr instanceof Entity\Expr\NewOp) {
+		else if ($expr instanceof Entity\Expr\NewOp) {
 			$snippet->expr = "malloc(sizeof *({$expr->compiler->type->getCType()}))";
 			$snippet->exprRequired = true;
+		}
+		else {
+			throw new \exception("Unable to generate expression code for ".vartype($expr));
 		}
 		return $snippet;
 	}

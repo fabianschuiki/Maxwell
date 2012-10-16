@@ -1,6 +1,15 @@
 Random TODOs
 ============
 
+- Implement function calls.
+- Implement "value" and "object" type definitions, and adjust their pointer level.
+- Implement raw C types, including pointer & dereferencing unary operators.
+- Implement native function declarations (function without a body that will use call an external C function).
+
+
+Old Stuff
+=========
+
 - Add raw C types to the language, possibly through a prefix like `@` or `$`. These should become obsolete as the language evolves. Later on it might even be possible to recognize a C type without special indicator.
 
 - Implement binding. Maybe there should be an `Analysis\Node` that may be assigned to each entity which holds all the information the analyzer gathers. This way, identifiers would get an `Analysis\Ident` object that contains the binding results.

@@ -188,4 +188,13 @@ class Encoder
 			$e->setAttribute('id', $stmt->getID());
 		}
 	}
+	
+	protected function encodeEntityFuncTuple(\Entity\Func\Tuple $entity, Coder\Element $element)
+	{
+		foreach ($entity->getArgs() as $arg) {
+			$this->encodeEntity($arg);
+			$e = $element->makeElement('arg');
+			$e->setAttribute('id', $arg->getID());
+		}
+	}
 }

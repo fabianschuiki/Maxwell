@@ -1,8 +1,8 @@
 <?php
 namespace Entity\Func;
-use Entity\Expr\Expr;
+use Entity\Entity;
 
-class Argument extends Expr
+class Argument extends Entity
 {
 	static public function makeFromSyntaxNode(\AST\Stmt\FuncArg $node)
 	{

@@ -13,8 +13,15 @@ class FunctionDefinition extends RootEntity
 		$e->setHumanRange(Range::union($def->getKeyword()->getRange(), $def->getName()->getRange()));
 		$e->setName($def->getName()->getText());
 		$e->setBody(Block::makeFromSyntaxNode($def->getBody()));
-		$e->setInputArgs(Func\Tuple::makeFromSyntaxNodes($def->getArgsIn()));
-		$e->setOutputArgs(Func\Tuple::makeFromSyntaxNodes($def->getArgsOut()));
+		
+		$ins = Func\Tuple::makeFromSyntaxNodes($def->getArgsIn());
+		if (!$ins->getRange()) $ins->setRange($e->getHumanRange());
+		$e->setInputArgs($ins);
+		
+		$outs = Func\Tuple::makeFromSyntaxNodes($def->getArgsOut());
+		if (!$outs->getRange()) $outs->setRange($e->getHumanRange());
+		$e->setOutputArgs($outs);
+		
 		$e->popID();
 		return $e;
 	}
@@ -57,6 +64,6 @@ class FunctionDefinition extends RootEntity
 	
 	public function getChildEntities()
 	{
-		return array($this->body);
+		return array($this->inputArgs, $this->outputArgs, $this->body);
 	}
 }

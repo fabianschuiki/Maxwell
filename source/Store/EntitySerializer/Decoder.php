@@ -234,4 +234,20 @@ class Decoder
 		}
 		$entity->setStmts($stmts);
 	}
+	
+	protected function decodeEntityFuncTuple(\Entity\Func\Tuple $entity, Coder\Element $element)
+	{
+		$args = array();
+		foreach ($element->getElements() as $arg) {
+			if ($arg->getName() != "arg") {
+				throw new \exception("Only 'arg' tags are supported within a block");
+			}
+			if ($id = $arg->getAttribute("id")) {
+				$args[] = $this->findEntity($id);
+			} else {
+				throw new \exception("Function argument in tuple has no ID");
+			}
+		}
+		$entity->setArgs($args);
+	}
 }

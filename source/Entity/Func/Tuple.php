@@ -1,8 +1,8 @@
 <?php
 namespace Entity\Func;
-use Entity\Expr\Expr;
+use Entity\Entity;
 
-class Tuple extends Expr
+class Tuple extends Entity
 {
 	static public function makeFromSyntaxNodes(array $nodes)
 	{

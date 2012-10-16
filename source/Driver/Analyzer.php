@@ -45,16 +45,12 @@ class Analyzer
 				$entityStore->pushRootID($entityID);
 				echo "analyzing initial type of ".vartype($entity)."\n";
 				
-				//Bind all identifiers within type expressions and calculate the initial types of the entities.
-				$this->bindIdentsInTypeExprs($entity);
+				//Bind all identifiers and calculate the initial types of the entities.
+				$this->bindIdents($entity);
 				if ($issues->isFatal()) break;
 				$this->evaluateTypeExprs($entity);
 				if ($issues->isFatal()) break;
 				$this->calculateInitialType($entity);
-				if ($issues->isFatal()) break;
-				
-				//Bind all identifiers that are left.
-				$this->bindIdents($entity);
 				if ($issues->isFatal()) break;
 				
 				//Queue this entity for type inferrence.
@@ -265,14 +261,19 @@ class Analyzer
 			}
 			
 			if ($entity instanceof Entity\Expr\Identifier) {
-				if ($entity->analysis->binding->target) {
+				echo "analysing identifier {$entity->getName()}\n";
+				if ($target = $entity->analysis->binding->target) {
 					if ($entity->analysis->binding->target instanceof \Type\Type || $entity->analysis->binding->target instanceof \Entity\TypeDefinition) {
 						$entity->analysis->type->initial = \Type\Builtin::makeWithName("Type");
+					} else if ($target->analysis->type) {
+						$entity->analysis->type->initial = $target->analysis->type->initial;
 					} else {
-						$entity->analysis->type->initial = \Type\Generic::make();
+						//$entity->analysis->type->initial = \Type\Generic::make();
+						IssueList::add('error', "Entity referenced by '{$entity->getName()}' has no valid type.", $target, $entity);
 					}
 				} else {
-					$entity->analysis->type->initial = \Type\Generic::make();
+					//$entity->analysis->type->initial = \Type\Generic::make();
+					throw new \exception("Trying to perform initial type analysis on identifier '{$entity->getName()}' which is not bound");
 				}
 			}
 			
@@ -325,7 +326,7 @@ class Analyzer
 		foreach ($entity->getChildEntities() as $e)
 			$this->calculateInferredType($e);
 		
-		if (isset($entity->analysis->type)) {
+		if (isset($entity->analysis->type) && !$entity->analysis->type->inferred) {
 			$entity->analysis->type->inferred = $entity->analysis->type->initial;
 			
 			if ($entity instanceof Entity\Expr\Identifier) {

@@ -261,7 +261,6 @@ class Analyzer
 			}
 			
 			if ($entity instanceof Entity\Expr\Identifier) {
-				echo "analysing identifier {$entity->getName()}\n";
 				if ($target = $entity->analysis->binding->target) {
 					if ($entity->analysis->binding->target instanceof \Type\Type || $entity->analysis->binding->target instanceof \Entity\TypeDefinition) {
 						$entity->analysis->type->initial = \Type\Builtin::makeWithName("Type");

@@ -211,6 +211,16 @@ class Analyzer
 				}
 			}
 			
+			if ($entity instanceof Entity\Type\Member) {
+				$t = $entity->getType();
+				if ($t) {
+					$tt = $t->getType();
+					$entity->analysis->type->initial = $tt;
+				} else {
+					IssueList::add('error', "Member '{$entity->getName()}' has invalid type expression.", $t, $entity);
+				}
+			}
+			
 			if ($entity instanceof Entity\Expr\NewOp) {
 				$t = $entity->getType();
 				if ($t) {
@@ -313,8 +323,19 @@ class Analyzer
 				$t = $entity->getExpr()->analysis->type->inferred;
 				if ($t instanceof \Type\Defined) {
 					$def = $t->getDefinition();
-					//check whether type actually has this member
-					//IssueList::add('error', "Type '{$def->getName()}' has no member '{$entity->getName()}'.", $entity, $def);
+					
+					$member = null;
+					foreach ($def->getMembers() as $m) {
+						if ($m->getName() == $entity->getName()) {
+							$member = $m;
+							break;
+						}
+					}
+					if (!$member) {
+						IssueList::add('error', "Type '{$def->getName()}' has no member '{$entity->getName()}'.", $entity, $def);
+					} else {
+						$entity->analysis->type->inferred = $member->analysis->type->initial;
+					}
 				} else {
 					IssueList::add('error', "Only user-defined types have accessible members.", $entity);
 				}

@@ -60,7 +60,7 @@ class Issue
 		
 		//Make a list of source files this issue references.
 		$sourceFiles = array();
-		$sourceFiles[] = $this->range->getFile();
+		if ($this->range) $sourceFiles[] = $this->range->getFile();
 		foreach ($this->marked as $m) {
 			$f = $m->getFile();
 			$found = false;
@@ -111,7 +111,7 @@ class Issue
 			if ($file !== $source) {
 				$output .= "- see ".basename($file->getPath()).":\n";
 			}
-			$output .= $this->getMarkedFileSnippet($file, ($this->range->getFile() === $file ? $this->range : null), @$markedPerFile[$file->getPath()]);
+			$output .= $this->getMarkedFileSnippet($file, ($this->range && $this->range->getFile() === $file ? $this->range : null), @$markedPerFile[$file->getPath()]);
 		}
 		
 		return $output;

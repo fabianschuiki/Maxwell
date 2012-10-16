@@ -46,5 +46,10 @@ class Member extends \Entity\Entity
 		$this->setScope($s);
 	}
 	
-	public function getChildEntities() { return array($this->type); }
+	public function getChildEntities()
+	{
+		$a = array();
+		if ($this->type) $a[] = $this->type;
+		return $a;
+	}
 }

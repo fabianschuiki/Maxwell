@@ -329,7 +329,7 @@ class Analyzer
 		if (isset($entity->analysis->type) && !$entity->analysis->type->inferred) {
 			$entity->analysis->type->inferred = $entity->analysis->type->initial;
 			
-			if ($entity instanceof Entity\Expr\Identifier) {
+			/*if ($entity instanceof Entity\Expr\Identifier) {
 				$t = $entity->analysis->binding->target;
 				if (isset($t->analysis->type)) {
 					if ($tt = $t->analysis->type->inferred) {
@@ -338,7 +338,7 @@ class Analyzer
 						IssueList::add('error', "Entity referenced by '{$entity->getName()}' has no valid type.", $t, $entity);
 					}
 				}
-			}
+			}*/
 			if ($entity instanceof Entity\Expr\Operator\Binary) {
 				$lt = $entity->getLHS()->analysis->type->inferred;
 				$rt = $entity->getRHS()->analysis->type->inferred;

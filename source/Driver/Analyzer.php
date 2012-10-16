@@ -9,9 +9,15 @@ class Analyzer
 {
 	protected $entityIDs;
 	
+	protected $initialTypeQueue;
+	protected $typeInferrenceQueue;
+	
 	public function __construct()
 	{
 		$this->entityIDs = array();
+		
+		$this->initialTypeQueue = array();
+		$this->typeInferrenceQueue = array();
 	}
 	
 	public function addEntityID($e) { $this->entityIDs[] = $e; }
@@ -26,39 +32,63 @@ class Analyzer
 		$issues = new IssueList;
 		$issues->push();
 		
-		while (count($this->entityIDs) && !$issues->isFatal())
+		//Move the entity IDs into the initial type analysis queue.
+		$this->initialTypeQueue = $this->entityIDs;
+		
+		//Enter the main loop which proceeds as long as there are entities to analyze.
+		while (!$issues->isFatal())
 		{
-			//Fetch the entity we're supposed to analyze.
-			$entityID = array_shift($this->entityIDs);
-			$entity = $entityStore->getEntity($entityID);
-			$entityStore->pushRootID($entityID);
-			echo "loaded ".vartype($entity)."\n";
+			//Initial type analysis.
+			if (count($this->initialTypeQueue)) {
+				$entityID = array_shift($this->initialTypeQueue);
+				$entity = $entityStore->getEntity($entityID);
+				$entityStore->pushRootID($entityID);
+				echo "analyzing initial type of ".vartype($entity)."\n";
+				
+				//Bind all identifiers within type expressions and calculate the initial types of the entities.
+				$this->bindIdentsInTypeExprs($entity);
+				if ($issues->isFatal()) break;
+				$this->evaluateTypeExprs($entity);
+				if ($issues->isFatal()) break;
+				$this->calculateInitialType($entity);
+				if ($issues->isFatal()) break;
+				
+				//Bind all identifiers that are left.
+				$this->bindIdents($entity);
+				if ($issues->isFatal()) break;
+				
+				//Queue this entity for type inferrence.
+				array_push($this->typeInferrenceQueue, $entityID);
+				
+				//Store the entity back to disk.
+				$entityStore->popRootID($entityID);
+				$entityStore->persistEntity($entityID);
+			}
 			
-			//Bind all identifiers within type expressions and calculate the initial types of the entities.
-			$this->bindIdentsInTypeExprs($entity);
-			if ($issues->isFatal()) break;
-			$this->evaluateTypeExprs($entity);
-			if ($issues->isFatal()) break;
-			$this->calculateInitialType($entity);
-			if ($issues->isFatal()) break;
+			//Type inferrence.
+			else if (count($this->typeInferrenceQueue)) {
+				$entityID = array_shift($this->typeInferrenceQueue);
+				$entity = $entityStore->getEntity($entityID);
+				$entityStore->pushRootID($entityID);
+				echo "inferring type of ".vartype($entity)."\n";
+				
+				//Don't spawn any constraints for now.
+				//Spawn type constraints for the entities.
+				//$this->spawnTypeConstraints($entity, $entity);
+				
+				//Calculate the required type.
+				//$this->calculateRequiredType($entity);
+				
+				//Calculate the inferred types.
+				$this->calculateInferredType($entity);
+				
+				//Store the entity back to disk.
+				$entityStore->popRootID($entityID);
+				$entityStore->persistEntity($entityID);
+			}
 			
-			//Bind all identifiers that are left.
-			$this->bindIdents($entity);
-			if ($issues->isFatal()) break;
-			
-			//Don't spawn any constraints for now.
-			//Spawn type constraints for the entities.
-			//$this->spawnTypeConstraints($entity, $entity);
-			
-			//Calculate the required type.
-			//$this->calculateRequiredType($entity);
-			
-			//Calculate the inferred types.
-			$this->calculateInferredType($entity);
-			
-			//Store the entity back to disk.
-			$entityStore->popRootID($entityID);
-			$entityStore->persistEntity($entityID);
+			//Nothing left to do.
+			else break;
 		}
 		
 		$issues->pop();

@@ -16,7 +16,7 @@ func main
 	v.y = 34;
 	
 	//Analyzer throws an error, since v.x is not yet of type int.
-	var shouldBeInt = v.x;
+	var int shouldBeInt = v.x;
 }
 
 type Vector

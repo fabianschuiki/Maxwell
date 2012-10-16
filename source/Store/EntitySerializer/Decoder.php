@@ -152,7 +152,7 @@ class Decoder
 					throw new \exception(vartype($entity)." does not support function $func as defined by {$scheme->tagName}.{$field->name}");
 				}
 				$value = $element->getAttribute($field->tag);
-				if ($value) {
+				if ($value !== null) {
 					if ($field->type == "&") {
 						$entity->$func($value);
 					} else {

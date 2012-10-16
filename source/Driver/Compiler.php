@@ -76,6 +76,10 @@ class Compiler
 			$compiler->setLocalName("struct ".$entity->getName());
 			$compiler->setName($entity->getName()."_t");
 		}
+		if ($entity instanceof Entity\Type\Member) {
+			$compiler = $entity->compiler;
+			$compiler->setName($entity->getName());
+		}
 	}
 	
 	private function calculateEntityTypes(Entity\Entity $entity)
@@ -98,6 +102,21 @@ class Compiler
 			}
 			else {
 				//throw new \exception("Type of ".vartype($entity)." cannot be compiled");
+			}
+		}
+		if ($entity instanceof Entity\Type\Member) {
+			$compiler = $entity->compiler;
+			$type = $entity->analysis->type->inferred;
+			if ($type instanceof \Type\Builtin) {
+				$compiler->type->setName($type->getName());
+				$compiler->type->setPointerLevel(0);
+			}
+			else if ($type instanceof \Type\Defined) {
+				$compiler->type->setName($type->getDefinition()->compiler->getName());
+				$compiler->type->setPointerLevel(1);
+			}
+			else {
+				throw new \exception("Type of ".vartype($entity)." cannot be compiled");
 			}
 		}
 	}
@@ -125,7 +144,13 @@ class Compiler
 			$structName = $entity->compiler->getLocalName();
 			$snippet->publicHeader = "typedef $structName {$entity->compiler->getName()};\n";
 			$snippet->privateHeader = "$structName;\n";
-			$snippet->stmts .= "$structName {\n};\n";
+			
+			$body = "";
+			foreach ($entity->getMembers() as $member) {
+				$body .= "\t{$member->compiler->type->getCType()} {$member->compiler->getName()};\n";
+			}
+			
+			$snippet->stmts .= "$structName {\n$body};\n";
 		}
 		
 		//Generate the header/source pair with the appropriate surroundings.

@@ -80,7 +80,7 @@ class Encoder
 					throw new \exception(vartype($entity)." does not support function $func as defined by {$scheme->tagName}.{$field->name}");
 				}
 				$value = $entity->$func();
-				if ($value) {
+				if ($value !== null) {
 					if ($field->type == "&") {
 						$element->setAttribute($field->tag, $value);
 					} else {

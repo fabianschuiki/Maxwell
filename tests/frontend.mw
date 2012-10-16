@@ -31,3 +31,7 @@ type Vector
 	var int x;
 	var int y;
 }
+
+func test (int a, int b) -> (int r)
+{
+}

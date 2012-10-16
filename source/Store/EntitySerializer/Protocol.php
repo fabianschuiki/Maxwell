@@ -18,6 +18,7 @@ class Protocol
 		//Statements
 		$this->register("Block", "block", array("@headScope", "*tailScope"));
 		$this->register('Stmt\Expr', "expr-stmt", array("@expr"));
+		$this->register('Stmt\IfStmt', "if", array("@condition", "@body", "@else"));
 		
 		//Expressions
 		$this->register('Expr\VarDef', "var", array("&name", "@type", "@initial", "@scope"));

@@ -1,7 +1,6 @@
 <?php
 namespace AST\Stmt;
 use Lexer\Token;
-use AST\Expr\Expr;
 use AST\Block;
 
 class IfStmt extends Keyword
@@ -10,7 +9,7 @@ class IfStmt extends Keyword
 	protected $body;
 	protected $else;
 	
-	public function __construct(Token $keyword, Expr $condition, Block $body, ElseStmt $else = null)
+	public function __construct(Token $keyword, \AST\Expr\Expr $condition, Block $body, ElseStmt $else = null)
 	{
 		parent::__construct();
 		$this->keyword = $keyword;

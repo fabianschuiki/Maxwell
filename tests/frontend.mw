@@ -17,6 +17,9 @@ func main
 	
 	//Analyzer throws an error, since v.x is not yet of type int.
 	var int shouldBeInt = v.x;
+	if (shouldBeInt == 9) {
+		v.y = x;
+	}
 }
 
 type Vector

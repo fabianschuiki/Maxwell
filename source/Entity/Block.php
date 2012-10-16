@@ -8,7 +8,7 @@ class Block extends Entity
 	{
 		$e = new self;
 		$e->generateID();
-		$e->setRange($block->getGroup()->getRange());
+		$e->setRange($block->getRange());
 		
 		$s = array();
 		foreach ($block->getStmts() as $stmt) {

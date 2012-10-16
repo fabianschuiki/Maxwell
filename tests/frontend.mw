@@ -19,6 +19,10 @@ func main
 	var int shouldBeInt = v.x;
 	if (shouldBeInt == 9) {
 		v.y = x;
+	} else if (x == 5) {
+		y = 9;
+	} else {
+		x = 125;
 	}
 }
 

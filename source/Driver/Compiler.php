@@ -194,7 +194,17 @@ class Compiler
 			$condition = $this->generateExprCode($stmt->getCondition());
 			$block = $this->generateBlockCode($stmt->getBody());
 			$snippet->stmts = $condition->stmts;
-			$snippet->stmts .= "if ({$condition->expr}) {\n".static::indent(trim($block->stmts))."\n}\n";
+			$snippet->stmts .= "if ({$condition->expr}) {\n".static::indent(trim($block->stmts))."\n}";
+			if ($else = $stmt->getElse()) {
+				$elseCode = $this->generateStmtCode($else);
+				$snippet->stmts .= " ".$elseCode->stmts;
+			} else {
+				$snippet->stmts .= "\n";
+			}
+		}
+		else if ($stmt instanceof Entity\Stmt\ElseStmt) {
+			$block = $this->generateBlockCode($stmt->getBody());
+			$snippet->stmts = "else {\n".static::indent(trim($block->stmts))."\n}\n";
 		}
 		else {
 			throw new \exception("Unable to generate statement code for ".vartype($stmt));

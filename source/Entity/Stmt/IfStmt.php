@@ -9,11 +9,11 @@ class IfStmt extends Stmt
 		$e = new self;
 		$e->generateID();
 		$e->setRange($stmt->getRange());
-		$e->setHumanRange($stmt->getCondition()->getRange());
+		$e->setHumanRange(\Source\Range::union($stmt->getKeyword()->getRange(), $stmt->getCondition()->getRange()));
 		
 		$e->setCondition(\Entity\Expr\Expr::makeFromSyntaxNode($stmt->getCondition()));
 		$e->setBody(\Entity\Block::makeFromSyntaxNode($stmt->getBody()));
-		if ($else = $e->getElse()) $e->setElse(\Entity\Stmt\ElseStmt::makeFromSyntaxNode($else));
+		if ($else = $stmt->getElse()) $e->setElse(\Entity\Stmt\ElseStmt::makeFromSyntaxNode($else));
 		
 		return $e;
 	}

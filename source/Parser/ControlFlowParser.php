@@ -41,6 +41,6 @@ class ControlFlowParser
 		}
 		$body = StatementParser::parseBlockOrStmt($tokens);
 		if (!$body) return null;
-		return null;
+		return new AST\Stmt\ElseStmt($keyword, $body);
 	}
 }

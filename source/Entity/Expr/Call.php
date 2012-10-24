@@ -35,5 +35,5 @@ class Call extends Expr
 		$this->setScope($scope);
 	}
 	
-	public function getChildEntities() { return array($callee, $args); }
+	public function getChildEntities() { return array($this->callee, $this->args); }
 }

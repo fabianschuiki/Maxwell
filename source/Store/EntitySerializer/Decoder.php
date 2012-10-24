@@ -240,12 +240,28 @@ class Decoder
 		$args = array();
 		foreach ($element->getElements() as $arg) {
 			if ($arg->getName() != "arg") {
-				throw new \exception("Only 'arg' tags are supported within a block");
+				throw new \exception("Only 'arg' tags are supported within a function argument tuple.");
 			}
 			if ($id = $arg->getAttribute("id")) {
 				$args[] = $this->findEntity($id);
 			} else {
-				throw new \exception("Function argument in tuple has no ID");
+				throw new \exception("Function argument in tuple has no ID.");
+			}
+		}
+		$entity->setArgs($args);
+	}
+	
+	protected function decodeEntityExprCallTuple(\Entity\Expr\Call\Tuple $entity, Coder\Element $element)
+	{
+		$args = array();
+		foreach ($element->getElements() as $arg) {
+			if ($arg->getName() != "arg") {
+				throw new \exception("Only 'arg' tags are supported within a call argument tuple.");
+			}
+			if ($id = $arg->getAttribute("id")) {
+				$args[] = $this->findEntity($id);
+			} else {
+				throw new \exception("Call argument in tuple has no ID.");
 			}
 		}
 		$entity->setArgs($args);

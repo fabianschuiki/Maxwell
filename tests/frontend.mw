@@ -24,6 +24,9 @@ func main
 	} else {
 		x = 125;
 	}
+	
+	//Test function call.
+	var res = test(1, 2);
 }
 
 type Vector

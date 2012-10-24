@@ -197,4 +197,13 @@ class Encoder
 			$e->setAttribute('id', $arg->getID());
 		}
 	}
+	
+	protected function encodeEntityExprCallTuple(\Entity\Expr\Call\Tuple $entity, Coder\Element $element)
+	{
+		foreach ($entity->getArgs() as $arg) {
+			$this->encodeEntity($arg);
+			$e = $element->makeElement('arg');
+			$e->setAttribute('id', $arg->getID());
+		}
+	}
 }

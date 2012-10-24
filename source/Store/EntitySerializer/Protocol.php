@@ -31,6 +31,9 @@ class Protocol
 		$this->register('Expr\Operator\Binary', "binary-op", array("&operator", "@LHS", "@RHS"));
 		$this->register('Expr\NewOp', "new", array("@type"));
 		$this->register('Expr\MemberAccess', "member-access", array("@expr", "&name"));
+		$this->register('Expr\Call', "call", array("@callee", "@args"));
+		$this->register('Expr\Call\Tuple', "call-tuple");
+		$this->register('Expr\Call\Argument', "call-arg", array("@expr", "&name"));
 		
 		//Scope
 		$this->register('Scope\Scope', "scope", array("*upper", "*outer"));

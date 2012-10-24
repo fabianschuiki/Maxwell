@@ -14,4 +14,7 @@ class Call extends Expr
 		$this->callee = $callee;
 		$this->args = $args;
 	}
+	
+	public function getCallee() { return $this->callee; }
+	public function getArgs() { return $this->args; }
 }

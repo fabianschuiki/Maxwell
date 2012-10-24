@@ -25,14 +25,10 @@ class Call extends Expr
 	public function getArgs() { return $this->args; }
 	
 	
-	protected $scope;
-	
-	public function setScope(Scope $s) { $this->scope = $s; }
-	public function getScope() { return $this->scope; }
-	
 	public function initScope(Scope &$scope)
 	{
-		$this->setScope($scope);
+		$this->callee->initScope($scope);
+		$this->args->initScope($scope);
 	}
 	
 	public function getChildEntities() { return array($this->callee, $this->args); }

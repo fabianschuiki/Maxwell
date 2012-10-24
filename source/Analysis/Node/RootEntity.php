@@ -6,7 +6,7 @@ class RootEntity extends Node
 {
 	public $constraints;
 	
-	public function __construct(\Entity\Entity $entity)
+	public function __construct(\Entity\RootEntity $entity)
 	{
 		parent::__construct($entity);
 		$this->constraints = new \Analysis\ConstraintSet;

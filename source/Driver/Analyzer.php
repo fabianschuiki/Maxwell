@@ -294,6 +294,10 @@ class Analyzer
 			if ($entity instanceof Entity\Expr\Type) {
 				$entity->analysis->type->initial = \Type\Builtin::makeWithName("Type");
 			}
+			
+			if ($entity instanceof Entity\FunctionDefinition) {
+				$entity->analysis->type->initial = \Type\Func::makeWithArgs(\Type\Generic::make(), \Type\Generic::make());
+			}
 		}
 	}
 	

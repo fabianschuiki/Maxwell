@@ -33,6 +33,7 @@ class DebugHTML
 		if ($type instanceof \Type\Generic) return "*";
 		if ($type instanceof \Type\Builtin) return "builtin {$type->getName()}";
 		if ($type instanceof \Type\Defined) return $type->getDefinition()->getName();
+		if ($type instanceof \Type\Func)    return static::typeInfo($type->getInput())." -> ".static::typeInfo($type->getOutput());
 		throw new \exception("unable to generate type info for ".vartype($type));
 	}
 	

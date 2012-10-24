@@ -162,6 +162,11 @@ class Encoder
 			$e = $element->makeElement("type-defined");
 			$e->setAttribute('definition', $type->getDefinition()->getID());
 		}
+		if ($type instanceof \Type\Func) {
+			$e = $element->makeElement("type-func");
+			$this->encodeAnalysisTypeType($type->getInput(),  $e)->setAttribute('rel', "input");
+			$this->encodeAnalysisTypeType($type->getOutput(), $e)->setAttribute('rel', "output");
+		}
 		
 		if (!$e) throw new \exception("Unable to encode type ".vartype($type));
 		return $e;

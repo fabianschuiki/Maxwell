@@ -2,7 +2,7 @@
 namespace Type;
 
 /** Function type that represents a mapping from one type to another. */
-class Function extends Type
+class Func extends Type
 {
 	static public function makeWithArgs(Type $input, Type $output)
 	{

@@ -17,5 +17,10 @@ class Callee extends \Entity\Entity
 	public function setExpr(\Entity\Expr\Expr $e) { $this->expr = $e; }
 	public function getExpr() { return $this->expr; }
 	
+	public function initScope(\Entity\Scope\Scope $scope)
+	{
+		$this->expr->initScope($scope);
+	}
+	
 	public function getChildEntities() { return array(); }
 }

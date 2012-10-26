@@ -89,6 +89,17 @@ class DebugHTML
 						$info .= "<div>Inferred: ".static::typeInfo($entity->analysis->type->inferred)."</div>";
 						//$info .= "<div>Required: ".static::typeInfo($entity->analysis->type->required)."</div>";
 					}
+					if ($entity->analysis instanceof \Analysis\Node\Call\Callee) {
+						$info .= "<h1>Candidates</h1>\n";
+						$c = $entity->analysis->getCandidates();
+						if (count($c)) {
+							foreach ($c as $candidate) {
+								$info .= "<div>".static::entityInfo($candidate)."</div>";
+							}
+						} else {
+							$info .= "<div><em>no candidates</em></div>";
+						}
+					}
 					if (isset($entity->compiler)) {
 						$info .= "<h1>Compiler</h1>\n";
 						$compiler = $entity->compiler;

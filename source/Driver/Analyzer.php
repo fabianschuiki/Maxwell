@@ -45,11 +45,19 @@ class Analyzer
 				$entityStore->pushRootID($entityID);
 				echo "analyzing initial type of ".vartype($entity)."\n";
 				
-				//Bind all identifiers and calculate the initial types of the entities.
+				//Bind all identifiers.
 				$this->bindIdents($entity);
 				if ($issues->isFatal()) break;
+				
+				//Assemble a list of candidates for callees.
+				$this->bindCalleeCandidates($entity);
+				if ($issues->isFatal()) break;
+				
+				//Evaluate type expressions to actual types.
 				$this->evaluateTypeExprs($entity);
 				if ($issues->isFatal()) break;
+				
+				//Calculate the initial types of the entities.
 				$this->calculateInitialType($entity);
 				if ($issues->isFatal()) break;
 				
@@ -178,6 +186,58 @@ class Analyzer
 			foreach ($entity->getChildEntities() as $e)
 				$this->bindIdentsInTypeExprs($e);
 		}	
+	}
+	
+	/** Assembles a list of possible functions to be called for all callee objects. */
+	public function bindCalleeCandidates(Entity\Entity $entity)
+	{
+		if ($entity instanceof Entity\Expr\Call\Callee) {
+			$expr = $entity->getExpr();
+			$scope = null;
+			$name  = null;
+			if ($expr instanceof Entity\Expr\Identifier) {
+				$scope = $expr->getScope();
+				$name  = $expr->getName();
+			} else {
+				IssueList::add('error', "Expression is not a function that can be called.", $expr);
+				return;
+			}
+			
+			//Search the scope for functions that match this name.
+			$results = array();
+			while ($scope) {
+				if ($scope instanceof Entity\Scope\ScopeDeclaration) {
+					if ($scope->getDeclares()->getName() == $name) {
+						$results[] = $scope->getDeclares();
+					}
+				}
+				if ($scope instanceof Entity\Scope\ScopeRoot) {
+					foreach ($scope->getRootEntity()->getKnownEntities() as $e) {
+						if ($e->getName() == $name) {
+							$results[] = $e;
+						}
+					}
+				}
+				
+				//Jump to the previous scope, or the outer scope if we're at the beginning.
+				if ($s = $scope->getUpper())
+					$scope = $s;
+				else
+					$scope = $scope->getOuter();
+			}
+			
+			//Remove all the non-function results, as they are not relevant.
+			$results = array_filter($results, function($f) { return $f instanceof Entity\FunctionDefinition; });
+			
+			if (count($results)) {
+				$entity->analysis->setCandidates($results);
+			} else {
+				IssueList::add('error', "No function called '$name' exists.", $expr);
+			}
+		} else {
+			foreach ($entity->getChildEntities() as $e)
+				$this->bindCalleeCandidates($e);
+		}
 	}
 	
 	public function evaluateTypeExprs(Entity\Entity $entity)

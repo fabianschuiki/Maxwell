@@ -17,7 +17,7 @@ func main
 	
 	//Analyzer throws an error, since v.x is not yet of type int.
 	var int shouldBeInt = v.x;
-	if (shouldBeInt == 9) {
+	if (shouldBeInt == test(1,2)) {
 		v.y = x;
 	} else if (x == 5) {
 		y = 9;

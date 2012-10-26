@@ -13,6 +13,8 @@ class Node
 		else if ($e instanceof \Entity\RootEntity) return new RootEntity($e);
 		else if ($e instanceof \Entity\Func\Tuple) return new Func\Tuple($e);
 		else if ($e instanceof \Entity\Func\Argument) return new Func\Argument($e);
+		else if ($e instanceof \Entity\Expr\Call\Tuple) return new Call\Tuple($e);
+		else if ($e instanceof \Entity\Expr\Call\Argument) return new Call\Argument($e);
 		else if ($e instanceof \Entity\Expr\Call\Callee) return new Call\Callee($e);
 		
 		return null;

@@ -10,9 +10,23 @@ class Type
 			return ($a->getName() == $b->getName());
 		}
 		if ($a instanceof Defined && $b instanceof Defined) {
-			return ($a->getTypeDef()->getID() == $b->getTypeDef()->getID());
+			return ($a->getDefinition()->getID() == $b->getDefinition()->getID());
 		}
 		if ($a instanceof Generic && $b instanceof Generic) {
+			return true;
+		}
+		if ($a instanceof Func && $b instanceof Func) {
+			return static::equal($a->getInputArgs(), $b->getInputArgs()) && static::equal($a->getOutputArgs(), $b->getOutputArgs());
+		}
+		if ($a instanceof Tuple && $b instanceof Tuple) {
+			$fa = $a->getFields();
+			$fb = $b->getFields();
+			$n = count($fa);
+			if (count($fb) != $n) return false;
+			for ($i = 0; $i < $n; $i++) {
+				if (!static::equal($fa[$i], $fb[$i]))
+					return false;
+			}
 			return true;
 		}
 		return false;

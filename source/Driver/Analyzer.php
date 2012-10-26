@@ -86,6 +86,9 @@ class Analyzer
 				//Calculate the inferred types.
 				$this->calculateInferredType($entity);
 				
+				//Choose one of the function candidates for each call.
+				$this->chooseCallCandidate($entity);
+				
 				//Store the entity back to disk.
 				$entityStore->popRootID($entityID);
 				$entityStore->persistEntity($entityID);
@@ -469,6 +472,48 @@ class Analyzer
 			if ($entity instanceof Entity\Expr\Call) {
 				//implement stuff here...
 			}
+			if ($entity instanceof Entity\Expr\Call\Argument) {
+				$t = $entity->getExpr()->analysis->type->inferred;
+				if ($t) {
+					$entity->analysis->type->inferred = $t;
+				} else {
+					IssueList::add('error', "Type of call argument cannot be infered.", $entity);
+				}
+			}
+			if ($entity instanceof Entity\Expr\Call\Tuple) {
+				$fields = array();
+				foreach ($entity->getArgs() as $arg) {
+					$fields[] = $arg->analysis->type->inferred;
+				}
+				$entity->analysis->type->inferred = \Type\Tuple::makeWithFields($fields);
+			}
+		}
+	}
+	
+	public function chooseCallCandidate(Entity\Entity $entity)
+	{
+		if ($entity instanceof Entity\Expr\Call) {
+			$type = $entity->getArgs()->analysis->type->inferred;
+			$candidates = array_filter($entity->getCallee()->analysis->getCandidates(), function($c) use ($type) {
+				return \Type\Type::equal($c->analysis->type->initial->getInput(), $type);
+			});
+			
+			if (count($candidates) == 1) {
+				$analysis = $entity->getCallee()->analysis;
+				$candidate = array_pop($candidates);
+				$analysis->binding->target = $candidate;
+				$analysis->type->inferred = $candidate->analysis->type->initial;
+				$entity->analysis->type->inferred = $analysis->type->inferred->getOutput();
+			}
+			else if (count($candidates) > 1) {
+				IssueList::add('error', "Multiple functions match type {$type->toHumanReadableString()} of the call.", $entity, $candidates);
+			}
+			else {
+				IssueList::add('error', "Call requires function to be of type {$type->toHumanReadableString()}, but none of the candidate functions is of this type.", $entity, $entity->getCallee()->analysis->getCandidates());
+			}
+		} else {
+			foreach ($entity->getChildEntities() as $e)
+				$this->chooseCallCandidate($e);
 		}
 	}
 }

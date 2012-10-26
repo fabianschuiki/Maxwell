@@ -26,7 +26,7 @@ func main
 	}
 	
 	//Test function call.
-	//var int r0 = test(test(1,2),3);
+	var int r0 = test(test(1,2),3);
 	var int r1 = test(v, 1.0);
 }
 

@@ -83,11 +83,11 @@ class Analyzer
 				//Calculate the required type.
 				//$this->calculateRequiredType($entity);
 				
+				//Choose one of the function candidates for each call.
+				//$this->chooseCallCandidate($entity);
+				
 				//Calculate the inferred types.
 				$this->calculateInferredType($entity);
-				
-				//Choose one of the function candidates for each call.
-				$this->chooseCallCandidate($entity);
 				
 				//Store the entity back to disk.
 				$entityStore->popRootID($entityID);
@@ -381,7 +381,16 @@ class Analyzer
 			}
 			
 			if ($entity instanceof Entity\FunctionDefinition) {
-				$entity->analysis->type->initial = \Type\Func::makeWithArgs($entity->getInputArgs()->analysis->type->initial, $entity->getOutputArgs()->analysis->type->initial);
+				$output = $entity->getOutputArgs()->analysis->type->initial;
+				if ($output instanceof \Type\Tuple) {
+					$fields = $output->getFields();
+					if (count($fields) == 1) {
+						$output = array_pop($fields);
+					} else if (count($fields) > 1) {
+						IssueList::add('error', "Only one return value allowed at the moment.", $entity->getOutputArgs());
+					}
+				}
+				$entity->analysis->type->initial = \Type\Func::makeWithArgs($entity->getInputArgs()->analysis->type->initial, $output);
 			}
 		}
 	}
@@ -471,6 +480,7 @@ class Analyzer
 			}
 			if ($entity instanceof Entity\Expr\Call) {
 				//implement stuff here...
+				$this->chooseCallCandidate($entity);
 			}
 			if ($entity instanceof Entity\Expr\Call\Argument) {
 				$t = $entity->getExpr()->analysis->type->inferred;
@@ -494,6 +504,9 @@ class Analyzer
 	{
 		if ($entity instanceof Entity\Expr\Call) {
 			$type = $entity->getArgs()->analysis->type->inferred;
+			if (!$type) {
+				throw new \exception("Argument tuple inferred type is null.");
+			}
 			$candidates = array_filter($entity->getCallee()->analysis->getCandidates(), function($c) use ($type) {
 				return \Type\Type::equal($c->analysis->type->initial->getInput(), $type);
 			});

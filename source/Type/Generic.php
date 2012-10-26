@@ -7,7 +7,7 @@ class Generic extends Type
 	static public function make()
 	{
 		$t = new self;
-		$t->generateId();
+		//$t->generateId();
 		return $t;
 	}
 }

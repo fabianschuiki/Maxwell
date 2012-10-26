@@ -6,7 +6,7 @@ class Defined extends Type
 	static public function makeWithDefinition(\Entity\TypeDefinition $d)
 	{
 		$b = new self;
-		$b->generateId();
+		//$b->generateId();
 		$b->setDefinition($d);
 		return $b;
 	}

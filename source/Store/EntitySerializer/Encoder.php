@@ -167,6 +167,12 @@ class Encoder
 			$this->encodeAnalysisTypeType($type->getInput(),  $e)->setAttribute('rel', "input");
 			$this->encodeAnalysisTypeType($type->getOutput(), $e)->setAttribute('rel', "output");
 		}
+		if ($type instanceof \Type\Tuple) {
+			$e = $element->makeElement("type-tuple");
+			foreach ($type->getFields() as $field) {
+				$this->encodeAnalysisTypeType($field, $e);
+			}
+		}
 		
 		if (!$e) throw new \exception("Unable to encode type ".vartype($type));
 		return $e;

@@ -7,7 +7,7 @@ class Func extends Type
 	static public function makeWithArgs(Type $input, Type $output)
 	{
 		$t = new self;
-		$t->generateId();
+		//$t->generateId();
 		$t->setInput($input);
 		$t->setOutput($output);
 		return $t;

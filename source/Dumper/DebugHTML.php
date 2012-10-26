@@ -34,6 +34,7 @@ class DebugHTML
 		if ($type instanceof \Type\Builtin) return "builtin {$type->getName()}";
 		if ($type instanceof \Type\Defined) return $type->getDefinition()->getName();
 		if ($type instanceof \Type\Func)    return static::typeInfo($type->getInput())." -> ".static::typeInfo($type->getOutput());
+		return $type->toHumanReadableString();
 		throw new \exception("unable to generate type info for ".vartype($type));
 	}
 	
@@ -79,8 +80,8 @@ class DebugHTML
 					if (isset($entity->analysis->binding)) {
 						$info .= "<h1>Binding</h1>\n";
 						$t = $entity->analysis->binding->target;
-						$info .= "<div>Target: ".static::entityInfo($t)."</div>\n";
-						if ($t) $attrs .= " data-bindingTarget=\"".static::idify($t)."\"";
+						$info .= "<div>Target: ".($t instanceof \Type\Type ? static::typeInfo($t) : static::entityInfo($t))."</div>\n";
+						if ($t instanceof \Entity\Node) $attrs .= " data-bindingTarget=\"".static::idify($t)."\"";
 					}
 					if (isset($entity->analysis->type)) {
 						$info .= "<h1>Type</h1>\n";

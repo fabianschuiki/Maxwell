@@ -251,6 +251,14 @@ class Analyzer
 				}
 			}
 			
+			if ($entity instanceof Entity\Func\Tuple) {
+				$fields = array();
+				foreach ($entity->getArgs() as $arg) {
+					$fields[] = $arg->analysis->type->initial;
+				}
+				$entity->analysis->type->initial = \Type\Tuple::makeWithFields($fields);
+			}
+			
 			if ($entity instanceof Entity\Type\Member) {
 				$t = $entity->getType();
 				if ($t) {
@@ -310,7 +318,7 @@ class Analyzer
 			}
 			
 			if ($entity instanceof Entity\FunctionDefinition) {
-				$entity->analysis->type->initial = \Type\Func::makeWithArgs(\Type\Generic::make(), \Type\Generic::make());
+				$entity->analysis->type->initial = \Type\Func::makeWithArgs($entity->getInputArgs()->analysis->type->initial, $entity->getOutputArgs()->analysis->type->initial);
 			}
 		}
 	}
@@ -386,6 +394,16 @@ class Analyzer
 					}
 				} else {
 					IssueList::add('error', "Only user-defined types have accessible members.", $entity);
+				}
+			}
+			if ($entity instanceof Entity\Expr\Identifier) {
+				$target = $entity->analysis->binding->target;
+				if ($target instanceof \Entity\FunctionDefinition) {
+					if ($target->analysis->type->initial) {
+						$entity->analysis->type->inferred = $target->analysis->type->initial;
+					} else {
+						IssueList::add('error', "Function referenced by '{$entity->getName()}' has no valid type.", $target, $entity);
+					}
 				}
 			}
 		}

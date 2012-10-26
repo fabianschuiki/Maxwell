@@ -34,6 +34,7 @@ class Protocol
 		$this->register('Expr\Call', "call", array("@callee", "@args"));
 		$this->register('Expr\Call\Tuple', "call-tuple");
 		$this->register('Expr\Call\Argument', "call-arg", array("@expr", "&name"));
+		$this->register('Expr\Call\Callee', "call-callee", array("@expr"));
 		
 		//Scope
 		$this->register('Scope\Scope', "scope", array("*upper", "*outer"));

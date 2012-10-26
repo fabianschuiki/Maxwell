@@ -187,7 +187,7 @@ class Decoder
 					$rel = $e->getAttribute('rel');
 					if ($rel == "initial")  $analysis->type->initial  = $type;
 					if ($rel == "inferred") $analysis->type->inferred = $type;
-					if ($rel == "required") $analysis->type->required = $type;
+					//if ($rel == "required") $analysis->type->required = $type;
 				}
 			} break;
 		}

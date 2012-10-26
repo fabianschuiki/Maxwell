@@ -10,14 +10,14 @@ class Analyzer
 	protected $entityIDs;
 	
 	protected $initialTypeQueue;
-	protected $typeInferrenceQueue;
+	protected $typeInferenceQueue;
 	
 	public function __construct()
 	{
 		$this->entityIDs = array();
 		
 		$this->initialTypeQueue = array();
-		$this->typeInferrenceQueue = array();
+		$this->typeInferenceQueue = array();
 	}
 	
 	public function addEntityID($e) { $this->entityIDs[] = $e; }
@@ -53,17 +53,17 @@ class Analyzer
 				$this->calculateInitialType($entity);
 				if ($issues->isFatal()) break;
 				
-				//Queue this entity for type inferrence.
-				array_push($this->typeInferrenceQueue, $entityID);
+				//Queue this entity for type inference.
+				array_push($this->typeInferenceQueue, $entityID);
 				
 				//Store the entity back to disk.
 				$entityStore->popRootID($entityID);
 				$entityStore->persistEntity($entityID);
 			}
 			
-			//Type inferrence.
-			else if (count($this->typeInferrenceQueue)) {
-				$entityID = array_shift($this->typeInferrenceQueue);
+			//Type inference.
+			else if (count($this->typeInferenceQueue)) {
+				$entityID = array_shift($this->typeInferenceQueue);
 				$entity = $entityStore->getEntity($entityID);
 				$entityStore->pushRootID($entityID);
 				echo "inferring type of ".vartype($entity)."\n";
@@ -405,6 +405,9 @@ class Analyzer
 						IssueList::add('error', "Function referenced by '{$entity->getName()}' has no valid type.", $target, $entity);
 					}
 				}
+			}
+			if ($entity instanceof Entity\Expr\Call) {
+				//implement stuff here...
 			}
 		}
 	}

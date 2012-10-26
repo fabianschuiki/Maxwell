@@ -39,6 +39,10 @@ func test (int a, int b) -> (int r)
 {
 }
 
+func test (Vector a, float b) -> (float r)
+{
+}
+
 func lengthSquared (Vector v) -> (int l)
 {
 	//l = v.x*v.x + v.y*v.y

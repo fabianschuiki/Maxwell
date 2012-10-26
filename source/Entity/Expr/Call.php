@@ -10,7 +10,7 @@ class Call extends Expr
 		$e = new self;
 		$e->generateID();
 		$e->setRange($call->getRange());
-		$e->setCallee(Expr::makeFromSyntaxNode($call->getCallee()));
+		$e->setCallee(Call\Callee::makeFromSyntaxNode($call->getCallee()));
 		$e->setArgs(Call\Tuple::makeFromSyntaxNodes($call->getArgs()));
 		return $e;
 	}
@@ -18,7 +18,7 @@ class Call extends Expr
 	protected $callee;
 	protected $args;
 	
-	public function setCallee(Expr $c) { $this->callee = $c; }
+	public function setCallee(Call\Callee $c) { $this->callee = $c; }
 	public function getCallee() { return $this->callee; }
 	
 	public function setArgs(Call\Tuple $a) { $this->args = $a; }

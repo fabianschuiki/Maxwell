@@ -87,7 +87,7 @@ class DebugHTML
 						$info .= "<h1>Type</h1>\n";
 						$info .= "<div>Initial: ".static::typeInfo($entity->analysis->type->initial)."</div>";
 						$info .= "<div>Inferred: ".static::typeInfo($entity->analysis->type->inferred)."</div>";
-						$info .= "<div>Required: ".static::typeInfo($entity->analysis->type->required)."</div>";
+						//$info .= "<div>Required: ".static::typeInfo($entity->analysis->type->required)."</div>";
 					}
 					if (isset($entity->compiler)) {
 						$info .= "<h1>Compiler</h1>\n";

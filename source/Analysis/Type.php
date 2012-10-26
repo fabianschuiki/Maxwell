@@ -9,7 +9,4 @@ class Type
 	
 	/** The calculated type, based on the initial type and imposed constraints. */
 	public $inferred;
-	
-	/** The type requirement as imposed by outer entities. */
-	public $required;
 }

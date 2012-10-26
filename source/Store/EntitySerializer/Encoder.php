@@ -26,12 +26,12 @@ class Encoder
 		
 		//Keep track of the known entities as well as the entity's siblings.
 		foreach ($rootEntity->getSiblingEntities() as $sibling) {
-			if ($sibling == $rootEntity) continue;
+			if ($sibling === $rootEntity) continue;
 			$e = $this->root->makeElement('sibling');
 			$e->setAttribute('id', $sibling->getID());
 		}
 		foreach ($rootEntity->getKnownEntities() as $known) {
-			if ($known == $rootEntity) continue;
+			if ($known === $rootEntity) continue;
 			$e = $this->root->makeElement('known');
 			$e->setAttribute('id', $known->getID());
 		}
@@ -145,7 +145,7 @@ class Encoder
 	{
 		if ($i = $type->initial)  $this->encodeAnalysisTypeType($i, $element)->setAttribute('rel', 'initial');
 		if ($i = $type->inferred) $this->encodeAnalysisTypeType($i, $element)->setAttribute('rel', 'inferred');
-		if ($i = $type->required) $this->encodeAnalysisTypeType($i, $element)->setAttribute('rel', 'required');
+		//if ($i = $type->required) $this->encodeAnalysisTypeType($i, $element)->setAttribute('rel', 'required');
 	}
 	
 	protected function encodeAnalysisTypeType(\Type\Type $type, Coder\Element $element)

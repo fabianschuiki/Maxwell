@@ -80,6 +80,10 @@ class Compiler
 			$compiler = $entity->compiler;
 			$compiler->setName($entity->getName());
 		}
+		if ($entity instanceof Entity\FunctionDefinition) {
+			$compiler = $entity->compiler;
+			$compiler->setName($entity->getName());
+		}
 	}
 	
 	private function calculateEntityTypes(Entity\Entity $entity)
@@ -133,6 +137,13 @@ class Compiler
 			$declaration = "void ";
 			$declaration .= $entity->getName();
 			$declaration .= "(";
+			
+			$args = array();
+			foreach ($entity->getInputArgs()->getArgs() as $arg) {
+				$args[] = "{$arg->compiler->type->getCType()} {$arg->compiler->getName()}";
+			}
+			$declaration .= implode(", ", $args);
+			
 			$declaration .= ")";
 			
 			$block = $this->generateBlockCode($entity->getBody());
@@ -249,6 +260,37 @@ class Compiler
 		}
 		else if ($expr instanceof Entity\Expr\NewOp) {
 			$snippet->expr = "malloc(sizeof *({$expr->compiler->type->getCType()}))";
+			$snippet->exprRequired = true;
+		}
+		else if ($expr instanceof Entity\Expr\Call) {
+			if (!$expr->getCallee() instanceof Entity\Expr\Identifier) {
+				throw new \exception("Only identifier callees can be compiled for now.");
+			}
+			$func = $expr->getCallee()->analysis->binding->target;
+			$name = $func->compiler->getName();
+			$args = array();
+			foreach ($func->getInputArgs()->getArgs() as $i => $arg) {
+				echo "- processing input arg {$arg->getName()}\n";
+				$callArg = null;
+				foreach ($expr->getArgs()->getArgs() as $a) {
+					if ($a->getName() == $arg->getName()) {
+						$callArg = $a;
+						break;
+					}
+				}
+				if (!$callArg) {
+					$callArgs = $expr->getArgs()->getArgs();
+					if ($i < count($callArgs)) {
+						$callArg = $callArgs[$i];
+					} else {
+						IssueList::add('error', "Function call is lacking argument '{$arg->getName()}'.", $expr, $arg);
+					}
+				}
+				$as = $this->generateExprCode($callArg->getExpr());
+				$snippet->stmts .= $as->stmts;
+				$args[] = $as->expr;
+			}
+			$snippet->expr = "$name(".implode(", ", $args).")";
 			$snippet->exprRequired = true;
 		}
 		else {

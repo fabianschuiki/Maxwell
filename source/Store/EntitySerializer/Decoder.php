@@ -199,6 +199,20 @@ class Decoder
 			case "type-builtin": return \Type\Builtin::makeWithName($element->getAttribute('name')); break;
 			case "type-generic": return \Type\Generic::make(); break;
 			case "type-defined": return \Type\Defined::makeWithDefinition($this->findEntity($element->getAttribute('definition'))); break;
+			case "type-func": {
+				$input  = null;
+				$output = null;
+				foreach ($element->getElements() as $member) {
+					switch ($member->getAttribute("rel")) {
+						case "input":  $input  = $this->decodeAnalysisType($member); break;
+						case "output": $output = $this->decodeAnalysisType($member); break;
+						default: {
+							throw new \exception("Only types with relation ('rel') 'input' or 'output' supported within an analysis type");
+						}
+					}
+				}
+				return \Type\Func::makeWithArgs($input, $output);
+			} break;
 		}
 		throw new \exception("Unable to decode type \"{$element->getName()}\"");
 	}

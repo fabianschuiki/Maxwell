@@ -10,6 +10,7 @@ class Node
 		if ($entity instanceof \Entity\Expr\VarDef) return new VarDef($entity);
 		if ($entity instanceof \Entity\Expr\Expr) return new Expr($entity);
 		if ($entity instanceof \Entity\Type\Member) return new Member($entity);
+		if ($entity instanceof \Entity\Func\Argument) return new FuncArgument($entity);
 		throw new \exception("Unable to make compiler node for ".vartype($entity));
 	}
 	

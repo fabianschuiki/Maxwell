@@ -38,3 +38,8 @@ type Vector
 func test (int a, int b) -> (int r)
 {
 }
+
+func lengthSquared (Vector v) -> (int l)
+{
+	//l = v.x*v.x + v.y*v.y
+}

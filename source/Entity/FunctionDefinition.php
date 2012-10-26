@@ -59,6 +59,8 @@ class FunctionDefinition extends RootEntity
 		}
 		$s->generateID();
 		$this->setScope($s);
+		$this->inputArgs->initScope($s);
+		$this->outputArgs->initScope($s);
 		$this->body->initScope($s);
 	}
 	

@@ -27,5 +27,12 @@ class Tuple extends Entity
 	public function setArgs(array $a) { $this->args = $a; }
 	public function getArgs() { return $this->args; }
 	
+	public function initScope(\Entity\Scope\Scope $scope)
+	{
+		foreach ($this->args as $arg) {
+			$arg->initScope($scope);
+		}
+	}
+	
 	public function getChildEntities() { return $this->args; }
 }

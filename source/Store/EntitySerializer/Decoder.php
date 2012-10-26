@@ -213,6 +213,13 @@ class Decoder
 				}
 				return \Type\Func::makeWithArgs($input, $output);
 			} break;
+			case "type-tuple": {
+				$fields = array();
+				foreach ($element->getElements() as $field) {
+					$fields[] = $this->decodeAnalysisType($field);
+				}
+				return \Type\Tuple::makeWithFields($fields);
+			} break;
 		}
 		throw new \exception("Unable to decode type \"{$element->getName()}\"");
 	}

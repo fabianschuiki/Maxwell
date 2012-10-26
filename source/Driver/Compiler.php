@@ -82,7 +82,7 @@ class Compiler
 		}
 		if ($entity instanceof Entity\FunctionDefinition) {
 			$compiler = $entity->compiler;
-			$compiler->setName($entity->getName());
+			$compiler->setName($entity->getName()."_".$entity->getID());
 		}
 		if ($entity instanceof Entity\Func\Argument) {
 			$entity->compiler->setName($entity->getName());
@@ -146,7 +146,7 @@ class Compiler
 			} else {
 				$declaration = $output[0]->compiler->type->getCType()." ";
 			}
-			$declaration .= $entity->getName();
+			$declaration .= $entity->compiler->getName();
 			$declaration .= "(";
 			
 			$args = array();
@@ -288,7 +288,6 @@ class Compiler
 			$name = $func->compiler->getName();
 			$args = array();
 			foreach ($func->getInputArgs()->getArgs() as $i => $arg) {
-				echo "- processing input arg {$arg->getName()}\n";
 				$callArg = null;
 				foreach ($expr->getArgs()->getArgs() as $a) {
 					if ($a->getName() == $arg->getName()) {

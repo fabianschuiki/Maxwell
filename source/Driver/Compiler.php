@@ -160,7 +160,15 @@ class Compiler
 			$block = $this->generateBlockCode($entity->getBody());
 			
 			$snippet->publicHeader .= "$declaration;\n";
-			$snippet->stmts .= "$declaration\n{\n".static::indent(trim($block->stmts))."\n}\n";
+			$snippet->stmts .= "$declaration\n{\n";
+			foreach ($entity->getOutputArgs()->getArgs() as $arg) {
+				$snippet->stmts .= "\t{$arg->compiler->type->getCType()} {$arg->compiler->getName()};\n";
+			}
+			$snippet->stmts .= static::indent(trim($block->stmts));
+			foreach ($entity->getOutputArgs()->getArgs() as $arg) {
+				$snippet->stmts .= "\n\treturn {$arg->compiler->getName()};";
+			}
+			$snippet->stmts .= "\n}\n";
 		}
 		if ($entity instanceof Entity\TypeDefinition) {
 			$structName = $entity->compiler->getLocalName();

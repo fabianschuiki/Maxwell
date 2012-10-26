@@ -11,8 +11,10 @@ class Node
 		else if ($e instanceof \Entity\Type\Member) return new Expr($e);
 		else if ($e instanceof \Entity\FunctionDefinition) return new FunctionDefinition($e);
 		else if ($e instanceof \Entity\RootEntity) return new RootEntity($e);
+		else if ($e instanceof \Entity\Func\Argument) return new Expr($e);
 		
-		throw new \exception("Unable to make analysis node for ".vartype($e));
+		return null;
+		//throw new \exception("Unable to make analysis node for ".vartype($e));
 	}
 	
 	public $entity;

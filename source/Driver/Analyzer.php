@@ -237,6 +237,20 @@ class Analyzer
 				}
 			}
 			
+			if ($entity instanceof Entity\Func\Argument) {
+				$t = $entity->getType();
+				if ($t) {
+					$tt = $t->getType();
+					if ($tt) {
+						$entity->analysis->type->initial = $tt;
+					} else {
+						IssueList::add('error', "Function argument '{$entity->getName()}' has invalid type expression.", $t, $entity);
+					}
+				} else {
+					IssueList::add('error', "Type of function argument '{$entity->getName()}' cannot be inferred.", $entity);
+				}
+			}
+			
 			if ($entity instanceof Entity\Type\Member) {
 				$t = $entity->getType();
 				if ($t) {

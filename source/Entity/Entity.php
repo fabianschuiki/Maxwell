@@ -25,4 +25,14 @@ abstract class Entity extends Node
 	//subclass responsibilities
 	public function initScope(Scope\Scope $scope = null) {}
 	abstract public function getChildEntities();
+	
+	
+	public $analysis;
+	public $compiler;
+	
+	public function __construct()
+	{
+		$this->analysis = \Analysis\Node\Node::makeForEntity($this);
+		$this->compiler = \Compiler\Node\Node::makeForEntity($this);
+	}
 }

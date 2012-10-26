@@ -84,6 +84,9 @@ class Compiler
 			$compiler = $entity->compiler;
 			$compiler->setName($entity->getName());
 		}
+		if ($entity instanceof Entity\Func\Argument) {
+			$entity->compiler->setName($entity->getName());
+		}
 	}
 	
 	private function calculateEntityTypes(Entity\Entity $entity)
@@ -108,7 +111,7 @@ class Compiler
 				//throw new \exception("Type of ".vartype($entity)." cannot be compiled");
 			}
 		}
-		if ($entity instanceof Entity\Type\Member) {
+		if ($entity instanceof Entity\Type\Member || $entity instanceof Entity\Func\Argument) {
 			$compiler = $entity->compiler;
 			$type = $entity->analysis->type->inferred;
 			if ($type instanceof \Type\Builtin) {

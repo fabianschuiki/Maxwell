@@ -9,6 +9,9 @@ class Type
 		if ($a instanceof Builtin && $b instanceof Builtin) {
 			return ($a->getName() == $b->getName());
 		}
+		if ($a instanceof Native && $b instanceof Native) {
+			return ($a->getName() == $b->getName());
+		}
 		if ($a instanceof Defined && $b instanceof Defined) {
 			return ($a->getDefinition()->getID() == $b->getDefinition()->getID());
 		}

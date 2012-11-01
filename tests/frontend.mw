@@ -15,6 +15,9 @@ func main
 	var y = 6;
 	x = 9 + 15 * y;
 	
+	var $ const char *str;
+	puts(str);
+	
 	//First tests with types and their members.
 	var Vector v = new Vector;
 	v.x = 9;

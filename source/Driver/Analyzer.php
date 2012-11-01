@@ -150,10 +150,19 @@ class Analyzer
 						}
 						if ($scope instanceof Entity\Scope\ScopeRoot) {
 							foreach ($scope->getRootEntity()->getKnownEntities() as $e) {
-								if ($e->getName() == $entity->getName()) {
+								if ($e instanceof \Entity\ExternalDeclaration) {
+									foreach ($e->getDeclarations() as $decl) {
+										if ($decl->getName() == $entity->getName()) {
+											$result = $decl;
+											break;
+										}
+									}
+								}
+								else if ($e->getName() == $entity->getName()) {
 									$result = $e;
 									break;
 								}
+								if ($result) break;
 							}
 							if ($result) break;
 						}
@@ -216,7 +225,15 @@ class Analyzer
 				}
 				if ($scope instanceof Entity\Scope\ScopeRoot) {
 					foreach ($scope->getRootEntity()->getKnownEntities() as $e) {
-						if ($e->getName() == $name) {
+						if ($e instanceof \Entity\ExternalDeclaration) {
+							foreach ($e->getDeclarations() as $decl) {
+								if ($decl->getName() == $name) {
+									$results[] = $decl;
+									break;
+								}
+							}
+						}
+						else if ($e->getName() == $name) {
 							$results[] = $e;
 						}
 					}

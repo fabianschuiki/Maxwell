@@ -16,5 +16,5 @@ class NativeType extends Expr
 	}
 	
 	public function getOperator() { return $this->operator; }
-	public function getIdent() { return $this->tokens; }
+	public function getTokens() { return $this->tokens; }
 }

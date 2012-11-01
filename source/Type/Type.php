@@ -36,6 +36,7 @@ class Type
 	{
 		if ($this instanceof Generic) return "generic";
 		if ($this instanceof Builtin) return $this->getName();
+		if ($this instanceof Native) return $this->getName();
 		if ($this instanceof Defined) return $this->getDefinition()->getName();
 		if ($this instanceof Func)    return $this->getInputArgs()->toHumanReadableString()." -> ".$this->getOutputArgs()->toHumanReadableString();
 		if ($this instanceof Tuple) {

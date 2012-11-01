@@ -259,6 +259,9 @@ class Analyzer
 					IssueList::add('error', "Type '{$expr->getName()}' is unknown.", $expr->getRange());
 				}
 			}
+			else if ($expr instanceof Entity\Expr\NativeType) {
+				$entity->setType(\Type\Native::makeWithName($expr->getName()));
+			}
 			else {
 				IssueList::add('error', "Invalid type expression.", $expr->getHumanRangeIfPossible());
 			}

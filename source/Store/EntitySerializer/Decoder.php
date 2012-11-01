@@ -197,6 +197,7 @@ class Decoder
 	{
 		switch ($element->getName()) {
 			case "type-builtin": return \Type\Builtin::makeWithName($element->getAttribute('name')); break;
+			case "type-native": return \Type\Native::makeWithName($element->getAttribute('type-native')); break;
 			case "type-generic": return \Type\Generic::make(); break;
 			case "type-defined": return \Type\Defined::makeWithDefinition($this->findEntity($element->getAttribute('definition'))); break;
 			case "type-func": {

@@ -173,6 +173,10 @@ class Encoder
 				$this->encodeAnalysisTypeType($field, $e);
 			}
 		}
+		if ($type instanceof \Type\Native) {
+			$e = $element->makeElement("type-native");
+			$e->setAttribute('name', $type->getName());
+		}
 		
 		if (!$e) throw new \exception("Unable to encode type ".vartype($type));
 		return $e;

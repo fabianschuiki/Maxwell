@@ -53,8 +53,10 @@ class Compiler
 			$this->calculateEntityTypes($entity);
 			
 			//Generate code.
-			$pair = $this->generateRootCodePair($entity);
-			$codeStore->persistCode($entityID, $pair);
+			if (!$entity instanceof \Entity\ExternalDeclaration) {
+				$pair = $this->generateRootCodePair($entity);
+				$codeStore->persistCode($entityID, $pair);
+			}
 		}
 		
 		$issues->pop();
@@ -122,8 +124,12 @@ class Compiler
 				$compiler->type->setName($type->getDefinition()->compiler->getName());
 				$compiler->type->setPointerLevel(1);
 			}
+			else if ($type instanceof \Type\Native) {
+				$compiler->type->setName($type->getName());
+				$compiler->type->setPointerLevel(0);
+			}
 			else {
-				throw new \exception("Type of ".vartype($entity)." cannot be compiled");
+				throw new \exception("Type ".vartype($type)." of ".vartype($entity)." cannot be compiled");
 			}
 		}
 	}
@@ -151,7 +157,11 @@ class Compiler
 		//Include the headers of the known entities.
 		$pair->source = "$preamble\n#include \"{$entity->getID()}.h\"\n\n";
 		foreach ($entity->getKnownEntities() as $e) {
-			$pair->source .= "#include \"{$e->getID()}.h\"\n";
+			if ($e instanceof \Entity\ExternalDeclaration) {
+				$pair->source .= "#include <{$e->getName()}>\n";
+			} else {
+				$pair->source .= "#include \"{$e->getID()}.h\"\n";
+			}
 		}
 		$pair->source .= "\n";
 		if ($snippet->privateHeader) {
@@ -210,6 +220,9 @@ class Compiler
 			}
 			
 			$snippet->stmts .= "$structName {\n$body};\n";
+		}
+		if ($entity instanceof Entity\ExternalDeclaration) {
+			$snippet->publicHeader = "#include <{$entity->getName()}>\n";
 		}
 		return $snippet;
 	}

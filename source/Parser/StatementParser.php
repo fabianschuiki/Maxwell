@@ -107,7 +107,7 @@ class StatementParser
 		$semicolon = $tokens->consumeIf('symbol', ';');
 		
 		if (!$declarations) return null;
-		return new AST\Stmt\External($keyword, $name, $declarations, $semicolon);
+		return new AST\Stmt\External($keyword, $name, $declarations, $group, $semicolon);
 	}
 	
 	static public function parseExternalStmtDeclarations(TokenList $tokens)

@@ -33,6 +33,10 @@ class Entitializer
 			}
 			else if ($node instanceof AST\Stmt\Import) {
 			}
+			else if ($node instanceof AST\Stmt\External) {
+				$e = Entity\ExternalDeclaration::makeFromSyntaxNode($node);
+				if ($e) $entities[] = $e;
+			}
 			else {
 				IssueList::add('warning', "Unable to wrap statement into a language entity.", $node->getRange());
 			}

@@ -14,8 +14,8 @@ class ExternalDeclaration extends RootEntity
 		$e->setName($ext->getName()->getText());
 		
 		$decls = array();
-		foreach ($ext->getDeclarations() as $declaration) {
-			echo "would wrap declaration ".vartype($declaration)."\n";
+		foreach ($ext->getDeclarations() as $d) {
+			if ($d instanceof \AST\Stmt\FuncDef) $decls[] = FunctionDefinition::makeFromSyntaxNode($d);
 		}
 		$e->setDeclarations($decls);
 		

@@ -50,19 +50,18 @@ class DefinitionParser
 		
 		//Extract the body.
 		$body = null;
-		if ($tokens->is('group', '{}')) {
-			$body = StatementParser::parseBlock($tokens->consume());
-		}
-		else if ($declarationOnly) {
-			$body = new AST\Block(array());
-		}
-		else {
-			IssueList::add('error', "Function requires a body.", array($keyword, $name));
-			goto body_failed;
+		if (!$declarationOnly) {
+			if ($tokens->is('group', '{}')) {
+				$body = StatementParser::parseBlock($tokens->consume());
+			}
+			else {
+				IssueList::add('error', "Function requires a body.", array($keyword, $name));
+				goto body_failed;
+			}
 		}
 		body_failed:
 		
-		if (!$name || $args_in === null || $args_out === null || !$body) return null;
+		if (!$name || $args_in === null || $args_out === null) return null;
 		return new AST\Stmt\FuncDef($keyword, $name, $args_in, $args_out, $body);
 	}
 	

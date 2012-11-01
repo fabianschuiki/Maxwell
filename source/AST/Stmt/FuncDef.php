@@ -10,7 +10,7 @@ class FuncDef extends Keyword
 	protected $args_out;
 	protected $body;
 	
-	public function __construct(Token $keyword, Token $name, array $args_in, array $args_out, Block $body)
+	public function __construct(Token $keyword, Token $name, array $args_in, array $args_out, Block $body = null)
 	{
 		parent::__construct();
 		$this->keyword = $keyword;

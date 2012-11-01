@@ -9,10 +9,10 @@ class FunctionDefinition extends RootEntity
 		$e = new self;
 		$e->generateID();
 		$e->pushID();
-		$e->setRange(Range::union($def->getKeyword()->getRange(), $def->getBody()->getRange()));
+		$e->setRange($def->getRange());
 		$e->setHumanRange(Range::union($def->getKeyword()->getRange(), $def->getName()->getRange()));
 		$e->setName($def->getName()->getText());
-		$e->setBody(Block::makeFromSyntaxNode($def->getBody()));
+		if ($b = $def->getBody()) $e->setBody(Block::makeFromSyntaxNode($b));
 		
 		$ins = Func\Tuple::makeFromSyntaxNodes($def->getArgsIn());
 		if (!$ins->getRange()) $ins->setRange($e->getHumanRange());
@@ -35,7 +35,7 @@ class FunctionDefinition extends RootEntity
 	public function setName($n) { $this->name = $n; }
 	public function getName() { return $this->name; }
 	
-	public function setBody(Block $b) { $this->body = $b; }
+	public function setBody(Block $b = null) { $this->body = $b; }
 	public function getBody() { return $this->body; }
 	
 	public function setScope(Scope\Scope $s) { $this->scope = $s; }
@@ -61,11 +61,13 @@ class FunctionDefinition extends RootEntity
 		$this->setScope($s);
 		$this->inputArgs->initScope($s);
 		$this->outputArgs->initScope($s);
-		$this->body->initScope($s);
+		if ($this->body) $this->body->initScope($s);
 	}
 	
 	public function getChildEntities()
 	{
-		return array($this->inputArgs, $this->outputArgs, $this->body);
+		$a = array($this->inputArgs, $this->outputArgs);
+		if ($this->body) $a[] = $this->body;
+		return $a;
 	}
 }

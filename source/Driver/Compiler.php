@@ -112,7 +112,7 @@ class Compiler
 				$compiler->type->setPointerLevel(0);
 			}
 			else if ($type instanceof \Type\Defined) {
-				$compiler->type->setName($type->getDefinition()->compiler->getName());
+				$compiler->type->setName($type->getDefinition()->compiler->getLocalName());
 				$compiler->type->setPointerLevel(1);
 			}
 			else if ($type instanceof \Type\Native) {
@@ -131,7 +131,7 @@ class Compiler
 				$compiler->type->setPointerLevel(0);
 			}
 			else if ($type instanceof \Type\Defined) {
-				$compiler->type->setName($type->getDefinition()->compiler->getName());
+				$compiler->type->setName($type->getDefinition()->compiler->getLocalName());
 				$compiler->type->setPointerLevel(1);
 			}
 			else if ($type instanceof \Type\Native) {
@@ -159,13 +159,13 @@ class Compiler
 		$pair->header = "$preamble\n#pragma once\n\n";
 		foreach ($entity->getKnownEntities() as $e) {
 			if (!$e instanceof \Entity\TypeDefinition) continue;
-			$sn = $this->generateRootCode($e);
-			$pair->header .= $sn->publicHeader."\n";
+			$pair->header .= $e->compiler->getLocalName().";\n";
 		}
 		$pair->header .= $snippet->publicHeader;
 		
 		//Include the headers of the known entities.
-		$pair->source = "$preamble\n#include \"{$entity->getID()}.h\"\n\n";
+		$pair->source  = "$preamble\n#include \"{$entity->getID()}.h\"\n\n";
+		$pair->source .= "//debug includes\n#include <stdlib.h>\n";
 		foreach ($entity->getKnownEntities() as $e) {
 			if ($e instanceof \Entity\ExternalDeclaration) {
 				$pair->source .= "#include <{$e->getName()}>\n";

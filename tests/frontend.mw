@@ -20,18 +20,18 @@ func main
 	
 	//First tests with types and their members.
 	var Vector v = new Vector;
-	v.x = 9;
-	v.y = 34;
+	//v.x = 9;
+	//v.y = 34;
 	
 	//Analyzer throws an error, since v.x is not yet of type int.
-	var int shouldBeInt = v.x;
+	/*var int shouldBeInt = v.x;
 	if (shouldBeInt == test(1,2)) {
 		v.y = x;
 	} else if (x == 5) {
 		y = 9;
 	} else {
 		x = 125;
-	}
+	}*/
 	
 	//Test function call.
 	var int r0 = test(test(1,2),3);

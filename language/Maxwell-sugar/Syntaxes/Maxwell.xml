@@ -29,7 +29,7 @@
 		-->
 		<!-- Keywords -->
 		<zone name="keyword.control">
-			<expression>\b(if|else(\s*if)?|for|where|switch|case|casesof|isa|otherwise|assume|return|package|import|var|new|typeclass|defer|env)\b</expression>
+			<expression>\b(if|else(\s*if)?|for|where|switch|case|casesof|isa|otherwise|assume|return|package|import|external|var|new|typeclass|defer|env)\b</expression>
 		</zone>
 		
 		<!-- Built-in types -->

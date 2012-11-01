@@ -84,7 +84,13 @@ class Compiler
 		}
 		if ($entity instanceof Entity\FunctionDefinition) {
 			$compiler = $entity->compiler;
-			$compiler->setName($entity->getName()."_".$entity->getID());
+			//this is quite a hack to distinguish function definitions in external {} statements and the standalone ones.
+			//probably should be more sophisticated...
+			if ($entity->getBody()) {
+				$compiler->setName($entity->getName()."_".str_replace(".", "_", $entity->getID()));
+			} else {
+				$compiler->setName($entity->getName());
+			}
 		}
 		if ($entity instanceof Entity\Func\Argument) {
 			$entity->compiler->setName($entity->getName());
@@ -108,6 +114,10 @@ class Compiler
 			else if ($type instanceof \Type\Defined) {
 				$compiler->type->setName($type->getDefinition()->compiler->getName());
 				$compiler->type->setPointerLevel(1);
+			}
+			else if ($type instanceof \Type\Native) {
+				$compiler->type->setName($type->getName());
+				$compiler->type->setPointerLevel(0);
 			}
 			else {
 				//throw new \exception("Type of ".vartype($entity)." cannot be compiled");

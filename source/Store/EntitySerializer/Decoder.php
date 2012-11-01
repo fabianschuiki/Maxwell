@@ -14,6 +14,7 @@ class Decoder
 	
 	protected $siblingIDs;
 	protected $knownIDs;
+	protected $subrootEntities;
 	
 	protected $rootEntity;
 	protected $entityElements;
@@ -54,6 +55,7 @@ class Decoder
 		//Create a new object for each of the entities.
 		$this->entityElements = array();
 		$this->entities = array();
+		$this->subrootEntities = array();
 		foreach ($this->entitiesRoot->getElements() as $element) {
 			$className = $this->protocol->getClassForTagName($element->getName());
 			if (!$className) {
@@ -68,11 +70,16 @@ class Decoder
 			}
 			$this->entities[$id]       = $entity;
 			$this->entityElements[$id] = $element;
+			if ($entity instanceof \Entity\RootEntity) {
+				$this->subrootEntities[$id] = $entity;
+			}
 		}
 		
 		//Resolve the root entity.
 		if ($id = $root->getAttribute("id")) {
 			$this->rootEntity = $this->findEntity($id);
+			unset($this->subrootEntities[$id]);
+			$this->rootEntity->setEmbeddedRootEntities($this->subrootEntities);
 		} else {
 			throw new \exception("No root ID specified in root element");
 		}
@@ -82,6 +89,11 @@ class Decoder
 	{
 		if ($e = @$this->entities[$id]) {
 			return $e;
+		}
+		else if (($dot = strpos($id, ".")) !== false) {
+			$rootID = substr($id, 0, $dot);
+			$embeddedRoots = $this->findEntity($rootID)->getEmbeddedRootEntities();
+			return @$embeddedRoots[$id];
 		}
 		foreach ($this->rootEntity->getKnownEntities() as $e) {
 			if ($e->getID() == $id)

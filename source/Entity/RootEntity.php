@@ -7,6 +7,7 @@ abstract class RootEntity extends Entity
 	protected $packageName;
 	protected $siblingEntities;
 	protected $knownEntities;
+	protected $embeddedRootEntities;
 	
 	public $analysis;
 	public $compiler;
@@ -29,6 +30,9 @@ abstract class RootEntity extends Entity
 	
 	public function setKnownEntities(array $entities) { $this->knownEntities = $entities; }
 	public function getKnownEntities() { return $this->knownEntities; }
+	
+	public function setEmbeddedRootEntities(array $entities) { $this->embeddedRootEntities = $entities; }
+	public function getEmbeddedRootEntities() { return $this->embeddedRootEntities; }
 	
 	public function pushID() { \Store\Manager::get()->getEntityStore()->pushRootID($this->getID()); }
 	public function popID() { \Store\Manager::get()->getEntityStore()->popRootID($this->getID()); }

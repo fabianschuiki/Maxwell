@@ -9,8 +9,15 @@ class NativeType extends Expr
 	{
 		$e = new self;
 		$e->generateID();
-		$e->setRange($expr->getRange());
-		$e->setName(implode(" ", array_map(function($t){return $t->getText();}, $expr->getTokens()->getTokens())));
+		
+		$tokens = $expr->getTokens()->getTokens();
+		$tokenTexts = array_map(function($t) { return $t->getText(); }, $expr->getTokens()->getTokens());
+		
+		$range = Range::union($expr->getOperator()->getRange(), $tokens[count($tokens)-1]->getRange());
+		
+		$e->setRange($range);
+		$e->setName(implode(" ", $tokenTexts));
+		
 		return $e;
 	}
 	

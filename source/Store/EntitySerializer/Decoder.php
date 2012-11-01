@@ -287,4 +287,20 @@ class Decoder
 		}
 		$entity->setArgs($args);
 	}
+	
+	protected function decodeEntityExternalDeclaration(\Entity\ExternalDeclaration $entity, Coder\Element $element)
+	{
+		$declarations = array();
+		foreach ($element->getElements() as $declaration) {
+			if ($declaration->getName() != "declaration") {
+				throw new \exception("Only 'declaration' tags are supported within an external declaration.");
+			}
+			if ($id = $declaration->getAttribute("id")) {
+				$declarations[] = $this->findEntity($id);
+			} else {
+				throw new \exception("External declaration has no ID");
+			}
+		}
+		$entity->setDeclarations($declarations);
+	}
 }

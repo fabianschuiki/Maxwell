@@ -217,4 +217,13 @@ class Encoder
 			$e->setAttribute('id', $arg->getID());
 		}
 	}
+	
+	protected function encodeEntityExternalDeclaration(\Entity\ExternalDeclaration $entity, Coder\Element $element)
+	{
+		foreach ($entity->getDeclarations() as $declaration) {
+			$this->encodeEntity($declaration);
+			$e = $element->makeElement("declaration");
+			$e->setAttribute("id", $declaration->getID());
+		}
+	}
 }

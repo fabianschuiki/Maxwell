@@ -14,6 +14,7 @@ class Protocol
 		$this->register('Func\Tuple', "func-tuple");
 		$this->register('Func\Argument', "func-arg", array("&name", "@type"));
 		$this->register("TypeDefinition", "type", array("&name", "@scope"));
+		$this->register("ExternalDeclaration", "external", array("&name", "@scope"));
 		
 		$this->register('Type\Member', "type-member", array("&name", "@type", "*scope"));
 		
@@ -35,6 +36,7 @@ class Protocol
 		$this->register('Expr\Call\Tuple', "call-tuple");
 		$this->register('Expr\Call\Argument', "call-arg", array("@expr", "&name"));
 		$this->register('Expr\Call\Callee', "call-callee", array("@expr"));
+		$this->register('Expr\NativeType', "native-type", array("&name"));
 		
 		//Scope
 		$this->register('Scope\Scope', "scope", array("*upper", "*outer"));

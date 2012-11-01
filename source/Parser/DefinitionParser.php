@@ -9,7 +9,7 @@ use Language;
 
 class DefinitionParser
 {
-	static public function parseFuncDefStmt(Token $keyword, TokenList $tokens)
+	static public function parseFuncDefStmt(Token $keyword, TokenList $tokens, $declarationOnly = false)
 	{
 		//Extract the function name.
 		$name = null;
@@ -52,6 +52,9 @@ class DefinitionParser
 		$body = null;
 		if ($tokens->is('group', '{}')) {
 			$body = StatementParser::parseBlock($tokens->consume());
+		}
+		else if ($declarationOnly) {
+			$body = new AST\Block(array());
 		}
 		else {
 			IssueList::add('error', "Function requires a body.", array($keyword, $name));

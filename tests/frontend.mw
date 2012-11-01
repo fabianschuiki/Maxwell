@@ -4,7 +4,7 @@
 package parser
 
 external "stdio.h" {
-	func puts ($ const char * s) -> (int r);
+	func puts ($ const char *s) -> (int r);
 	func fopen ($ const char *path, $ const char *mode) -> ($ FILE *_);
 }
 

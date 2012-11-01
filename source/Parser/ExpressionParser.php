@@ -12,6 +12,15 @@ class ExpressionParser
 {
 	static public function parseExpr(TokenList $tokens, Range $range = null)
 	{
+		if ($tokens->is('symbol', '$')) {
+			$op = $tokens->consume();
+			if ($tokens->isEmpty()) {
+				IssueList::add('error', "Native type operator without a native type following it.", $op);
+				return null;
+			}
+			return new AST\Expr\NativeType($op, $tokens);
+		}
+		
 		if ($tokens->is('identifier') && in_array($tokens->getText(), Language::$expressionKeywords)) {
 			return static::parseKeywordExpr($tokens->consume(), $tokens);
 		}

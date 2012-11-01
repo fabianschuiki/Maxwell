@@ -12,7 +12,7 @@ class Language
 	
 	static public $keywords;
 	static public $statementKeywords = array(
-		'func', 'type', 'primitive', 'if', 'else', 'for', 'return', 'inline', 'import', 'native', 'package',
+		'func', 'type', 'primitive', 'if', 'else', 'for', 'return', 'inline', 'import', 'native', 'package', 'external',
 	);
 	static public $expressionKeywords = array(
 		'var', 'new',

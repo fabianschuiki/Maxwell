@@ -302,7 +302,11 @@ class Compiler
 				$snippet->exprRequired = true;
 		}
 		else if ($expr instanceof Entity\Expr\Constant) {
-			$snippet->expr = $expr->getValue();
+			if ($expr->getType() == 'string') {
+				$snippet->expr = "\"".$expr->getValue()."\"";
+			} else {
+				$snippet->expr = $expr->getValue();
+			}
 		}
 		else if ($expr instanceof Entity\Expr\Identifier) {
 			$snippet->expr = $expr->analysis->binding->target->compiler->getName();

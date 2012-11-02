@@ -145,8 +145,8 @@ class DebugHTML
 				foreach ($appliedWrappers as $aw) {
 					$r = $aw['r'];
 					if ($r->getStart()->getOffset() <= $ins_a) $sa += strlen($aw['a']);
-					if ($r->getStart()->getOffset() <= $ins_b) $sb += strlen($aw['a']);
-					if ($r->getEnd()->getOffset() < $ins_a) $sa += strlen($aw['b']);
+					if ($r->getStart()->getOffset() < $ins_b) $sb += strlen($aw['a']);
+					if ($r->getEnd()->getOffset() <= $ins_a) $sa += strlen($aw['b']);
 					if ($r->getEnd()->getOffset() < $ins_b) $sb += strlen($aw['b']);
 				}
 				$ins_a += $sa - $range->getPosition();

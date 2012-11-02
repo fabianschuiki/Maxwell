@@ -8,8 +8,8 @@ class Type extends Expr
 	{
 		$e = new self;
 		$e->generateID();
-		$e->setRange($expr->getRange());
 		$e->setExpr(Expr::makeFromSyntaxNode($expr));
+		$e->setRange($e->getExpr()->getRange());
 		return $e;
 	}
 	

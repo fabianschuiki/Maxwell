@@ -1,0 +1,44 @@
+#!/usr/bin/php
+<?php
+
+/**
+ * h2mw
+ *
+ * Preprocesses a C header and generates a Maxwell file containing external
+ * function declarations that enable the use of the functions contained
+ * in the original header.
+ */
+
+//Parse the arguments.
+$opts = array(
+);
+$opt = null;
+$input = null;
+foreach ($argv as $i => $arg) {
+	if ($i == 0) continue;
+	if (!$opt) {
+		if ($input) {
+			die ("multiple input files provided\n");
+		}
+		$input = $arg;
+	}
+}
+
+//Check argument sanity.
+if (!$input) {
+	die ("no input file\n");
+}
+
+//Decide on the output file.
+$output = preg_replace('/\.[^\.]*$/', "", basename($input)).".mw";
+
+
+//Preprocess the input file.
+$preprocessCommand = "gcc -E ".escapeshellarg($input);
+echo "> $preprocessCommand\n";
+exec($preprocessCommand, $preprocessedLines, $result);
+if ($result) {
+	die ("unable to precompile $input\n");
+}
+$preprocessed = implode("\n", array_filter($preprocessedLines, function($line) { return !preg_match('/^#/', $line); }));
+file_put_contents($output.".pre.h", $preprocessed);

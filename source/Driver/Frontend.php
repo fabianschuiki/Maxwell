@@ -87,9 +87,7 @@ class Frontend
 	public function run()
 	{
 		$manager = Manager::get();
-		
-		$issues = new IssueList;
-		$issues->push();
+		$issues = IssueList::get();
 		
 		//Tokenize and parse the files.
 		$processedFiles = array();
@@ -126,8 +124,5 @@ class Frontend
 				$es->persistEntity($id);
 			}
 		}
-		
-		$issues->pop();
-		$issues->report();
 	}
 }

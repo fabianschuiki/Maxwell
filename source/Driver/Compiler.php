@@ -25,9 +25,7 @@ class Compiler
 		$manager = Manager::get();
 		$entityStore = $manager->getEntityStore();
 		$codeStore   = $manager->getCodeStore();
-		
-		$issues = new IssueList;
-		$issues->push();
+		$issues = IssueList::get();
 		
 		$precompileIDs = $this->entityIDs;
 		while (count($precompileIDs) && !$issues->isFatal())
@@ -58,9 +56,6 @@ class Compiler
 				$codeStore->persistCode($entityID, $pair);
 			}
 		}
-		
-		$issues->pop();
-		$issues->report();
 	}
 	
 	/** Calculates the name of individual entities, as it will appear in the C file. */

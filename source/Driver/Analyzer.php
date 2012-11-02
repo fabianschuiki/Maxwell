@@ -29,8 +29,7 @@ class Analyzer
 		$manager = Manager::get();
 		$entityStore = $manager->getEntityStore();
 		
-		$issues = new IssueList;
-		$issues->push();
+		$issues = IssueList::get();
 		
 		//Move the entity IDs into the initial type analysis queue.
 		$this->initialTypeQueue = $this->entityIDs;
@@ -97,9 +96,6 @@ class Analyzer
 			//Nothing left to do.
 			else break;
 		}
-		
-		$issues->pop();
-		$issues->report();
 	}
 	
 	/** Concatenates the arguments into one output line, with the relevant entities highlighted. */

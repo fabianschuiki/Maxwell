@@ -524,6 +524,33 @@ class Analyzer
 					IssueList::add('error', "Only user-defined types have accessible members.", $entity);
 				}
 			}
+			
+			if ($entity instanceof Entity\Expr\ElementAccess) {
+				$t = $entity->getExpr()->analysis->type->inferred;
+				if (!$t instanceof \Type\Native) {
+					IssueList::add('error', "Element access [] is only allowed on native C types at the moment.", $entity);
+				} else {
+					$pointerCount = 0;
+					$hasArray = false;
+					$s = $t->getName();
+					for ($i = 0; $i < strlen($s); $i++) {
+						if ($s[$i] == '*') $pointerCount++;
+						if ($s[$i] == '[') $hasArray = true;
+					}
+					
+					if (!$pointerCount && !$hasArray) {
+						IssueList::add('error', "Elements of native C type $s cannot be accessed since it is not a pointer type.", $entity);
+					} else {
+						$rs = strrev($s);
+						$rs_deref = trim(preg_replace('/(\[[^\]]\]|\*)/', "", $rs, 1, $count));
+						if (!$count) {
+							throw new \exception("Dereferencing $s should work, but yielded a replacement count of 0.");
+						}
+						$entity->analysis->type->inferred = \Type\Native::makeWithName(strrev($rs_deref));
+					}
+				}
+			}
+			
 			if ($entity instanceof Entity\Expr\Identifier) {
 				$target = $entity->analysis->binding->target;
 				if ($target instanceof \Entity\FunctionDefinition) {

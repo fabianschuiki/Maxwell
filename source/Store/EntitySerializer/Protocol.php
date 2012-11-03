@@ -30,6 +30,7 @@ class Protocol
 		$this->register('Expr\Identifier', "identifier", array("&name", "@scope"));
 		$this->register('Expr\Constant', "constant", array("&type", "&value"));
 		$this->register('Expr\Operator\Binary', "binary-op", array("&operator", "@LHS", "@RHS"));
+		$this->register('Expr\Operator\Unary', "unary-op", array("&operator", "@operand"));
 		$this->register('Expr\NewOp', "new", array("@type"));
 		$this->register('Expr\MemberAccess', "member-access", array("@expr", "&name"));
 		$this->register('Expr\Call', "call", array("@callee", "@args"));
@@ -37,6 +38,7 @@ class Protocol
 		$this->register('Expr\Call\Argument', "call-arg", array("@expr", "&name"));
 		$this->register('Expr\Call\Callee', "call-callee", array("@expr"));
 		$this->register('Expr\NativeType', "native-type", array("&name"));
+		$this->register('Expr\ElementAccess', "element-access", array("@expr", "@index"));
 		
 		//Scope
 		$this->register('Scope\Scope', "scope", array("*upper", "*outer"));

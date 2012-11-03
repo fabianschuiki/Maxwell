@@ -19,10 +19,12 @@ abstract class Expr extends Entity
 		if ($node instanceof \AST\Expr\Identifier) return Identifier::makeFromSyntaxNode($node);
 		if ($node instanceof \AST\Expr\VarDef) return VarDef::makeFromSyntaxNode($node);
 		if ($node instanceof \AST\Expr\Operator\Binary) return Operator\Binary::makeFromSyntaxNode($node);
+		if ($node instanceof \AST\Expr\Operator\Unary) return Operator\Unary::makeFromSyntaxNode($node);
 		if ($node instanceof \AST\Expr\MemberAccess) return MemberAccess::makeFromSyntaxNode($node);
 		if ($node instanceof \AST\Expr\NewOp) return NewOp::makeFromSyntaxNode($node);
 		if ($node instanceof \AST\Expr\Call) return Call::makeFromSyntaxNode($node);
 		if ($node instanceof \AST\Expr\NativeType) return NativeType::makeFromSyntaxNode($node);
+		if ($node instanceof \AST\Expr\ElementAccess) return ElementAccess::makeFromSyntaxNode($node);
 		throw new \exception("Unable to wrap ".vartype($node));
 	}
 }

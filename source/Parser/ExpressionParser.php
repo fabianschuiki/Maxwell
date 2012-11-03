@@ -30,7 +30,7 @@ class ExpressionParser
 			
 			//Binary Operators.
 			foreach (Language::$binaryOperators as $operators) {
-				for ($i = 0; $i < $tokens->count(); $i++) {
+				for ($i = 1; $i < $tokens->count() - 1; $i++) {
 					if ($tokens->is('symbol', null, $i) && in_array($tokens->getText($i), $operators)) {
 						$lhs = $tokens->upTo('symbol', $tokens->getText($i));
 						$op  = $tokens->consume();
@@ -43,6 +43,15 @@ class ExpressionParser
 		
 		if ($tokens->count() >= 2) {
 			if ($tokens->backIs('group', '()')) return static::parseCallExpr($tokens->backConsume(), $tokens);
+			if ($tokens->backIs('group', '[]')) return static::parseElementAccessExpr($tokens->backConsume(), $tokens);
+			
+			//Unary prefix operators.
+			foreach (Language::$unaryPrefixOperators as $operators) {
+				if (in_array($tokens->getText(0), $operators)) {
+					$op = $tokens->consume();
+					return static::parseUnaryPrefixOperator($op, $tokens);
+				}
+			}
 		}
 		
 		if ($tokens->count() == 1) {
@@ -254,5 +263,28 @@ class ExpressionParser
 		
 		//Wrap up.
 		return new AST\Expr\Operator\Binary($lhs_expr, $operator, $rhs_expr);
+	}
+	
+	static public function parseUnaryPrefixOperator(Token $operator, TokenList $operand)
+	{
+		$expr = static::parseExpr($operand);
+		if (!$expr) return null;
+		return new AST\Expr\Operator\Unary($operator, $expr);
+	}
+	
+	static public function parseElementAccessExpr(TokenGroup $accessor, TokenList $tokens)
+	{
+		$expr = static::parseExpr($tokens);
+		if (!$expr) return null;
+		
+		$indexTokens = $accessor->getStrippedTokens();
+		if ($indexTokens->isEmpty()) {
+			IssueList::add('error', "Element index required inside [].", $accessor);
+			return null;
+		}
+		$index = static::parseExpr($indexTokens);
+		if (!$index) return null;
+		
+		return new AST\Expr\ElementAccess($expr, $index, $accessor);
 	}
 }

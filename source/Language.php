@@ -19,8 +19,8 @@ class Language
 	);
 	
 	static public $operators;
-	static public $unaryOperators = array(
-		array('-', '!'),
+	static public $unaryPrefixOperators = array(
+		array('-', '!', '&', '*'),
 	);
 	static public $binaryOperators = array(
 		array('=', ':='),
@@ -41,7 +41,7 @@ Language::$symbols = array_merge(
 Language::$keywords = array_merge(Language::$statementKeywords, Language::$expressionKeywords);
 
 Language::$operators = array_unique(array_reduce(array_merge(
-		Language::$unaryOperators,
+		Language::$unaryPrefixOperators,
 		Language::$binaryOperators
 	),
 	function($a, $b) {

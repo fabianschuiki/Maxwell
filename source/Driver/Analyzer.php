@@ -458,6 +458,9 @@ class Analyzer
 				if ($lt && $rt) {
 					if (\Type\Type::equal($lt, $rt)) {
 						$entity->analysis->type->inferred = $lt;
+					} else if ($lt instanceof \Type\Native || $rt instanceof \TypeNative) {
+						IssueList::add('warning', "Ignoring types for binary operator since one or both sides are of a native C type.", $entity);
+						$entity->analysis->type->inferred = $lt;
 					} else {
 						IssueList::add('error', "Binary operator requires both operands to be of same type. Left operand is {$lt->toHumanReadableString()}, right operand is {$rt->toHumanReadableString()}.", $entity, array($entity->getLHS(), $entity->getRHS()));
 					}
@@ -475,9 +478,7 @@ class Analyzer
 				}
 				else if ($entity->getOperator() == '*') {
 					$t = $entity->getOperand()->analysis->type->inferred;
-					if (!$t instanceof \Type\Native) {
-						IssueList::add('error', "The dereferencing operator * is only allowed on native C types.", $entity);
-					} else {
+					if ($t instanceof \Type\Native) {
 						$pointerCount = 0;
 						$hasArray = false;
 						$s = $t->getName();
@@ -496,6 +497,17 @@ class Analyzer
 							}
 							$entity->analysis->type->inferred = \Type\Native::makeWithName(strrev($rs_deref));
 						}
+					}
+					else if ($entity->getOperand() instanceof Entity\Expr\Constant) {
+						$op = $entity->getOperand();
+						if ($op->getType() == 'string') {
+							$entity->analysis->type->inferred = \Type\Native::makeWithName("char");
+						} else {
+							IssueList::add('error', "The ASCII operator * is only allowed on string constants.", $entity);
+						}
+					}
+					else {
+						IssueList::add('error', "The dereferencing operator * is only allowed on native C types or on string constants.", $entity);
 					}
 				}
 				else {

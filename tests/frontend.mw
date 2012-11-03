@@ -1,7 +1,7 @@
 /*
  * Some test file for debugging the frontend.
  */
-package parser
+package main
 
 external "stdio.h" {
 	func puts ($ const char *s) -> (int r);

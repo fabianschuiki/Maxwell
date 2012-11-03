@@ -29,7 +29,7 @@ class Entitializer
 				if ($e) $entities[] = $e;
 			}
 			else if ($node instanceof AST\Stmt\Package) {
-				$context['package'] = $node->getName();
+				$context['package'] = $node->getName()->getText();
 			}
 			else if ($node instanceof AST\Stmt\Import) {
 			}

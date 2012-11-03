@@ -10,10 +10,10 @@ class Protocol
 	{
 		$this->schemes = array();
 		
-		$this->register("FunctionDefinition", "function", array("&name", "@inputArgs", "@outputArgs", "@body", "@scope"));
+		$this->register("FunctionDefinition", "function", array("&name", "&packageName", "@inputArgs", "@outputArgs", "@body", "@scope"));
 		$this->register('Func\Tuple', "func-tuple");
 		$this->register('Func\Argument', "func-arg", array("&name", "@type"));
-		$this->register("TypeDefinition", "type", array("&name", "@scope"));
+		$this->register("TypeDefinition", "type", array("&name", "&packageName", "@scope"));
 		$this->register("ExternalDeclaration", "external", array("&name", "@scope"));
 		
 		$this->register('Type\Member', "type-member", array("&name", "@type", "*scope"));

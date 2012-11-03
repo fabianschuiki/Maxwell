@@ -22,7 +22,7 @@ abstract class RootEntity extends Entity
 	public function setFile(\Source\File $file) { $this->file = $file; }
 	public function getFile() { return $this->file; }
 	
-	public function setPackageName(\Lexer\Token $packageName) { $this->packageName = $packageName; }
+	public function setPackageName($packageName) { $this->packageName = $packageName; }
 	public function getPackageName() { return $this->packageName; }
 	
 	public function setSiblingEntities(array $entities) { $this->siblingEntities = $entities; }

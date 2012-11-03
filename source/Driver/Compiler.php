@@ -49,10 +49,12 @@ class Compiler
 			
 			//Prepare entity type information.
 			$this->calculateEntityTypes($entity);
+			if ($issues->isFatal()) break;
 			
 			//Generate code.
 			if (!$entity instanceof \Entity\ExternalDeclaration) {
 				$pair = $this->generateRootCodePair($entity);
+				if ($issues->isFatal()) break;
 				$codeStore->persistCode($entityID, $pair);
 			}
 		}
@@ -213,6 +215,18 @@ class Compiler
 				$snippet->stmts .= "\n\treturn {$arg->compiler->getName()};";
 			}
 			$snippet->stmts .= "\n}\n";
+			
+			//If this is the function main.main, generate the proper entry point for the C program here as well.
+			if ($entity->getName() == "main" && $entity->getPackageName() == "main") {
+				$snippet->stmts .= "\n//main entry point\n";
+				if (count($args) != 0) {
+					IssueList::add('error', "Main function may not have any input arguments yet.", $entity);
+				} else {
+					$snippet->stmts .= "int main(int argc, char *argv[])\n{\n";
+					$snippet->stmts .= "\t{$entity->compiler->getName()}();\n";
+					$snippet->stmts .= "\treturn 0;\n}\n";
+				}
+			}
 		}
 		if ($entity instanceof Entity\TypeDefinition) {
 			$structName = $entity->compiler->getLocalName();

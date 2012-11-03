@@ -463,6 +463,46 @@ class Analyzer
 					}
 				}
 			}
+			
+			if ($entity instanceof Entity\Expr\Operator\Unary) {
+				if ($entity->getOperator() == '&') {
+					$t = $entity->getOperand()->analysis->type->inferred;
+					if (!$t instanceof \Type\Native) {
+						IssueList::add('error', "The pointer operator & is only allowed on native C types.", $entity);
+					} else {
+						$entity->analysis->type->inferred = \Type\Native::makeWithName($t->getName()."*");
+					}
+				}
+				else if ($entity->getOperator() == '*') {
+					$t = $entity->getOperand()->analysis->type->inferred;
+					if (!$t instanceof \Type\Native) {
+						IssueList::add('error', "The dereferencing operator * is only allowed on native C types.", $entity);
+					} else {
+						$pointerCount = 0;
+						$hasArray = false;
+						$s = $t->getName();
+						for ($i = 0; $i < strlen($s); $i++) {
+							if ($s[$i] == '*') $pointerCount++;
+							if ($s[$i] == '[') $hasArray = true;
+						}
+						
+						if (!$pointerCount && !$hasArray) {
+							IssueList::add('error', "Native C type $s cannot be dereferenced since it is not a pointer type.", $entity);
+						} else {
+							$rs = strrev($s);
+							$rs_deref = trim(preg_replace('/(\[[^\]]\]|\*)/', "", $rs, 1, $count));
+							if (!$count) {
+								throw new \exception("Dereferencing $s should work, but yielded a replacement count of 0.");
+							}
+							$entity->analysis->type->inferred = \Type\Native::makeWithName(strrev($rs_deref));
+						}
+					}
+				}
+				else {
+					IssueList::add('error', "Unary operator {$entity->getOperator()} not yet supported.", $entity);
+				}
+			}
+			
 			if ($entity instanceof Entity\Expr\MemberAccess) {
 				$t = $entity->getExpr()->analysis->type->inferred;
 				if ($t instanceof \Type\Defined) {

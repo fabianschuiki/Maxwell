@@ -37,7 +37,7 @@ class Binary extends Expr
 	public function setRHS(Expr $e) { $this->rhs = $e; }
 	public function getRHS() { return $this->rhs; }
 	
-	public function initScope(Scope\Scope $scope)
+	public function initScope(Scope\Scope &$scope)
 	{
 		$this->lhs->initScope($scope);
 		$this->rhs->initScope($scope);

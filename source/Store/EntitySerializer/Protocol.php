@@ -10,9 +10,9 @@ class Protocol
 	{
 		$this->schemes = array();
 		
-		$this->register("FunctionDefinition", "function", array("&name", "&packageName", "@inputArgs", "@outputArgs", "@body", "@scope"));
+		$this->register("FunctionDefinition", "function", array("&name", "&packageName", "@inputArgs", "@outputArgs", "@body", "@scope", "@innerScope"));
 		$this->register('Func\Tuple', "func-tuple");
-		$this->register('Func\Argument', "func-arg", array("&name", "@type"));
+		$this->register('Func\Argument', "func-arg", array("&name", "@type", "@scope"));
 		$this->register("TypeDefinition", "type", array("&name", "&packageName", "@scope"));
 		$this->register("ExternalDeclaration", "external", array("&name", "@scope"));
 		
@@ -21,13 +21,13 @@ class Protocol
 		//Statements
 		$this->register("Block", "block", array("@headScope", "*tailScope"));
 		$this->register('Stmt\Expr', "expr-stmt", array("@expr"));
-		$this->register('Stmt\IfStmt', "if", array("@condition", "@body", "@else"));
-		$this->register('Stmt\ElseStmt', "else", array("@body"));
+		$this->register('Stmt\IfStmt', "if", array("@condition", "@body", "@else", "@scope"));
+		$this->register('Stmt\ElseStmt', "else", array("@body", "@scope"));
 		
 		//Expressions
 		$this->register('Expr\VarDef', "var", array("&name", "@type", "@initial", "@scope"));
 		$this->register('Expr\Type', "type-expr", array("@expr"));
-		$this->register('Expr\Identifier', "identifier", array("&name", "@scope"));
+		$this->register('Expr\Identifier', "identifier", array("&name", "*scope"));
 		$this->register('Expr\Constant', "constant", array("&type", "&value"));
 		$this->register('Expr\Operator\Binary', "binary-op", array("&operator", "@LHS", "@RHS"));
 		$this->register('Expr\Operator\Unary', "unary-op", array("&operator", "@operand"));

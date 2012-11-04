@@ -51,6 +51,7 @@ type Vector
 
 func test (int a, int b) -> (int r)
 {
+	r = a * b;
 }
 
 func test (Vector a, float b) -> (float r)

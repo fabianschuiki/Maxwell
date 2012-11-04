@@ -31,7 +31,7 @@ class Unary extends Expr
 	public function setOperand(Expr $e) { $this->operand = $e; }
 	public function getOperand() { return $this->operand; }
 	
-	public function initScope(Scope\Scope $scope)
+	public function initScope(Scope\Scope &$scope)
 	{
 		$this->operand->initScope($scope);
 	}

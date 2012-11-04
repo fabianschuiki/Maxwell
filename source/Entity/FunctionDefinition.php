@@ -29,6 +29,7 @@ class FunctionDefinition extends RootEntity
 	protected $name;
 	protected $body;
 	protected $scope;
+	protected $innerScope;
 	protected $inputArgs;
 	protected $outputArgs;
 	
@@ -41,24 +42,36 @@ class FunctionDefinition extends RootEntity
 	public function setScope(Scope\Scope $s) { $this->scope = $s; }
 	public function getScope() { return $this->scope; }
 	
+	public function setInnerScope(Scope\Scope $s) { $this->innerScope = $s; }
+	public function getInnerScope() { return $this->innerScope; }
+	
 	public function setInputArgs(Func\Tuple $t) { $this->inputArgs = $t; }
 	public function getInputArgs() { return $this->inputArgs; }
 	
 	public function setOutputArgs(Func\Tuple $t) { $this->outputArgs = $t; }
 	public function getOutputArgs() { return $this->outputArgs; }
 	
-	public function initScope(Scope\Scope $scope = null)
+	public function initScope(Scope\Scope &$scope = null)
 	{
 		if ($scope) {
 			$s = new Scope\ScopeDeclaration;
+			$s->generateID();
 			$s->setUpper($scope);
 			$s->setDeclares($this);
+			$scope = $s;
 		} else {
 			$s = new Scope\ScopeRoot;
+			$s->generateID();
 			$s->setRootEntity($this);
+			$scope = $s;
 		}
+		$this->setScope($scope);
+		
+		$s = new Scope\Scope;
 		$s->generateID();
-		$this->setScope($s);
+		$s->setOuter($scope);
+		$this->setInnerScope($s);
+		
 		$this->inputArgs->initScope($s);
 		$this->outputArgs->initScope($s);
 		if ($this->body) $this->body->initScope($s);

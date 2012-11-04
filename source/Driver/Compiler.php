@@ -310,6 +310,15 @@ class Compiler
 			if ($expr->getOperator() == '=')
 				$snippet->exprRequired = true;
 		}
+		else if ($expr instanceof Entity\Expr\Operator\Unary) {
+			if ($expr->getOperand() instanceof Entity\Expr\Constant && $expr->getOperand()->getType() == 'string') {
+				$snippet->expr = "'{$expr->getOperand()->getValue()}'";
+			} else {
+				$os = $this->generateExprCode($expr->getOperand());
+				$snippet->stmts .= $os->stmts;
+				$snippet->expr = "{$expr->getOperator()}{$os->expr}";
+			}
+		}
 		else if ($expr instanceof Entity\Expr\Constant) {
 			if ($expr->getType() == 'string') {
 				$snippet->expr = "\"".$expr->getValue()."\"";
@@ -356,6 +365,13 @@ class Compiler
 			}
 			$snippet->expr = "$name(".implode(", ", $args).")";
 			$snippet->exprRequired = true;
+		}
+		else if ($expr instanceof Entity\Expr\ElementAccess) {
+			$es = $this->generateExprCode($expr->getExpr());
+			$is = $this->generateExprCode($expr->getIndex());
+			$snippet->stmts .= $es->stmts;
+			$snippet->stmts .= $is->stmts;
+			$snippet->expr = "{$es->expr}[{$is->expr}]";
 		}
 		else {
 			throw new \exception("Unable to generate expression code for ".vartype($expr));

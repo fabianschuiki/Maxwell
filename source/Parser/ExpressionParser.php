@@ -26,8 +26,6 @@ class ExpressionParser
 		}
 		
 		if ($tokens->count() >= 3) {
-			if ($tokens->backIs('symbol', '.', 1)) return static::parseMemberAccessExpr($tokens->backConsume(), $tokens->backConsume(), $tokens);
-			
 			//Binary Operators.
 			foreach (Language::$binaryOperators as $operators) {
 				for ($i = 1; $i < $tokens->count() - 1; $i++) {
@@ -52,6 +50,10 @@ class ExpressionParser
 					return static::parseUnaryPrefixOperator($op, $tokens);
 				}
 			}
+		}
+		
+		if ($tokens->count() >= 3) {
+			if ($tokens->backIs('symbol', '.', 1)) return static::parseMemberAccessExpr($tokens->backConsume(), $tokens->backConsume(), $tokens);
 		}
 		
 		if ($tokens->count() == 1) {

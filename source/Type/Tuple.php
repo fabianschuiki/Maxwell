@@ -6,6 +6,11 @@ class Tuple extends Type
 {
 	static public function makeWithFields(array $fields)
 	{
+		foreach ($fields as $n => $f) {
+			if (!$f instanceof Type) {
+				throw new \exception("Field '$n' is ".vartype($f)." instead of a Type.");
+			}
+		}
 		$t = new self;
 		$t->setFields($fields);
 		return $t;

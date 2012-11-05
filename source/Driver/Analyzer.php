@@ -282,7 +282,8 @@ class Analyzer
 				}
 			}
 			else if ($expr instanceof Entity\Expr\NativeType) {
-				$entity->setType(\Type\Native::makeWithName($expr->getName()));
+				$n = preg_replace('/\s+\*/', "*", $expr->getName());
+				$entity->setType(\Type\Native::makeWithName($n));
 			}
 			else {
 				IssueList::add('error', "Invalid type expression.", $expr->getHumanRangeIfPossible());
@@ -447,6 +448,7 @@ class Analyzer
 	{
 		foreach ($entity->getChildEntities() as $e)
 			$this->calculateInferredType($e);
+		if (IssueList::get()->isFatal()) return;
 		
 		if (isset($entity->analysis->type) && !$entity->analysis->type->inferred) {
 			$entity->analysis->type->inferred = $entity->analysis->type->initial;
@@ -478,9 +480,10 @@ class Analyzer
 			
 			if ($entity instanceof Entity\Expr\Operator\Unary) {
 				if ($entity->getOperator() == '&') {
+					echo "inferring type of & operator\n";
 					$t = $entity->getOperand()->analysis->type->inferred;
 					if (!$t instanceof \Type\Native) {
-						IssueList::add('error', "The pointer operator & is only allowed on native C types.", $entity);
+						IssueList::add('error', "The pointer operator & is not allowed on type {$t->toHumanReadableString()}, only on native C types.", $entity);
 					} else {
 						$entity->analysis->type->inferred = \Type\Native::makeWithName($t->getName()."*");
 					}
@@ -612,7 +615,11 @@ class Analyzer
 				throw new \exception("Argument tuple inferred type is null.");
 			}
 			$candidates = array_filter($entity->getCallee()->analysis->getCandidates(), function($c) use ($type) {
-				return \Type\Type::equal($c->analysis->type->initial->getInput(), $type);
+				$t = $c->analysis->type->initial->getInput();
+				if (!$t) {
+					throw new \exception("Inferred type of candidate {$c->getName()} input is null.");
+				}
+				return \Type\Type::equal($t, $type);
 			});
 			
 			if (count($candidates) == 1) {
@@ -626,7 +633,11 @@ class Analyzer
 				IssueList::add('error', "Multiple functions match type {$type->toHumanReadableString()} of the call.", $entity, $candidates);
 			}
 			else {
-				IssueList::add('error', "Call requires function to be of type {$type->toHumanReadableString()}, but none of the candidate functions is of this type.", $entity, $entity->getCallee()->analysis->getCandidates());
+				$msg = "Call requires function of type {$type->toHumanReadableString()}. Candidates are:";
+				foreach ($entity->getCallee()->analysis->getCandidates() as $candidate) {
+					$msg .= "\n{$candidate->getName()} {$candidate->analysis->type->initial->getInput()->toHumanReadableString()}";
+				}
+				IssueList::add('error', $msg, $entity, $entity->getCallee()->analysis->getCandidates());
 			}
 		} else {
 			foreach ($entity->getChildEntities() as $e)

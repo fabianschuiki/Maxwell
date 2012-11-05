@@ -250,7 +250,8 @@ class Compiler
 				$body .= "\t{$member->compiler->type->getCType()} {$member->compiler->getName()};\n";
 			}
 			
-			$snippet->stmts .= "$structName {\n$body};\n";
+			//$snippet->stmts .= "$structName {\n$body};\n";
+			$snippet->publicHeader .= "$structName {\n$body};\n";
 		}
 		if ($entity instanceof Entity\ExternalDeclaration) {
 			$snippet->publicHeader = "#include <{$entity->getName()}>\n";
@@ -348,7 +349,7 @@ class Compiler
 			$snippet->expr = "{$e->expr}$op{$expr->getName()}";
 		}
 		else if ($expr instanceof Entity\Expr\NewOp) {
-			$snippet->expr = "malloc(sizeof *({$expr->compiler->type->getCType()}))";
+			$snippet->expr = "malloc(sizeof({$expr->analysis->type->inferred->getDefinition()->compiler->getLocalName()}))";
 			$snippet->exprRequired = true;
 		}
 		else if ($expr instanceof Entity\Expr\Call) {

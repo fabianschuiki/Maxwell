@@ -28,6 +28,8 @@ class Compiler
 		$issues = IssueList::get();
 		
 		$precompileIDs = $this->entityIDs;
+		$precompiled = array();
+		$compileIDs = array();
 		while (count($precompileIDs) && !$issues->isFatal())
 		{
 			//Fetch the entity we're supposed to precompile.
@@ -37,9 +39,19 @@ class Compiler
 			
 			//Decide the entity names.
 			$this->calculateEntityNames($entity);
+			
+			//Mark this entity as to be compiled.
+			array_push($compileIDs, $entityID);
+			array_push($precompiled, $entityID);
+			
+			//Compile this entity's known entities.
+			foreach ($entity->getKnownEntities() as $known) {
+				if (!in_array($known->getID(), $precompiled, true) && !in_array($known->getID(), $precompileIDs, true)) {
+					array_push($precompileIDs, $known->getID());
+				}
+			}
 		}
 		
-		$compileIDs = $this->entityIDs;
 		while (count($compileIDs) && !$issues->isFatal())
 		{
 			//Fetch the entity we're supposed to compile.

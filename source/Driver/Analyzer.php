@@ -33,6 +33,7 @@ class Analyzer
 		
 		//Move the entity IDs into the initial type analysis queue.
 		$this->initialTypeQueue = $this->entityIDs;
+		$initialTypeDone = array();
 		
 		//Enter the main loop which proceeds as long as there are entities to analyze.
 		while (!$issues->isFatal())
@@ -42,7 +43,7 @@ class Analyzer
 				$entityID = array_shift($this->initialTypeQueue);
 				$entity = $entityStore->getEntity($entityID);
 				$entityStore->pushRootID($entityID);
-				echo "analyzing initial type of ".vartype($entity)."\n";
+				echo "analyzing initial type of ".vartype($entity)." {$entity->getName()}\n";
 				
 				//Bind all identifiers.
 				$this->bindIdents($entity);
@@ -62,10 +63,18 @@ class Analyzer
 				
 				//Queue this entity for type inference.
 				array_push($this->typeInferenceQueue, $entityID);
+				array_push($initialTypeDone, $entityID);
 				
 				//Store the entity back to disk.
 				$entityStore->popRootID($entityID);
 				$entityStore->persistEntity($entityID);
+				
+				//Analyze this entity's known entities.
+				foreach ($entity->getKnownEntities() as $known) {
+					if (!in_array($known->getID(), $initialTypeDone, true) && !in_array($known->getID(), $this->initialTypeQueue, true)) {
+						array_push($this->initialTypeQueue, $known->getID());
+					}
+				}
 			}
 			
 			//Type inference.

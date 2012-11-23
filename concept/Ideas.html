@@ -181,6 +181,74 @@ return (fetchPerson() or "unknown");</code>
 
 
 
+<h1>Types</h1>
+
+<h2>Member Accessors</h2>
+<p>Consider the following type:</p>
+<code>type Person {
+	var String name;
+	var int age;
+}</code>
+
+<h3>Direct Access</h3>
+<p>Accessing the members of the type should be as straightforward and easy as possible.</p>
+<code>var Person p = somePerson();
+var String n = p.name;
+p.name = "John Doe";</code>
+
+<p>This code yields the following C code:</p>
+<code>struct Person {
+	struct String *name;
+	int age;
+};
+struct Person *p = somePerson();
+struct String *s = p->name;
+p->name = String_new("John Doe");</code>
+
+<h3>Synchronized Direct Access</h3>
+<p>If the analyzer detects access to variable through multiple threads, it will protect the access through locks:</p>
+<code>struct Person {
+	struct String *name;
+	int age;
+	pthread_mutex_t name_mutex;
+	pthread_mutex_t age_mutex;
+};
+struct Person *p = somePerson();
+
+pthread_mutex_lock(&amp;p->name_mutex);
+struct String *s = p->name;
+pthread_mutex_unlock(&amp;p->name_mutex);
+
+pthread_mutex_lock(&amp;p->name_mutex);
+p->name = String_new("John Doe");
+pthread_mutex_unlock(&amp;p->name_mutex);</code>
+
+<h3>Accessors</h3>
+<p>The programmer may choose to provide their own setter and getter methods, in which case all member accesses will be performed through the accessors.:</p>
+<code>struct Person *p = somePerson();
+struct String *s = Person_get_name(p);
+Person_set_name(p, String_new("John Doe"));</code>
+
+<p>Member accesses inside their own accessor function will be performed through one of the <em>Direct Access</em> methods.</p>
+<code>func name= (Person p, String s) { p.name = s; }
+func main
+{
+	var Person p = somePerson();
+	p.name = "John Doe";
+}</code>
+<p>The previous code snippet will produce the following C code:</p>
+<code>void Person_set_name(struct Person *p, struct String *s)
+{
+	p->name = s;
+}
+void main()
+{
+	struct Person *p = somePerson();
+	Person_set_name(p, String_new("John Doe"));
+}</code>
+
+
+
 
 <h1>Random Code Snippets</h1>
 

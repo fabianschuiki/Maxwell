@@ -15,6 +15,5 @@ type String
 //Main function of the program.
 func main
 {
-	//var String s;
-	"Hello World";
+	var String s = "Hello World";
 }

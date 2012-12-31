@@ -3,21 +3,35 @@
  */
 package main
 
-/*external "stdio.h" {
-	func puts ($ const char *s) -> (int r);
-	func fopen ($ const char *path, $ const char *mode) -> ($ FILE *_);
-}*/
-
 type String
 {
+	var $const char* cstr;
+}
+
+func cstr (String s) -> ($const char* r)
+{
+	r = s.cstr;
 }
 
 func _makeString ($const char* s) -> (String r)
 {
+	r = new String;
+	r.cstr = s;
 }
 
 //Main function of the program.
 func main
 {
 	var String s = "Hello World";
+	println(s);
+}
+
+//Console tools.
+external "stdio.h" {
+	func puts($ const char* s) -> (int r);
+}
+
+func println (String line)
+{
+	puts(cstr(line));
 }

@@ -1,0 +1,93 @@
+@import url(http://yui.yahooapis.com/2.9.0/build/reset/reset-min.css);
+
+/* Load the required fonts. */
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400,300italic,400italic);
+@import url(http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic,700italic);
+
+/* Basic body. */
+body {
+	/*font-family: Ubuntu, sans-serif;
+	font-weight: 300;
+	font-size: 14px;
+	line-height: 1.3;*/
+	font: 300 14px/1.4 Lato, sans-serif;
+	padding: 2em;
+}
+
+code {
+	white-space: pre-wrap;
+	font: 14px/1.2 Ubuntu Mono, monospace;
+	background-color: #2e3436;
+	display: block;
+	padding: 0.75em 1em;
+	color: white;
+}
+
+em {
+	font-style: italic;
+}
+
+p > code {
+	display: inline;
+	padding: 0;
+	color: black;
+	background: none;
+}
+
+p {
+	margin: 1em 0;
+}
+
+body :first-child {
+	margin-top: 0;
+}
+
+h1, h2, h3 {
+	margin-top: 2em;
+	margin-bottom: 1em;
+}
+h1 {
+	font-size: 2em;
+}
+h2 {
+	font-size: 1.5em;
+}
+
+code > .comment {
+	color: #888a85;
+}
+code > .keyword {
+	font-weight: bold;
+}
+code > .type {
+	color: #8ae234;
+	font-weight: bold;
+}
+code > .function {
+	color: #729fcf;
+}
+code > .number {
+	color: #ad7fa8;
+}
+code > .string {
+	color: #fcaf3e;
+}
+code > .constant {
+	color: #ad7fa8;
+}
+code > .tag {
+	color: #e9b96e;
+}
+
+p > code > .keyword,
+p > code > .type,
+p > code > .function {
+	color: black;
+}
+
+li {
+	list-style: circle; outside;
+	margin-left: 1.5em;
+}
+li li {
+}

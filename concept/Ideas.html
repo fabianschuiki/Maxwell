@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Maxwell – Ideas</title>
+	<meta charset="utf-8"/>
+	<script src="http://code.jquery.com/jquery-1.6.2.min.js" type="text/javascript"></script>
+	<script src="include/include.js" type="text/javascript"></script>
+	<link rel="stylesheet" href="include/include.css" type="text/css" />
+</head>
+<body>
+
+<h1>If Expression</h1>
+<p>It should be possible to have complex if statements as expressions, similar to how cases are notated in mathematics.</p>
+<code>a.doSomethingWith({0 if x == "null", 1 otherwise});</code>
+<p>Or, in a more elaborate case:</p>
+<code>var int x = getUserInput();
+var String b = {
+	"0" if x == 0,
+	"1" if x == 1,
+	">1" otherwise };</code>
+
+
+<h1>"incase" Statement/Expression</h1>
+<p>The <em>incase</em> keyword should introduce a construct that implements and extends the well-known <em>switch and case</em> statement. The keyword may be used as a statement, taking statements or blocks as case arguments; or as an expression, taking any expressions as case arguments. The construct allows a sequence of binary operator expressions with the same left hand side operand and optionally the same operator to be written in a compact manner.</p>
+<code>var int x = getUserInput();
+if (x == 0)
+	doA();
+if (x == 1)
+	doB();
+if (x == 2)
+	doC();
+</code>
+<p>In the preceding code, all <em>if</em> statements share the same LHS operand and operator, namely <code>x ==</code>. Using the <code>incase</code> keword, these statements may be simplified to:</p>
+<code>incase x == 0: doA(), 1: doB(), 2: doC();
+
+// or easier to read on multiple lines
+incase x ==
+	0: doA(),
+	1: doB(),
+	2: doC();</code>
+
+<p>In case the LHS is the same but the operator changes:</p>
+<code>incase x == 0: doA(), &lt;= -1: doB(), &gt;= 1: doC();
+
+// or easier to read on multiple lines
+incase x
+	== 0: doA(),
+	&lt;= 1: doB(),
+	&gt;= 1: doC();</code>
+
+<p>To make it possible to contract <em>if/else if/else</em> constructs, the <code>otherwise</code> keyword allows for the <em>else</em> part:</p>
+<code>incase x == 0: doA(), 1: doB(), otherwise: doC();</code>
+
+
+<h1>Option Types</h1>
+<p>The planned type inferrence strongly suggests the support of option types, i.e. a special type that is a set of actual types. This allows a variable to be expressed as being either of type "A or B".</p>
+<code>var String|Error r = getUserInput();</code>
+
+<h2>Implications</h2>
+<p>One implication of option types is that it allows for very rigorous type checking. If <em>String</em> has a function <code>getLength()</code> and <em>Error</em> a function <code>getMessage()</code>, the statement…</p>
+<code>r.getLength();
+r.getMessage();</code>
+<p>…will throw an error, since neither of the two functions is supported by both types. In case there is some powerful assumption logic in place, the following would work:</p>
+<code>if (r isa String) {
+	//In this scope, r is of type String.
+	r.getLength();
+}
+if (r isa Error) {
+	//In this scope, r is of type Error.
+	r.getMessage();
+}</code>
+
+
+
+<h1>String Formatting</h1>
+<p>In general, there should be a function that allows a string to be formatted by replacing special template characters (e.g. <em>%s</em>) with appropriate values from a value map or array. Syntactic sugar should be available to make this process as easy as possible:</p>
+<code>var int x = 1;
+var float y = 1.2345;
+var String text = "We have an int %{x}, some float %{y} and a float as int %i{x}.";
+</code>
+<p>The last line of the snippet should automatically be converted to:</p>
+<code>var String text = "We have an int %i, some float %f and a float as int %i.".format([x, y, x]);</code>
+
+
+
+<h1>Nullable Types</h1>
+<p>Variables with an object type should not automatically accept <code>null</code> or <code>nil</code> as a value, even if the C backend has nullable pointers for free. This enables the programmer to clearly distinguish functions that always return a value and those that may return null.</p>
+<code>func loadWebsite -> (<span class="type">String|null</span>) { ... } //This function returns the contents of the website on success, or null if an error occurred.
+
+var String google = loadWebsite(); //Fails to compile, since the variable mustn't be null.
+var String|null google = loadWebsite(); //Works.</code>
+
+<h2>Implications</h2>
+<p>Combined with type inferrence and some powerful assumption logic, this allows for some nice error checking that may catch a lot of the classic <em>null-pointer dereferencing</em> issues at compile time:</p>
+<code>//loadWebsite() as above
+var any google = loadWebsite(); //Type detected to be String|null.
+
+//The following will fail and prevent a null-dereferencing segfault…
+var int length = google.length(); //…since no functions can be called on null.
+
+//The following will work…
+if (google == null)
+	return;
+var int length = google.length(); //…since the compiler assumes the variable to be of type String after the if-statement.</code>
+
+
+
+<h1>Interfaces / Typeclasses</h1>
+<p>Due to its generic nature, Maxwell only imposes those constraints on entity types that are vital for the program's integrity. Consider the following snippet of code:</p>
+<code>func describeWeight(thing) {
+	if (thing.weight &lt; 20)
+		return "light";
+	else
+		return "heavy";
+}</code>
+
+<p>When compiling, Maxwell would infer the type of <code>thing</code> to be anything that has a <code>weight</code> property. Typeclasses allow the programmer to explicitly restrict a generic type to meet a minimal standard of functionality that is required. The function above may be written more explicitly:</p>
+<code>//define a "weighable" object as something that has a weight assigned
+typeclass #weighable { var any weight; };
+
+//our function now describes the weight of something that is weighable
+func describeWeight(thing #weighable) { ... }</code>
+
+<p>Typeclasses look like a Twitter hashtag as they categorize an entity. Other definition syntaxes might look like:</p>
+<code>typeclass colored { ... }
+typeclass #colored { ... }
+
+tag colored { ... }
+tag #colored { ... }
+
+interface colored { ... }
+interface #colored { ... }</code>
+
+<h2>Simple Example</h2>
+<p>Having these hashtags helps improve the readability of Maxwell code and simplifies the task of analyzing what a certain snippet of code is doing. Consider the following snippet of code. For this section of the code, it is not important that <code>connection.receive()</code> returns a set of packets, but rather that it supports the <code>count()</code> and <code>get(var i)</code> functions, as they're required for the iteration.</p>
+<code>//we've setup a network connection where we receive packets
+var any packets #countable = connection.receive();
+
+//we don't care that these are packets, we just want to iterate over them
+for (var i = 0; i &lt; packets.count(); i++) {
+	var any packet = packets.get(i);
+	//... do something with it
+}</code>
+
+<h2>Nested Tags</h2>
+<p>Tags become even more useful if they may be nested and defined across multiple hierarchy levels. Consider the following example, in which <code>list</code> may be any collection whose objects are <code>#named</code>:</p>
+<code>typeclass #named { var name; }
+
+//we want to process an collection of objects whose name we're going to require
+var any list [#named] = connection.receive();
+for (var obj in list) {
+	console.print("received something called %{obj.name}\n");
+	//...
+}</code>
+
+<p>Or the following example with objects:</p>
+<code>typeclass #rgb { var r; var g; var b; }
+typeclass #colored { var color; }
+
+var any mesh #{color #rgb} = engine.getMesh();
+mesh.color.r = 1.0;
+mesh.color.g = 0.5;
+mesh.color.b = 0.0;
+
+//or more Maxwell-like:
+{ c.r = 1.0; c.g = 0.5; c.b = 0.0; } where c = mesh.color;
+
+//or even more Maxwell-like:
+mesh.color.(r,g,b) = (1.0, 0.5, 0.0);</code>
+
+
+
+<h1>In-case-null abbreviation</h1>
+<p>In C and C++ you tend to do things like:</p>
+<code>Person *p = fetchPerson();
+return (p ? p->getName() : "unknown");</code>
+
+<p>In Maxwell the following should be possible as an abbreviation, with the latter form to be preferred as it describes its operation better:</p>
+<code>return (fetchPerson() ?? "unknown");
+return (fetchPerson() or "unknown");</code>
+
+
+
+<h1>Types</h1>
+
+<h2>Member Accessors</h2>
+<p>Consider the following type:</p>
+<code>type Person {
+	var String name;
+	var int age;
+}</code>
+
+<h3>Direct Access</h3>
+<p>Accessing the members of the type should be as straightforward and easy as possible.</p>
+<code>var Person p = somePerson();
+var String n = p.name;
+p.name = "John Doe";</code>
+
+<p>This code yields the following C code:</p>
+<code>struct Person {
+	struct String *name;
+	int age;
+};
+struct Person *p = somePerson();
+struct String *s = p->name;
+p->name = String_new("John Doe");</code>
+
+<h3>Synchronized Direct Access</h3>
+<p>If the analyzer detects access to variable through multiple threads, it will protect the access through locks:</p>
+<code>struct Person {
+	struct String *name;
+	int age;
+	pthread_mutex_t name_mutex;
+	pthread_mutex_t age_mutex;
+};
+struct Person *p = somePerson();
+
+pthread_mutex_lock(&amp;p->name_mutex);
+struct String *s = p->name;
+pthread_mutex_unlock(&amp;p->name_mutex);
+
+pthread_mutex_lock(&amp;p->name_mutex);
+p->name = String_new("John Doe");
+pthread_mutex_unlock(&amp;p->name_mutex);</code>
+
+<h3>Accessors</h3>
+<p>The programmer may choose to provide their own setter and getter methods, in which case all member accesses will be performed through the accessors.:</p>
+<code>struct Person *p = somePerson();
+struct String *s = Person_get_name(p);
+Person_set_name(p, String_new("John Doe"));</code>
+
+<p>Member accesses inside their own accessor function will be performed through one of the <em>Direct Access</em> methods.</p>
+<code>func name= (Person p, String s) { p.name = s; }
+func main
+{
+	var Person p = somePerson();
+	p.name = "John Doe";
+}</code>
+<p>The previous code snippet will produce the following C code:</p>
+<code>void Person_set_name(struct Person *p, struct String *s)
+{
+	p->name = s;
+}
+void main()
+{
+	struct Person *p = somePerson();
+	Person_set_name(p, String_new("John Doe"));
+}</code>
+
+
+<h2>Values vs. Objects</h2>
+<p>Maxwell shall distinguish between values and objects, i.e. entities that are represent magnitude and identity.</p>
+
+<h3>Objects</h3>
+<p>Objects are entities that you instinctively assign an identity to. A person for example has a unique identity. Duplicating a person yields another entity which is not identical to the original.</p>
+<code>object Person {
+	var String name;
+	var int age;
+}</code>
+
+<p>Objects are treated as allocated memory locations in the resulting C code.</p>
+<code>func main
+{
+	var Person p = new Person;
+	p.name = "John Doe";
+	
+	var Person q = p;
+	q.age = 25;
+	
+	//p and q both represent the same Person, namely John Doe, age 25.
+}</code>
+
+<p>The previous code yields the following C code:</p>
+<code>struct Person {
+	struct String name;
+	int age;
+};
+
+void main()
+{
+	struct Person *p = Person_new();
+	p->name = String_new("John Doe");
+	struct Person *q = p;
+	q->age = 25;
+}</code>
+
+<h3>Values</h3>
+<p>Values are entities that have no identity and usually represent some form of magnitude or value. A vector for example has no identity. Two vectors with equal components are considered to be equal.</p>
+<code>value Vector {
+	var float x;
+	var float y;
+}</code>
+
+<p>Values are treated as structs that are copied around from function to function in the resulting C code.</p>
+<code>func main
+{
+	var Vector v;
+	v.x = 1;
+	
+	var Vector w = v;
+	w.y = 2;
+	
+	//v is a vector (1,0), w a vector (1,2).
+}</code>
+
+<p>The previous code yields the following C code:</p>
+<code>struct Value {
+	float x;
+	float y;
+};
+
+void main()
+{
+	struct Vector v = Vector_new();
+	v.x = 1;
+	struct Vector w = v;
+	w.y = 2;
+}</code>
+
+<h3>Example: String and Data</h3>
+<p>A string is usually considered a value. It represents a bunch of text. Copying around thousands of bytes for each string is inefficient though. This is where the value/object distinction comes in handy: A string may well be considered a value, the memory block containing the string data is not! A block of memory is unique and has an identity, two memory blocks with the same content are not equal, as they may cover different areas of the system memory.</p>
+<p>The concept of a string may be implemented as follows:</p>
+<code>value String {
+	var Blob bytes;
+}
+
+object Blob {
+	var $unsigned char* data;
+	var int size;
+}</code>
+
+
+
+
+<h1>Random Code Snippets</h1>
+
+<h2>Errors/Exceptions</h2>
+<code>type Shader
+{
+	var path;
+	var shader;
+	
+	func compile
+	{
+		//Open the file containing the shader code.
+		var f = File.open(path);
+		defer f.close();
+		
+		//Read the entire data.
+		var code = f.read();
+		var size = code.size;
+		
+		//Assign the code to the shader and compile.
+		glShaderSource(shader, 1, code, size);
+		glCompileShader(shader);
+		
+		//Check whether compilation went well.
+		var compiled;
+		glGetShaderiv(shader, GL_COMPILE_STATUS, compiled);
+		
+		//Throw an error if not.
+		if (!compiled) {
+			var l = 0;
+			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, l);
+			var GLchar[l] msg;
+			glGetShaderInfoLog(shader, l, l, msg);
+			throw Error (msg);
+		}
+		
+		//In case we encounter an error.
+		error {
+			throw Error ("Unable to compile shader %{path.name}.");
+		}
+	}
+}</code>
+
+<p>Running the above code with a path that does not point to a file (e.g. <code>"nowhere/test.frag"</code>), the <code>File.open()</code> factory will throw an error <code>"File nowhere/test.frag does not exist."</code>. Once this happens, the error handler will get called, with the file-not-found error stored in the <em>environment</em>. The error handler creates another Error object which will use the existing error in the environment as its <em>underlying error</em>. Converting the new error to text would yield <code>"Unable to compile shader test.frag. File nowhere/test.frag does not exist."</code>.</p>
+
+
+<h2>Error Handling in Files</h2>
+<p>When trying to open a file that does not exist, the <code>File</code> factory may either return <code>null</code> or throw an error, depending on what you're requested return type is:</p>
+<code>//The following will throw an error if the file doesn't exist:
+var f = File.open("test.txt"); //f inferred to be of type "File"
+f.read();
+
+//The following will return null if the file doesn't exist:
+var f = File.open("test.txt"); //f inferred to be of type "File|null"
+if (f == nil) return "failed!";
+f.read();</code>
+
+<p>Implementation of <code>File.open</code>:</p>
+<code>type File
+{
+	func open (path) -> (r)
+	{
+		if (!File.exists(path)) {
+			if (r maybe nil) {
+				return nil;
+			} else {
+				throw Error ("File %{path} does not exist.");
+			}
+		}
+	}
+}</code>
+<p>The <code>maybe</code> operator returns <code>true</code> if the expression on the left hand side may be of the type on the right hand side. In case of <code>File</code> it would return <code>false</code>, in case of <code>File|null</code> it would return <code>true</code>.</p>
+
+
+<h2>Deferred Statements</h2>
+<p>Inspired by the Go language, the <code>defer</code> keyword introduces a statement that is executed when the function is about to be terminated, either due to a <code>return</code> or a <code>throw</code>.</p>
+<code>func read
+{
+	var f = File.open("test.txt");
+	defer f.close();
+	
+	if (f.size &lt; 100) {
+		throw Error ("File %{f.path} too small.");
+		//f.close() will be executed here
+	}
+	
+	return f.read(100);
+	//f.close() will be executed here
+}</code>
+
+
+<h2>Factories vs. Constructors</h2>
+<p>Instead of constructors as in C++ it would be more convenient to have factory functions for types. This would make code more readable and the code inside the factory would not have the restrictions that apply to C++ constructors (e.g. no virtual function calls, etc.).</p>
+
+<code>type Vector
+{
+	var x;
+	var y;
+	var otherStuff;
+	
+	func new
+	{
+		var same v;
+		v.x = 0;
+		v.y = 0;
+		v.otherStuff = nil;
+		return v;
+	}
+	
+	func new (x,y)
+	{
+		var same v = new(); //does basic initialization
+		v.x = x;
+		v.y = y;
+		return v;
+	}
+}</code>
+
+
+<h2>Function Argument "Don't Care" Order</h2>
+<p>For certain functions, function argument order is irrelevant, i.e. <code>add(a,b)</code> and <code>add(b,a)</code> is equivalent. It should be possible to tell the compiler about this when defining a function.</p>
+
+<code>func multiply (Vector v', float f') -> (Vector r)
+{
+	r = v*f;
+}
+
+//allows the following code to work
+var Vector v;
+var float f;
+multiply(v,f);
+multiply(f,v);</code>
+
+</body>
+</html>

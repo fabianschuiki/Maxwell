@@ -1,0 +1,56 @@
+/*
+ * Some test file for debugging the parser.
+ */
+package parser
+import String
+import Array, Tokenizer, Scanner
+
+//Main function of the program.
+func main
+{
+	if (abcd) {
+	}
+	else if (zw436r) {
+	}
+	else {
+	}
+	
+	//Create a new list of issues and make it the topmost issue list.
+	var issues = new IssueList;
+	issues.push();
+	
+	//Open the source file.
+	var file = new Source.File("./lexer.mw");
+	
+	//Tokenize the contents of the file.
+	var lexer = new Lexer.Lexer (file);
+	lexer.run();
+	
+	//Store the tokens in a separate file.
+	var serializer = new Lexer.TokenSerializer (lexer.getTokens());
+	serializer.writeXML("./lexer.tokens");
+	
+	//Report the issues that occurred.
+	issues.pop();
+	issues.report();
+	
+	//Manually calling an operator should be possible as well.
+	issues.`+`(1,2);
+	
+	//Normal calls and named calls.
+	myFunction(1, 2, 3);
+	myFunction(a: 1, c: 3, b: 2);
+	
+	abcd; //try adding/removing the semicolon to provoke a warning
+}
+
+func debug (x,y) -> (r)
+{
+	[a,b,c]; //inline array
+	{a,b,c}; //inline set
+	{A: a, "B": b, 16: c, 19.5: d}; //inline map
+}
+
+func `*` (a,b) -> (r)
+{
+}

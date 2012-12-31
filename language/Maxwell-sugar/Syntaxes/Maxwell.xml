@@ -29,7 +29,7 @@
 		-->
 		<!-- Keywords -->
 		<zone name="keyword.control">
-			<expression>\b(if|else(\s*if)?|for|where|switch|case|casesof|isa|otherwise|assume|return|package|import)\b</expression>
+			<expression>\b(if|else(\s*if)?|for|where|switch|case|casesof|isa|otherwise|assume|return|package|import|external|var|new|typeclass|defer|env)\b</expression>
 		</zone>
 		
 		<!-- Built-in types -->
@@ -59,6 +59,21 @@
 			</starts-with>
 			<ends-with>
 				<expression>"</expression>
+				<capture number="0" name="punctuation.definition.end"/>
+			</ends-with>
+			<subzones>
+				<include collection="character-escapes" />
+			</subzones>
+		</zone>
+		
+		<!-- Backticks -->
+		<zone name="string.quoted.backtick">
+			<starts-with>
+				<expression>`</expression>
+				<capture number="0" name="punctuation.definition.begin"/>
+			</starts-with>
+			<ends-with>
+				<expression>`</expression>
 				<capture number="0" name="punctuation.definition.end"/>
 			</ends-with>
 			<subzones>

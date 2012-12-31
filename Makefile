@@ -1,17 +1,6 @@
-MWC=php/bin/mwc
-BUILD_DIR=build
-EXEC=${BUILD_DIR}/mwc
+INSTALL_DIR = /usr/local/Maxwell
 
-compile: strip ${EXEC}
-
-${EXEC}: ${BUILD_DIR} source/main.mw
-	${MWC} --debug -o ${EXEC} -b ${BUILD_DIR} source/main.mw
-
-${BUILD_DIR}:
-	mkdir -p ${BUILD_DIR}
-
-strip:
-	rm -R ${BUILD_DIR}/*
-
-debug: ${EXEC}
-	${EXEC}
+install:
+	mkdir -p "${INSTALL_DIR}"
+	cp -r source bin "${INSTALL_DIR}"
+	chmod +x "${INSTALL_DIR}"/bin/*

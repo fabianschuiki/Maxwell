@@ -1,0 +1,121 @@
+{
+	"name": "Maxwell",
+ 	"scopeName": "source.maxwell",
+ 	"fileTypes": ["mw"],
+ 	"patterns": [
+ 		{ "include": "#comments" },
+ 		{
+ 			"match": "\\b(if|else|otherwise|for|incase|throw|new|package|external|import|return|inherits|where)\\b",
+ 			"name": "keyword.control.maxwell"
+ 		},
+
+ 		{
+ 			"captures": {
+ 				"1": {
+ 					"name": "storage.type.maxwell"
+ 				},
+ 				"2": {
+ 					"name": "entity.name.function"
+ 				}
+ 			},
+			"match": "\\b(func)\\s+([^\\s]+)\\b"
+		},
+ 		{
+ 			"captures": {
+ 				"1": {
+ 					"name": "storage.type.maxwell"
+ 				},
+ 				"2": {
+ 					"name": "entity.name.class"
+ 				}
+ 			},
+			"match": "\\b(object|value)\\s+([^\\s]+)\\b"
+		},
+
+ 		{
+ 			"match": "\\b(func|type|value|object|var|byte|int|float|bool|String|Exception)\\b",
+ 			"name": "storage.type.maxwell"
+ 		},
+ 		{
+ 			"match": "\\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\\.?[0-9]*)|(\\.[0-9]+))((e|E)(\\+|-)?[0-9]+)?)\\b",
+ 			"name": "constant.numeric.maxwell"
+ 		},
+        {
+            "match": "\\b(this)\\b", 
+            "name": "variable.language.maxwell"
+        }, 
+        {
+            "match": "\\b(nil|true|false)\\b", 
+            "name": "constant.language.maxwell"
+        },
+        {
+            "captures": {
+                "1": {
+                    "name": "punctuation.whitespace.function-call.leading.maxwell"
+                }, 
+                "2": {
+                    "name": "support.function.any-method.maxwell"
+                }, 
+                "3": {
+                    "name": "punctuation.definition.parameters.maxwell"
+                }
+            }, 
+            "match": "(?x) (?: (?= \\s )  (?:(?<=else|new|return) | (?<!\\w)) (\\s+))?\n\t\t\t(\\b\n\t\t\t\t(?!(while|for|do|if|else|switch|catch|enumerate|return|r?iterate)\\s*\\()(?:(?!NS)[A-Za-z_][A-Za-z0-9_]*+\\b | :: )++                  # actual name\n\t\t\t)\n\t\t\t \\s*(\\()", 
+            "name": "meta.function-call.maxwell"
+        },
+
+ 		{
+ 			"begin": "\"",
+ 			"beginCaptures": {
+ 				"0": { "name": "punctuation.definition.string.begin.maxwell" }
+ 			},
+ 			"end": "\"",
+ 			"endCaptures": {
+ 				"0": { "name": "punctuation.definition.string.end.maxwell" }
+ 			},
+ 			"name": "string.quoted.double.maxwell"
+ 		}
+	],
+
+	"repository": {
+		"comments": {
+			"patterns": [
+				{
+					"captures": {
+						"1": {
+							"name": "meta.toc-list.banner.block.maxwell"
+						}
+					}, 
+					"match": "^/\\* =(\\s*.*?)\\s*= \\*/$\\n?", 
+					"name": "comment.block.maxwell"
+				}, 
+				{
+					"begin": "/\\*", 
+					"captures": {
+						"0": {
+							"name": "punctuation.definition.comment.maxwell"
+						}
+					}, 
+					"end": "\\*/", 
+					"name": "comment.block.maxwell"
+				}, 
+				{
+					"match": "\\*/.*\\n", 
+					"name": "invalid.illegal.stray-comment-end.maxwell"
+				}, 
+				{
+					"begin": "//", 
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.comment.maxwell"
+						}
+					}, 
+					"end": "$\\n?", 
+					"name": "comment.line.double-slash.maxwell"
+				}
+			]
+		}
+	},
+
+	"uuid": "194a6037-5ccb-4a00-8e1b-b92aa7fa024f"
+}

@@ -1,0 +1,90 @@
+#!/usr/bin/php
+<?php
+
+/**
+ * mwc
+ * 
+ * The Maxwell compiler.
+ */
+
+//Include the source autoloader.
+require_once __DIR__."/../source/autoload.php";
+error_reporting(E_ALL);
+
+
+//Parse the command line arguments.
+$options = array();
+$inputFiles = array();
+$switch = null;
+foreach (array_slice($argv, 1) as $arg) {
+	if ($switch) {
+		$options[$switch] = $arg;
+		$switch = null;
+	} else {
+		if ($arg[0] == "-") {
+			$switch = $arg;
+			$options[$switch] = false;
+		} else {
+			$inputFiles[] = $arg;
+		}
+	}
+}
+
+//Decide on a build directory.
+$buildDir = null;
+if ($b = @$options["-b"]) $buildDir = $b;
+if ($b = @$options["--build-dir"]) $buildDir = $b;
+if ($buildDir === false) {
+	die ("No build directory supplied with -b or --build-dir option.\n");
+}
+if (!$buildDir) {
+	$buildDir = "./build";
+}
+
+//Check the configuration for sanity.
+if (!count($inputFiles)) {
+	die ("No input files.\n");
+}
+
+
+//Setup an issue list to capture warnings and errors.
+$issues = new IssueList;
+$issues->push();
+
+//Create a new store manager for the desired output directory.
+$manager = new Store\Manager($buildDir);
+$manager->push();
+
+
+//Run the input files through the frontend.
+$frontend = new Driver\Frontend;
+$frontend->addFiles($inputFiles);
+$frontend->run();
+if ($issues->isFatal()) goto fatal_error;
+
+//Analyze all the entities that were contained in the input files.
+$analyzer = new Driver\Analyzer;
+foreach ($inputFiles as $inputFile) {
+	$ids = $manager->getEntityStore()->getEntityIDsInFile($inputFile);
+	$analyzer->addEntityIDs($ids);
+}
+$analyzer->run();
+if ($issues->isFatal()) goto fatal_error;
+
+//Compile the entities.
+$compiler = new Driver\Compiler;
+foreach ($inputFiles as $inputFile) {
+	$ids = $manager->getEntityStore()->getEntityIDsInFile($inputFile);
+	$compiler->addEntityIDs($ids);
+}
+$compiler->run();
+if ($issues->isFatal()) goto fatal_error;
+
+
+//Get rid of the manager.
+fatal_error:
+$manager->pop();
+
+//Show the issues stored in the issue list.
+$issues->pop();
+$issues->report();

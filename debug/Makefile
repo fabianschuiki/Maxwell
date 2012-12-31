@@ -1,14 +1,11 @@
-MWC=../php/bin/debug.php
-BUILD_DIR=build
-EXEC=${BUILD_DIR}/main
+MWC=../bin/mwc
+BUILD_DIR=../build
+EXEC=${BUILD_DIR}/mwc
 
-all: ${EXEC}
+compile: ${EXEC}
 
-${EXEC}: ${BUILD_DIR} *.mw
-	${MWC} -o ${EXEC} main.mw ${BUILD_DIR}
+${EXEC}: ${BUILD_DIR} main.mw
+	${MWC} --debug -o ${EXEC} -b ${BUILD_DIR} main.mw
 
 ${BUILD_DIR}:
-	mkdir ${BUILD_DIR}
-
-debug: ${EXEC}
-	${EXEC}
+	mkdir -p ${BUILD_DIR}

@@ -19,5 +19,7 @@ $dumper->run();
 
 $manager->pop();
 
+$fatal = $issues->isFatal();
 $issues->pop();
 $issues->report();
+exit($fatal ? 1 : 0);

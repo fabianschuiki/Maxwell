@@ -1,6 +1,7 @@
 <?php
 namespace Entity\Expr;
 use Source\Range;
+use Entity\Scope\Scope;
 
 class Constant extends Expr
 {
@@ -25,6 +26,16 @@ class Constant extends Expr
 	
 	public function setValue($v) { $this->value = $v; }
 	public function getValue() { return $this->value; }
+	
+	protected $scope;
+	
+	public function setScope(Scope $s) { $this->scope = $s; }
+	public function getScope() { return $this->scope; }
+	
+	public function initScope(Scope &$scope)
+	{
+		$this->setScope($scope);
+	}
 	
 	public function getChildEntities() { return array(); }
 }

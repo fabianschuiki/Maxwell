@@ -145,7 +145,7 @@ class Analyzer
 				//Try to bind the identifier to something in scope.
 				else {
 					$scope = $entity->getScope();
-					$result = null;
+					/*$result = null;
 					while ($scope) {
 						if ($scope instanceof Entity\Scope\ScopeDeclaration) {
 							if ($scope->getDeclares()->getName() == $entity->getName()) {
@@ -177,7 +177,8 @@ class Analyzer
 							$scope = $s;
 						else
 							$scope = $scope->getOuter();
-					}
+					}*/
+					$result = $this->findNameInScope($entity->getName(), $scope);
 					
 					if ($result) {
 						$entity->analysis->binding->target = $result;
@@ -397,7 +398,12 @@ class Analyzer
 							$entity->analysis->type->initial = \Type\Builtin::makeWithName("int");
 					} break;
 					case 'string': {
-						$entity->analysis->type->initial = \Type\Builtin::makeWithName("String");
+						$t = $this->findTypeInScope("String", $entity->getScope());
+						if (!$t) {
+							IssueList::add('error', "String constants require a 'String' class to be defined.", $entity);
+						} else {
+							$entity->analysis->type->initial = $t;//\Type\Builtin::makeWithName("String");
+						}
 					} break;
 				}
 			}
@@ -643,5 +649,52 @@ class Analyzer
 			foreach ($entity->getChildEntities() as $e)
 				$this->chooseCallCandidate($e);
 		}
+	}
+	
+	private function findNameInScope($name, Entity\Scope\Scope $scope)
+	{
+		$result = null;
+		while ($scope) {
+			if ($scope instanceof Entity\Scope\ScopeDeclaration) {
+				if ($scope->getDeclares()->getName() == $name) {
+					$result = $scope->getDeclares();
+					break;
+				}
+			}
+			if ($scope instanceof Entity\Scope\ScopeRoot) {
+				foreach ($scope->getRootEntity()->getKnownEntities() as $e) {
+					if ($e instanceof \Entity\ExternalDeclaration) {
+						foreach ($e->getDeclarations() as $decl) {
+							if ($decl->getName() == $name) {
+								$result = $decl;
+								break;
+							}
+						}
+					}
+					else if ($e->getName() == $name) {
+						$result = $e;
+						break;
+					}
+					if ($result) break;
+				}
+				if ($result) break;
+			}
+			
+			//Jump to the previous scope, or the outer scope if we're at the beginning.
+			if ($s = $scope->getUpper())
+				$scope = $s;
+			else
+				$scope = $scope->getOuter();
+		}
+		return $result;
+	}
+	
+	private function findTypeInScope($name, Entity\Scope\Scope $scope)
+	{
+		$t = $this->findNameInScope($name, $scope);
+		if ($t) {
+			return \Type\Defined::makeWithDefinition($t);
+		}
+		return null;
 	}
 }

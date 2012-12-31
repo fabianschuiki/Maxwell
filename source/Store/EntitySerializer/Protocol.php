@@ -28,7 +28,7 @@ class Protocol
 		$this->register('Expr\VarDef', "var", array("&name", "@type", "@initial", "@scope"));
 		$this->register('Expr\Type', "type-expr", array("@expr"));
 		$this->register('Expr\Identifier', "identifier", array("&name", "*scope"));
-		$this->register('Expr\Constant', "constant", array("&type", "&value"));
+		$this->register('Expr\Constant', "constant", array("&type", "&value", "*scope"));
 		$this->register('Expr\Operator\Binary', "binary-op", array("&operator", "@LHS", "@RHS"));
 		$this->register('Expr\Operator\Unary', "unary-op", array("&operator", "@operand"));
 		$this->register('Expr\NewOp', "new", array("@type"));

@@ -41,8 +41,9 @@ class ExpressionParser
 		
 		if ($tokens->count() >= 2) {
 			if ($tokens->is('group', '()')) {
-				IssueList::add('error', "Cast operator not yet implemented.", $tokens->consume());
-				return null;
+				/*IssueList::add('error', "Cast operator not yet implemented.", $tokens->consume());
+				return null;*/
+				return static::parseCastExpr($tokens->consume(), $tokens);
 			}
 			if ($tokens->backIs('group', '()')) return static::parseCallExpr($tokens->backConsume(), $tokens);
 			if ($tokens->backIs('group', '[]')) return static::parseElementAccessExpr($tokens->backConsume(), $tokens);
@@ -65,6 +66,7 @@ class ExpressionParser
 			if ($tokens->is('number') || $tokens->is('string')) return new AST\Expr\Constant($tokens->consume());
 			if ($tokens->is('group', '[]')) return static::parseInlineArray($tokens->consume());
 			if ($tokens->is('group', '{}')) return static::parseInlineSetOrMap($tokens->consume());
+			if ($tokens->is('group', '()')) return static::parseExpr($tokens->consume()->getStrippedTokens());
 		}
 		
 		IssueList::add('error', "Unable to parse expression.", ($tokens->isEmpty() ? $range : $tokens->getTokens()));
@@ -292,5 +294,20 @@ class ExpressionParser
 		if (!$index) return null;
 		
 		return new AST\Expr\ElementAccess($expr, $index, $accessor);
+	}
+	
+	static public function parseCastExpr(TokenGroup $typeGroup, TokenList $tokens)
+	{
+		$typeTokens = $typeGroup->getStrippedTokens();
+		if ($typeTokens->isEmpty()) {
+			IssueList::add('error', "Cast operator requires a type inside ().", $typeGroup);
+		}
+		$type = static::parseExpr($typeTokens);
+		if (!$type) return null;
+		
+		$expr = static::parseExpr($tokens);
+		if (!$expr) return null;
+		
+		return new AST\Expr\Cast($type, $expr, $typeGroup);
 	}
 }

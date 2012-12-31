@@ -39,6 +39,7 @@ class Protocol
 		$this->register('Expr\Call\Callee', "call-callee", array("@expr"));
 		$this->register('Expr\NativeType', "native-type", array("&name"));
 		$this->register('Expr\ElementAccess', "element-access", array("@expr", "@index"));
+		$this->register('Expr\Cast', "cast", array("@type", "@expr"));
 		
 		//Scope
 		$this->register('Scope\Scope', "scope", array("*upper", "*outer"));

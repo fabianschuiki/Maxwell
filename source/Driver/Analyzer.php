@@ -429,6 +429,19 @@ class Analyzer
 				}
 				$entity->analysis->type->initial = \Type\Func::makeWithArgs($entity->getInputArgs()->analysis->type->initial, $output);
 			}
+			
+			if ($entity instanceof Entity\Expr\Cast) {
+				$t = $entity->getType();
+				if (!$t) {
+					IssueList::add('error', "Type of cast is invalid.", $entity);
+				} else {
+					$tt = $t->getType();
+					$entity->analysis->type->initial = $tt;
+					if (!$tt) {
+						IssueList::add('error', "Cast has invalid type expression.", $t, $entity);
+					}
+				}
+			}
 		}
 	}
 	

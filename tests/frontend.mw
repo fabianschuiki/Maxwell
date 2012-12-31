@@ -39,7 +39,7 @@ func println (String line)
 /** Concatenates the two strings. */
 func concatenate (String s1, String s2) -> (String r)
 {
-	/*var int l1 = strlen(s1.cstr);
+	var int l1 = strlen(s1.cstr);
 	var int l2 = strlen(s2.cstr);
 	var int totalLength = l1 + l2;
 
@@ -48,9 +48,7 @@ func concatenate (String s1, String s2) -> (String r)
 	strcpy(($char*)((int)tmp + l1), cstr(s2));
 	tmp[totalLength] = 0;
 
-	r.cstr = ($const char*)tmp;*/
-	var int v;
-	var float f = (float)(v + 4);
+	r.cstr = ($const char*)tmp;
 }
 
 external "string.h" {

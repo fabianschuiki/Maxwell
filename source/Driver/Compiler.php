@@ -386,6 +386,11 @@ class Compiler
 			$snippet->stmts .= $is->stmts;
 			$snippet->expr = "{$es->expr}[{$is->expr}]";
 		}
+		else if ($expr instanceof Entity\Expr\Cast) {
+			$es = $this->generateExprCode($expr->getExpr());
+			$snippet->stmts .= $es->stmts;
+			$snippet->expr = "({$expr->compiler->type->getCType()})({$es->expr})";
+		}
 		else {
 			throw new \exception("Unable to generate expression code for ".vartype($expr));
 		}

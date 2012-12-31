@@ -26,6 +26,36 @@ abstract class Entity extends Node
 	public function initScope(Scope\Scope $scope = null) {}
 	abstract public function getChildEntities();
 	
+	/** Returns a string clearly identifying this entity. Not to be shown to the end user, but
+	 * rather to be used in exceptions and the like. */
+	public function getInternalDescription()
+	{
+		$s = get_class($this);
+		if ($this->range) $s .= " ".$this->range->toString();
+		return $s;
+	}
+	
+	/** The entity containing this entity. */
+	protected $parent;
+	
+	public function getParent()
+	{
+		if (!$this->parent) {
+			throw new \RuntimeException($this->getInternalDescription()." does not have a parent.");
+		}
+		return $this->parent;
+	}
+	
+	public function setParent(Entity $p)
+	{
+		$this->parent = $p;
+	}
+	
+	public function replaceChild(Entity $child, Entity $with)
+	{
+		throw new \InvalidArgumentException($this->getInternalDescription()." does not implement replaceChild().");
+	}
+	
 	
 	public $analysis;
 	public $compiler;

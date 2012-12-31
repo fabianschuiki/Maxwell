@@ -3,6 +3,7 @@ namespace Entity\Expr;
 use Entity\Scope\Scope;
 use Entity\Scope\ScopeDeclaration;
 use Source\Range;
+use Entity\Entity;
 
 class VarDef extends Expr
 {
@@ -25,10 +26,10 @@ class VarDef extends Expr
 	public function setName($n) { $this->name = $n; }
 	public function getName() { return $this->name; }
 	
-	public function setType(Type $t) { $this->type = $t; }
+	public function setType(Type $t) { $this->type = $t; $t->setParent($this); }
 	public function getType() { return $this->type; }
 	
-	public function setInitial(Expr $i) { $this->initial = $i; }
+	public function setInitial(Expr $i) { $this->initial = $i; $i->setParent($this); }
 	public function getInitial() { return $this->initial; }
 	
 	
@@ -53,5 +54,16 @@ class VarDef extends Expr
 	public function getChildEntities()
 	{
 		return array_filter(array($this->type, $this->initial));
+	}
+	
+	public function replaceChild(Entity $child, Entity $with)
+	{
+		if ($child === $this->type) {
+			$this->setType($with);
+		} else if ($child === $this->initial) {
+			$this->setInitial($with);
+		} else {
+			throw $this->makeUnknownChildException($child);
+		}
 	}
 }

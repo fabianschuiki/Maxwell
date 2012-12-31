@@ -12,6 +12,10 @@ type String
 {
 }
 
+func _makeString (String s) -> (String r)
+{
+}
+
 //Main function of the program.
 func main
 {

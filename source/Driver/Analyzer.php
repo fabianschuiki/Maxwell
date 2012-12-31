@@ -45,6 +45,10 @@ class Analyzer
 				$entityStore->pushRootID($entityID);
 				//echo "analyzing initial type of ".vartype($entity)." {$entity->getName()}\n";
 				
+				//Wrap inline constants (strings, arrays, etc.).
+				$this->wrapInlineConstants($entity);
+				if ($issues->isFatal()) break;
+				
 				//Bind all identifiers.
 				$this->bindIdents($entity);
 				if ($issues->isFatal()) break;
@@ -696,5 +700,51 @@ class Analyzer
 			return \Type\Defined::makeWithDefinition($t);
 		}
 		return null;
+	}
+	
+	private function wrapInlineConstants(Entity\Entity $entity)
+	{
+		foreach ($entity->getChildEntities() as $e)
+			$this->wrapInlineConstants($e);
+		if (IssueList::get()->isFatal()) return;
+		
+		//Wrap string constants in an appropriate initializer function.
+		if ($entity instanceof Entity\Expr\Constant && $entity->getType() == "string") {
+			IssueList::add('note', "Wrapping string constant.", $entity);
+			
+			//Create a new call.
+			$ident = new Entity\Expr\Identifier;
+			$ident->generateID();
+			$ident->setName("_makeString");
+			$ident->setRange($entity->getRange());
+			
+			$callee = new Entity\Expr\Call\Callee;
+			$callee->generateID();
+			$callee->setExpr($ident);
+			$callee->setRange($entity->getRange());
+			
+			$arg = new Entity\Expr\Call\Argument;
+			$arg->generateID();
+			$arg->setExpr($entity);
+			$arg->setRange($entity->getRange());
+			
+			$tuple = new Entity\Expr\Call\Tuple;
+			$tuple->generateID();
+			$tuple->setArgs(array($arg));
+			$tuple->setRange($entity->getRange());
+			
+			$call = new Entity\Expr\Call;
+			$call->generateID();
+			$call->setCallee($callee);
+			$call->setArgs($tuple);
+			$call->setRange($entity->getRange());
+			
+			//Replace the constant with this call.
+			$parent = $entity->getParent();
+			$parent->replaceChild($entity, $call);
+			
+			//Initialize the scope.
+			$call->initScope($entity->getScope());
+		}
 	}
 }

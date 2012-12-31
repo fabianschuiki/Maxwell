@@ -30,14 +30,16 @@ abstract class Entity extends Node
 	 * rather to be used in exceptions and the like. */
 	public function getInternalDescription()
 	{
-		$s = get_class($this);
+		$s = get_class($this)."(".$this->getId();
 		if ($this->range) $s .= " ".$this->range->toString();
+		$s .= ")";
 		return $s;
 	}
 	
 	/** The entity containing this entity. */
 	protected $parent;
 	
+	/** Returns the entity's parent entity. Throws an exception if there is none. */
 	public function getParent()
 	{
 		if (!$this->parent) {
@@ -46,11 +48,13 @@ abstract class Entity extends Node
 		return $this->parent;
 	}
 	
+	/** Sets the entity's parent entity which cannot be null. */
 	public function setParent(Entity $p)
 	{
 		$this->parent = $p;
 	}
 	
+	/** Replaces the given child with another entity. Throws an exception if the child is not part of the entity. */
 	public function replaceChild(Entity $child, Entity $with)
 	{
 		throw new \InvalidArgumentException($this->getInternalDescription()." does not implement replaceChild().");
@@ -64,5 +68,12 @@ abstract class Entity extends Node
 	{
 		$this->analysis = \Analysis\Node\Node::makeForEntity($this);
 		$this->compiler = \Compiler\Node\Node::makeForEntity($this);
+	}
+	
+	
+	/* Convenience Utilities */
+	protected function makeUnknownChildException(Entity $child)
+	{
+		return new \InvalidArgumentException("{$this->getInternalDescription()} does not contain child {$child->getInternalDescription()}.");
 	}
 }

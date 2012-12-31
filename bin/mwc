@@ -80,6 +80,22 @@ foreach ($inputFiles as $inputFile) {
 $compiler->run();
 if ($issues->isFatal()) goto fatal_error;
 
+//Feed the entities through gcc.
+$files = array();
+foreach ($inputFiles as $inputFile) {
+	$ids = $manager->getEntityStore()->getEntityIDsInFile($inputFile);
+	foreach ($ids as $id) {
+		$path = $manager->getCodeStore()->getPathToCFile($id);
+		if (file_exists($path)) $files[] = $path;
+	}
+}
+$compiledFile = $buildDir."/".basename($inputFile, ".mw");
+$gcc_cmd = "gcc -o ".escapeshellarg($compiledFile);
+foreach ($files as $f) {
+	$gcc_cmd .= " ".escapeshellarg($f);
+}
+passthru($gcc_cmd);
+
 
 //Get rid of the manager.
 fatal_error:

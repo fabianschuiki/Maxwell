@@ -32,6 +32,11 @@ class CodeStore
 		return "{$this->dir}/$id";
 	}
 	
+	public function getPathToCFile($id)
+	{
+		return $this->getPathToCode($id).".c";
+	}
+	
 	static private function ensureDirExists($path)
 	{
 		$dir = dirname($path);

@@ -720,7 +720,6 @@ class Analyzer
 					if ($expr->getName() == "_makeString") return;
 				}
 			}
-			IssueList::add('note', "Wrapping string constant.", $entity);
 			
 			//Create a new call.
 			$ident = new Entity\Expr\Identifier;

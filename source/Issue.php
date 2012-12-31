@@ -99,7 +99,7 @@ class Issue
 			$sfr = basename($source->getPath());
 			if ($this->range) {
 				$sfr .= ':';
-				$sfr .= ($this->range->getStart()->getLine()+1).':'.$this->range->getStart()->getColumn();
+				$sfr .= ($this->range->getStart()->getLine()+1).':'.($this->range->getStart()->getColumn()+1);
 			}
 			$msg = "$sfr: $msg";
 		}

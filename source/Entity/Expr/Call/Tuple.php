@@ -24,7 +24,7 @@ class Tuple extends Expr
 	
 	protected $args;
 	
-	public function setArgs(array $a) { $this->args = $a; }
+	public function setArgs(array $a) { $this->args = $a; foreach($a as $arg) $arg->setParent($this); }
 	public function getArgs() { return $this->args; }
 	
 	public function initScope(\Entity\Scope\Scope &$scope)

@@ -710,6 +710,15 @@ class Analyzer
 		
 		//Wrap string constants in an appropriate initializer function.
 		if ($entity instanceof Entity\Expr\Constant && $entity->getType() == "string") {
+			$parent = $entity->getParent();
+			
+			//Check whether the constant is already wrapped.
+			if ($parent instanceof Entity\Expr\Call\Argument) {
+				$call = $parent->getParent()->getParent(); //Call
+				if (($expr = $call->getCallee()->getExpr()) instanceof Entity\Expr\Identifier) {
+					if ($expr->getName() == "_makeString") return;
+				}
+			}
 			IssueList::add('note', "Wrapping string constant.", $entity);
 			
 			//Create a new call.
@@ -740,7 +749,6 @@ class Analyzer
 			$call->setRange($entity->getRange());
 			
 			//Replace the constant with this call.
-			$parent = $entity->getParent();
 			$parent->replaceChild($entity, $call);
 			
 			//Initialize the scope.

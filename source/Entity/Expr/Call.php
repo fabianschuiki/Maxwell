@@ -18,10 +18,10 @@ class Call extends Expr
 	protected $callee;
 	protected $args;
 	
-	public function setCallee(Call\Callee $c) { $this->callee = $c; }
+	public function setCallee(Call\Callee $c) { $this->callee = $c; $c->setParent($this); }
 	public function getCallee() { return $this->callee; }
 	
-	public function setArgs(Call\Tuple $a) { $this->args = $a; }
+	public function setArgs(Call\Tuple $a) { $this->args = $a; $a->setParent($this); }
 	public function getArgs() { return $this->args; }
 	
 	

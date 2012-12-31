@@ -19,7 +19,7 @@ class Argument extends \Entity\Entity
 	public function setName($n) { $this->name = $n; }
 	public function getName() { return $this->name; }
 	
-	public function setExpr(\Entity\Expr\Expr $e) { $this->expr = $e; }
+	public function setExpr(\Entity\Expr\Expr $e) { $this->expr = $e; $e->setParent($this); }
 	public function getExpr() { return $this->expr; }
 	
 	public function initScope(\Entity\Scope\Scope &$scope)

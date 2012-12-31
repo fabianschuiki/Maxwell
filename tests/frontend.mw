@@ -12,7 +12,7 @@ type String
 {
 }
 
-func _makeString (String s) -> (String r)
+func _makeString ($const char* s) -> (String r)
 {
 }
 

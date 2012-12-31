@@ -402,12 +402,13 @@ class Analyzer
 							$entity->analysis->type->initial = \Type\Builtin::makeWithName("int");
 					} break;
 					case 'string': {
-						$t = $this->findTypeInScope("String", $entity->getScope());
+						/*$t = $this->findTypeInScope("String", $entity->getScope());
 						if (!$t) {
 							IssueList::add('error', "String constants require a 'String' class to be defined.", $entity);
 						} else {
 							$entity->analysis->type->initial = $t;//\Type\Builtin::makeWithName("String");
-						}
+						}*/
+						$entity->analysis->type->initial = \Type\Native::makeWithName("const char*");
 					} break;
 				}
 			}

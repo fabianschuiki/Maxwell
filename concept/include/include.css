@@ -84,3 +84,10 @@ p > code > .type,
 p > code > .function {
 	color: black;
 }
+
+li {
+	list-style: circle; outside;
+	margin-left: 1.5em;
+}
+li li {
+}

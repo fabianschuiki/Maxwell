@@ -248,6 +248,88 @@ void main()
 }</code>
 
 
+<h2>Values vs. Objects</h2>
+<p>Maxwell shall distinguish between values and objects, i.e. entities that are represent magnitude and identity.</p>
+
+<h3>Objects</h3>
+<p>Objects are entities that you instinctively assign an identity to. A person for example has a unique identity. Duplicating a person yields another entity which is not identical to the original.</p>
+<code>object Person {
+	var String name;
+	var int age;
+}</code>
+
+<p>Objects are treated as allocated memory locations in the resulting C code.</p>
+<code>func main
+{
+	var Person p = new Person;
+	p.name = "John Doe";
+	
+	var Person q = p;
+	q.age = 25;
+	
+	//p and q both represent the same Person, namely John Doe, age 25.
+}</code>
+
+<p>The previous code yields the following C code:</p>
+<code>struct Person {
+	struct String name;
+	int age;
+};
+
+void main()
+{
+	struct Person *p = Person_new();
+	p->name = String_new("John Doe");
+	struct Person *q = p;
+	q->age = 25;
+}</code>
+
+<h3>Values</h3>
+<p>Values are entities that have no identity and usually represent some form of magnitude or value. A vector for example has no identity. Two vectors with equal components are considered to be equal.</p>
+<code>value Vector {
+	var float x;
+	var float y;
+}</code>
+
+<p>Values are treated as structs that are copied around from function to function in the resulting C code.</p>
+<code>func main
+{
+	var Vector v;
+	v.x = 1;
+	
+	var Vector w = v;
+	w.y = 2;
+	
+	//v is a vector (1,0), w a vector (1,2).
+}</code>
+
+<p>The previous code yields the following C code:</p>
+<code>struct Value {
+	float x;
+	float y;
+};
+
+void main()
+{
+	struct Vector v = Vector_new();
+	v.x = 1;
+	struct Vector w = v;
+	w.y = 2;
+}</code>
+
+<h3>Example: String and Data</h3>
+<p>A string is usually considered a value. It represents a bunch of text. Copying around thousands of bytes for each string is inefficient though. This is where the value/object distinction comes in handy: A string may well be considered a value, the memory block containing the string data is not! A block of memory is unique and has an identity, two memory blocks with the same content are not equal, as they may cover different areas of the system memory.</p>
+<p>The concept of a string may be implemented as follows:</p>
+<code>value String {
+	var Blob bytes;
+}
+
+object Blob {
+	var $unsigned char* data;
+	var int size;
+}</code>
+
+
 
 
 <h1>Random Code Snippets</h1>

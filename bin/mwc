@@ -102,5 +102,7 @@ fatal_error:
 $manager->pop();
 
 //Show the issues stored in the issue list.
+$fatal = $issues->isFatal();
 $issues->pop();
 $issues->report();
+exit($fatal ? 1 : 0);

@@ -1,0 +1,15 @@
+/*
+ * Copyright © 2013 Fabian Schuiki
+ * Simple program that demonstrates an issue with nested imports. util/Console
+ * requires util/String to work properly.
+ */
+package main
+import "util/String"
+import "util/Console" //imports String as well
+
+//Main function of the program.
+func main
+{
+	var String s = "Hello World";
+	println(s);
+}

@@ -1,0 +1,43 @@
+/*
+ * Copyright © 2013 Fabian Schuiki.
+ * An implementation for the String type.
+ */
+
+/** The basic string type. */
+type String
+{
+	var $const char* cstr;
+}
+
+/** Converts the String to a const char* C string. */
+func cstr (String s) -> ($const char* r)
+{
+	r = s.cstr;
+}
+
+/** Used internally to convert a const char* C string to a Maxwell String. */
+func _makeString ($const char* s) -> (String r)
+{
+	r = new String;
+	r.cstr = s;
+}
+
+/** Concatenates the two strings. */
+func concatenate (String s1, String s2) -> (String r)
+{
+	var int l1 = strlen(s1.cstr);
+	var int l2 = strlen(s2.cstr);
+	var int totalLength = l1 + l2;
+
+	var $char* tmp = ($char*)malloc(totalLength + 1);
+	strcpy(tmp, s1);
+	strcpy(($char*)((int)tmp + l1), s2);
+	tmp[totalLength] = 0;
+
+	r.cstr = ($const char*)tmp;
+}
+
+external "string.h" {
+	func strlen ($const char* s) -> (int r);
+	func strcpy ($char* dst, $const char* src);
+}

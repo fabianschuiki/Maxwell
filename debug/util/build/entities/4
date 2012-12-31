@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<root id="4" file="String.mw">
+	<entities>
+		<function id="4" range="469:25:0-620:30:1" humanRange="469:25:0-485:25:16" name="concatenate" inputArgs="4.34" outputArgs="4.42" body="4.1" scope="4.46" innerScope="4.47" />
+		<func-tuple id="4.34" range="487:25:18-507:25:38">
+			<arg id="4.35" />
+			<arg id="4.38" />
+		</func-tuple>
+		<func-arg id="4.35" range="487:25:18-496:25:27" name="s1" type="4.36" scope="4.48" />
+		<type-expr id="4.36" range="487:25:18-493:25:24" expr="4.37" />
+		<identifier id="4.37" range="487:25:18-493:25:24" name="String" scope="4.47" />
+		<scope-declaration id="4.48" upper="4.47" declares="4.35" />
+		<func-arg id="4.38" range="498:25:29-507:25:38" name="s2" type="4.39" scope="4.49" />
+		<type-expr id="4.39" range="498:25:29-504:25:35" expr="4.41" />
+		<identifier id="4.41" range="498:25:29-504:25:35" name="String" scope="4.48" />
+		<scope-declaration id="4.49" upper="4.48" declares="4.38" />
+		<func-tuple id="4.42" range="513:25:44-521:25:52">
+			<arg id="4.43" />
+		</func-tuple>
+		<func-arg id="4.43" range="513:25:44-521:25:52" name="r" type="4.44" scope="4.51" />
+		<type-expr id="4.44" range="513:25:44-519:25:50" expr="4.45" />
+		<identifier id="4.45" range="513:25:44-519:25:50" name="String" scope="4.49" />
+		<scope-declaration id="4.51" upper="4.49" declares="4.43" />
+		<block id="4.1" range="523:26:0-620:30:1" headScope="4.52" tailScope="4.55">
+			<stmt id="4.2" />
+			<stmt id="4.14" />
+			<stmt id="4.26" />
+		</block>
+		<scope id="4.52" outer="4.51" />
+		<expr-stmt id="4.2" range="526:27:1-555:27:30" expr="4.3" />
+		<var id="4.3" range="526:27:1-545:27:20" humanRange="534:27:9-536:27:11" name="l1" type="4.4" initial="4.6" scope="4.53" />
+		<type-expr id="4.4" range="530:27:5-533:27:8" expr="4.5" />
+		<identifier id="4.5" range="530:27:5-533:27:8" name="int" scope="4.52" />
+		<call id="4.6" range="539:27:14-545:27:20" callee="4.7" args="4.9" />
+		<call-callee id="4.7" range="539:27:14-545:27:20" expr="4.8" />
+		<identifier id="4.8" range="539:27:14-545:27:20" name="strlen" scope="4.52" />
+		<call-tuple id="4.9" range="546:27:21-553:27:28">
+			<arg id="4.11" />
+		</call-tuple>
+		<call-arg id="4.11" range="546:27:21-553:27:28" expr="4.12" />
+		<member-access id="4.12" range="546:27:21-553:27:28" humanRange="549:27:24-553:27:28" expr="4.13" name="cstr" />
+		<identifier id="4.13" range="546:27:21-548:27:23" name="s1" scope="4.52" />
+		<scope-declaration id="4.53" upper="4.52" declares="4.3" />
+		<expr-stmt id="4.14" range="557:28:1-586:28:30" expr="4.15" />
+		<var id="4.15" range="557:28:1-576:28:20" humanRange="565:28:9-567:28:11" name="l2" type="4.16" initial="4.18" scope="4.54" />
+		<type-expr id="4.16" range="561:28:5-564:28:8" expr="4.17" />
+		<identifier id="4.17" range="561:28:5-564:28:8" name="int" scope="4.53" />
+		<call id="4.18" range="570:28:14-576:28:20" callee="4.19" args="4.22" />
+		<call-callee id="4.19" range="570:28:14-576:28:20" expr="4.21" />
+		<identifier id="4.21" range="570:28:14-576:28:20" name="strlen" scope="4.53" />
+		<call-tuple id="4.22" range="577:28:21-584:28:28">
+			<arg id="4.23" />
+		</call-tuple>
+		<call-arg id="4.23" range="577:28:21-584:28:28" expr="4.24" />
+		<member-access id="4.24" range="577:28:21-584:28:28" humanRange="580:28:24-584:28:28" expr="4.25" name="cstr" />
+		<identifier id="4.25" range="577:28:21-579:28:23" name="s2" scope="4.53" />
+		<scope-declaration id="4.54" upper="4.53" declares="4.15" />
+		<expr-stmt id="4.26" range="588:29:1-618:29:31" expr="4.27" />
+		<var id="4.27" range="588:29:1-617:29:30" humanRange="596:29:9-607:29:20" name="totalLength" type="4.28" initial="4.31" scope="4.55" />
+		<type-expr id="4.28" range="592:29:5-595:29:8" expr="4.29" />
+		<identifier id="4.29" range="592:29:5-595:29:8" name="int" scope="4.54" />
+		<binary-op id="4.31" range="610:29:23-617:29:30" humanRange="613:29:26-614:29:27" operator="+" LHS="4.32" RHS="4.33" />
+		<identifier id="4.32" range="610:29:23-612:29:25" name="l1" scope="4.54" />
+		<identifier id="4.33" range="615:29:28-617:29:30" name="l2" scope="4.54" />
+		<scope-declaration id="4.55" upper="4.54" declares="4.27" />
+		<scope-root id="4.46" rootEntity="4" />
+		<scope id="4.47" outer="4.46" />
+	</entities>
+	<analysis>
+		<binding id="4.37" target="1" />
+		<type id="4.37">
+			<type-builtin name="Type" rel="initial" />
+			<type-builtin name="Type" rel="inferred" />
+		</type>
+		<type id="4.36">
+			<type-builtin name="Type" rel="initial" />
+			<type-builtin name="Type" rel="inferred" />
+		</type>
+		<type id="4.35">
+			<type-defined definition="1" rel="initial" />
+			<type-defined definition="1" rel="inferred" />
+		</type>
+		<binding id="4.41" target="1" />
+		<type id="4.41">
+			<type-builtin name="Type" rel="initial" />
+			<type-builtin name="Type" rel="inferred" />
+		</type>
+		<type id="4.39">
+			<type-builtin name="Type" rel="initial" />
+			<type-builtin name="Type" rel="inferred" />
+		</type>
+		<type id="4.38">
+			<type-defined definition="1" rel="initial" />
+			<type-defined definition="1" rel="inferred" />
+		</type>
+		<type id="4.34">
+			<type-tuple rel="initial">
+				<type-defined definition="1" />
+				<type-defined definition="1" />
+			</type-tuple>
+			<type-tuple rel="inferred">
+				<type-defined definition="1" />
+				<type-defined definition="1" />
+			</type-tuple>
+		</type>
+		<binding id="4.45" target="1" />
+		<type id="4.45">
+			<type-builtin name="Type" rel="initial" />
+			<type-builtin name="Type" rel="inferred" />
+		</type>
+		<type id="4.44">
+			<type-builtin name="Type" rel="initial" />
+			<type-builtin name="Type" rel="inferred" />
+		</type>
+		<type id="4.43">
+			<type-defined definition="1" rel="initial" />
+			<type-defined definition="1" rel="inferred" />
+		</type>
+		<type id="4.42">
+			<type-tuple rel="initial">
+				<type-defined definition="1" />
+			</type-tuple>
+			<type-tuple rel="inferred">
+				<type-defined definition="1" />
+			</type-tuple>
+		</type>
+		<binding id="4.5" target="builtin:int" />
+		<type id="4.5">
+			<type-builtin name="Type" rel="initial" />
+			<type-builtin name="Type" rel="inferred" />
+		</type>
+		<type id="4.4">
+			<type-builtin name="Type" rel="initial" />
+			<type-builtin name="Type" rel="inferred" />
+		</type>
+		<binding id="4.8" />
+		<type id="4.8" />
+		<binding id="4.7" target="5.1" />
+		<type id="4.7">
+			<type-func rel="inferred">
+				<type-tuple rel="input">
+					<type-native name="const char*" />
+				</type-tuple>
+				<type-builtin name="int" rel="output" />
+			</type-func>
+		</type>
+		<binding id="4.13" target="4.35" />
+		<type id="4.13">
+			<type-defined definition="1" rel="initial" />
+			<type-defined definition="1" rel="inferred" />
+		</type>
+		<type id="4.12">
+			<type-native name="const char*" rel="inferred" />
+		</type>
+		<type id="4.11">
+			<type-native name="const char*" rel="inferred" />
+		</type>
+		<type id="4.9">
+			<type-tuple rel="inferred">
+				<type-native name="const char*" />
+			</type-tuple>
+		</type>
+		<type id="4.6">
+			<type-builtin name="int" rel="inferred" />
+		</type>
+		<type id="4.3">
+			<type-builtin name="int" rel="initial" />
+			<type-builtin name="int" rel="inferred" />
+		</type>
+		<binding id="4.17" target="builtin:int" />
+		<type id="4.17">
+			<type-builtin name="Type" rel="initial" />
+			<type-builtin name="Type" rel="inferred" />
+		</type>
+		<type id="4.16">
+			<type-builtin name="Type" rel="initial" />
+			<type-builtin name="Type" rel="inferred" />
+		</type>
+		<binding id="4.21" />
+		<type id="4.21" />
+		<binding id="4.19" target="5.1" />
+		<type id="4.19">
+			<type-func rel="inferred">
+				<type-tuple rel="input">
+					<type-native name="const char*" />
+				</type-tuple>
+				<type-builtin name="int" rel="output" />
+			</type-func>
+		</type>
+		<binding id="4.25" target="4.38" />
+		<type id="4.25">
+			<type-defined definition="1" rel="initial" />
+			<type-defined definition="1" rel="inferred" />
+		</type>
+		<type id="4.24">
+			<type-native name="const char*" rel="inferred" />
+		</type>
+		<type id="4.23">
+			<type-native name="const char*" rel="inferred" />
+		</type>
+		<type id="4.22">
+			<type-tuple rel="inferred">
+				<type-native name="const char*" />
+			</type-tuple>
+		</type>
+		<type id="4.18">
+			<type-builtin name="int" rel="inferred" />
+		</type>
+		<type id="4.15">
+			<type-builtin name="int" rel="initial" />
+			<type-builtin name="int" rel="inferred" />
+		</type>
+		<binding id="4.29" target="builtin:int" />
+		<type id="4.29">
+			<type-builtin name="Type" rel="initial" />
+			<type-builtin name="Type" rel="inferred" />
+		</type>
+		<type id="4.28">
+			<type-builtin name="Type" rel="initial" />
+			<type-builtin name="Type" rel="inferred" />
+		</type>
+		<binding id="4.32" target="4.3" />
+		<type id="4.32">
+			<type-builtin name="int" rel="initial" />
+			<type-builtin name="int" rel="inferred" />
+		</type>
+		<binding id="4.33" target="4.15" />
+		<type id="4.33">
+			<type-builtin name="int" rel="initial" />
+			<type-builtin name="int" rel="inferred" />
+		</type>
+		<type id="4.31">
+			<type-builtin name="int" rel="inferred" />
+		</type>
+		<type id="4.27">
+			<type-builtin name="int" rel="initial" />
+			<type-builtin name="int" rel="inferred" />
+		</type>
+		<type id="4">
+			<type-func rel="initial">
+				<type-tuple rel="input">
+					<type-defined definition="1" />
+					<type-defined definition="1" />
+				</type-tuple>
+				<type-defined definition="1" rel="output" />
+			</type-func>
+			<type-func rel="inferred">
+				<type-tuple rel="input">
+					<type-defined definition="1" />
+					<type-defined definition="1" />
+				</type-tuple>
+				<type-defined definition="1" rel="output" />
+			</type-func>
+		</type>
+	</analysis>
+	<sibling id="1" />
+	<sibling id="2" />
+	<sibling id="3" />
+	<sibling id="5" />
+	<known id="1" />
+	<known id="2" />
+	<known id="3" />
+	<known id="5" />
+</root>

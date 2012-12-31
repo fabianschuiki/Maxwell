@@ -40,6 +40,10 @@ class ExpressionParser
 		}
 		
 		if ($tokens->count() >= 2) {
+			if ($tokens->is('group', '()')) {
+				IssueList::add('error', "Cast operator not yet implemented.", $tokens->consume());
+				return null;
+			}
 			if ($tokens->backIs('group', '()')) return static::parseCallExpr($tokens->backConsume(), $tokens);
 			if ($tokens->backIs('group', '[]')) return static::parseElementAccessExpr($tokens->backConsume(), $tokens);
 			

@@ -1,0 +1,17 @@
+/*
+ * Copyright © 2013 Fabian Schuiki
+ * Tools that allow input/output with the console.
+ */
+package util
+import "String"
+
+//use some function from stdio.h
+external "stdio.h" {
+	func puts ($ const char* s) -> (int r);
+}
+
+/** Prints the given String as one line to the console. */
+func println (String line)
+{
+	puts(cstr(line));
+}

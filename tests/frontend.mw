@@ -3,62 +3,17 @@
  */
 package main
 
-external "stdio.h" {
+/*external "stdio.h" {
 	func puts ($ const char *s) -> (int r);
 	func fopen ($ const char *path, $ const char *mode) -> ($ FILE *_);
+}*/
+
+type String
+{
 }
 
 //Main function of the program.
 func main
 {
-	var int x = 0;
-	var y = 6;
-	x = 9 + 15 * y;
-	
-	var $ const char *str = "hello!\n";
-	var $ const char *str2 = "b";
-	var $ int ci = 100;
-	var $ int* ciptr = &ci;
-	/*str[1] = str2[0];
-	str[2] = *"k";*/
-	puts(str);
-	
-	//First tests with types and their members.
-	var Vector v = new Vector;
-	v.x = 9;
-	v.y = 34;
-	
-	//Analyzer throws an error, since v.x is not yet of type int.
-	var int shouldBeInt = v.x;
-	if (shouldBeInt == test(1,2)) {
-		v.y = x;
-	} else if (x == 5) {
-		y = 9;
-	} else {
-		x = 125;
-	}
-	
-	//Test function call.
-	var int r0 = test(test(1,2),3);
-	var int r1 = test(v, 1.0);
-}
-
-type Vector
-{
-	var int x;
-	var int y;
-}
-
-func test (int a, int b) -> (int r)
-{
-	r = a * b;
-}
-
-func test (Vector a, float b) -> (float r)
-{
-}
-
-func lengthSquared (Vector v) -> (int l)
-{
-	//l = v.x*v.x + v.y*v.y
+	var String s = "Hello World";
 }

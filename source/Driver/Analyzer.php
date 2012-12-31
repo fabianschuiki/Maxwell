@@ -43,7 +43,7 @@ class Analyzer
 				$entityID = array_shift($this->initialTypeQueue);
 				$entity = $entityStore->getEntity($entityID);
 				$entityStore->pushRootID($entityID);
-				echo "analyzing initial type of ".vartype($entity)." {$entity->getName()}\n";
+				//echo "analyzing initial type of ".vartype($entity)." {$entity->getName()}\n";
 				
 				//Bind all identifiers.
 				$this->bindIdents($entity);
@@ -82,7 +82,7 @@ class Analyzer
 				$entityID = array_shift($this->typeInferenceQueue);
 				$entity = $entityStore->getEntity($entityID);
 				$entityStore->pushRootID($entityID);
-				echo "inferring type of ".vartype($entity)."\n";
+				//echo "inferring type of ".vartype($entity)."\n";
 				
 				//Don't spawn any constraints for now.
 				//Spawn type constraints for the entities.

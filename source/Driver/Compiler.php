@@ -35,7 +35,7 @@ class Compiler
 			//Fetch the entity we're supposed to precompile.
 			$entityID = array_shift($precompileIDs);
 			$entity = $entityStore->getEntity($entityID);
-			echo "precompiling ".vartype($entity)."\n";
+			//echo "precompiling ".vartype($entity)."\n";
 			
 			//Decide the entity names.
 			$this->calculateEntityNames($entity);
@@ -57,7 +57,7 @@ class Compiler
 			//Fetch the entity we're supposed to compile.
 			$entityID = array_shift($compileIDs);
 			$entity = $entityStore->getEntity($entityID);
-			echo "compiling ".vartype($entity)."\n";
+			//echo "compiling ".vartype($entity)."\n";
 			
 			//Prepare entity type information.
 			$this->calculateEntityTypes($entity);

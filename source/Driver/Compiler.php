@@ -167,8 +167,12 @@ class Compiler
 		$pair = new CodePair;
 		$pair->header = "$preamble\n#pragma once\n\n";
 		foreach ($entity->getKnownEntities() as $e) {
-			if (!$e instanceof \Entity\TypeDefinition) continue;
-			$pair->header .= $e->compiler->getLocalName().";\n";
+			if ($e instanceof \Entity\ExternalDeclaration) {
+				$pair->header .= "#include <{$e->getName()}>\n";
+			}
+			if ($e instanceof \Entity\TypeDefinition) {
+				$pair->header .= $e->compiler->getLocalName().";\n";
+			}
 		}
 		$pair->header .= $snippet->publicHeader;
 		

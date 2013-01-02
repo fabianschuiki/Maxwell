@@ -1,0 +1,23 @@
+/*
+ * Copyright © 2013 Fabian Schuiki
+ */
+package sf;
+
+external "SFML/Graphics.h"
+{
+	func sfRenderWindow_Create ($sfVideoMode mode, $const char* title, int options, $sfWindowSettings settings) -> ($sfRenderWindow* w);
+}
+
+type RenderWindow
+{
+	var $sfRenderWindow* native;
+}
+
+func create ($const char* title) -> (RenderWindow w)
+{
+	var $sfWindowSettings settings;
+	var $sfVideoMode mode;
+
+	w = new RenderWindow;
+	w.native = sfRenderWindow_Create(mode, title, 0, settings);
+}

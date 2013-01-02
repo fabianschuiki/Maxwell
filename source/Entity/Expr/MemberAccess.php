@@ -2,6 +2,7 @@
 namespace Entity\Expr;
 use Entity\Scope\Scope;
 use Source\Range;
+use Entity\Entity;
 
 class MemberAccess extends Expr
 {
@@ -22,7 +23,7 @@ class MemberAccess extends Expr
 	public function setName($n) { $this->name = $n; }
 	public function getName() { return $this->name; }
 	
-	public function setExpr(Expr $e) { $this->expr = $e; }
+	public function setExpr(Expr $e) { $this->expr = $e; $e->setParent($this); }
 	public function getExpr() { return $this->expr; }
 	
 	
@@ -38,4 +39,13 @@ class MemberAccess extends Expr
 	}
 	
 	public function getChildEntities() { return array($this->expr); }
+	
+	public function replaceChild(Entity $child, Entity $with)
+	{
+		if ($this->expr === $child) {
+			$this->setExpr($with);
+		} else {
+			throw $this->makeUnknownChildException($child);
+		}
+	}
 }

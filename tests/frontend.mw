@@ -8,7 +8,5 @@ import "../debug/util/Console";
 //Main function of the program.
 func main
 {
-	var String s = "Hello World";
-	var String t = "!!!";
-	puts(s.concatenate(t).cstr());
+	"Hello World".concatenate("!!!").println();
 }

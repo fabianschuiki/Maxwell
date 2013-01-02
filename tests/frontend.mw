@@ -9,5 +9,6 @@ import "../debug/util/Console";
 func main
 {
 	var String s = "Hello World";
-	puts(s.cstr());
+	var String t = "!!!";
+	puts(s.concatenate(t).cstr());
 }

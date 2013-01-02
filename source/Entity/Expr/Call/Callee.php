@@ -22,5 +22,5 @@ class Callee extends \Entity\Entity
 		$this->expr->initScope($scope);
 	}
 	
-	public function getChildEntities() { return array(); }
+	public function getChildEntities() { return array($this->expr); }
 }

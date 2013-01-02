@@ -30,14 +30,19 @@ func concatenate (String s1, String s2) -> (String r)
 	var int totalLength = l1 + l2;
 
 	var $char* tmp = ($char*)malloc(totalLength + 1);
-	strcpy(tmp, s1);
-	strcpy(($char*)((int)tmp + l1), s2);
+	strcpy(tmp, cstr(s1));
+	strcpy(($char*)(($long)tmp + ($long)l1), cstr(s2));
 	tmp[totalLength] = 0;
 
+	r = new String;
 	r.cstr = ($const char*)tmp;
 }
 
 external "string.h" {
 	func strlen ($const char* s) -> (int r);
 	func strcpy ($char* dst, $const char* src);
+}
+
+external "stdlib.h" {
+	func malloc (int size) -> ($void* memory);
 }

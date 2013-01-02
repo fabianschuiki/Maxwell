@@ -45,7 +45,7 @@ func concatenate (String s1, String s2) -> (String r)
 
 	var $char* tmp = ($char*)malloc(totalLength + 1);
 	strcpy(tmp, cstr(s1));
-	strcpy(($char*)((int)tmp + l1), cstr(s2));
+	strcpy(($char*)(tmp + l1), cstr(s2));
 	tmp[totalLength] = 0;
 
 	r.cstr = ($const char*)tmp;

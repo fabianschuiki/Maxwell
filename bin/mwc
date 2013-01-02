@@ -99,7 +99,7 @@ foreach (array_unique($compilableIDs) as $id) {
 }
 
 $compiledFile = $buildDir."/".basename($inputFile, ".mw");
-$gcc_cmd = "gcc -o ".escapeshellarg($compiledFile);
+$gcc_cmd = "gcc -ggdb -o ".escapeshellarg($compiledFile);
 foreach ($files as $f) {
 	$gcc_cmd .= " ".escapeshellarg($f);
 }

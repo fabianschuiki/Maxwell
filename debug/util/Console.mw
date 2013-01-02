@@ -8,10 +8,16 @@ import "String"
 //use some function from stdio.h
 external "stdio.h" {
 	func puts ($ const char* s) -> (int r);
+	func gets ($ char* s);
 }
 
 /** Prints the given String as one line to the console. */
 func println (String line)
 {
 	puts(cstr(line));
+}
+
+func readln -> (String line)
+{
+	
 }

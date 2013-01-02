@@ -252,7 +252,7 @@ class ExpressionParser
 			$args[] = new AST\Expr\CallArg($expr, $name);
 		}
 		
-		return new AST\Expr\Call($callee, $args);
+		return new AST\Expr\Call($callee, $args, $args_group);
 	}
 	
 	static public function parseMemberAccessExpr(Token $name, Token $period, TokenList $tokens)

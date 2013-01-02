@@ -66,6 +66,7 @@ class Encoder
 		
 		//If applicable, encode the ranges for this entity.
 		if ($entity instanceof \Entity\Entity) {
+			if (!$entity->getRange()) throw new \RuntimeException("Entity {$entity->getInternalDescription()} has no range!");
 			$element->setAttribute('range', $entity->getRange()->toString());
 			if ($entity->getHumanRange()) {
 				$element->setAttribute('humanRange', $entity->getHumanRange()->toString());

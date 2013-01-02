@@ -11,7 +11,7 @@ class Call extends Expr
 		$e->generateID();
 		$e->setRange($call->getRange());
 		$e->setCallee(Call\Callee::makeFromSyntaxNode($call->getCallee()));
-		$e->setArgs(Call\Tuple::makeFromSyntaxNodes($call->getArgs()));
+		$e->setArgs(Call\Tuple::makeFromSyntaxNodes($call->getArgs(), $call->getArgsGroup()->getRange()));
 		return $e;
 	}
 	

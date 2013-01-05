@@ -78,6 +78,21 @@ func someBar -> (String s) { return "World"; }</code>
 
 
 
+<h1>Project Configuration</h1>
+<p>To make using the Maxwell compiler from the command line as easy as possible, it might be desirable to employ a mechanism similar to the one <em>git</em> uses for its data structure.</p>
+<p>There should be <em>Maxwell configuration files</em> that can be distributed arbitrarily in the source tree, which affect their sibling files and all subdirectories. These config files might contain certain optimization information, whether to build in debug mode, what C libraries to use automatically, etc..</p>
+<p>The project root should have a <code>.maxwell</code> or <code>.mwc</code> directory that contains the intermediate build files (tokens, AST, entities, etc.). Using the Maxwell compiler would then boil down to calling <code>mwc</code> from anywhere in the source tree. The compiler would automatically walk up the tree to the next <code>.mwc</code> directory and look for build configurations there.</p>
+
+<h2>Compiler Interrogation</h2>
+<p>This scheme would allow for efficient compiler interrogation. That is the user beeing able to ask the compiler for certain information after the compilation process is complete. This is important for a language where the compiler makes a fair amount of decisions for the source code. The user might ask the compiler what <em>C type</em> the variable <code>var Vector v</code> has. Depending on certain factors, the compiler might choose to go for <code>struct Vector* v</code> or <code>struct Vector v</code>. Or the compiler might decide to make certain function calls or member accesses thread safe, or to make certain assumptions.</p>
+<p>The user should be able to retrieve this information from the compiler, since it is vital during the optimization stage of the project. The compiler might have chosen the wrong implementation of <code>Array</code>, maybe a single-linked list instead of a vector. Being able to retrieve this information helps to nail down performance issues which may be eliminated through compiler hints.</p>
+
+<h2>Documentation</h2>
+<p>Having this <em>build repository</em>, the compiler may produce valuable documentation from the individual source files which the user may not only export but might also want to be able to retrieve online, by asking the compiler questions.</p>
+<p>With generic programming and type inference the type of a function is usually more restricted after compilation than the user initially wrote down himself. Writing a function that calculates the norm of something will usually boil down to a function that takes an argument for which a <em>sqrt</em> function is defined. This information may be made visible in such a documentation: Instead of having norm(x) with x anything, the documentation would actually say norm(x) with x anything such that sqrt(x) is defined.</p>
+
+
+
 <h1>If Expression</h1>
 <p>It should be possible to have complex if statements as expressions, similar to how cases are notated in mathematics.</p>
 <code>a.doSomethingWith({0 if x == "null", 1 otherwise});</code>

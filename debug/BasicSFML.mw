@@ -10,4 +10,8 @@ func main
 {
 	var String s = "Hello SFML";
 	var RenderWindow w = create(cstr(s));
+
+	while (true) {
+		
+	}
 }

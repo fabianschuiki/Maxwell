@@ -9,6 +9,90 @@
 </head>
 <body>
 
+<h1>Packages</h1>
+<p>Source code written in Maxwell should be organized into individual packages. Other parts of the project and potentially other programmers using the package will refer to its contents using the package name.</p>
+<p>Consider the following dummy package:</p>
+<code>/* somepkg/utils.mw */
+func greet { console.writeln("Hello World"); }</code>
+<p>And the following simple console program trying to make use of it:</p>
+<code>/* hello.mw */
+func main { greet(); }</code>
+<p>Compiling <code>hello.mw</code> will fail since <code>greet()</code> is unknown. The compiler has to be told where to find the function:</p>
+<code>/* hello.mw */
+import "somepkg";
+func main { somepkg.greet(); }</code>
+
+<h2>File Dependencies</h2>
+<p>Packages introduce file dependencies. The compiler needs to be able to tell at an early stage what other files a source file might refer to and what names that file might contain. A distinction has to be made between known entity names that are located in other files and the entities that a certain entity depends upon.</p>
+<p>Consider the following file hierarchy and files:</p>
+<p><ul>
+	<li>hello.mw</li>
+	<li>world.mw</li>
+	<li>somepkg/
+	<ul>
+		<li>foo.mw</li>
+		<li>bar.mw</li>
+	</ul>
+	</li>
+</ul></p>
+<code>/* hello.mw */
+func main { greetWorld(); }
+
+/* world.mw */
+import "somepkg"
+func greetWorld { somepkg.someFoo(); }
+
+/* somepkg/foo.mw */
+func someFoo { console.writeln("Hello " + someBar()); }
+
+/* somepkg/bar.mw */
+func someBar -> (String s) { return "World"; }</code>
+
+<p>The command used to compile the program is:</p>
+<code>mwc hello.mw</code>
+
+<p>The compiler's first step is to determine what files need to be parsed in order to be able to see all the entity names that the programmer might refer to. First, all files in the same directory as the main source file are parsed, namely <code>hello.mw</code> and <code>world.mw</code>. This generates the following raw, not yet analyzed entities which are added to the main file's list of <em>known</em> entities:</p>
+<code>#1 func main
+#2 func greetWorld</code>
+<p>The compiler now starts its name-resolving process by iterating through the main file and resolving all the name references. Since it encounters the <code>greetWorld()</code> function, the compiler resolves this call to the <code>func greetWorld</code> function defined in <code>world.mw</code>. This will add entity #2 to the list of <em>required</em> entities of entity #1.</p>
+<p>Since entity #2 is a dependency of the main file, the compiler will continue name-resolving by iterating through the <code>world.mw</code> file and collecting all <code>import</code> statements. All import statements are resolved to package locations in the file system, and the compiler will parse all source files contained therein. This generates the following raw entities in <code>world.mw</code>'s list of <em>known</em> entities:</p>
+<code>#3 func someFoo
+#4 func someBar</code>
+<p>The compiler then continues its name-resolving by iterating through entity #2 and resolving all name references. This will resolve the call to <code>somepkg.someFoo()</code> call to the <code>func someFoo</code> function in the <code>somepkg</code> package. This will add entity #3 to the list of <em>required</em> entities for entity #2.</p>
+<p>Since entity #3 is now a dependency of entity #2, the compiler will also resolve its name references. Since no packages are imported, the only names that are known are <code>someFoo</code> and <code>someBar</code>. The compiler will resolved the cal to <code>func someBar</code>, which adds entity #4 as a dependency of entity #3.</p>
+
+<p>Since all files have been parsed and the names resolved, the compiler will build the canonical dependency tree of the entities, which looks as follows:</p>
+<code>#4 depends on nothing
+#3 depends on 4
+#2 depends on 3, 4
+#1 depends on 2, 3, 4</code>
+<p>All analysis and compilation steps are now performed as a task queue with the entire dependency tree loaded as queue at the beginning. This yields the general analysis and compilation order <code>#4,#3,#2,#1</code>.</p>
+
+<h2>Influences on Compilation</h2>
+<p>Since a canonical dependency tree exists, the compiler will perform a check at each stage whether a certain file has been modified. If it has, the file will be run through the parser again. This change will remove all the compiled information for the dependent files whic will cause the compiler to re-compile these files as well.</p>
+<p>Not importing entire files or directories at once, but rather building the dependency tree from the actual name usage will result in the compiler only processing the files that are actually necessary. A source file may import a <em>huge</em> package containing many files and the compiler will only have to tokenize and parse them once in order to build the list of names. After that, only the actual entities from the package that are used are processed.</p>
+<p>Since the precise dependency tracking requires lists of files and their contained entities, the result of the compilation process may be stored as individual source snippet XMLs. A final <em>synthesizer</em> stage will then collect all the snippets that belong to one of the original source files and will fuse them into a <code>.h</code> and <code>.c</code> file. This makes reading the output much more clear.</p>
+
+<h2>A Note on Specializations</h2>
+<p>Since the concept of generic types requires the compiler to copy and specialize functions and types during compilation, these specializations have to be listed in the original entity's file. These specializations may then be added as <em>required</em> and <em>known</em> entities to other entities as well.</p>
+
+
+
+<h1>Project Configuration</h1>
+<p>To make using the Maxwell compiler from the command line as easy as possible, it might be desirable to employ a mechanism similar to the one <em>git</em> uses for its data structure.</p>
+<p>There should be <em>Maxwell configuration files</em> that can be distributed arbitrarily in the source tree, which affect their sibling files and all subdirectories. These config files might contain certain optimization information, whether to build in debug mode, what C libraries to use automatically, etc..</p>
+<p>The project root should have a <code>.maxwell</code> or <code>.mwc</code> directory that contains the intermediate build files (tokens, AST, entities, etc.). Using the Maxwell compiler would then boil down to calling <code>mwc</code> from anywhere in the source tree. The compiler would automatically walk up the tree to the next <code>.mwc</code> directory and look for build configurations there.</p>
+
+<h2>Compiler Interrogation</h2>
+<p>This scheme would allow for efficient compiler interrogation. That is the user beeing able to ask the compiler for certain information after the compilation process is complete. This is important for a language where the compiler makes a fair amount of decisions for the source code. The user might ask the compiler what <em>C type</em> the variable <code>var Vector v</code> has. Depending on certain factors, the compiler might choose to go for <code>struct Vector* v</code> or <code>struct Vector v</code>. Or the compiler might decide to make certain function calls or member accesses thread safe, or to make certain assumptions.</p>
+<p>The user should be able to retrieve this information from the compiler, since it is vital during the optimization stage of the project. The compiler might have chosen the wrong implementation of <code>Array</code>, maybe a single-linked list instead of a vector. Being able to retrieve this information helps to nail down performance issues which may be eliminated through compiler hints.</p>
+
+<h2>Documentation</h2>
+<p>Having this <em>build repository</em>, the compiler may produce valuable documentation from the individual source files which the user may not only export but might also want to be able to retrieve online, by asking the compiler questions.</p>
+<p>With generic programming and type inference the type of a function is usually more restricted after compilation than the user initially wrote down himself. Writing a function that calculates the norm of something will usually boil down to a function that takes an argument for which a <em>sqrt</em> function is defined. This information may be made visible in such a documentation: Instead of having norm(x) with x anything, the documentation would actually say norm(x) with x anything such that sqrt(x) is defined.</p>
+
+
+
 <h1>If Expression</h1>
 <p>It should be possible to have complex if statements as expressions, similar to how cases are notated in mathematics.</p>
 <code>a.doSomethingWith({0 if x == "null", 1 otherwise});</code>

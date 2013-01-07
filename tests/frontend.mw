@@ -2,60 +2,11 @@
  * Some test file for debugging the frontend.
  */
 package main
-
-type String
-{
-	var $const char* cstr;
-}
-
-func cstr (String s) -> ($const char* r)
-{
-	r = s.cstr;
-}
-
-func _makeString ($const char* s) -> (String r)
-{
-	r = new String;
-	r.cstr = s;
-}
+import "../debug/util/String";
+import "../debug/util/Console";
 
 //Main function of the program.
 func main
 {
-	var String s = "Hello World";
-	println(s);
-}
-
-//Console tools.
-external "stdio.h" {
-	func puts($ const char* s) -> (int r);
-}
-
-func println (String line)
-{
-	puts(cstr(line));
-}
-
-/** Concatenates the two strings. */
-func concatenate (String s1, String s2) -> (String r)
-{
-	var int l1 = strlen(s1.cstr);
-	var int l2 = strlen(s2.cstr);
-	var int totalLength = l1 + l2;
-
-	var $char* tmp = ($char*)malloc(totalLength + 1);
-	strcpy(tmp, cstr(s1));
-	strcpy(($char*)(tmp + l1), cstr(s2));
-	tmp[totalLength] = 0;
-
-	r.cstr = ($const char*)tmp;
-}
-
-external "string.h" {
-	func strlen ($const char* s) -> (int r);
-	func strcpy ($char* dst, $const char* src);
-}
-
-external "stdlib.h" {
-	func malloc (int size) -> ($void* memory);
+	"Hello World".concatenate("!!!").println();
 }

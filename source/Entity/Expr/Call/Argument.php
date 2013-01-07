@@ -1,5 +1,6 @@
 <?php
 namespace Entity\Expr\Call;
+use Entity\Entity;
 
 class Argument extends \Entity\Entity
 {
@@ -28,4 +29,13 @@ class Argument extends \Entity\Entity
 	}
 	
 	public function getChildEntities() { return array($this->expr); }
+	
+	public function replaceChild(Entity $child, Entity $with)
+	{
+		if ($this->expr === $child) {
+			$this->setExpr($with);
+		} else {
+			throw $this->makeUnknownChildException($child);
+		}
+	}
 }

@@ -12,7 +12,7 @@ abstract class Entity extends Node
 	public function setRange(\Source\Range $r) { $this->range = $r; }
 	public function getRange() { return $this->range; }
 	
-	public function setHumanRange(\Source\Range $r) { $this->humanRange = $r; }
+	public function setHumanRange(\Source\Range $r = null) { $this->humanRange = $r; }
 	public function getHumanRange() { return $this->humanRange; }
 	
 	public function getHumanRangeIfPossible()

@@ -49,6 +49,10 @@ class Analyzer
 				$this->wrapInlineConstants($entity);
 				if ($issues->isFatal()) break;
 				
+				//Wrap member function calls.
+				$this->wrapMemberCalls($entity);
+				if ($issues->isFatal()) break;
+				
 				//Bind all identifiers.
 				$this->bindIdents($entity);
 				if ($issues->isFatal()) break;
@@ -766,6 +770,38 @@ class Analyzer
 			
 			//Initialize the scope.
 			$call->initScope($entity->getScope());
+		}
+	}
+	
+	private function wrapMemberCalls(Entity\Entity $entity)
+	{
+		foreach ($entity->getChildEntities() as $e)
+			$this->wrapMemberCalls($e);
+		if (IssueList::get()->isFatal()) return;
+		
+		if ($entity instanceof Entity\Expr\Call) {
+			$expr = $entity->getCallee()->getExpr();
+			if ($expr instanceof Entity\Expr\MemberAccess) {
+				//Resolve the member access.
+				$identifier = new Entity\Expr\Identifier;
+				$identifier->generateID();
+				$identifier->setRange($expr->getHumanRange());
+				$identifier->setName($expr->getName());
+				$entity->getCallee()->setExpr($identifier);
+				
+				$arg = new Entity\Expr\Call\Argument;
+				$arg->generateID();
+				$arg->setRange($expr->getExpr()->getRange());
+				$arg->setHumanRange($expr->getExpr()->getHumanRange());
+				$arg->setExpr($expr->getExpr());
+				
+				$args = $entity->getArgs()->getArgs();
+				array_unshift($args, $arg);
+				$entity->getArgs()->setArgs($args);
+				
+				$scope = $expr->getScope();
+				$entity->getCallee()->initScope($scope);
+			}
 		}
 	}
 }

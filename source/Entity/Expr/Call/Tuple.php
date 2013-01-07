@@ -4,14 +4,11 @@ use Entity\Expr\Expr;
 
 class Tuple extends Expr
 {
-	static public function makeFromSyntaxNodes(array $nodes)
+	static public function makeFromSyntaxNodes(array $nodes, \Source\Range $range)
 	{
 		$e = new self;
 		$e->generateID();
-		
-		if (count($nodes)) {
-			$e->setRange(\Source\Range::union(array_map(function($n){ return $n->getRange(); }, $nodes)));
-		}
+		$e->setRange($range);
 		
 		$args = array();
 		foreach ($nodes as $node) {

@@ -38,6 +38,12 @@ func concatenate (String s1, String s2) -> (String r)
 	r.cstr = ($const char*)tmp;
 }
 
+/** Returns the length of a string. */
+func length (String s) -> (int l)
+{
+	l = strlen(s.cstr());
+}
+
 external "string.h" {
 	func strlen ($const char* s) -> (int r);
 	func strcpy ($char* dst, $const char* src);

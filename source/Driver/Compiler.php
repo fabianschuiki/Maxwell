@@ -340,7 +340,7 @@ class Compiler
 			$rs = $this->generateExprCode($expr->getRHS());
 			$snippet->stmts .= $ls->stmts;
 			$snippet->stmts .= $rs->stmts;
-			$snippet->expr = "{$ls->expr} {$expr->getOperator()} {$rs->expr}";
+			$snippet->expr = "({$ls->expr} {$expr->getOperator()} {$rs->expr})";
 			if ($expr->getOperator() == '=')
 				$snippet->exprRequired = true;
 		}

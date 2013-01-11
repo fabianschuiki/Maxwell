@@ -13,4 +13,5 @@ func main
 		"Hello".println();
 	}*/
 	var bool b = (1 == 2 && 2 == 3);
+	b = (bool)95;
 }

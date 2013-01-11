@@ -8,6 +8,7 @@ abstract class Stmt extends Entity
 	{
 		if ($node instanceof \AST\Stmt\Expr) return Expr::makeFromSyntaxNode($node);
 		if ($node instanceof \AST\Stmt\IfStmt) return IfStmt::makeFromSyntaxNode($node);
+		if ($node instanceof \AST\Stmt\ForStmt) return ForStmt::makeFromSyntaxNode($node);
 		throw new \exception("Unable to wrap ".vartype($node));
 	}
 }

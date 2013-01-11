@@ -23,6 +23,7 @@ class Protocol
 		$this->register('Stmt\Expr', "expr-stmt", array("@expr"));
 		$this->register('Stmt\IfStmt', "if", array("@condition", "@body", "@else", "@scope"));
 		$this->register('Stmt\ElseStmt', "else", array("@body", "@scope"));
+		$this->register('Stmt\ForStmt', "for", array("@initial", "@condition", "@increment", "@body", "@scope"));
 		
 		//Expressions
 		$this->register('Expr\VarDef', "var", array("&name", "@type", "@initial", "@scope"));

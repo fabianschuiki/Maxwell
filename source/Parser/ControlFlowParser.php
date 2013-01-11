@@ -80,7 +80,6 @@ class ControlFlowParser
 		}
 
 		if (!$condition || !$body) return null;
-		/*return new AST\Stmt\ForStmt($keyword, $initial, $condition, $increment, $body);*/
-		return null;
+		return new AST\Stmt\ForStmt($keyword, $initial, $condition, $increment, $body, $cfg_group);
 	}
 }

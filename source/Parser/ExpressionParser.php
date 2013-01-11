@@ -69,6 +69,9 @@ class ExpressionParser
 			if ($tokens->is('group', '()')) return static::parseExpr($tokens->consume()->getStrippedTokens());
 		}
 		
+		if ($tokens->isEmpty() && !$range) {
+			throw new \RuntimeException("Asked to parse empty expression without location in file.");
+		}
 		IssueList::add('error', "Unable to parse expression.", ($tokens->isEmpty() ? $range : $tokens->getTokens()));
 		return null;
 	}

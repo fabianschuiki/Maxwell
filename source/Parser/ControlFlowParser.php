@@ -69,6 +69,8 @@ class ControlFlowParser
 			$initial_tokens = null;
 			$increment_tokens = null;
 		}
+		if ($initial_tokens && $initial_tokens->isEmpty()) $initial_tokens = null;
+		if ($increment_tokens && $increment_tokens->isEmpty()) $increment_tokens = null;
 
 		$initial   = ($initial_tokens   ? ExpressionParser::parseExpr($initial_tokens)   : null);
 		$condition = ($condition_tokens ? ExpressionParser::parseExpr($condition_tokens) : null);

@@ -44,6 +44,46 @@ func length (String s) -> (int l)
 	l = strlen(s.cstr());
 }
 
+/** Replaces the first template character in the string by the int passed to
+ * the function. */
+func format (String in, int v) -> (String out)
+{
+	out = in.format(v.toString());
+}
+
+/** Replaces the first template character in the string by the string passed to
+ * the function. */
+func format (String in, String v) -> (String out)
+{
+	//Create a new string that has enough space to store the final string.
+	var $char* str = ($char*)malloc(in.length() + out.length());
+
+	//Copy the string segments together.
+	var int i = 0;
+	var int d = 0;
+	for (; in.cstr[i] != 0 && in.cstr[i] != "%"; i++) str[d++] = in.cstr[i];
+	for (var int n = 0; v.cstr[n] != 0; n++) str[d++] = v.cstr[n];
+	for (; in.cstr[i] != 0; i++) str[d++] = in.cstr[i];
+	str[d] = 0;
+
+	//Move everything into the final string.
+	out = new String;
+	out.cstr = str;
+}
+
+/** Converts the given integer to a string. */
+func toString (int i) -> (String s)
+{
+	var $char* result;
+	asprintf(&result, "%i".cstr(), i);
+	s = new String;
+	s.cstr = result;
+}
+
+external "stdio.h" {
+	func asprintf ($char** ret, $const char* format, int arg);
+}
+
 external "string.h" {
 	func strlen ($const char* s) -> (int r);
 	func strcpy ($char* dst, $const char* src);

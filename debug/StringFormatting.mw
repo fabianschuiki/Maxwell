@@ -7,18 +7,5 @@ import "util/Console"
 
 func main
 {
-	var int i = 42;
-	"Hello ".concatenate(i.toString()).println();
-}
-
-func toString (int i) -> (String s)
-{
-	var $char* result;
-	asprintf(&result, "%i".cstr(), i);
-	s = new String;
-	s.cstr = result;
-}
-
-external "stdio.h" {
-	func asprintf ($char** ret, $const char* format, int arg);
+	"Hello %, your name %!".println();
 }

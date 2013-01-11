@@ -7,5 +7,5 @@ import "util/Console"
 
 func main
 {
-	"Hello %, your name %!".println();
+	"Hello %, your name %!".format(42).format("Fabian").println();
 }

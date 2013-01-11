@@ -56,7 +56,7 @@ func format (String in, int v) -> (String out)
 func format (String in, String v) -> (String out)
 {
 	//Create a new string that has enough space to store the final string.
-	var $char* str = ($char*)malloc(in.length() + out.length());
+	var $char* str = ($char*)malloc(in.length() + v.length());
 
 	//Copy the string segments together.
 	var int i = 0;
@@ -65,6 +65,7 @@ func format (String in, String v) -> (String out)
 		str[d] = in.cstr[i];
 		d = d + 1;
 	}
+	i = i + 1;
 	for (var int n = 0; v.cstr[n] != 0; n = n + 1) {
 		str[d] = v.cstr[n];
 		d = d + 1;

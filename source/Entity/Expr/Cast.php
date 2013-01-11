@@ -2,6 +2,7 @@
 namespace Entity\Expr;
 use Entity\Scope\Scope;
 use Source\Range;
+use Entity\Entity;
 
 class Cast extends Expr
 {

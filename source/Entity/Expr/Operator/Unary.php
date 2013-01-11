@@ -3,6 +3,7 @@ namespace Entity\Expr\Operator;
 use Source\Range;
 use Entity\Expr\Expr;
 use Entity\Scope;
+use Entity\Entity;
 
 class Unary extends Expr
 {
@@ -28,7 +29,7 @@ class Unary extends Expr
 	public function setOperator($o) { $this->operator = $o; }
 	public function getOperator() { return $this->operator; }
 	
-	public function setOperand(Expr $e) { $this->operand = $e; }
+	public function setOperand(Expr $e) { $this->operand = $e; $e->setParent($this); }
 	public function getOperand() { return $this->operand; }
 	
 	public function initScope(Scope\Scope &$scope)
@@ -39,5 +40,14 @@ class Unary extends Expr
 	public function getChildEntities()
 	{
 		return array($this->operand);
+	}
+
+	public function replaceChild(Entity $child, Entity $with)
+	{
+		if ($child === $this->operand) {
+			$this->setOperand($with);
+		} else {
+			throw $this->makeUnknownChildException($child);
+		}
 	}
 }

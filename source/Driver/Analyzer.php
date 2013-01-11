@@ -508,7 +508,6 @@ class Analyzer
 			
 			if ($entity instanceof Entity\Expr\Operator\Unary) {
 				if ($entity->getOperator() == '&') {
-					echo "inferring type of & operator\n";
 					$t = $entity->getOperand()->analysis->type->inferred;
 					if (!$t instanceof \Type\Native) {
 						IssueList::add('error', "The pointer operator & is not allowed on type {$t->toHumanReadableString()}, only on native C types.", $entity);

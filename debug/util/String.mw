@@ -61,9 +61,18 @@ func format (String in, String v) -> (String out)
 	//Copy the string segments together.
 	var int i = 0;
 	var int d = 0;
-	for (; in.cstr[i] != 0 && in.cstr[i] != "%"; i++) str[d++] = in.cstr[i];
-	for (var int n = 0; v.cstr[n] != 0; n++) str[d++] = v.cstr[n];
-	for (; in.cstr[i] != 0; i++) str[d++] = in.cstr[i];
+	for (; in.cstr[i] != 0 && in.cstr[i] != "%"; i = i + 1) {
+		str[d] = in.cstr[i];
+		d = d + 1;
+	}
+	for (var int n = 0; v.cstr[n] != 0; n = n + 1) {
+		str[d] = v.cstr[n];
+		d = d + 1;
+	}
+	for (; in.cstr[i] != 0; i = i + 1) {
+		str[d] = in.cstr[i];
+		d = d + 1;
+	}
 	str[d] = 0;
 
 	//Move everything into the final string.

@@ -117,7 +117,9 @@ class Compiler
 			$type = $entity->analysis->type->inferred;
 			
 			if ($type instanceof \Type\Builtin) {
-				$compiler->type->setName($type->getName());
+				$name = $type->getName();
+				if ($name == "bool") $name = "char";
+				$compiler->type->setName($name);
 				$compiler->type->setPointerLevel(0);
 			}
 			else if ($type instanceof \Type\Defined) {

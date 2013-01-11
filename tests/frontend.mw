@@ -8,8 +8,9 @@ import "../debug/util/Console";
 //Main function of the program.
 func main
 {
-	var int i;
+	/*var int i;
 	for (i = 0; i < 10; i = i+1) {
 		"Hello".println();
-	}
+	}*/
+	var bool b = (1 == 2);
 }

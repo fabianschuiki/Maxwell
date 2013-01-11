@@ -24,6 +24,7 @@ class Language
 	);
 	static public $binaryOperators = array(
 		array('=', ':='),
+		array('&&', '||'),
 		array('==', '!=', '<', '>', '<=', '>='),
 		array('+', '-'),
 		array('*', '/'),

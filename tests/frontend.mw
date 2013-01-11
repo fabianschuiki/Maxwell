@@ -12,5 +12,5 @@ func main
 	for (i = 0; i < 10; i = i+1) {
 		"Hello".println();
 	}*/
-	var bool b = (1 == 2);
+	var bool b = (1 == 2 && 2 == 3);
 }

@@ -495,7 +495,9 @@ class Analyzer
 				$lt = $entity->getLHS()->analysis->type->inferred;
 				$rt = $entity->getRHS()->analysis->type->inferred;
 				if ($lt && $rt) {
-					if (\Type\Type::equal($lt, $rt)) {
+					if (in_array($entity->getOperator(), array("==", "!=", "<", ">", "<=", ">=", "&&", "||"))) {
+						$entity->analysis->type->inferred = \Type\Builtin::makeWithName("bool");
+					} else if (\Type\Type::equal($lt, $rt)) {
 						$entity->analysis->type->inferred = $lt;
 					} else if ($lt instanceof \Type\Native || $rt instanceof \TypeNative) {
 						//IssueList::add('warning', "Ignoring types for binary operator since one or both sides are of a native C type.", $entity);
@@ -514,6 +516,9 @@ class Analyzer
 					} else {
 						$entity->analysis->type->inferred = \Type\Native::makeWithName($t->getName()."*");
 					}
+				}
+				else if ($entity->getOperator() == '!') {
+					$entity->analysis->type->inferred = \Type\Builtin::makeWithName("bool");
 				}
 				else if ($entity->getOperator() == '*') {
 					$t = $entity->getOperand()->analysis->type->inferred;

@@ -298,6 +298,21 @@ class Compiler
 			$block = $this->generateBlockCode($stmt->getBody());
 			$snippet->stmts = "else {\n".static::indent(trim($block->stmts))."\n}\n";
 		}
+		else if ($stmt instanceof Entity\Stmt\ForStmt) {
+			$initial = ($stmt->getInitial() ? $this->generateExprCode($stmt->getInitial()) : null);
+			$condition = $this->generateExprCode($stmt->getCondition());
+			$increment = ($stmt->getIncrement() ? $this->generateExprCode($stmt->getIncrement()) : null);
+			$block = $this->generateBlockCode($stmt->getBody());
+
+			if ($initial) $snippet->stmts .= $initial->stmts;
+			$snippet->stmts .= $condition->stmts;
+			if ($increment) $snippet->stmts .= $increment->stmts;
+			$snippet->stmts .= "for (";
+			if ($initial) $snippet->stmts .= $initial->expr;
+			$snippet->stmts .= "; {$condition->expr}; ";
+			if ($increment) $snippet->stmts .= $increment->expr;
+			$snippet->stmts .= ") {\n".static::indent(trim($block->stmts))."\n}\n";
+		}
 		else {
 			throw new \exception("Unable to generate statement code for ".vartype($stmt));
 		}

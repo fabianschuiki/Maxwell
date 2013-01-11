@@ -82,6 +82,8 @@ class StatementParser
 			
 			case 'if': return ControlFlowParser::parseIfStmt($keyword, $tokens);
 			case 'else': return ControlFlowParser::parseElseStmt($keyword, $tokens);
+
+			case 'for': return ControlFlowParser::parseForStmt($keyword, $tokens);
 		}
 		
 		IssueList::add('error', "Keyword '{$keyword->getText()}' cannot be used in a statement.", $keyword);

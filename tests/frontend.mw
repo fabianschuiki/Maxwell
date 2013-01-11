@@ -8,5 +8,7 @@ import "../debug/util/Console";
 //Main function of the program.
 func main
 {
-	"Hello World".concatenate("!!!").println();
+	for (var int i = 0; i < 10; i = i+1) {
+		"Hello".println();
+	}
 }

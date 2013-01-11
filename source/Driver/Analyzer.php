@@ -498,7 +498,7 @@ class Analyzer
 					if (\Type\Type::equal($lt, $rt)) {
 						$entity->analysis->type->inferred = $lt;
 					} else if ($lt instanceof \Type\Native || $rt instanceof \TypeNative) {
-						IssueList::add('warning', "Ignoring types for binary operator since one or both sides are of a native C type.", $entity);
+						//IssueList::add('warning', "Ignoring types for binary operator since one or both sides are of a native C type.", $entity);
 						$entity->analysis->type->inferred = $lt;
 					} else {
 						IssueList::add('error', "Binary operator requires both operands to be of same type. Left operand is {$lt->toHumanReadableString()}, right operand is {$rt->toHumanReadableString()}.", $entity, array($entity->getLHS(), $entity->getRHS()));

@@ -729,10 +729,14 @@ class Analyzer
 		foreach ($entity->getChildEntities() as $e)
 			$this->wrapInlineConstants($e);
 		if (IssueList::get()->isFatal()) return;
-		
+
 		//Wrap string constants in an appropriate initializer function.
 		if ($entity instanceof Entity\Expr\Constant && $entity->getType() == "string") {
 			$parent = $entity->getParent();
+
+			//Don't wrap string constants inside unary* operators, since they indicate an ASCII
+			//value instead of a String object.
+			if ($parent instanceof Entity\Expr\Operator\Unary && $parent->getOperator() == "*") return;
 			
 			//Check whether the constant is already wrapped.
 			if ($parent instanceof Entity\Expr\Call\Argument) {

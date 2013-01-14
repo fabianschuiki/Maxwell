@@ -148,10 +148,12 @@ class DefinitionParser
 			return static::parseTypeDefStmt($keyword, $tokens);
 		if ($tokens->is('identifier', 'var'))
 			return StatementParser::parseStmt($tokens);
+		if ($tokens->is('identifier', 'typevar'))
+			return StatementParser::parseStmt($tokens);
 		
 		$ignored = $tokens->upTo('symbol', ';');
 		$tokens->consumeIf('symbol', ';');
-		IssueList::add('error', "Only function, type and member definitions allowed inside type body.", $ignored->getTokens());
+		IssueList::add('error', "Only function, type, variable and type variable definitions allowed inside type body.", $ignored->getTokens());
 		return null;
 	}
 }

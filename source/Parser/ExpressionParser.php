@@ -313,4 +313,15 @@ class ExpressionParser
 		
 		return new AST\Expr\Cast($type, $expr, $typeGroup);
 	}
+
+	static public function parseTypevarExpr(Token $keyword, TokenList $tokens)
+	{
+		if ($tokens->isEmpty() || !$tokens->is('identifier')) {
+			IssueList::add('error', "Type variable requires a name after 'typevar'.", $keyword);
+			return null;
+		}
+		$name = $tokens->consume();
+
+		return new AST\Expr\TypeVar($keyword, $name);
+	}
 }

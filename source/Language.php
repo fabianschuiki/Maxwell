@@ -15,7 +15,7 @@ class Language
 		'func', 'type', 'primitive', 'if', 'else', 'for', 'return', 'inline', 'import', 'native', 'package', 'external',
 	);
 	static public $expressionKeywords = array(
-		'var', 'new',
+		'var', 'typevar', 'new',
 	);
 	
 	static public $operators;

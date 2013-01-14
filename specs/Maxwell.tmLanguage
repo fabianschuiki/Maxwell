@@ -56,7 +56,7 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>\b(func|type|value|object|var|byte|int|float|bool|String|Exception)\b</string>
+			<string>\b(func|type|value|object|var|typevar|byte|int|float|bool|String|Exception)\b</string>
 			<key>name</key>
 			<string>storage.type.maxwell</string>
 		</dict>

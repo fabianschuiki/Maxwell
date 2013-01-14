@@ -153,6 +153,9 @@ class Analyzer
 				//Try to bind the identifier to something in scope.
 				else {
 					$scope = $entity->getScope();
+					if (!$scope) {
+						throw new \RuntimeException("{$entity->getInternalDescription()} has no scope.");
+					}
 					/*$result = null;
 					while ($scope) {
 						if ($scope instanceof Entity\Scope\ScopeDeclaration) {

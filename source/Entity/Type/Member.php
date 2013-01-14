@@ -43,7 +43,7 @@ class Member extends \Entity\Entity
 	public function initScope(Scope &$scope)
 	{
 		if ($this->type) $this->type->initScope($scope);
-		$this->setScope($s);
+		$this->setScope($scope);
 	}
 	
 	public function getChildEntities()

@@ -77,6 +77,9 @@ class TypeDefinition extends RootEntity
 		}
 		$s->generateID();
 		$this->setScope($s);
+		foreach ($this->members as $member) {
+			$member->initScope($s);
+		}
 	}
 	
 	public function getChildEntities() { return $this->members; }

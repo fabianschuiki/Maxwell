@@ -6,7 +6,7 @@ package main
 //Main function of the program.
 func main
 {
-	var Array{int} a;
+	//var Array{int} a;
 }
 
 /** Array has to be a generic object that can be specialized for a specific

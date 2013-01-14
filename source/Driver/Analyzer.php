@@ -294,6 +294,9 @@ class Analyzer
 				$n = preg_replace('/\s+\*/', "*", $expr->getName());
 				$entity->setType(\Type\Native::makeWithName($n));
 			}
+			else if ($expr instanceof Entity\Expr\TypeSpec) {
+				IssueList::add('error', "Type specializations not yet supported.", $expr->getHumanRangeIfPossible());
+			}
 			else {
 				IssueList::add('error', "Invalid type expression.", $expr->getHumanRangeIfPossible());
 			}

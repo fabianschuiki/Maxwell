@@ -24,7 +24,7 @@ class ExpressionParser
 		if ($tokens->is('identifier') && in_array($tokens->getText(), Language::$expressionKeywords)) {
 			return static::parseKeywordExpr($tokens->consume(), $tokens);
 		}
-		
+
 		if ($tokens->count() >= 3) {
 			//Binary Operators.
 			foreach (Language::$binaryOperators as $operators) {
@@ -47,7 +47,9 @@ class ExpressionParser
 			}
 			if ($tokens->backIs('group', '()')) return static::parseCallExpr($tokens->backConsume(), $tokens);
 			if ($tokens->backIs('group', '[]')) return static::parseElementAccessExpr($tokens->backConsume(), $tokens);
-			
+			if ($tokens->count() == 2 && $tokens->is('identifier') && $tokens->backIs('group', '{}'))
+				return static::parseTypeSpecExpr($tokens->consume(), $tokens->consume());
+
 			//Unary prefix operators.
 			foreach (Language::$unaryPrefixOperators as $operators) {
 				if (in_array($tokens->getText(0), $operators)) {
@@ -321,7 +323,33 @@ class ExpressionParser
 			return null;
 		}
 		$name = $tokens->consume();
-
+		
 		return new AST\Expr\TypeVar($keyword, $name);
+	}
+
+	static public function parseTypeSpecExpr(Token $name, TokenGroup $group)
+	{
+		$tokens = $group->getStrippedTokens();
+
+		//Parse the specialization arguments.
+		$args = array();
+		while (!$tokens->isEmpty()) {
+			$arg_tokens = $tokens->upTo('symbol', ',');
+			$comma = $tokens->consumeIf('symbol', ',');
+			if ($arg_tokens->isEmpty()) {
+				IssueList::add('warning', "Ignoring gratuitous comma. Maybe you forgot to type a specialization argument?", $comma);
+				continue;
+			}
+			$expr = static::parseExpr($arg_tokens);
+			if ($expr) $args[] = $expr;
+		}
+
+		//Warn the user that there are no specialization arguments which might
+		//indicate an error.
+		if (!count($args)) {
+			IssueList::add('warning', "Type specialization without any arguments. Maybe you forgot to type an argument between { and }?", $group);
+		}
+
+		return new AST\Expr\TypeSpec($name, $args, $group);
 	}
 }

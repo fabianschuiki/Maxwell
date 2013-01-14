@@ -41,6 +41,8 @@ class Protocol
 		$this->register('Expr\NativeType', "native-type", array("&name"));
 		$this->register('Expr\ElementAccess', "element-access", array("@expr", "@index"));
 		$this->register('Expr\Cast', "cast", array("@type", "@expr"));
+		$this->register('Expr\TypeVar', "typevar", array("&name"));
+		$this->register('Expr\TypeSpec', "typespec", array("@type"));
 		
 		//Scope
 		$this->register('Scope\Scope', "scope", array("*upper", "*outer"));

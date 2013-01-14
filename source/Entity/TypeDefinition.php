@@ -2,6 +2,7 @@
 namespace Entity;
 use Source\Range;
 use Lexer\Token;
+use IssueList;
 
 class TypeDefinition extends RootEntity
 {
@@ -29,6 +30,9 @@ class TypeDefinition extends RootEntity
 				$expr = $stmt->getExpr();
 				if ($expr instanceof \AST\Expr\VarDef) {
 					$members[] = Type\Member::makeFromSyntaxNode($expr);
+				}
+				else if ($expr instanceof \AST\Expr\TypeVar) {
+					IssueList::add('warning', "Ignoring type variable '{$expr->getName()->getText()}' as they are not yet implemented.", $expr);
 				}
 				else {
 					throw new \exception(vartype($expr)." makes no sense as a statement inside a type definition. Replace this with a proper issue!");

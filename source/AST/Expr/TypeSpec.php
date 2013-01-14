@@ -5,11 +5,11 @@ use Lexer\TokenGroup;
 
 class TypeSpec extends Expr
 {
-	protected $name;
+	protected $expr;
 	protected $args;
 	protected $group;
 	
-	public function __construct(Token $name, array $args, TokenGroup $group)
+	public function __construct(Expr $expr, array $args, TokenGroup $group)
 	{
 		parent::__construct();
 
@@ -19,12 +19,12 @@ class TypeSpec extends Expr
 			}
 		}
 
-		$this->name = $name;
+		$this->expr = $expr;
 		$this->args = $args;
 		$this->group = $group;
 	}
 	
-	public function getName() { return $this->name; }
+	public function getExpr() { return $this->expr; }
 	public function getArgs() { return $this->args; }
 	public function getGroup() { return $this->group; }
 }

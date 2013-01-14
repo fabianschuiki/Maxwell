@@ -26,6 +26,7 @@ abstract class Expr extends Entity
 		if ($node instanceof \AST\Expr\NativeType) return NativeType::makeFromSyntaxNode($node);
 		if ($node instanceof \AST\Expr\ElementAccess) return ElementAccess::makeFromSyntaxNode($node);
 		if ($node instanceof \AST\Expr\Cast) return Cast::makeFromSyntaxNode($node);
+		if ($node instanceof \AST\Expr\TypeSpec) return TypeSpec::makeFromSyntaxNode($node);
 		throw new \exception("Unable to wrap ".vartype($node));
 	}
 }

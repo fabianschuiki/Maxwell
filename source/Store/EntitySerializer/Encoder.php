@@ -231,4 +231,13 @@ class Encoder
 			$e->setAttribute("id", $declaration->getID());
 		}
 	}
+	
+	protected function encodeEntityExprTypeSpec(\Entity\Expr\TypeSpec $entity, Coder\Element $element)
+	{
+		foreach ($entity->getArgs() as $arg) {
+			$this->encodeEntity($arg);
+			$e = $element->makeElement('arg');
+			$e->setAttribute('id', $arg->getID());
+		}
+	}
 }

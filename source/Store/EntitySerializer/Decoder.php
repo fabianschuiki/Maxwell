@@ -317,4 +317,20 @@ class Decoder
 		}
 		$entity->setDeclarations($declarations);
 	}
+	
+	protected function decodeEntityExprTypeSpec(\Entity\Expr\TypeSpec $entity, Coder\Element $element)
+	{
+		$args = array();
+		foreach ($element->getElements() as $arg) {
+			if ($arg->getName() != "arg") {
+				throw new \exception("Only 'arg' tags are supported within a tpe specialization.");
+			}
+			if ($id = $arg->getAttribute("id")) {
+				$args[] = $this->findEntity($id);
+			} else {
+				throw new \exception("Type specialization argument has no ID.");
+			}
+		}
+		$entity->setArgs($args);
+	}
 }

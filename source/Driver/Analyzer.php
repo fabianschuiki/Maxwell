@@ -694,6 +694,10 @@ class Analyzer
 				}
 			}
 			if ($scope instanceof Entity\Scope\ScopeRoot) {
+				if ($scope->getRootEntity()->getName() == $name) {
+					$result = $scope->getRootEntity();
+					break;
+				}
 				foreach ($scope->getRootEntity()->getKnownEntities() as $e) {
 					if ($e instanceof \Entity\ExternalDeclaration) {
 						foreach ($e->getDeclarations() as $decl) {

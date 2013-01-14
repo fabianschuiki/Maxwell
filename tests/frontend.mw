@@ -2,16 +2,25 @@
  * Some test file for debugging the frontend.
  */
 package main
-import "../debug/util/String";
-import "../debug/util/Console";
 
 //Main function of the program.
 func main
 {
-	/*var int i;
-	for (i = 0; i < 10; i = i+1) {
-		"Hello".println();
-	}*/
-	var bool b = (1 == 2 && 2 == 3);
-	b = (bool)95;
+	var Array<int> a;
+}
+
+/** Array has to be a generic object that can be specialized for a specific
+ * type that it may hold. */
+object Array
+{
+	typevar a; //The type of the values stored in this array.
+	var ArrayElement<a> first;
+}
+
+/** Link element of a single linked list. */
+object ArrayElement
+{
+	typevar a; //The type of the value stored in this array element.
+	var a v;
+	var ArrayElement<a> next;
 }

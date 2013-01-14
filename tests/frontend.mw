@@ -11,14 +11,14 @@ func main
 
 /** Array has to be a generic object that can be specialized for a specific
  * type that it may hold. */
-object Array
+type Array
 {
 	typevar a; //The type of the values stored in this array.
 	var ArrayElement<a> first;
 }
 
 /** Link element of a single linked list. */
-object ArrayElement
+type ArrayElement
 {
 	typevar a; //The type of the value stored in this array element.
 	var a v;

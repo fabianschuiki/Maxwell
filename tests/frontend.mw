@@ -6,7 +6,7 @@ package main
 //Main function of the program.
 func main
 {
-	//var Array{int} a;
+	var Array{int} a;
 }
 
 /** Array has to be a generic object that can be specialized for a specific
@@ -14,7 +14,7 @@ func main
 type Array
 {
 	typevar a; //The type of the values stored in this array.
-	//var ArrayElement{a} first;
+	var ArrayElement{a} first;
 }
 
 /** Link element of a single linked list. */

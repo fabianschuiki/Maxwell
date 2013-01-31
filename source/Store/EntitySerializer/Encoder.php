@@ -194,6 +194,11 @@ class Encoder
 			$e = $element->makeElement("member");
 			$e->setAttribute("id", $member->getID());
 		}
+		foreach ($entity->getTypeVars() as $typeVar) {
+			$this->encodeEntity($typeVar);
+			$e = $element->makeElement("typevar");
+			$e->setAttribute("id", $typeVar->getID());
+		}
 	}
 	
 	protected function encodeEntityBlock(\Entity\Block $entity, Coder\Element $element)

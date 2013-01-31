@@ -241,17 +241,28 @@ class Decoder
 	protected function decodeEntityTypeDefinition(\Entity\TypeDefinition $entity, Coder\Element $element)
 	{
 		$members = array();
+		$typeVars = array();
 		foreach ($element->getElements() as $member) {
-			if ($member->getName() != "member") {
-				throw new \exception("Only 'member' tags are supported within a type definition");
+			if ($member->getName() == "member") {
+				if ($id = $member->getAttribute("id")) {
+					$members[] = $this->findEntity($id);
+				} else {
+					throw new \exception("Type member has no ID");
+				}
 			}
-			if ($id = $member->getAttribute("id")) {
-				$members[] = $this->findEntity($id);
-			} else {
-				throw new \exception("Type member has no ID");
+			else if ($member->getName() == "typevar") {
+				if ($id = $member->getAttribute("id")) {
+					$typeVars[] = $this->findEntity($id);
+				} else {
+					throw new \exception("Type typevar has no ID");
+				}
+			}
+			else {
+				throw new \exception("Only 'member' and 'typevar' tags are supported within a type definition");
 			}
 		}
 		$entity->setMembers($members);
+		$entity->setTypeVars($typeVars);
 	}
 	
 	protected function decodeEntityBlock(\Entity\Block $entity, Coder\Element $element)

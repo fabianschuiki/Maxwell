@@ -25,6 +25,7 @@ class TypeDefinition extends RootEntity
 		
 		//Disassemble the body containing the members.
 		$members = array();
+		$typeVars = array();
 		foreach ($def->getBody()->getStmts() as $stmt) {
 			if ($stmt instanceof \AST\Stmt\Expr) {
 				$expr = $stmt->getExpr();
@@ -32,7 +33,8 @@ class TypeDefinition extends RootEntity
 					$members[] = Type\Member::makeFromSyntaxNode($expr);
 				}
 				else if ($expr instanceof \AST\Expr\TypeVar) {
-					IssueList::add('warning', "Ignoring type variable '{$expr->getName()->getText()}' as they are not yet implemented.", $expr);
+					$typeVars[] = Type\TypeVar::makeFromSyntaxNode($expr);
+					//IssueList::add('warning', "Ignoring type variable '{$expr->getName()->getText()}' as they are not yet implemented.", $expr);
 				}
 				else {
 					throw new \exception(vartype($expr)." makes no sense as a statement inside a type definition. Replace this with a proper issue!");
@@ -43,6 +45,7 @@ class TypeDefinition extends RootEntity
 			}
 		}
 		$e->setMembers($members);
+		$e->setTypeVars($typeVars);
 		
 		$e->popID();
 		return $e;
@@ -51,6 +54,7 @@ class TypeDefinition extends RootEntity
 	protected $name;
 	protected $superType;
 	protected $members;
+	protected $typeVars;
 	protected $scope;
 	
 	public function setName($n) { $this->name = $n; }
@@ -61,6 +65,9 @@ class TypeDefinition extends RootEntity
 	
 	public function setMembers(array $m) { $this->members = $m; }
 	public function getMembers() { return $this->members; }
+
+	public function setTypeVars(array $t) { $this->typeVars = $t; foreach ($t as $tv) $tv->setParent($this); }
+	public function getTypeVars() { return $this->typeVars; }
 	
 	public function setScope(Scope\Scope $s) { $this->scope = $s; }
 	public function getScope() { return $this->scope; }
@@ -80,7 +87,10 @@ class TypeDefinition extends RootEntity
 		foreach ($this->members as $member) {
 			$member->initScope($s);
 		}
+		foreach ($this->typeVars as $typeVar) {
+			$typeVar->initScope($s);
+		}
 	}
 	
-	public function getChildEntities() { return $this->members; }
+	public function getChildEntities() { return array_merge($this->members, $this->typeVars); }
 }

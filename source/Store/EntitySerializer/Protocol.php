@@ -17,6 +17,7 @@ class Protocol
 		$this->register("ExternalDeclaration", "external", array("&name", "@scope"));
 		
 		$this->register('Type\Member', "type-member", array("&name", "@type", "*scope"));
+		$this->register('Type\TypeVar', "type-var", array("&name", "*scope"));
 		
 		//Statements
 		$this->register("Block", "block", array("@headScope", "*tailScope"));

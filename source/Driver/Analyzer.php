@@ -312,8 +312,14 @@ class Analyzer
 					IssueList::add('error', "Non-generic type {$type->toHumanReadableString()} cannot be specialized.", $expr->getRange());
 					return;
 				}
-				echo "- specializing ".vartype($expr->getType()->getType())."\n";
-				IssueList::add('error', "Type specializations not yet supported.", $expr->getHumanRangeIfPossible());
+				$spec = Analyzer\TypeSpecializer::specialize($type->getDefinition(), $expr->getArgs(), $expr->getHumanRangeIfPossible());
+				if (!$spec) {
+					IssueList::add('error', "Specialization failed.", $expr);
+					return;
+				}
+				$entity->setType(\Type\Defined::makeWithDefinition($spec));
+				//echo "- specializing ".vartype($expr->getType()->getType())."\n";
+				//IssueList::add('error', "Type specializations not yet supported.", $expr->getHumanRangeIfPossible());
 			}
 			else {
 				IssueList::add('error', "Invalid type expression.", $expr->getHumanRangeIfPossible());

@@ -36,4 +36,12 @@ abstract class RootEntity extends Entity
 	
 	public function pushID() { \Store\Manager::get()->getEntityStore()->pushRootID($this->getID()); }
 	public function popID() { \Store\Manager::get()->getEntityStore()->popRootID($this->getID()); }
+
+	public function copyInto(RootEntity $target)
+	{
+		$target->setFile($this->file);
+		$target->setPackageName($this->packageName);
+		$target->setSiblingEntities($this->siblingEntities);
+		$target->setKnownEntities($this->knownEntities);
+	}
 }

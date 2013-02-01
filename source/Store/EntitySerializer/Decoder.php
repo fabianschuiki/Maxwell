@@ -78,6 +78,7 @@ class Decoder
 		//Resolve the root entity.
 		if ($id = $root->getAttribute("id")) {
 			$this->rootEntity = $this->findEntity($id);
+			$this->rootEntity->setFile($this->file);
 			unset($this->subrootEntities[$id]);
 			$this->rootEntity->setEmbeddedRootEntities($this->subrootEntities);
 		} else {

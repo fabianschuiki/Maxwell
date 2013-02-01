@@ -93,4 +93,23 @@ class TypeDefinition extends RootEntity
 	}
 	
 	public function getChildEntities() { return array_merge($this->members, $this->typeVars); }
+
+	public function copy()
+	{
+		$e = new self;
+		$e->generateID();
+		$e->pushID();
+		$e->setRange($this->getRange());
+		$e->setHumanRange($this->getHumanRange());
+		$e->setName($this->getName());
+		$this->copyInto($e); //root entity stuff
+
+		$e->setMembers(array());
+		$e->setTypeVars(array());
+
+		$e->initScope(null);
+
+		$e->popID();
+		return $e;
+	}
 }

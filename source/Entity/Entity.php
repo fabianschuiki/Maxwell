@@ -59,6 +59,12 @@ abstract class Entity extends Node
 	{
 		throw new \InvalidArgumentException($this->getInternalDescription()." does not implement replaceChild().");
 	}
+
+	/** Returns a deep copy of this entity. */
+	public function copy()
+	{
+		throw new \InvalidArgumentException($this->getInternalDescription()." does not implement copy().");
+	}
 	
 	
 	public $analysis;

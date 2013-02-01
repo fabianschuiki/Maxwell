@@ -298,6 +298,21 @@ class Analyzer
 				$entity->setType(\Type\Native::makeWithName($n));
 			}
 			else if ($expr instanceof Entity\Expr\TypeSpec) {
+				//Make sure the type we're about to specialized and the specialization parameters are set.
+				foreach ($entity->getChildEntities() as $e) {
+					$this->evaluateTypeExprs($e);
+				}
+
+				//Fetch the type we're about to specialize and check whether specialization is possible.
+				$type = $expr->getType()->getType();
+				if (!$type) {
+					throw new \exception("Entity {$expr->getInternalDescription()} is trying to specialize type expression that did not yield a valid type.");
+				}
+				if (!$type instanceof \Type\Defined) {
+					IssueList::add('error', "Non-generic type {$type->toHumanReadableString()} cannot be specialized.", $expr->getRange());
+					return;
+				}
+				echo "- specializing ".vartype($expr->getType()->getType())."\n";
 				IssueList::add('error', "Type specializations not yet supported.", $expr->getHumanRangeIfPossible());
 			}
 			else {

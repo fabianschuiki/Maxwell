@@ -33,6 +33,8 @@ class TypeSpecializer
 		echo "cloned {$type->getName()} has ID {$cloned->getID()}\n";
 		$entityStore->popRootID($type->getID());
 		$entityStore->setEntity($cloned);
+		$type->addKnownEntity($cloned);
+		return $cloned;
 
 		IssueList::add('error', "Specialization of type {$type->getName()} is not yet implemented.", $range);
 		return null;

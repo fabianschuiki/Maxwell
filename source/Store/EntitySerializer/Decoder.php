@@ -93,9 +93,16 @@ class Decoder
 		}
 		else if (($dot = strpos($id, ".")) !== false) {
 			$rootID = substr($id, 0, $dot);
-			$embeddedRoots = $this->findEntity($rootID)->getEmbeddedRootEntities();
+			$root = $this->findEntity($rootID);
+
+			$embeddedRoots = $root->getEmbeddedRootEntities();
 			$er = @$embeddedRoots[$id];
 			if ($er) return $er;
+
+			foreach ($root->getKnownEntities() as $e) {
+				if ($e->getID() == $id)
+					return $e;
+			}
 		}
 		foreach ($this->rootEntity->getKnownEntities() as $e) {
 			if ($e->getID() == $id)

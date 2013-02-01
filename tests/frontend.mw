@@ -14,13 +14,13 @@ func main
 type Array
 {
 	typevar a; //The type of the values stored in this array.
-	var ArrayElement{a} first;
+	//var ArrayElement{int} first;
 }
 
 /** Link element of a single linked list. */
 type ArrayElement
 {
 	typevar a; //The type of the value stored in this array element.
-	var a v;
-	var ArrayElement{a} next;
+	var int v;
+	//var ArrayElement{int} next;
 }

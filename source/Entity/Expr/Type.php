@@ -35,4 +35,14 @@ class Type extends Expr
 	}
 	
 	public function getChildEntities() { return array($this->expr); }
+
+	public function copy()
+	{
+		$e = new self;
+		$e->generateID();
+		$e->setRange($this->getRange());
+		$e->setExpr($this->expr->copy());
+		if ($this->type) $e->setType($this->type->copy());
+		return $e;
+	}
 }

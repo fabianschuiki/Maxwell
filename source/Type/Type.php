@@ -48,4 +48,10 @@ class Type
 		}
 		throw new \exception("Unable to convert ".vartype($this)." to human readable string.");
 	}
+
+	/** Returns a copy of this type. */
+	public function copy()
+	{
+		throw new \InvalidArgumentException(vartype($this)." \"{$this->toHumanReadableString()}\" does not implement copy().");
+	}
 }

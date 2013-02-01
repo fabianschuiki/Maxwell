@@ -15,4 +15,11 @@ class Defined extends Type
 	
 	public function setDefinition(\Entity\TypeDefinition $d) { $this->definition = $d; }
 	public function getDefinition() { return $this->definition; }
+
+	public function copy()
+	{
+		$b = new self;
+		$b->setDefinition($this->definition);
+		return $b;
+	}
 }

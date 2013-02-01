@@ -30,6 +30,7 @@ abstract class RootEntity extends Entity
 	
 	public function setKnownEntities(array $entities) { $this->knownEntities = $entities; }
 	public function getKnownEntities() { return $this->knownEntities; }
+	public function addKnownEntity(RootEntity $e) { $this->knownEntities[] = $e; }
 	
 	public function setEmbeddedRootEntities(array $entities) { $this->embeddedRootEntities = $entities; }
 	public function getEmbeddedRootEntities() { return $this->embeddedRootEntities; }

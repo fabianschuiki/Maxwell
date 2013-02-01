@@ -104,8 +104,9 @@ class TypeDefinition extends RootEntity
 		$e->setName($this->getName());
 		$this->copyInto($e); //root entity stuff
 
-		$e->setMembers(array());
-		$e->setTypeVars(array());
+		$copyFunc = function (Entity $e) { return $e->copy(); };
+		$e->setMembers(array_map($copyFunc, $this->getMembers()));
+		$e->setTypeVars(array_map($copyFunc, $this->getTypeVars()));
 
 		$e->initScope(null);
 

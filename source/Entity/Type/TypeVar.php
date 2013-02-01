@@ -41,4 +41,14 @@ class TypeVar extends \Entity\Entity
 	}
 	
 	public function getChildEntities() { return array(); }
+
+	public function copy()
+	{
+		$e = new self;
+		$e->generateID();
+		$e->setRange($this->getRange());
+		$e->setHumanRange($this->getHumanRange());
+		$e->setName($this->name);
+		return $e;
+	}
 }

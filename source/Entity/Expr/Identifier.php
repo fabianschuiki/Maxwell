@@ -32,4 +32,13 @@ class Identifier extends Expr
 	}
 	
 	public function getChildEntities() { return array(); }
+
+	public function copy()
+	{
+		$e = new self;
+		$e->generateID();
+		$e->setRange($this->getRange());
+		$e->setName($this->name);
+		return $e;
+	}
 }

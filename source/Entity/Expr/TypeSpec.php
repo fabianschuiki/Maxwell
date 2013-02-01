@@ -57,4 +57,17 @@ class TypeSpec extends Expr
 			}
 		}
 	}
+
+	public function copy()
+	{
+		$e = new self;
+		$e->generateID();
+		$e->setRange($this->getRange());
+		$e->setType($this->type->copy());
+
+		$copyFunc = function (\Entity\Entity $e) { return $e->copy(); };
+		$e->setArgs(array_map($copyFunc, $this->args));
+
+		return $e;
+	}
 }

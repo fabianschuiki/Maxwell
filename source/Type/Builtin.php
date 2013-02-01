@@ -17,4 +17,11 @@ class Builtin extends Type
 	
 	public function setName($n) { $this->name = $n; }
 	public function getName() { return $this->name; }
+
+	public function copy()
+	{
+		$b = new self;
+		$b->setName($this->name);
+		return $b;
+	}
 }

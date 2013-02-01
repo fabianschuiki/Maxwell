@@ -52,4 +52,15 @@ class Member extends \Entity\Entity
 		if ($this->type) $a[] = $this->type;
 		return $a;
 	}
+
+	public function copy()
+	{
+		$e = new self;
+		$e->generateID();
+		$e->setRange($this->getRange());
+		$e->setHumanRange($this->getHumanRange());
+		$e->setName($this->getName());
+		if ($this->getType()) $e->setType($this->getType()->copy());
+		return $e;
+	}
 }

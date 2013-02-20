@@ -83,9 +83,10 @@ class Compiler
 			$entity->compiler->setName($entity->getName());
 		}
 		if ($entity instanceof Entity\TypeDefinition) {
+			$name = $entity->getName()."_".str_replace(".", "_", $entity->getID());
 			$compiler = $entity->compiler;
-			$compiler->setLocalName("struct ".$entity->getName());
-			$compiler->setName($entity->getName()."_t");
+			$compiler->setLocalName("struct $name");
+			$compiler->setName("{$name}_t");
 		}
 		if ($entity instanceof Entity\Type\Member) {
 			$compiler = $entity->compiler;

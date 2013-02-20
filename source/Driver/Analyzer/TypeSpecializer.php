@@ -34,9 +34,21 @@ class TypeSpecializer
 		$entityStore->popRootID($type->getID());
 		$entityStore->setEntity($cloned);
 		$type->addKnownEntity($cloned);
-		return $cloned;
 
-		IssueList::add('error', "Specialization of type {$type->getName()} is not yet implemented.", $range);
-		return null;
+		//Specialize the cloned entity's type variables.
+		$args_left = $args;
+		foreach ($cloned->getTypeVars() as $tv) {
+			if (!count($args_left)) break;
+			$arg = array_shift($args_left);
+			$type = $arg->getType();
+			if (!$type) {
+				IssueList::add('error', "Specialization argument has no valid type.", $arg);
+				return null;
+			}
+			$tv->setType($type);
+			echo "Setting {$tv->getName()}'s type to {$type->toHumanReadableString()}\n";
+		}
+
+		return $cloned;
 	}
 }

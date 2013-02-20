@@ -11,4 +11,9 @@ class Expr extends Node
 		parent::__construct($entity);
 		$this->type = new \Analysis\Type;
 	}
+
+	public function copyFrom(self $f)
+	{
+		$this->type->copyFrom($f->type);
+	}
 }

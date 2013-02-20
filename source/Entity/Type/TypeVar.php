@@ -1,6 +1,5 @@
 <?php
 namespace Entity\Type;
-use Entity\Expr\Type;
 use Entity\Scope\Scope;
 
 class TypeVar extends \Entity\Entity
@@ -15,19 +14,19 @@ class TypeVar extends \Entity\Entity
 		return $e;
 	}
 	
-	/*public $analysis;
-	public $compiler;
-	
 	public function __construct()
 	{
-		$this->analysis = \Analysis\Node\Node::makeForEntity($this);
-		$this->compiler = \Compiler\Node\Node::makeForEntity($this);
-	}*/
+		$this->type = null;
+	}
 	
 	protected $name;
-	
+	protected $type;
+
 	public function setName($n) { $this->name = $n; }
 	public function getName() { return $this->name; }
+
+	public function setType(\Type\Type $t) { $this->type = $t; }
+	public function getType() { return $this->type; }
 	
 	
 	protected $scope;
@@ -49,6 +48,7 @@ class TypeVar extends \Entity\Entity
 		$e->setRange($this->getRange());
 		$e->setHumanRange($this->getHumanRange());
 		$e->setName($this->name);
+		if ($this->type) $e->setType($this->type->copy());
 		return $e;
 	}
 }

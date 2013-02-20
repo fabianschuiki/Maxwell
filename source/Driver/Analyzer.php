@@ -43,7 +43,7 @@ class Analyzer
 				$entityID = array_shift($this->initialTypeQueue);
 				$entity = $entityStore->getEntity($entityID);
 				$entityStore->pushRootID($entityID);
-				//echo "analyzing initial type of ".vartype($entity)." {$entity->getName()}\n";
+				echo "analyzing initial type of {$entity->getID()} ".vartype($entity)." {$entity->getName()}\n";
 				
 				//Wrap inline constants (strings, arrays, etc.).
 				$this->wrapInlineConstants($entity);
@@ -90,7 +90,7 @@ class Analyzer
 				$entityID = array_shift($this->typeInferenceQueue);
 				$entity = $entityStore->getEntity($entityID);
 				$entityStore->pushRootID($entityID);
-				//echo "inferring type of ".vartype($entity)."\n";
+				echo "inferring type of {$entity->getID()} ".vartype($entity)."\n";
 				
 				//Don't spawn any constraints for now.
 				//Spawn type constraints for the entities.
@@ -289,6 +289,11 @@ class Analyzer
 				else if ($t instanceof \Entity\TypeDefinition) {
 					$entity->setType(\Type\Defined::makeWithDefinition($t));
 				}
+				else if ($t instanceof \Entity\Type\TypeVar) {
+					if ($tt = $t->getType()) {
+						$entity->setType($tt);
+					}
+				}
 				else {
 					IssueList::add('error', "Type '{$expr->getName()}' is unknown.", $expr->getRange());
 				}
@@ -318,6 +323,7 @@ class Analyzer
 					return;
 				}
 				$entity->setType(\Type\Defined::makeWithDefinition($spec));
+				$this->initialTypeQueue[] = $spec->getID();
 				//echo "- specializing ".vartype($expr->getType()->getType())."\n";
 				//IssueList::add('error', "Type specializations not yet supported.", $expr->getHumanRangeIfPossible());
 			}
@@ -409,7 +415,7 @@ class Analyzer
 			
 			if ($entity instanceof Entity\Expr\Identifier) {
 				if ($target = $entity->analysis->binding->target) {
-					if ($entity->analysis->binding->target instanceof \Type\Type || $entity->analysis->binding->target instanceof \Entity\TypeDefinition) {
+					if ($entity->analysis->binding->target instanceof \Type\Type || $entity->analysis->binding->target instanceof \Entity\TypeDefinition || $entity->analysis->binding->target instanceof \Entity\Type\TypeVar) {
 						$entity->analysis->type->initial = \Type\Builtin::makeWithName("Type");
 					} else if ($target->analysis->type) {
 						$entity->analysis->type->initial = $target->analysis->type->initial;
@@ -715,9 +721,18 @@ class Analyzer
 				}
 			}
 			if ($scope instanceof Entity\Scope\ScopeRoot) {
-				if ($scope->getRootEntity()->getName() == $name) {
+				$root = $scope->getRootEntity();
+				if ($root->getName() == $name) {
 					$result = $scope->getRootEntity();
 					break;
+				}
+				if ($root instanceof Entity\TypeDefinition) {
+					foreach ($root->getTypeVars() as $tv) {
+						if ($tv->getName() == $name) {
+							$result = $tv;
+							break;
+						}
+					}
 				}
 				foreach ($scope->getRootEntity()->getKnownEntities() as $e) {
 					if ($e instanceof \Entity\ExternalDeclaration) {

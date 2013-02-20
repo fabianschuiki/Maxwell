@@ -144,12 +144,12 @@ class Encoder
 	
 	protected function encodeAnalysisType(\Analysis\Type $type, Coder\Element $element)
 	{
-		if ($i = $type->initial)  $this->encodeAnalysisTypeType($i, $element)->setAttribute('rel', 'initial');
-		if ($i = $type->inferred) $this->encodeAnalysisTypeType($i, $element)->setAttribute('rel', 'inferred');
-		//if ($i = $type->required) $this->encodeAnalysisTypeType($i, $element)->setAttribute('rel', 'required');
+		if ($i = $type->initial)  $this->encodeType($i, $element)->setAttribute('rel', 'initial');
+		if ($i = $type->inferred) $this->encodeType($i, $element)->setAttribute('rel', 'inferred');
+		//if ($i = $type->required) $this->encodeType($i, $element)->setAttribute('rel', 'required');
 	}
 	
-	protected function encodeAnalysisTypeType(\Type\Type $type, Coder\Element $element)
+	protected function encodeType(\Type\Type $type, Coder\Element $element)
 	{
 		$e = null;
 		if ($type instanceof \Type\Generic) {
@@ -165,13 +165,13 @@ class Encoder
 		}
 		if ($type instanceof \Type\Func) {
 			$e = $element->makeElement("type-func");
-			$this->encodeAnalysisTypeType($type->getInput(),  $e)->setAttribute('rel', "input");
-			$this->encodeAnalysisTypeType($type->getOutput(), $e)->setAttribute('rel', "output");
+			$this->encodeType($type->getInput(),  $e)->setAttribute('rel', "input");
+			$this->encodeType($type->getOutput(), $e)->setAttribute('rel', "output");
 		}
 		if ($type instanceof \Type\Tuple) {
 			$e = $element->makeElement("type-tuple");
 			foreach ($type->getFields() as $field) {
-				$this->encodeAnalysisTypeType($field, $e);
+				$this->encodeType($field, $e);
 			}
 		}
 		if ($type instanceof \Type\Native) {
@@ -243,6 +243,13 @@ class Encoder
 			$this->encodeEntity($arg);
 			$e = $element->makeElement('arg');
 			$e->setAttribute('id', $arg->getID());
+		}
+	}
+
+	protected function encodeEntityTypeTypeVar(\Entity\Type\TypeVar $entity, Coder\Element $element)
+	{
+		if ($t = $entity->getType()) {
+			$this->encodeType($t, $element);
 		}
 	}
 }

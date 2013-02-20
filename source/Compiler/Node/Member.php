@@ -15,4 +15,10 @@ class Member extends Node
 	
 	public function setName($n) { $this->name = $n; }
 	public function getName() { return $this->name; }
+
+	public function copyFrom(self $f)
+	{
+		$this->type->copyFrom($f->type);
+		$this->name = $f->name;
+	}
 }

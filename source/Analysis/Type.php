@@ -9,4 +9,10 @@ class Type
 	
 	/** The calculated type, based on the initial type and imposed constraints. */
 	public $inferred;
+
+	public function copyFrom(self $f)
+	{
+		$this->initial  = ($f->initial ? $f->initial->copy() : null);
+		$this->inferred = ($f->inferred ? $f->inferred->copy() : null);
+	}
 }

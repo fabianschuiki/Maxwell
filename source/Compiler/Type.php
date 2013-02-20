@@ -15,4 +15,10 @@ class Type
 	public function getPointerLevel() { return $this->pointerLevel; }
 	
 	public function getCType() { return $this->name.str_repeat("*", $this->pointerLevel); }
+
+	public function copyFrom(self $f)
+	{
+		$this->name = $f->name;
+		$this->pointerLevel = $f->pointerLevel;
+	}
 }

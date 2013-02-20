@@ -204,7 +204,7 @@ class Decoder
 			} break;
 			case "type": {
 				foreach ($element->getElements() as $e) {
-					$type = $this->decodeAnalysisType($e);
+					$type = $this->decodeType($e);
 					$rel = $e->getAttribute('rel');
 					if ($rel == "initial")  $analysis->type->initial  = $type;
 					if ($rel == "inferred") $analysis->type->inferred = $type;
@@ -214,7 +214,7 @@ class Decoder
 		}
 	}
 	
-	public function decodeAnalysisType(Coder\Element $element)
+	public function decodeType(Coder\Element $element)
 	{
 		switch ($element->getName()) {
 			case "type-builtin": return \Type\Builtin::makeWithName($element->getAttribute('name')); break;
@@ -226,8 +226,8 @@ class Decoder
 				$output = null;
 				foreach ($element->getElements() as $member) {
 					switch ($member->getAttribute("rel")) {
-						case "input":  $input  = $this->decodeAnalysisType($member); break;
-						case "output": $output = $this->decodeAnalysisType($member); break;
+						case "input":  $input  = $this->decodeType($member); break;
+						case "output": $output = $this->decodeType($member); break;
 						default: {
 							throw new \exception("Only types with relation ('rel') 'input' or 'output' supported within an analysis type");
 						}
@@ -238,7 +238,7 @@ class Decoder
 			case "type-tuple": {
 				$fields = array();
 				foreach ($element->getElements() as $field) {
-					$fields[] = $this->decodeAnalysisType($field);
+					$fields[] = $this->decodeType($field);
 				}
 				return \Type\Tuple::makeWithFields($fields);
 			} break;
@@ -351,5 +351,19 @@ class Decoder
 			}
 		}
 		$entity->setArgs($args);
+	}
+
+	protected function decodeEntityTypeTypeVar(\Entity\Type\TypeVar $entity, Coder\Element $element)
+	{
+		$elements = $element->getElements();
+		if (count($elements)) {
+			$e = array_pop($elements);
+			$type = $this->decodeType($e);
+			echo "Typevar {$entity->getID()}: Decoded type {$type->toHumanReadableString()}\n";
+			if (!$type) {
+				throw new \RuntimeException("Unable to decode TypeVar type.");
+			}
+			$entity->setType($type);
+		}
 	}
 }

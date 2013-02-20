@@ -61,6 +61,8 @@ class Member extends \Entity\Entity
 		$e->setHumanRange($this->getHumanRange());
 		$e->setName($this->getName());
 		if ($this->getType()) $e->setType($this->getType()->copy());
+		$e->analysis->copyFrom($this->analysis);
+		$e->compiler->copyFrom($this->compiler);
 		return $e;
 	}
 }

@@ -344,7 +344,7 @@ class Analyzer
 		foreach ($entity->getChildEntities() as $e)
 			$this->calculateInitialType($e);
 		
-		if (isset($entity->analysis->type) && !$entity->analysis->type->initial) {
+		if (isset($entity->analysis->type) /*&& !$entity->analysis->type->initial*/) {
 			if ($entity instanceof Entity\Expr\VarDef) {
 				$t = $entity->getType();
 				if (!$t) {

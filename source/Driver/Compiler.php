@@ -35,14 +35,18 @@ class Compiler
 			//Fetch the entity we're supposed to precompile.
 			$entityID = array_shift($precompileIDs);
 			$entity = $entityStore->getEntity($entityID);
-			//echo "precompiling ".vartype($entity)."\n";
+			echo "precompiling {$entity->getID()} ".vartype($entity)."\n";
 			
 			//Decide the entity names.
 			$this->calculateEntityNames($entity);
 			
-			//Mark this entity as to be compiled.
-			array_push($compileIDs, $entityID);
+			//Mark this entity as to be compiled if it isn't generic.
 			array_push($precompiled, $entityID);
+			if (!$this->isEntityGeneric($entity)) {
+				array_push($compileIDs, $entityID);
+			} else {
+				echo " -> not compiling generic entity $entityID\n";
+			}
 			
 			//Compile this entity's known entities.
 			foreach ($entity->getKnownEntities() as $known) {
@@ -57,7 +61,7 @@ class Compiler
 			//Fetch the entity we're supposed to compile.
 			$entityID = array_shift($compileIDs);
 			$entity = $entityStore->getEntity($entityID);
-			//echo "compiling ".vartype($entity)."\n";
+			echo "compiling {$entity->getID()} ".vartype($entity)."\n";
 			
 			//Prepare entity type information.
 			$this->calculateEntityTypes($entity);
@@ -185,7 +189,7 @@ class Compiler
 		foreach ($entity->getKnownEntities() as $e) {
 			if ($e instanceof \Entity\ExternalDeclaration) {
 				$pair->source .= "#include <{$e->getName()}>\n";
-			} else {
+			} else if (!$this->isEntityGeneric($e)) {
 				$pair->source .= "#include \"{$e->getID()}.h\"\n";
 			}
 		}
@@ -417,5 +421,30 @@ class Compiler
 			throw new \exception("Unable to generate expression code for ".vartype($expr));
 		}
 		return $snippet;
+	}
+
+	/**
+	 * Recursively checks the given entity for any generic types, returning
+	 * true if one is found, indicating that the entity cannot be compiled to
+	 * C code as is.
+	 */
+	public function isEntityGeneric(Entity\Entity $entity)
+	{
+		foreach ($entity->getChildEntities() as $e) {
+			if ($this->isEntityGeneric($e)) {
+				return true;
+			}
+		}
+
+		if ($entity instanceof Entity\Type\Member) {
+			if ($entity->getType() instanceof \Type\Generic)
+				return true;
+		}
+		if ($entity instanceof Entity\Type\TypeVar) {
+			if ($entity->getType() instanceof \Type\Generic)
+				return true;
+		}
+
+		return false;
 	}
 }

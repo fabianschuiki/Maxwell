@@ -10,4 +10,9 @@ class Generic extends Type
 		//$t->generateId();
 		return $t;
 	}
+
+	public function copy()
+	{
+		return new self();
+	}
 }

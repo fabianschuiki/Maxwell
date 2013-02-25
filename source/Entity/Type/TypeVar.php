@@ -11,6 +11,7 @@ class TypeVar extends \Entity\Entity
 		$e->setRange($typeVar->getRange());
 		$e->setHumanRange($typeVar->getName()->getRange());
 		$e->setName($typeVar->getName()->getText());
+		$e->setType(\Type\Generic::make());
 		return $e;
 	}
 	

@@ -450,7 +450,7 @@ class Analyzer
 				}
 			}
 			
-			if ($entity instanceof Entity\Expr\Type) {
+			if ($entity instanceof Entity\Expr\Type || $entity instanceof Entity\Expr\TypeSpec) {
 				$entity->analysis->type->initial = \Type\Builtin::makeWithName("Type");
 			}
 			

@@ -132,7 +132,7 @@ class Compiler
 				$compiler->type->setPointerLevel(0);
 			}
 			else {
-				//throw new \exception("Type of ".vartype($entity)." cannot be compiled");
+				throw new \exception("Type ".vartype($type)." of ".$entity->getInternalDescription()." cannot be compiled");
 			}
 		}
 		if ($entity instanceof Entity\Type\Member || $entity instanceof Entity\Func\Argument) {

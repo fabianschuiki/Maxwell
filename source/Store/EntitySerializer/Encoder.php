@@ -35,6 +35,11 @@ class Encoder
 			$e = $this->root->makeElement('known');
 			$e->setAttribute('id', $known->getID());
 		}
+		foreach ($rootEntity->getReferencedEntities() as $ref) {
+			if ($ref === $rootEntity) continue;
+			$e = $this->root->makeElement('ref');
+			$e->setAttribute('id', $ref->getID());
+		}
 		
 		return $this->root;
 	}

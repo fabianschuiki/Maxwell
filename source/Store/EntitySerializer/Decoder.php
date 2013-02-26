@@ -14,6 +14,7 @@ class Decoder
 	
 	protected $siblingIDs;
 	protected $knownIDs;
+	protected $referencedIDs;
 	protected $subrootEntities;
 	
 	protected $rootEntity;
@@ -43,12 +44,14 @@ class Decoder
 		//Decode the top layer of the root element.
 		$this->siblingIDs = array();
 		$this->knownIDs   = array();
+		$this->referencedIDs = array();
 		foreach ($root->getElements() as $element) {
 			switch ($element->getName()) {
 				case "entities": $this->entitiesRoot = $element; break;
 				case "analysis": $this->analysisRoot = $element; break;
 				case "sibling": $this->siblingIDs[] = $element->getAttribute("id"); break;
-				case "known":   $this->knownIDs[]   = $element->getAttribute("id"); break;
+				case "known": $this->knownIDs[]   = $element->getAttribute("id"); break;
+				case "ref": $this->referencedIDs[] = $element->getAttribute("id"); break;
 			}
 		}
 		
@@ -116,14 +119,19 @@ class Decoder
 		//Resolve the siblings and known entities.
 		$siblings = array();
 		$known    = array();
+		$referenced = array();
 		foreach ($this->siblingIDs as $id) {
 			$siblings[] = $this->entityStore->getEntity($id);
 		}
 		foreach ($this->knownIDs as $id) {
 			$known[] = $this->entityStore->getEntity($id);
 		}
+		foreach ($this->referencedIDs as $id) {
+			$referenced[] = $this->entityStore->getEntity($id);
+		}
 		$this->rootEntity->setSiblingEntities($siblings);
 		$this->rootEntity->setKnownEntities($known);
+		$this->rootEntity->setReferencedEntities($referenced);
 		
 		//Decode each entity individually.
 		foreach ($this->entityElements as $id => $element) {

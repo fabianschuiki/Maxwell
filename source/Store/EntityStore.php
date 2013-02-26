@@ -86,9 +86,11 @@ class EntityStore
 		if ($id <= 0) throw new \exception("Setting entity ".vartype($entity)." with no ID.");
 		$path = $entity->getRange()->getFile()->getPath();
 		
+		// Keep the entity in the store.
 		$this->entities[$id] = $entity;
 		$this->entityIDsInFile[$path][] = $id;
 		
+		// Persist the information to disk.
 		$this->persistEntity($id);
 		$this->persistEntityIDsInFile($path);
 	}
@@ -143,6 +145,10 @@ class EntityStore
 	public function persistEntity($id)
 	{
 		$entity = $this->entities[$id];
+
+		// Update the reference list of the entity.
+		$refs = ReferenceGatherer::gatherReferencedEntities($entity);
+		$entity->setReferencedEntities($refs);
 		
 		//Transform the entities into an encodable representation.
 		$encoder = new EntitySerializer\Encoder($this->protocol);

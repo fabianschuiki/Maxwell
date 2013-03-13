@@ -10,4 +10,7 @@ class Snippet
 	public $outerStmts;
 	public $expr;
 	public $exprRequired;
+	public $declarations;
+	public $definitions;
+	public $includes;
 }

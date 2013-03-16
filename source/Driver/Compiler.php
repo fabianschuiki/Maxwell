@@ -79,9 +79,15 @@ class Compiler
 
 		// Sort the aggregate IDs into files.
 		$aggregateFiles = array();
+		$externals = array();
 		foreach ($aggregateIDs as $id) {
 			$entity = $entityStore->getEntity($id);
 			$aggregateFiles[$entity->getFile()->getPath()][] = $id;
+			$externals[$id] = array();
+			foreach ($entity->getReferencedEntities() as $e) {
+				if (!$this->isEntityGeneric($e))
+					$externals[$id][] = $e->getID();
+			}
 		}
 
 		// Create the aggregate output files.
@@ -92,13 +98,22 @@ class Compiler
 			$declarations = array();
 			$definitions = array();
 			$externalDeclarations = array();
+			$referencedEntities = array();
 			foreach ($ids as $id) {
 				$base = "/tmp/$id";
 				$includes[]     = trim(file_get_contents("$base.inc.h"));
 				$declarations[] = trim(file_get_contents("$base.decl.c"));
 				$definitions[]  = trim(file_get_contents("$base.def.c"));
-				$externalDeclarations[] = "// external declarations for $id";
+				//$externalDeclarations[] = "// external declarations for $id";
+				$referencedEntities = array_merge($referencedEntities, $externals[$id]);
 			}
+
+			// Gather external declarations.
+			$externalEntityIDs = array_diff(array_unique($referencedEntities), $ids);
+			foreach ($externalEntityIDs as $id) {
+				$externalDeclarations[] = trim(file_get_contents("/tmp/$id.decl.c"));
+			}
+
 			$includes = array_filter($includes);
 			$declarations = array_filter($declarations);
 			$definitions = array_filter($definitions);
@@ -187,7 +202,7 @@ class Compiler
 				$compiler->type->setPointerLevel(0);
 			}
 			else {
-				throw new \exception("Type ".vartype($type)." of ".$entity->getInternalDescription()." cannot be compiled");
+				//throw new \exception("Type ".vartype($type)." of ".$entity->getInternalDescription()." cannot be compiled");
 			}
 		}
 		if ($entity instanceof Entity\Type\Member || $entity instanceof Entity\Func\Argument) {

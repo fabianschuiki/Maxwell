@@ -311,9 +311,6 @@ class Compiler
 				$snippet->stmts .= "\n\treturn {$arg->compiler->getName()};";
 			}
 			$snippet->stmts .= "\n}\n";
-
-			$snippet->declarations .= $snippet->publicHeader;
-			$snippet->definitions  .= $snippet->stmts;
 			
 			//If this is the function main.main, generate the proper entry point for the C program here as well.
 			if ($entity->getName() == "main" && $entity->getPackageName() == "main") {
@@ -326,6 +323,9 @@ class Compiler
 					$snippet->stmts .= "\treturn 0;\n}\n";
 				}
 			}
+			
+			$snippet->declarations .= $snippet->publicHeader;
+			$snippet->definitions  .= $snippet->stmts;
 		}
 		if ($entity instanceof Entity\TypeDefinition) {
 			$structName = $entity->compiler->getLocalName();

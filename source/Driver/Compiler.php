@@ -101,6 +101,8 @@ class Compiler
 			$referencedEntities = array();
 			foreach ($ids as $id) {
 				$base = "/tmp/$id";
+				if (!file_exists("$base.inc.h"))
+					continue;
 				$includes[]     = trim(file_get_contents("$base.inc.h"));
 				$declarations[] = trim(file_get_contents("$base.decl.c"));
 				$definitions[]  = trim(file_get_contents("$base.def.c"));
@@ -109,6 +111,10 @@ class Compiler
 			}
 
 			// Gather external declarations.
+			$referencedEntities = array_map(function($id){
+					preg_match('/[^\.]*/sm', $id, $matches);
+					return $matches[0];
+				}, $referencedEntities);
 			$externalEntityIDs = array_diff(array_unique($referencedEntities), $ids);
 			foreach ($externalEntityIDs as $id) {
 				$externalDeclarations[] = trim(file_get_contents("/tmp/$id.decl.c"));
@@ -137,6 +143,8 @@ class Compiler
 			$cfile = "$preamble\n";
 			$cfile .= "#include \"".basename($basename).".h\"\n\n".implode("\n\n", $ccomps);
 
+			if (!file_exists(dirname("/tmp/$basename")))
+				mkdir(dirname("/tmp/$basename"), 0777, true);
 			file_put_contents("/tmp/$basename.h", $hfile);
 			file_put_contents("/tmp/$basename.c", $cfile);
 		}
@@ -268,6 +276,10 @@ class Compiler
 		// Produce chunked output for the code aggregator.
 		$basedir = "/tmp";
 		$base = "$basedir/{$entity->getID()}";
+		if (!file_exists(dirname($base))) {
+			echo "Creating missing ".dirname($base)."\n";
+			mkdir(dirname($base), 0777, true);
+		}
 		file_put_contents("$base.decl.c", $snippet->declarations);
 		file_put_contents("$base.def.c", $snippet->definitions);
 		file_put_contents("$base.inc.h", $snippet->includes);

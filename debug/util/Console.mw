@@ -9,15 +9,23 @@ import "String"
 external "stdio.h" {
 	func puts ($ const char* s) -> (int r);
 	func gets ($ char* s);
+	func scanf ($ const char* fmt, $ int* i);
 }
 
 /** Prints the given String as one line to the console. */
 func println (String line)
 {
-	puts(cstr(line));
+	puts(line.cstr());
 }
 
 func readln -> (String line)
 {
 	
+}
+
+func read -> (int i)
+{
+	var $int v;
+	scanf("%i".cstr(), &v);
+	i = (int)v;
 }

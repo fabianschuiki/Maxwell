@@ -95,16 +95,17 @@ class Compiler
 		foreach ($aggregateFiles as $name => $ids) {
 			$basename = preg_replace('/\.[^\.]*$/sm', "", $name);
 			$includes = array();
-			$declarations = array();
+			$declarations = array('a' => array(), 'b' => array());
 			$definitions = array();
-			$externalDeclarations = array();
+			$externalDeclarations = array('a' => array(), 'b' => array());
 			$referencedEntities = array();
 			foreach ($ids as $id) {
 				$base = "/tmp/$id";
 				if (!file_exists("$base.inc.h"))
 					continue;
 				$includes[]     = trim(file_get_contents("$base.inc.h"));
-				$declarations[] = trim(file_get_contents("$base.decl.c"));
+				$declarations['a'][] = trim(file_get_contents("$base.decl-a.c"));
+				$declarations['b'][] = trim(file_get_contents("$base.decl-b.c"));
 				$definitions[]  = trim(file_get_contents("$base.def.c"));
 				//$externalDeclarations[] = "// external declarations for $id";
 				$referencedEntities = array_merge($referencedEntities, $externals[$id]);
@@ -117,31 +118,66 @@ class Compiler
 				}, $referencedEntities);
 			$externalEntityIDs = array_diff(array_unique($referencedEntities), $ids);
 			foreach ($externalEntityIDs as $id) {
-				$externalDeclarations[] = trim(file_get_contents("/tmp/$id.decl.c"));
+				$externalDeclarations['a'][] = trim(file_get_contents("/tmp/$id.decl-a.c"));
+				$externalDeclarations['b'][] = trim(file_get_contents("/tmp/$id.decl-b.c"));
 			}
 
 			$includes = array_filter($includes);
-			$declarations = array_filter($declarations);
+			$declarations['a'] = array_filter($declarations['a']);
+			$declarations['b'] = array_filter($declarations['b']);
 			$definitions = array_filter($definitions);
-			$externalDeclarations = array_filter($externalDeclarations);
+			$externalDeclarations['a'] = array_filter($externalDeclarations['a']);
+			$externalDeclarations['b'] = array_filter($externalDeclarations['b']);
+
+			// Gather external C functions used.
+			$externalIncludes = array();
+			foreach ($entityStore->getEntity($id)->getReferencedEntities() as $entity) {
+				$scope = $entity->getScope();
+				while ($scope && !$scope instanceof Entity\Scope\RootScope)
+					$scope = $scope->getOuter();
+				if ($scope) {
+					$entity = $scope->getRootEntity();
+					if ($entity instanceof Entity\ExternalDeclaration) {
+						$externalIncludes[] = $entity->getName();
+					}
+				}
+			}
+			$externalIncludes = array_unique($externalIncludes);
 
 			// Generate the files.
 			$includes_flat             = implode("\n", $includes);
-			$declarations_flat         = implode("\n", $declarations);
+			$declarations_flat['a']    = implode("\n", $declarations['a']);
+			$declarations_flat['b']    = implode("\n", $declarations['b']);
 			$definitions_flat          = implode("\n\n", $definitions);
-			$externalDeclarations_flat = implode("\n", $externalDeclarations);
+			$externalDeclarations_flat['a'] = implode("\n", $externalDeclarations['a']);
+			$externalDeclarations_flat['b'] = implode("\n", $externalDeclarations['b']);
 
 			$hcomps = array();
 			if (strlen($includes_flat)) $hcomps[] = $includes_flat;
-			if (strlen($externalDeclarations_flat)) $hcomps[] = $externalDeclarations_flat;
-			if (strlen($declarations_flat)) $hcomps[] = $declarations_flat;
+			if (strlen($externalDeclarations_flat['a'])) $hcomps[] = $externalDeclarations_flat['a'];
+			if (strlen($externalDeclarations_flat['b'])) $hcomps[] = $externalDeclarations_flat['b'];
+			if (strlen($declarations_flat['a'])) $hcomps[] = $declarations_flat['a'];
+			if (strlen($declarations_flat['b'])) $hcomps[] = $declarations_flat['b'];
 			$hfile = "$preamble\n#pragma once\n\n".implode("\n\n", $hcomps);
 
 			$ccomps = array();
-			if (strlen($declarations_flat)) $ccomps[] = $declarations_flat;
+			if (strlen($declarations_flat['a'])) $ccomps[] = $declarations_flat['a'];
+			if (strlen($declarations_flat['b'])) $ccomps[] = $declarations_flat['b'];
 			if (strlen($definitions_flat)) $ccomps[] = $definitions_flat;
 			$cfile = "$preamble\n";
-			$cfile .= "#include \"".basename($basename).".h\"\n\n".implode("\n\n", $ccomps);
+			$cfile .= "#include \"".basename($basename).".h\"\n";
+			/*foreach ($aggregateFiles as $aggregateName => $aggregateIDs) {
+				if ($aggregateName === $name) continue;
+				if (count(array_intersect($externalEntityIDs, $aggregateIDs))) {
+					$aggregateRelative = $aggregateName; // TODO: relative path to this file's compilation destination required!
+					$aggregateBasename = preg_replace('/\.[^\.]*$/sm', "", $aggregateRelative);
+					$cfile .= "#include \"".$aggregateBasename.".h\"\n";
+				}
+			}*/
+			foreach ($externalIncludes as $name) {
+				$cfile .= "#include <$name>\n";
+			}
+			$cfile .= "\n".implode("\n\n", $ccomps);
 
 			if (!file_exists(dirname("/tmp/$basename")))
 				mkdir(dirname("/tmp/$basename"), 0777, true);
@@ -280,7 +316,10 @@ class Compiler
 			echo "Creating missing ".dirname($base)."\n";
 			mkdir(dirname($base), 0777, true);
 		}
-		file_put_contents("$base.decl.c", $snippet->declarations);
+		$declA = ($entity instanceof Entity\TypeDefinition ? $snippet->declarations : "");
+		$declB = ($entity instanceof Entity\FunctionDefinition ? $snippet->declarations : "");
+		file_put_contents("$base.decl-a.c", $declA);
+		file_put_contents("$base.decl-b.c", $declB);
 		file_put_contents("$base.def.c", $snippet->definitions);
 		file_put_contents("$base.inc.h", $snippet->includes);
 

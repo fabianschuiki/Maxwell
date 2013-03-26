@@ -131,15 +131,9 @@ class Compiler
 
 			// Gather external C functions used.
 			$externalIncludes = array();
-			foreach ($entityStore->getEntity($id)->getReferencedEntities() as $entity) {
-				$scope = $entity->getScope();
-				while ($scope && !$scope instanceof Entity\Scope\RootScope)
-					$scope = $scope->getOuter();
-				if ($scope) {
-					$entity = $scope->getRootEntity();
-					if ($entity instanceof Entity\ExternalDeclaration) {
-						$externalIncludes[] = $entity->getName();
-					}
+			foreach ($entityStore->getEntity($id)->getKnownEntities() as $entity) {
+				if ($entity instanceof Entity\ExternalDeclaration) {
+					$externalIncludes[] = $entity->getName();
 				}
 			}
 			$externalIncludes = array_unique($externalIncludes);

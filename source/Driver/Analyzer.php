@@ -322,8 +322,10 @@ class Analyzer
 					IssueList::add('error', "Specialization failed.", $expr);
 					return;
 				}
+				$prevType = $entity->getType();
 				$entity->setType(\Type\Defined::makeWithDefinition($spec));
-				$this->initialTypeQueue[] = $spec->getID();
+				if (!$prevType || $prevType->getDefinition() !== $spec)
+					$this->initialTypeQueue[] = $spec->getID();
 				//echo "- specializing ".vartype($expr->getType()->getType())."\n";
 				//IssueList::add('error', "Type specializations not yet supported.", $expr->getHumanRangeIfPossible());
 			}

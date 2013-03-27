@@ -18,22 +18,52 @@ class TypeSpecializer
 	 */
 	static public function specialize(TypeDefinition $type, array $args, Range $range)
 	{
+		// Strip down the generic specialization arguments.
+		$args = array_filter($args, function(\Entity\Expr\Type $t) { return !$t->getType() instanceof \Type\Generic; });
+
 		//Ignore specializations without any arguments.
 		if (!count($args)) {
 			return $type;
 		}
+		echo "specializing {$type->getID()} ({$type->getName()})\n";
 
 		//Check whether the specialization already exists.
 		// ... do this later ...
+		foreach ($type->getKnownEntities() as $known) {
+			if ($known instanceof TypeDefinition and $known->getName() === $type->getName()) {
+				echo " -> existing clone {$known->getID()}\n";
+				$args_left = $args;
+				$match = true;
+				foreach ($known->getTypeVars() as $tv) {
+					if (!count($args_left)) break;
+					$arg = array_shift($args_left);
+					$at = $arg->getType();
+					if (!$at) {
+						IssueList::add('error', "Specialization argument has no valid type.", $arg);
+						return null;
+					}
+					if (!\Type\Type::equal($tv->getType(), $at)) {
+						$match = false;
+						break;
+					}
+				}
+				if ($match) {
+					echo "    IS a match!\n";
+					return $known;
+				}
+			}
+		}
 
 		//Duplicate the type, generate an appropriate ID and add it to the entity store.
 		$entityStore = Manager::get()->getEntityStore();
 		$entityStore->pushRootID($type->getID());
 		$cloned = $type->copy();
+		if (strlen($cloned->getID()) > 10) die ("Specialization loop!\n");
 		echo "cloned {$type->getName()} has ID {$cloned->getID()}\n";
 		$entityStore->popRootID($type->getID());
 		$entityStore->setEntity($cloned);
 		$type->addKnownEntity($cloned);
+		$cloned->addKnownEntity($cloned);
 
 		//Specialize the cloned entity's type variables.
 		$args_left = $args;

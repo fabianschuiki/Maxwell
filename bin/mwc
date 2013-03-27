@@ -82,6 +82,7 @@ if ($issues->isFatal()) goto fatal_error;
 
 //Feed the entities through gcc.
 $compilableIDs = array();
+$compiledFiles = $inputFiles;
 foreach ($inputFiles as $inputFile) {
 	$ids = $manager->getEntityStore()->getEntityIDsInFile($inputFile);
 	foreach ($ids as $id) {
@@ -89,8 +90,12 @@ foreach ($inputFiles as $inputFile) {
 		$compilableIDs[] = $id;
 		foreach ($entity->getKnownEntities() as $known)
 			$compilableIDs[] = $known->getId();
+		foreach ($entity->getReferencedEntities() as $refd)
+			if ($refd instanceof \Entity\RootEntity)
+				$compiledFiles[] = $refd->getFile()->getPath();
 	}
 }
+$compiledFiles = array_unique($compiledFiles);
 
 $files = array();
 foreach (array_unique($compilableIDs) as $id) {
@@ -100,9 +105,10 @@ foreach (array_unique($compilableIDs) as $id) {
 
 $compiledFile = $buildDir."/".basename($inputFile, ".mw");
 $gcc_cmd = "gcc -ggdb -o ".escapeshellarg($compiledFile);
-foreach ($files as $f) {
-	$gcc_cmd .= " ".escapeshellarg($f);
+foreach ($compiledFiles as $f) {
+	$gcc_cmd .= " ".escapeshellarg("/tmp/".preg_replace("/\\.mw$/", ".c", $f));
 }
+echo "$gcc_cmd\n";
 passthru($gcc_cmd);
 
 

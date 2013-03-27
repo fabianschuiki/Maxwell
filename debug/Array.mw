@@ -1,12 +1,6 @@
 package main
 import "util/String"
 
-func main
-{
-	var Array{int} ints;
-	var Array{String} strings;
-}
-
 /**
  * Array has to be a generic object that can be specialized for a specific
  * type that it may hold.
@@ -25,4 +19,13 @@ type ArrayElement
 	typevar a; //The type of the value stored in this array element.
 	var a v;
 	var ArrayElement{a} next;
+}
+
+func main
+{
+	var Array{int} ints = new Array{int};
+	var Array{String} strings = new Array{String};
+
+	// Try to add an int to the array.
+	var int i = 123;
 }

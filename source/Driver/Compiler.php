@@ -107,7 +107,8 @@ class Compiler
 				$includes[] = trim(file_get_contents("$base.inc.h"));
 				$declarations['a'][] = trim(file_get_contents("$base.decl-a.c"));
 				$declarations['b'][] = trim(file_get_contents("$base.decl-b.c"));
-				$definitions[] = trim(file_get_contents("$base.def.c"));
+				$definitions['a'][] = trim(file_get_contents("$base.def-a.c"));
+				$definitions['b'][] = trim(file_get_contents("$base.def-b.c"));
 				//$externalDeclarations[] = "// external declarations for $id";
 				$referencedEntities = array_merge($referencedEntities, $externals[$id]);
 			}
@@ -128,7 +129,8 @@ class Compiler
 			$includes = array_filter($includes);
 			$declarations['a'] = array_filter($declarations['a']);
 			$declarations['b'] = array_filter($declarations['b']);
-			$definitions = array_filter($definitions);
+			$definitions['a'] = array_filter($definitions['a']);
+			$definitions['b'] = array_filter($definitions['b']);
 			$externalDeclarations['a'] = array_filter($externalDeclarations['a']);
 			$externalDeclarations['b'] = array_filter($externalDeclarations['b']);
 
@@ -145,7 +147,8 @@ class Compiler
 			$includes_flat             = implode("\n", $includes);
 			$declarations_flat['a']    = implode("\n", $declarations['a']);
 			$declarations_flat['b']    = implode("\n", $declarations['b']);
-			$definitions_flat          = implode("\n\n", $definitions);
+			$definitions_flat['a']     = implode("\n\n", $definitions['a']);
+			$definitions_flat['b']     = implode("\n\n", $definitions['b']);
 			$externalDeclarations_flat['a'] = implode("\n", $externalDeclarations['a']);
 			$externalDeclarations_flat['b'] = implode("\n", $externalDeclarations['b']);
 
@@ -160,7 +163,8 @@ class Compiler
 			$ccomps = array();
 			if (strlen($declarations_flat['a'])) $ccomps[] = $declarations_flat['a'];
 			if (strlen($declarations_flat['b'])) $ccomps[] = $declarations_flat['b'];
-			if (strlen($definitions_flat)) $ccomps[] = $definitions_flat;
+			if (strlen($definitions_flat['a'])) $ccomps[] = $definitions_flat['a'];
+			if (strlen($definitions_flat['b'])) $ccomps[] = $definitions_flat['b'];
 			$cfile = "$preamble\n";
 			$cfile .= "#include \"".basename($basename).".h\"\n";
 			/*foreach ($aggregateFiles as $aggregateName => $aggregateIDs) {
@@ -315,9 +319,12 @@ class Compiler
 		}
 		$declA = ($entity instanceof Entity\TypeDefinition ? $snippet->declarations : "");
 		$declB = ($entity instanceof Entity\FunctionDefinition ? $snippet->declarations : "");
+		$defA = ($entity instanceof Entity\TypeDefinition ? $snippet->definitions : "");
+		$defB = ($entity instanceof Entity\FunctionDefinition ? $snippet->definitions : "");
 		file_put_contents("$base.decl-a.c", $declA);
 		file_put_contents("$base.decl-b.c", $declB);
-		file_put_contents("$base.def.c", $snippet->definitions);
+		file_put_contents("$base.def-a.c", $defA);
+		file_put_contents("$base.def-b.c", $defB);
 		file_put_contents("$base.inc.h", $snippet->includes);
 
 		return $pair;

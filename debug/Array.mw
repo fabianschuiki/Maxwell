@@ -1,5 +1,6 @@
 package main
 import "util/String"
+import "util/Console"
 
 /**
  * Array has to be a generic object that can be specialized for a specific
@@ -28,4 +29,16 @@ func main
 
 	// Try to add an int to the array.
 	var int i = 123;
+	ints.add(i);
+	strings.add("Hello, World!");
+}
+
+func add (Array{int} a, int i)
+{
+	"Adding int % to the array.".format(i).println();
+}
+
+func add (Array{String} a, String s)
+{
+	"Adding string % to the array.".format(s).println();
 }

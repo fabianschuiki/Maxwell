@@ -25,13 +25,11 @@ class TypeSpecializer
 		if (!count($args)) {
 			return $type;
 		}
-		echo "specializing {$type->getID()} ({$type->getName()})\n";
 
 		//Check whether the specialization already exists.
-		// ... do this later ...
 		foreach ($type->getKnownEntities() as $known) {
 			if ($known instanceof TypeDefinition and $known->getName() === $type->getName()) {
-				echo " -> existing clone {$known->getID()}\n";
+				//echo " -> existing clone {$known->getID()}\n";
 				$args_left = $args;
 				$match = true;
 				foreach ($known->getTypeVars() as $tv) {
@@ -48,18 +46,19 @@ class TypeSpecializer
 					}
 				}
 				if ($match) {
-					echo "    IS a match!\n";
+					//echo "    IS a match!\n";
 					return $known;
 				}
 			}
 		}
+		echo "specializing {$type->getID()} ({$type->getName()})\n";
 
 		//Duplicate the type, generate an appropriate ID and add it to the entity store.
 		$entityStore = Manager::get()->getEntityStore();
 		$entityStore->pushRootID($type->getID());
 		$cloned = $type->copy();
 		if (strlen($cloned->getID()) > 10) die ("Specialization loop!\n");
-		echo "cloned {$type->getName()} has ID {$cloned->getID()}\n";
+		//echo "cloned {$type->getName()} has ID {$cloned->getID()}\n";
 		$entityStore->popRootID($type->getID());
 		$entityStore->setEntity($cloned);
 		$type->addKnownEntity($cloned);
@@ -76,7 +75,7 @@ class TypeSpecializer
 				return null;
 			}
 			$tv->setType($type);
-			echo "Setting {$tv->getName()}'s type to {$type->toHumanReadableString()}\n";
+			echo " -> {$tv->getName()} = {$type->toHumanReadableString()}\n";
 		}
 
 		return $cloned;

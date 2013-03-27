@@ -1,0 +1,28 @@
+package main
+import "util/String"
+
+func main
+{
+	var Array{int} ints;
+	var Array{String} strings;
+}
+
+/**
+ * Array has to be a generic object that can be specialized for a specific
+ * type that it may hold.
+ */
+type Array
+{
+	typevar a; //The type of the values stored in this array.
+	var ArrayElement{a} first;
+}
+
+/**
+ * Link element of a single linked list.
+ */
+type ArrayElement
+{
+	typevar a; //The type of the value stored in this array element.
+	var a v;
+	// var ArrayElement{a} next;
+}

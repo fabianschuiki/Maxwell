@@ -2,13 +2,11 @@
  * Some test file for debugging the frontend.
  */
 package main
-import "frontend2"
 
 //Main function of the program.
 func main
 {
 	var Array{int} a;
-	test();
 }
 
 /** Array has to be a generic object that can be specialized for a specific

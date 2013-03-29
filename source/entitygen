@@ -1,0 +1,148 @@
+#!/usr/bin/php
+<?php
+/* Copyright © 2013 Fabian Schuiki
+ * Generates entities according to the Entities.json file.*/
+
+// Read the definitions.
+$defs_file = __DIR__."/Entities.json";
+if (!file_exists($defs_file)) {
+	echo "definitions file $defs_file does not exist\n";
+	exit(1);
+}
+$defs = json_decode(file_get_contents($defs_file));
+if (!$defs) {
+	echo "unable to read definitions, JSON error ".json_last_error()."\n";
+	exit(1);
+}
+
+// Create the output directory if required.
+$dir = __DIR__."/Objects";
+if (!file_exists($dir)) {
+	if (!mkdir($dir)) {
+		echo "unable to make output directory $dir\n";
+		exit(1);
+	}
+}
+
+// Create an entity for each.
+$entity_defs = $defs->entities;
+$interface_defs = $defs->interfaces;
+foreach ($entity_defs as $name => $def)
+{
+	// Strip out the magic properties.
+	$implements = $def->implements;
+	unset($def->implements);
+	if (is_array($implements))
+		$interfaces = $implements;
+	else
+		$interfaces = array($implements);
+
+	// Generate the fragments.
+	$afragments = array();
+	$bfragments = array();
+	foreach ($def as $fragmentName => $properties) {
+		$prop_dirty  = "{$fragmentName}_dirty";
+		$prop_loaded = "{$fragmentName}_loaded";
+
+		$afragment  = "// $fragmentName fragment\n";
+		$afragment .= "public \$$prop_dirty  = false;\n";
+		$afragment .= "public \$$prop_loaded = false;";
+
+		// Resolve interfaces.
+		$canonicalProperties = array();
+		foreach ($properties as $property) {
+			if ($property[0] === "@") {
+				$interfaceName = substr($property, 1);
+				if (!isset($interface_defs->$interfaceName)) {
+					echo "unknown interface \"$interfaceName\" in fragment \"$fragmentName\" of $name\n";
+					exit(1);
+				}
+				foreach ($interface_defs->$interfaceName as $p)
+					$canonicalProperties[] = $p;
+				$interfaces[] = str_replace(" ", "", ucwords(str_replace("_", " ", $interfaceName)))."Interface";
+			} else {
+				$canonicalProperties[] = $property;
+			}
+		}
+
+		// Analyse types.
+		foreach ($canonicalProperties as $i => $property) {
+			if (!preg_match('/(([^\s]+)\s+)?(\w+)/', $property, $m)) {
+				echo "invalid property \"$property\"\n";
+				exit(1);
+			}
+			$p = new stdClass;
+			$p->name = $m[3];
+			$p->type = str_replace(".", "\\", $m[2]);
+			$canonicalProperties[$i] = $p;
+		}
+
+		// Create a property statement for each property.
+		foreach ($canonicalProperties as $property) {
+			$afragment .= "\nprotected \${$property->name};";
+		}
+
+		// Create the accessors for each property.
+		$bfragment = "";
+		foreach ($canonicalProperties as $property) {
+			$lcname = $property->name;
+			$ucname = ucfirst($lcname);
+			$scalarType = (!$property->type || $property->type == "string");
+
+			// SETTER
+			$bfragment .= "public function set{$ucname}(";
+			if (!$scalarType) $bfragment .= $property->type." ";
+			$bfragment .= "\$".$lcname;
+			if (!$scalarType) $bfragment .= " = null";
+			$bfragment .= ")\n{";
+			
+			// Perform a data type check.
+			if ($property->type == "string") {
+				$bfragment .= "
+	if (!is_string(\$$lcname)) {
+		throw new \\InvalidArgumentException(\"$lcname needs to be a string\");
+	}";
+			}
+
+			// Store the value.
+			$bfragment .= "
+	if (\$this->$lcname !== \$$lcname) {
+		\$this->$lcname = \$$lcname;
+		\$this->$prop_dirty = true;
+		\$this->repository->notifyObjectFragmentDirty(\$this, '$fragmentName');
+	}";
+			$bfragment .= "\n}\n";
+
+			// GETTER
+			$bfragment .= "public function get{$ucname}()\n{";
+			$bfragment .= "
+	if (!\$this->$prop_loaded) {
+		\$this->repository->loadObjectFragment(\$this, '$fragmentName');
+	}
+	return \$this->$lcname;";
+			$bfragment .= "\n}\n\n";
+		}
+
+		// Store the generated fragment.
+		$afragments[] = $afragment;
+		$bfragments[] = trim($bfragment);
+	}
+
+	// Assemble the class body.
+	$body = implode("\n\n", $afragments)."\n\n\n".implode("\n\n", $bfragments);
+
+	// Generate the class creation code.
+	$output = "<?php\n/* Copyright © 2013 Fabian Schuiki.\n * Automatically generated entity. */\n";
+	$superclass = "RepositoryObject";
+	$output .= "namespace Objects;\n\n";
+	$output .= "class $name extends $superclass";
+	if (count($interfaces))
+		$output .= " implements ".implode(", ", $interfaces);
+	$output .= "\n{\n\t";
+	$output .= str_replace("\n", "\n\t", trim($body));
+	$output .= "\n}";
+
+	// Store the code to disk.
+	$file = $dir."/$name.php";
+	file_put_contents($file, $output);
+}

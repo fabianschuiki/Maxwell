@@ -1,0 +1,33 @@
+{
+	"interfaces": {
+		"range": [
+			"Source.Range range",
+			"Source.Range humanRange"],
+		"binding": [
+			"Expr bindingTarget"],
+		"type": [
+			"Type type"],
+		"root_code": [
+			"string indepDeclCode",
+			"string depDeclCode",
+			"string indepDefCode",
+			"string depDefCode"],
+		"expr_code": [
+			"string exprCode",
+			"string stmtsCode"]
+	},
+
+	"entities": {
+		"IdentifierExpr": {
+			"implements": "Expr",
+			"main": ["@range", "name"],
+			"binding": ["@binding"],
+			"type": ["@type"]},
+
+		"VariableDefinitionExpr": {
+			"implements": "Expr",
+			"main": ["@range", "name", "TypeExpr typeExpr", "Expr initialExpr"],
+			"type": ["@type"],
+			"code": ["@expr_code"]}
+	}
+}

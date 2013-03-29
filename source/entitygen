@@ -24,18 +24,73 @@ if (!file_exists($dir)) {
 	}
 }
 
-// Create an entity for each.
-$entity_defs = $defs->entities;
+// General purpose functions.
+function makeInterfaceName($n)
+{
+	return str_replace(" ", "", ucwords(str_replace("_", " ", $n)))."Interface";
+}
+
+// Create an interface file for each interface.
 $interface_defs = $defs->interfaces;
+foreach ($interface_defs as $name => $def)
+{
+	$interfaceName = makeInterfaceName($name);
+
+	// Analyse types.
+	foreach ($def as $i => $property) {
+		if (!preg_match('/(([^\s]+)\s+)?(\w+)/', $property, $m)) {
+			echo "invalid property \"$property\"\n";
+			exit(1);
+		}
+		$p = new stdClass;
+		$p->name = $m[3];
+		$p->type = str_replace(".", "\\", $m[2]);
+		$canonicalProperties[$i] = $p;
+	}
+
+	// Create the accessors for each property.
+	$body = "";
+	foreach ($canonicalProperties as $property) {
+		$lcname = $property->name;
+		$ucname = ucfirst($lcname);
+		$scalarType = (!$property->type || $property->type == "string");
+
+		// SETTER
+		$body .= "public function set{$ucname}(";
+		if (!$scalarType) $body .= $property->type." ";
+		$body .= "\$".$lcname;
+		if (!$scalarType) $body .= " = null";
+		$body .= ");\n";
+
+		// GETTER
+		$body .= "public function get{$ucname}();\n\n";
+	}
+
+	// Generate the class creation code.
+	$output = "<?php\n/* Copyright © 2013 Fabian Schuiki.\n * Automatically generated interface. */\n";
+	$output .= "namespace Objects;\n\n";
+	$output .= "interface $interfaceName\n{\n\t";
+	$output .= str_replace("\n", "\n\t", trim($body));
+	$output .= "\n}";
+
+	// Store the code to disk.
+	$file = $dir."/$interfaceName.php";
+	file_put_contents($file, $output);
+}
+
+// Create an entity for each entity.
+$entity_defs = $defs->entities;
 foreach ($entity_defs as $name => $def)
 {
 	// Strip out the magic properties.
-	$implements = $def->implements;
+	$implements = (isset($def->implements) ? $def->implements : array());
 	unset($def->implements);
 	if (is_array($implements))
 		$interfaces = $implements;
 	else
 		$interfaces = array($implements);
+	$superclass = (isset($def->root) && $def->root === true ? "\\RepositoryRootObject" : "\\RepositoryObject");
+	unset($def->root);
 
 	// Generate the fragments.
 	$afragments = array();
@@ -59,7 +114,7 @@ foreach ($entity_defs as $name => $def)
 				}
 				foreach ($interface_defs->$interfaceName as $p)
 					$canonicalProperties[] = $p;
-				$interfaces[] = str_replace(" ", "", ucwords(str_replace("_", " ", $interfaceName)))."Interface";
+				$interfaces[] = makeInterfaceName($interfaceName);
 			} else {
 				$canonicalProperties[] = $property;
 			}
@@ -133,7 +188,6 @@ foreach ($entity_defs as $name => $def)
 
 	// Generate the class creation code.
 	$output = "<?php\n/* Copyright © 2013 Fabian Schuiki.\n * Automatically generated entity. */\n";
-	$superclass = "RepositoryObject";
 	$output .= "namespace Objects;\n\n";
 	$output .= "class $name extends $superclass";
 	if (count($interfaces))

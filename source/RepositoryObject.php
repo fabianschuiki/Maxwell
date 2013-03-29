@@ -20,4 +20,7 @@ class RepositoryObject
 		$this->repository = $repo;
 		$this->id = $id;
 	}
+
+	public function getId() { return $this->id; }
+	public function getRepository() { return $this->repository; }
 }

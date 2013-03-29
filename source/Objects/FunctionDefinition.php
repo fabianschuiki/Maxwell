@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class IdentifierExpr extends \RepositoryObject implements Expr, RangeInterface, BindingInterface, TypeInterface
+class FunctionDefinition extends \RepositoryRootObject implements RangeInterface, TypeInterface
 {
 	// main fragment
 	public $main_dirty  = false;
@@ -11,11 +11,6 @@ class IdentifierExpr extends \RepositoryObject implements Expr, RangeInterface, 
 	protected $range;
 	protected $humanRange;
 	protected $name;
-	
-	// binding fragment
-	public $binding_dirty  = false;
-	public $binding_loaded = false;
-	protected $bindingTarget;
 	
 	// type fragment
 	public $type_dirty  = false;
@@ -69,22 +64,6 @@ class IdentifierExpr extends \RepositoryObject implements Expr, RangeInterface, 
 			$this->repository->loadObjectFragment($this, 'main');
 		}
 		return $this->name;
-	}
-	
-	public function setBindingTarget(Expr $bindingTarget = null)
-	{
-		if ($this->bindingTarget !== $bindingTarget) {
-			$this->bindingTarget = $bindingTarget;
-			$this->binding_dirty = true;
-			$this->repository->notifyObjectFragmentDirty($this, 'binding');
-		}
-	}
-	public function getBindingTarget()
-	{
-		if (!$this->binding_loaded) {
-			$this->repository->loadObjectFragment($this, 'binding');
-		}
-		return $this->bindingTarget;
 	}
 	
 	public function setType(Type $type = null)

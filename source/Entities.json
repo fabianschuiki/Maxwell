@@ -1,8 +1,8 @@
 {
 	"interfaces": {
 		"range": [
-			"Source.Range range",
-			"Source.Range humanRange"],
+			"\\Source\\Range range",
+			"\\Source\\Range humanRange"],
 		"binding": [
 			"Expr bindingTarget"],
 		"type": [
@@ -28,6 +28,11 @@
 			"implements": "Expr",
 			"main": ["@range", "name", "TypeExpr typeExpr", "Expr initialExpr"],
 			"type": ["@type"],
-			"code": ["@expr_code"]}
+			"code": ["@expr_code"]},
+
+		"FunctionDefinition": {
+			"root": true,
+			"main": ["@range", "name"],
+			"type": ["@type"]}
 	}
 }

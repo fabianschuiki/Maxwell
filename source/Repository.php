@@ -20,6 +20,8 @@ class Repository
 	/// Registered objects.
 	protected $objects;
 	protected $objects_dir = "objects";
+	protected $objects_unpersisted = array();
+	protected $objects_modified = array();
 
 
 	/// Create a new repository at the location $dir.
@@ -46,6 +48,7 @@ class Repository
 	public function flush()
 	{
 		if ($this->sources_modified) $this->writeSources();
+		if ($this->objects_modified || $this->objects_unpersisted) $this->writeObjects();
 	}
 
 	/**
@@ -60,7 +63,9 @@ class Repository
 			for ($i = 1; in_array($i, $this->sources); $i++);
 			$this->sources[$path] = $i;
 			$this->sources_modified = true;
+			return $i;
 		}
+		return $this->sources[$path];
 	}
 
 	/**
@@ -123,5 +128,86 @@ class Repository
 			fprintf($f, "%d  %s\n", $id, $name);
 		}
 		fclose($f);
+	}
+
+	/**
+	 * Creates a new object of the class $class to be located inside source
+	 * $sourceId and being a descendant of $rootId.
+	 */
+	public function makeObject($class, $sourceId, $rootId = null)
+	{
+		// Assemble the ID of this object.
+		if (!$sourceId) {
+			throw new \InvalidArgumentException("Source ID $sourceId is invalid.");
+		}
+		if ($rootId && strpos($rootId, $sourceId) !== 0) {
+			throw new \InvalidArgumentException("Root ID $rootId is no descendant of source ID $sourceId.");
+		}
+		$baseId = ($rootId ? $rootId : $sourceId);
+		for ($i = 1; ($id = "$baseId.$i") && isset($this->objects[$id]); $i++);
+
+		// Create the new entity.
+		$class_full = "\\Objects\\$class";
+		if (!class_exists($class_full)) {
+			throw new \InvalidArgumentException("Object class $class is unknown (i.e. PHP class $class_full does not exist). Maybe run entitygen again?");
+		}
+		$obj = new $class_full($this, $id);
+		if (($rootId === null) != ($obj instanceof RepositoryRootObject)) {
+			throw new \InvalidArgumentException("Object class $class cannot be a root object and have a parent root ID $rootId at the same time, or vice versa.");
+		}
+		$this->objects[$id] = $obj;
+		if ($rootId === null) {
+			$this->objects_unpersisted[] = $id;
+		}
+		return $obj;
+	}
+
+	private function writeObjects()
+	{
+		// Write the object class to disk where needed.
+		foreach ($this->objects_unpersisted as $id) {
+			$obj = @$this->objects[$id];
+			if (!$obj) {
+				throw new \RuntimeException("Object $id listed as to be persisted, but is not part of the repository.");
+			}
+
+			$file = $this->dir."/".$this->objects_dir."/".str_replace(".", "/", $id)."/class";
+			if (file_exists($file)) {
+				//throw new \RuntimeException("Trying to persist object $id for the first time, but file $file already exists.");
+			}
+			$this->mkdirIfNeeded(dirname($file));
+			$class = preg_replace('/^(.*\\\)+/', "", get_class($obj));
+			if (!file_put_contents($file, $class)) {
+				throw new \RuntimeException("Unable to persist object $id class to $file.");
+			}
+		}
+		$this->objects_unpersisted = array();
+
+		// Write the modified fragments to disk.
+		foreach ($this->objects_modified as $id) {
+			echo "would persist modified $id\n";
+		}
+		$this->objects_modified = array();
+	}
+
+	public function notifyObjectFragmentDirty(RepositoryObject $object, $fragment)
+	{
+		$oid = $object->getId();
+		if ($object instanceof RepositoryRootObject) {
+			$rid = $oid;
+		} else {
+			if (!preg_match('/[^\.]*\.[^\.]/', $oid, $m)) {
+				throw new \InvalidArgumentException("Object ID $oid does not contain a valid root portion.");
+			}
+			$rid = $m[1];
+		}
+
+		// Mark the corresponding root object as modified.
+		if (!isset($this->objects[$rid])) {
+			throw new \InvalidArgumentException("Unable to mark fragment $fragment of object ID $oid as modified since the root object ID $rid is not part of the repository.");
+		}
+		if (!in_array($rid, $this->objects_modified)) {
+			$this->objects_modified[] = $rid;
+		}
 	}
 }

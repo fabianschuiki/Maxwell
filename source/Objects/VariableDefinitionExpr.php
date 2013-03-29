@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class VariableDefinitionExpr extends RepositoryObject implements Expr, RangeInterface, TypeInterface, ExprCodeInterface
+class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInterface, TypeInterface, ExprCodeInterface
 {
 	// main fragment
 	public $main_dirty  = false;
@@ -26,7 +26,7 @@ class VariableDefinitionExpr extends RepositoryObject implements Expr, RangeInte
 	protected $stmtsCode;
 	
 	
-	public function setRange(Source\Range $range = null)
+	public function setRange(\Source\Range $range = null)
 	{
 		if ($this->range !== $range) {
 			$this->range = $range;
@@ -42,7 +42,7 @@ class VariableDefinitionExpr extends RepositoryObject implements Expr, RangeInte
 		return $this->range;
 	}
 	
-	public function setHumanRange(Source\Range $humanRange = null)
+	public function setHumanRange(\Source\Range $humanRange = null)
 	{
 		if ($this->humanRange !== $humanRange) {
 			$this->humanRange = $humanRange;

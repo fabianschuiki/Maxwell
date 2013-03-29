@@ -1,6 +1,6 @@
 Entity Hierarchy
 ================
-This document describes the entity hierarchy and how entity information is fragmented upon persisting.
+This document describes the entity hierarchy and how entity information is fragmented upon persisting. The entities are persisted in the repository as `objects/<sourceId>/<rootId>`.
 
 ### Goals
 The following is a brief overview of what the system should be able to achieve:

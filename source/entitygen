@@ -95,6 +95,7 @@ foreach ($entity_defs as $name => $def)
 	// Generate the fragments.
 	$afragments = array();
 	$bfragments = array();
+	$propertiesByFragment = array();
 	foreach ($def as $fragmentName => $properties) {
 		$prop_dirty  = "{$fragmentName}_dirty";
 		$prop_loaded = "{$fragmentName}_loaded";
@@ -131,6 +132,7 @@ foreach ($entity_defs as $name => $def)
 			$p->type = str_replace(".", "\\", $m[2]);
 			$canonicalProperties[$i] = $p;
 		}
+		$propertiesByFragment[$fragmentName] = $canonicalProperties;
 
 		// Create a property statement for each property.
 		foreach ($canonicalProperties as $property) {
@@ -183,8 +185,24 @@ foreach ($entity_defs as $name => $def)
 		$bfragments[] = trim($bfragment);
 	}
 
+	// Assemble the general interface.
+	$general = array();
+	$general[] = "public function getFragmentNames()\n{\n\treturn array(\"".implode("\",\"", array_keys(get_object_vars($def)))."\");\n}";
+	$gf = "public function getFragment(\$name)\n{\n\tswitch (\$name) {";
+	foreach (array_keys(get_object_vars($def)) as $fragmentName) {
+		$ps = array();
+		foreach ($propertiesByFragment[$fragmentName] as $p) {
+			$ps[] = "\n\t\t\tarray(\"name\" => \"{$p->name}\", \"type\" => \"{$p->type}\")";
+		}
+		$gf .= "\n\t\tcase \"$fragmentName\": return array(".implode(", ", $ps).");";
+	}
+	$gf .= "\n\t}\n\tthrow new \\RuntimeException(\"Fragment \$name does not exist.\");\n}";
+	$general[] = $gf;
+
 	// Assemble the class body.
-	$body = implode("\n\n", $afragments)."\n\n\n".implode("\n\n", $bfragments);
+	$body  = "/* PROPERTIES */\n".implode("\n\n", $afragments)."\n\n\n";
+	$body .= "/* GENERAL */\n".implode("\n\n", $general)."\n\n\n";
+	$body .= "/* ACCESSORS */\n".implode("\n\n", $bfragments);
 
 	// Generate the class creation code.
 	$output = "<?php\n/* Copyright © 2013 Fabian Schuiki.\n * Automatically generated entity. */\n";

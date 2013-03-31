@@ -5,6 +5,7 @@ namespace Objects;
 
 class FunctionDefinition extends \RepositoryRootObject implements RangeInterface, TypeInterface
 {
+	/* PROPERTIES */
 	// main fragment
 	public $main_dirty  = false;
 	public $main_loaded = false;
@@ -18,6 +19,27 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	protected $type;
 	
 	
+	/* GENERAL */
+	public function getFragmentNames()
+	{
+		return array("main","type");
+	}
+	
+	public function getFragment($name)
+	{
+		switch ($name) {
+			case "main": return array(
+				array("name" => "range", "type" => "\Source\Range"), 
+				array("name" => "humanRange", "type" => "\Source\Range"), 
+				array("name" => "name", "type" => ""));
+			case "type": return array(
+				array("name" => "type", "type" => "Type"));
+		}
+		throw new \RuntimeException("Fragment $name does not exist.");
+	}
+	
+	
+	/* ACCESSORS */
 	public function setRange(\Source\Range $range = null)
 	{
 		if ($this->range !== $range) {

@@ -162,6 +162,9 @@ class Repository
 		return $obj;
 	}
 
+	/**
+	 * Writes all modified objects to disk.
+	 */
 	private function writeObjects()
 	{
 		// Write the object class to disk where needed.
@@ -185,7 +188,35 @@ class Repository
 
 		// Write the modified fragments to disk.
 		foreach ($this->objects_modified as $id) {
-			echo "would persist modified $id\n";
+			$obj = @$this->objects[$id];
+			if (!$obj) {
+				throw new \RuntimeException("Object $id listed as modified, but is not part of the repository.");
+			}
+
+			// Iterate through the fragments of the entity that are modified and persist each.
+			foreach ($obj->getFragmentNames() as $fragmentName) {
+				$frag_dirty = $fragmentName."_dirty";
+				if (!$obj->$frag_dirty) continue;
+				$obj->$frag_dirty = false;
+
+				// Assemble the output file name.
+				$file = $this->dir."/".$this->objects_dir."/".str_replace(".", "/", $id)."/".$fragmentName;
+				$this->mkdirIfNeeded(dirname($file));
+
+				// Fetch the properties this fragment consists of.
+				$properties = $obj->getFragment($fragmentName);
+
+				// Generate the output for each property.
+				$output = array();
+				foreach ($properties as $property) {
+					$output[$property["name"]] = "some ".$property["type"]." data";
+				}
+
+				// Store the output file.
+				if (!file_put_contents($file, json_encode($output))) {
+					throw new \RuntimeException("Unable to persist fragment $fragmentName of object $id to $file.");
+				}
+			}
 		}
 		$this->objects_modified = array();
 	}

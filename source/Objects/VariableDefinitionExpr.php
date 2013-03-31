@@ -5,6 +5,7 @@ namespace Objects;
 
 class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInterface, TypeInterface, ExprCodeInterface
 {
+	/* PROPERTIES */
 	// main fragment
 	public $main_dirty  = false;
 	public $main_loaded = false;
@@ -26,6 +27,32 @@ class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInt
 	protected $stmtsCode;
 	
 	
+	/* GENERAL */
+	public function getFragmentNames()
+	{
+		return array("main","type","code");
+	}
+	
+	public function getFragment($name)
+	{
+		switch ($name) {
+			case "main": return array(
+				array("name" => "range", "type" => "\Source\Range"), 
+				array("name" => "humanRange", "type" => "\Source\Range"), 
+				array("name" => "name", "type" => ""), 
+				array("name" => "typeExpr", "type" => "TypeExpr"), 
+				array("name" => "initialExpr", "type" => "Expr"));
+			case "type": return array(
+				array("name" => "type", "type" => "Type"));
+			case "code": return array(
+				array("name" => "exprCode", "type" => "string"), 
+				array("name" => "stmtsCode", "type" => "string"));
+		}
+		throw new \RuntimeException("Fragment $name does not exist.");
+	}
+	
+	
+	/* ACCESSORS */
 	public function setRange(\Source\Range $range = null)
 	{
 		if ($this->range !== $range) {

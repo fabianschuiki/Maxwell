@@ -5,6 +5,7 @@ namespace Objects;
 
 class IdentifierExpr extends \RepositoryObject implements Expr, RangeInterface, BindingInterface, TypeInterface
 {
+	/* PROPERTIES */
 	// main fragment
 	public $main_dirty  = false;
 	public $main_loaded = false;
@@ -23,6 +24,29 @@ class IdentifierExpr extends \RepositoryObject implements Expr, RangeInterface, 
 	protected $type;
 	
 	
+	/* GENERAL */
+	public function getFragmentNames()
+	{
+		return array("main","binding","type");
+	}
+	
+	public function getFragment($name)
+	{
+		switch ($name) {
+			case "main": return array(
+				array("name" => "range", "type" => "\Source\Range"), 
+				array("name" => "humanRange", "type" => "\Source\Range"), 
+				array("name" => "name", "type" => ""));
+			case "binding": return array(
+				array("name" => "bindingTarget", "type" => "Expr"));
+			case "type": return array(
+				array("name" => "type", "type" => "Type"));
+		}
+		throw new \RuntimeException("Fragment $name does not exist.");
+	}
+	
+	
+	/* ACCESSORS */
 	public function setRange(\Source\Range $range = null)
 	{
 		if ($this->range !== $range) {

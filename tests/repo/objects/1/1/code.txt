@@ -1,7 +1,4 @@
 Array
 (
-    [indepDeclCode] => some string data
-    [depDeclCode] => some string data
-    [indepDefCode] => some string data
-    [depDefCode] => some string data
+    [indepDeclCode] => void main() {}
 )

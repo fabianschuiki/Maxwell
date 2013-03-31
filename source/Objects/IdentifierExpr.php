@@ -3,9 +3,12 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class IdentifierExpr extends \RepositoryObject implements Expr, RangeInterface, BindingInterface, TypeInterface
+class IdentifierExpr extends \RepositoryObject implements RangeInterface, BindingInterface, TypeInterface
 {
 	/* PROPERTIES */
+	protected $parent = null;
+	protected $parent_name;
+	
 	// main fragment
 	public $main_dirty  = false;
 	public $main_loaded = false;
@@ -25,6 +28,12 @@ class IdentifierExpr extends \RepositoryObject implements Expr, RangeInterface, 
 	
 	
 	/* GENERAL */
+	public function setParent(\RepositoryObject $parent, $name = null)
+	{
+		$this->parent = $parent;
+		$this->parent_name = $name;
+	}
+	
 	public function getFragmentNames()
 	{
 		return array("main","binding","type");
@@ -45,11 +54,19 @@ class IdentifierExpr extends \RepositoryObject implements Expr, RangeInterface, 
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
 	
+	public function getClass()
+	{
+		return "IdentifierExpr";
+	}
+	
 	
 	/* ACCESSORS */
 	public function setRange(\Source\Range $range = null)
 	{
 		if ($this->range !== $range) {
+			if (!$this->main_loaded) {
+				$this->repository->loadObjectFragment($this, 'main');
+			}
 			$this->range = $range;
 			$this->main_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'main');
@@ -66,6 +83,9 @@ class IdentifierExpr extends \RepositoryObject implements Expr, RangeInterface, 
 	public function setHumanRange(\Source\Range $humanRange = null)
 	{
 		if ($this->humanRange !== $humanRange) {
+			if (!$this->main_loaded) {
+				$this->repository->loadObjectFragment($this, 'main');
+			}
 			$this->humanRange = $humanRange;
 			$this->main_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'main');
@@ -85,6 +105,9 @@ class IdentifierExpr extends \RepositoryObject implements Expr, RangeInterface, 
 			throw new \InvalidArgumentException("name needs to be a string");
 		}
 		if ($this->name !== $name) {
+			if (!$this->main_loaded) {
+				$this->repository->loadObjectFragment($this, 'main');
+			}
 			$this->name = $name;
 			$this->main_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'main');
@@ -101,6 +124,9 @@ class IdentifierExpr extends \RepositoryObject implements Expr, RangeInterface, 
 	public function setBindingTarget(Expr $bindingTarget = null)
 	{
 		if ($this->bindingTarget !== $bindingTarget) {
+			if (!$this->binding_loaded) {
+				$this->repository->loadObjectFragment($this, 'binding');
+			}
 			$this->bindingTarget = $bindingTarget;
 			$this->binding_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'binding');
@@ -117,6 +143,9 @@ class IdentifierExpr extends \RepositoryObject implements Expr, RangeInterface, 
 	public function setType(Type $type = null)
 	{
 		if ($this->type !== $type) {
+			if (!$this->type_loaded) {
+				$this->repository->loadObjectFragment($this, 'type');
+			}
 			$this->type = $type;
 			$this->type_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'type');

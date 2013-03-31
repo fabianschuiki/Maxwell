@@ -1,6 +1,11 @@
 Array
 (
-    [range] => some \Source\Range data
-    [humanRange] => some \Source\Range data
-    [name] => some string data
+    [name] => doSomething
+    [ident] => Array
+        (
+            [name] => myName
+            [class] => IdentifierExpr
+            [id] => 1.1.1
+        )
+
 )

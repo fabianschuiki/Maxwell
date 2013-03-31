@@ -6,12 +6,16 @@ namespace Objects;
 class FunctionDefinition extends \RepositoryRootObject implements RangeInterface, TypeInterface, RootCodeInterface
 {
 	/* PROPERTIES */
+	protected $parent = null;
+	protected $parent_name;
+	
 	// main fragment
 	public $main_dirty  = false;
 	public $main_loaded = false;
 	protected $range;
 	protected $humanRange;
 	protected $name;
+	protected $ident;
 	
 	// type fragment
 	public $type_dirty  = false;
@@ -28,6 +32,12 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	
 	
 	/* GENERAL */
+	public function setParent(\RepositoryObject $parent, $name = null)
+	{
+		$this->parent = $parent;
+		$this->parent_name = $name;
+	}
+	
 	public function getFragmentNames()
 	{
 		return array("main","type","code");
@@ -39,7 +49,8 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			case "main": return array(
 				array("name" => "range", "type" => "\Source\Range"), 
 				array("name" => "humanRange", "type" => "\Source\Range"), 
-				array("name" => "name", "type" => "string"));
+				array("name" => "name", "type" => "string"), 
+				array("name" => "ident", "type" => "\Objects\IdentifierExpr"));
 			case "type": return array(
 				array("name" => "type", "type" => "Type"));
 			case "code": return array(
@@ -51,11 +62,19 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
 	
+	public function getClass()
+	{
+		return "FunctionDefinition";
+	}
+	
 	
 	/* ACCESSORS */
 	public function setRange(\Source\Range $range = null)
 	{
 		if ($this->range !== $range) {
+			if (!$this->main_loaded) {
+				$this->repository->loadObjectFragment($this, 'main');
+			}
 			$this->range = $range;
 			$this->main_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'main');
@@ -72,6 +91,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	public function setHumanRange(\Source\Range $humanRange = null)
 	{
 		if ($this->humanRange !== $humanRange) {
+			if (!$this->main_loaded) {
+				$this->repository->loadObjectFragment($this, 'main');
+			}
 			$this->humanRange = $humanRange;
 			$this->main_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'main');
@@ -91,6 +113,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			throw new \InvalidArgumentException("name needs to be a string");
 		}
 		if ($this->name !== $name) {
+			if (!$this->main_loaded) {
+				$this->repository->loadObjectFragment($this, 'main');
+			}
 			$this->name = $name;
 			$this->main_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'main');
@@ -104,9 +129,33 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 		return $this->name;
 	}
 	
+	public function setIdent(\Objects\IdentifierExpr $ident = null)
+	{
+		if ($this->ident !== $ident) {
+			if (!$this->main_loaded) {
+				$this->repository->loadObjectFragment($this, 'main');
+			}
+			if ($this->ident !== null) $this->ident->setParent(null);
+			$this->ident = $ident;
+			if ($ident !== null) $ident->setParent($this, "ident");
+			$this->main_dirty = true;
+			$this->repository->notifyObjectFragmentDirty($this, 'main');
+		}
+	}
+	public function getIdent()
+	{
+		if (!$this->main_loaded) {
+			$this->repository->loadObjectFragment($this, 'main');
+		}
+		return $this->ident;
+	}
+	
 	public function setType(Type $type = null)
 	{
 		if ($this->type !== $type) {
+			if (!$this->type_loaded) {
+				$this->repository->loadObjectFragment($this, 'type');
+			}
 			$this->type = $type;
 			$this->type_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'type');
@@ -126,6 +175,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			throw new \InvalidArgumentException("indepDeclCode needs to be a string");
 		}
 		if ($this->indepDeclCode !== $indepDeclCode) {
+			if (!$this->code_loaded) {
+				$this->repository->loadObjectFragment($this, 'code');
+			}
 			$this->indepDeclCode = $indepDeclCode;
 			$this->code_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'code');
@@ -145,6 +197,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			throw new \InvalidArgumentException("depDeclCode needs to be a string");
 		}
 		if ($this->depDeclCode !== $depDeclCode) {
+			if (!$this->code_loaded) {
+				$this->repository->loadObjectFragment($this, 'code');
+			}
 			$this->depDeclCode = $depDeclCode;
 			$this->code_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'code');
@@ -164,6 +219,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			throw new \InvalidArgumentException("indepDefCode needs to be a string");
 		}
 		if ($this->indepDefCode !== $indepDefCode) {
+			if (!$this->code_loaded) {
+				$this->repository->loadObjectFragment($this, 'code');
+			}
 			$this->indepDefCode = $indepDefCode;
 			$this->code_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'code');
@@ -183,6 +241,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			throw new \InvalidArgumentException("depDefCode needs to be a string");
 		}
 		if ($this->depDefCode !== $depDefCode) {
+			if (!$this->code_loaded) {
+				$this->repository->loadObjectFragment($this, 'code');
+			}
 			$this->depDefCode = $depDefCode;
 			$this->code_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'code');

@@ -94,6 +94,7 @@ foreach ($entity_defs as $name => $def)
 
 	// Generate the fragments.
 	$afragments = array();
+	$afragments[] = "protected \$parent = null;\nprotected \$parent_name;";
 	$bfragments = array();
 	$propertiesByFragment = array();
 	foreach ($def as $fragmentName => $properties) {
@@ -130,6 +131,11 @@ foreach ($entity_defs as $name => $def)
 			$p = new stdClass;
 			$p->name = $m[3];
 			$p->type = str_replace(".", "\\", $m[2]);
+			$p->kind = "standard";
+			if ($p->type[0] == "*") {
+				$p->type = "\\Objects\\".substr($p->type, 1);
+				$p->kind = "object";
+			}
 			$canonicalProperties[$i] = $p;
 		}
 		$propertiesByFragment[$fragmentName] = $canonicalProperties;
@@ -164,7 +170,16 @@ foreach ($entity_defs as $name => $def)
 			// Store the value.
 			$bfragment .= "
 	if (\$this->$lcname !== \$$lcname) {
-		\$this->$lcname = \$$lcname;
+		if (!\$this->$prop_loaded) {
+			\$this->repository->loadObjectFragment(\$this, '$fragmentName');
+		}";
+			if ($property->kind == "object") $bfragment .= "
+		if (\$this->$lcname !== null) \$this->{$lcname}->setParent(null);";
+			$bfragment .= "
+		\$this->$lcname = \$$lcname;";
+			if ($property->kind == "object") $bfragment .= "
+		if (\$$lcname !== null) \${$lcname}->setParent(\$this, \"$lcname\");";
+			$bfragment .= "
 		\$this->$prop_dirty = true;
 		\$this->repository->notifyObjectFragmentDirty(\$this, '$fragmentName');
 	}";
@@ -187,6 +202,10 @@ foreach ($entity_defs as $name => $def)
 
 	// Assemble the general interface.
 	$general = array();
+	$sp  = "public function setParent(\\RepositoryObject \$parent, \$name = null)\n{\n";
+	$sp .= "\t\$this->parent = \$parent;\n\t\$this->parent_name = \$name;\n";
+	$sp .= "}";
+	$general[] = $sp;
 	$general[] = "public function getFragmentNames()\n{\n\treturn array(\"".implode("\",\"", array_keys(get_object_vars($def)))."\");\n}";
 	$gf = "public function getFragment(\$name)\n{\n\tswitch (\$name) {";
 	foreach (array_keys(get_object_vars($def)) as $fragmentName) {
@@ -198,6 +217,7 @@ foreach ($entity_defs as $name => $def)
 	}
 	$gf .= "\n\t}\n\tthrow new \\RuntimeException(\"Fragment \$name does not exist.\");\n}";
 	$general[] = $gf;
+	$general[] = "public function getClass()\n{\n\treturn \"$name\";\n}";
 
 	// Assemble the class body.
 	$body  = "/* PROPERTIES */\n".implode("\n\n", $afragments)."\n\n\n";

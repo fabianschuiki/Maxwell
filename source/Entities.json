@@ -19,7 +19,6 @@
 
 	"entities": {
 		"IdentifierExpr": {
-			"implements": "Expr",
 			"main": ["@range", "string name"],
 			"binding": ["@binding"],
 			"type": ["@type"]},
@@ -32,7 +31,7 @@
 
 		"FunctionDefinition": {
 			"root": true,
-			"main": ["@range", "string name"],
+			"main": ["@range", "string name", "*IdentifierExpr ident"],
 			"type": ["@type"],
 			"code": ["@root_code"]}
 	}

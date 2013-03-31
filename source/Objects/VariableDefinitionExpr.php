@@ -6,6 +6,9 @@ namespace Objects;
 class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInterface, TypeInterface, ExprCodeInterface
 {
 	/* PROPERTIES */
+	protected $parent = null;
+	protected $parent_name;
+	
 	// main fragment
 	public $main_dirty  = false;
 	public $main_loaded = false;
@@ -28,6 +31,12 @@ class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInt
 	
 	
 	/* GENERAL */
+	public function setParent(\RepositoryObject $parent, $name = null)
+	{
+		$this->parent = $parent;
+		$this->parent_name = $name;
+	}
+	
 	public function getFragmentNames()
 	{
 		return array("main","type","code");
@@ -51,11 +60,19 @@ class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInt
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
 	
+	public function getClass()
+	{
+		return "VariableDefinitionExpr";
+	}
+	
 	
 	/* ACCESSORS */
 	public function setRange(\Source\Range $range = null)
 	{
 		if ($this->range !== $range) {
+			if (!$this->main_loaded) {
+				$this->repository->loadObjectFragment($this, 'main');
+			}
 			$this->range = $range;
 			$this->main_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'main');
@@ -72,6 +89,9 @@ class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInt
 	public function setHumanRange(\Source\Range $humanRange = null)
 	{
 		if ($this->humanRange !== $humanRange) {
+			if (!$this->main_loaded) {
+				$this->repository->loadObjectFragment($this, 'main');
+			}
 			$this->humanRange = $humanRange;
 			$this->main_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'main');
@@ -91,6 +111,9 @@ class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInt
 			throw new \InvalidArgumentException("name needs to be a string");
 		}
 		if ($this->name !== $name) {
+			if (!$this->main_loaded) {
+				$this->repository->loadObjectFragment($this, 'main');
+			}
 			$this->name = $name;
 			$this->main_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'main');
@@ -107,6 +130,9 @@ class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInt
 	public function setTypeExpr(TypeExpr $typeExpr = null)
 	{
 		if ($this->typeExpr !== $typeExpr) {
+			if (!$this->main_loaded) {
+				$this->repository->loadObjectFragment($this, 'main');
+			}
 			$this->typeExpr = $typeExpr;
 			$this->main_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'main');
@@ -123,6 +149,9 @@ class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInt
 	public function setInitialExpr(Expr $initialExpr = null)
 	{
 		if ($this->initialExpr !== $initialExpr) {
+			if (!$this->main_loaded) {
+				$this->repository->loadObjectFragment($this, 'main');
+			}
 			$this->initialExpr = $initialExpr;
 			$this->main_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'main');
@@ -139,6 +168,9 @@ class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInt
 	public function setType(Type $type = null)
 	{
 		if ($this->type !== $type) {
+			if (!$this->type_loaded) {
+				$this->repository->loadObjectFragment($this, 'type');
+			}
 			$this->type = $type;
 			$this->type_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'type');
@@ -158,6 +190,9 @@ class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInt
 			throw new \InvalidArgumentException("exprCode needs to be a string");
 		}
 		if ($this->exprCode !== $exprCode) {
+			if (!$this->code_loaded) {
+				$this->repository->loadObjectFragment($this, 'code');
+			}
 			$this->exprCode = $exprCode;
 			$this->code_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'code');
@@ -177,6 +212,9 @@ class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInt
 			throw new \InvalidArgumentException("stmtsCode needs to be a string");
 		}
 		if ($this->stmtsCode !== $stmtsCode) {
+			if (!$this->code_loaded) {
+				$this->repository->loadObjectFragment($this, 'code');
+			}
 			$this->stmtsCode = $stmtsCode;
 			$this->code_dirty = true;
 			$this->repository->notifyObjectFragmentDirty($this, 'code');

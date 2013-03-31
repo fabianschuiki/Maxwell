@@ -247,7 +247,7 @@ class Repository
 				throw new \RuntimeException("Trying to persist object $id for the first time, but file $file already exists.");
 			}
 			$this->mkdirIfNeeded(dirname($file));
-			$class = preg_replace('/^(.*\\\)+/', "", get_class($obj));
+			$class = $obj->getClass();
 			if (!file_put_contents($file, $class)) {
 				throw new \RuntimeException("Unable to persist object $id class to $file.");
 			}
@@ -273,14 +273,8 @@ class Repository
 				$file = $this->dir."/".$this->objects_dir."/".str_replace(".", "/", $id)."/".$fragmentName;
 				$this->mkdirIfNeeded(dirname($file));
 
-				// Fetch the properties this fragment consists of.
-				$properties = $obj->getFragment($fragmentName);
-
 				// Generate the output for each property.
-				$output = array();
-				foreach ($properties as $property) {
-					$output[$property["name"]] = "some ".$property["type"]." data";
-				}
+				$output = RepositoryObjectSerializer::serialize($obj, $fragmentName);
 
 				// Store the output file.
 				if (!file_put_contents($file, json_encode($output))) {
@@ -314,7 +308,10 @@ class Repository
 			}
 
 			// Parse the loaded JSON file.
-			if ($this->debug) $this->println("Parsing JSON ".print_r($input, true));
+			RepositoryObjectSerializer::unserialize($object, $fragment, $input);
+
+			// Mark the fragment as not dirty since it now reflects the persisted state.
+			$object->{$fragment."_dirty"} = false;
 		}
 	}
 
@@ -345,6 +342,10 @@ class Repository
 		}
 	}
 
+	/**
+	 * Reads the requested fragment file for the given object from the disk and
+	 * loads its contents into the object.
+	 */
 	public function loadObjectFragment(RepositoryObject $object, $fragment)
 	{
 		$prop_dirty  = $fragment."_dirty";

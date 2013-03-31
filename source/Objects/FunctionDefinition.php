@@ -39,7 +39,7 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			case "main": return array(
 				array("name" => "range", "type" => "\Source\Range"), 
 				array("name" => "humanRange", "type" => "\Source\Range"), 
-				array("name" => "name", "type" => ""));
+				array("name" => "name", "type" => "string"));
 			case "type": return array(
 				array("name" => "type", "type" => "Type"));
 			case "code": return array(
@@ -87,6 +87,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	
 	public function setName($name)
 	{
+		if (!is_string($name)) {
+			throw new \InvalidArgumentException("name needs to be a string");
+		}
 		if ($this->name !== $name) {
 			$this->name = $name;
 			$this->main_dirty = true;

@@ -39,7 +39,7 @@ class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInt
 			case "main": return array(
 				array("name" => "range", "type" => "\Source\Range"), 
 				array("name" => "humanRange", "type" => "\Source\Range"), 
-				array("name" => "name", "type" => ""), 
+				array("name" => "name", "type" => "string"), 
 				array("name" => "typeExpr", "type" => "TypeExpr"), 
 				array("name" => "initialExpr", "type" => "Expr"));
 			case "type": return array(
@@ -87,6 +87,9 @@ class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInt
 	
 	public function setName($name)
 	{
+		if (!is_string($name)) {
+			throw new \InvalidArgumentException("name needs to be a string");
+		}
 		if ($this->name !== $name) {
 			$this->name = $name;
 			$this->main_dirty = true;

@@ -36,7 +36,7 @@ class IdentifierExpr extends \RepositoryObject implements Expr, RangeInterface, 
 			case "main": return array(
 				array("name" => "range", "type" => "\Source\Range"), 
 				array("name" => "humanRange", "type" => "\Source\Range"), 
-				array("name" => "name", "type" => ""));
+				array("name" => "name", "type" => "string"));
 			case "binding": return array(
 				array("name" => "bindingTarget", "type" => "Expr"));
 			case "type": return array(
@@ -81,6 +81,9 @@ class IdentifierExpr extends \RepositoryObject implements Expr, RangeInterface, 
 	
 	public function setName($name)
 	{
+		if (!is_string($name)) {
+			throw new \InvalidArgumentException("name needs to be a string");
+		}
 		if ($this->name !== $name) {
 			$this->name = $name;
 			$this->main_dirty = true;

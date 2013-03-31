@@ -18,10 +18,13 @@ class Repository
 	protected $sources_modified = false;
 
 	/// Registered objects.
-	protected $objects;
+	protected $objects = array();
 	protected $objects_dir = "objects";
 	protected $objects_unpersisted = array();
 	protected $objects_modified = array();
+
+	// Logging options.
+	public $debug = true;
 
 
 	/// Create a new repository at the location $dir.
@@ -39,6 +42,11 @@ class Repository
 				throw new RuntimeException("Unable to create directory $dir.");
 			}
 		}
+	}
+
+	private function println($str)
+	{
+		echo "Repository: ".$str."\n";
 	}
 
 	/**
@@ -77,11 +85,45 @@ class Repository
 		if (!$this->sources)
 			$this->readSources();
 		if (isset($this->sources[$path])) {
+			$id = $this->sources[$path];
 			unset($this->sources[$path]);
 			$this->sources_modified = true;
-			// TODO: Remove all remnants of this source from the repository.
+			$this->clearSource($id);
 		} else {
 			throw new InvalidArgumentException("Unable to unregister inexistent source $path.");
+		}
+	}
+
+	/**
+	 * Removes all entities associated with the given resource.
+	 */
+	public function clearSource($sourceId)
+	{
+		// Flush all changes to disk before attempting any modification.
+		$this->flush();
+
+		// Find all entities that belong to this source.
+		$dir = $this->dir."/".$this->objects_dir."/".$sourceId;
+		if (file_exists($dir)) {
+			$d = opendir($dir);
+			$ids = array();
+			while ($subid = readdir($d)) {
+				if ($subid[0] == ".") continue;
+				$ids[] = $sourceId.".".$subid;
+			}
+			closedir($d);
+
+			// Notify any dependencies of the removed entities.
+			foreach ($ids as $id) {
+				//$this->notifyObjectRemoved($id);
+				if ($this->debug) $this->println("Removing object $id due to source clearing.");
+			}
+
+			// Remove the data stored for this source file.
+			$result = shell_exec("rm -rf ".escapeshellarg($dir));
+			if (strlen($result) > 0) {
+				throw new \RuntimeException("Unable to remove objects for source ID $sourceId at $dir. $result.");
+			}
 		}
 	}
 
@@ -163,6 +205,32 @@ class Repository
 	}
 
 	/**
+	 * Returns the object with the given ID or throws an exception if it does
+	 * not exist.
+	 */
+	public function getObject($id)
+	{
+		// If the object has not been loaded yet, attempt to load it from disk.
+		if (!isset($this->objects[$id])) {
+			$file = $this->dir."/".$this->objects_dir."/".str_replace(".", "/", $id)."/class";
+			if (!file_exists($file)) {
+				throw new \InvalidArgumentException("Object ID $id does not exist at $file.");
+			}
+
+			// Load the class name and instantiate a new object.
+			$class = file_get_contents($file);
+			if (!$class) {
+				throw new \RuntimeException("Unable to read class $file for object ID $id.");
+			}
+			$full_class = "\\Objects\\$class";
+			$obj = new $full_class($this, $id);
+			$this->objects[$id] = $obj;
+			if ($this->debug) $this->println("Loaded object ID $id ($full_class) from $file.");
+		}
+		return $this->objects[$id];
+	}
+
+	/**
 	 * Writes all modified objects to disk.
 	 */
 	private function writeObjects()
@@ -176,7 +244,7 @@ class Repository
 
 			$file = $this->dir."/".$this->objects_dir."/".str_replace(".", "/", $id)."/class";
 			if (file_exists($file)) {
-				//throw new \RuntimeException("Trying to persist object $id for the first time, but file $file already exists.");
+				throw new \RuntimeException("Trying to persist object $id for the first time, but file $file already exists.");
 			}
 			$this->mkdirIfNeeded(dirname($file));
 			$class = preg_replace('/^(.*\\\)+/', "", get_class($obj));
@@ -225,6 +293,35 @@ class Repository
 		$this->objects_modified = array();
 	}
 
+	/**
+	 * Loads the given object's fragment.
+	 */
+	private function readObjectFragment(RepositoryRootObject $object, $fragment)
+	{
+		$object->{$fragment."_loaded"} = true;
+
+		// Attempt to load the fragment information from the fragment file.
+		$file = $this->dir."/".$this->objects_dir."/".str_replace(".", "/", $object->getId())."/".$fragment;
+		if (file_exists($file)) {
+			if ($this->debug) $this->println("Loading fragment $fragment of object ID {$object->getId()} from $file.");
+			$data = file_get_contents($file);
+			if ($data === false) {
+				throw new \RuntimeException("Unable to read file $file.");
+			}
+			$input = json_decode($data);
+			if ($input === false) {
+				throw new \RuntimeException("Unable to parse JSON file $file. JSON error ".json_last_error().".");
+			}
+
+			// Parse the loaded JSON file.
+			if ($this->debug) $this->println("Parsing JSON ".print_r($input, true));
+		}
+	}
+
+	/**
+	 * Called by RepositoryObject instances to notify the repository of changes
+	 * to a given fragment.
+	 */
 	public function notifyObjectFragmentDirty(RepositoryObject $object, $fragment)
 	{
 		$oid = $object->getId();
@@ -234,7 +331,9 @@ class Repository
 			if (!preg_match('/[^\.]*\.[^\.]/', $oid, $m)) {
 				throw new \InvalidArgumentException("Object ID $oid does not contain a valid root portion.");
 			}
-			$rid = $m[1];
+			$rid = $m[0];
+
+			// TODO: mark all fragments of the root as dirty for now. Needs to be changed later.
 		}
 
 		// Mark the corresponding root object as modified.
@@ -243,6 +342,43 @@ class Repository
 		}
 		if (!in_array($rid, $this->objects_modified)) {
 			$this->objects_modified[] = $rid;
+		}
+	}
+
+	public function loadObjectFragment(RepositoryObject $object, $fragment)
+	{
+		$prop_dirty  = $fragment."_dirty";
+		$prop_loaded = $fragment."_loaded";
+		$oid = $object->getId();
+
+		// Make sure nothing is loaded yet or the loaded data is not dirty.
+		if ($object->$prop_dirty) {
+			throw new \RuntimeException("Asked to load fragment $fragment of object ID $oid, but the loaded data is marked as dirty.");
+		}
+		if ($object->$prop_loaded) {
+			throw new \RuntimeException("Asked to load fragment $fragment of object ID $oid which is already loaded.");
+		}
+		$object->$prop_loaded = true;
+
+		// If this is a root object load the requested fragment. Otherwise load
+		// all root fragments.
+		if ($object instanceof RepositoryRootObject) {
+			$this->readObjectFragment($object, $fragment);
+		} else {
+			// Extract the root ID for the object.
+			if (!preg_match('/[^\.]*\.[^\.]/', $oid, $m)) {
+				throw new \InvalidArgumentException("Object ID $oid does not contain a valid root portion.");
+			}
+			$rid = $m[0];
+
+			// Load all the root's fragments.
+			if (!isset($this->objects[$rid])) {
+				throw new \InvalidArgumentException("Root object $rid of object ID $oid is not part of the repository.");
+			}
+			$root = $this->objects[$rid];
+			foreach ($root->getFragmentNames() as $name) {
+				$this->readObjectFragment($root, $name);
+			}
 		}
 	}
 }

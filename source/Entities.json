@@ -20,19 +20,19 @@
 	"entities": {
 		"IdentifierExpr": {
 			"implements": "Expr",
-			"main": ["@range", "name"],
+			"main": ["@range", "string name"],
 			"binding": ["@binding"],
 			"type": ["@type"]},
 
 		"VariableDefinitionExpr": {
 			"implements": "Expr",
-			"main": ["@range", "name", "TypeExpr typeExpr", "Expr initialExpr"],
+			"main": ["@range", "string name", "TypeExpr typeExpr", "Expr initialExpr"],
 			"type": ["@type"],
 			"code": ["@expr_code"]},
 
 		"FunctionDefinition": {
 			"root": true,
-			"main": ["@range", "name"],
+			"main": ["@range", "string name"],
 			"type": ["@type"],
 			"code": ["@root_code"]}
 	}

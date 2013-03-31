@@ -12,5 +12,8 @@ echo "main.mw has ID $sourceId\n";
 $f1 = $repo->makeObject("FunctionDefinition", $sourceId);
 echo "f1 has ID {$f1->getId()}\n";
 $f1->setName("doSomething");
+$repo->flush();
 
+// Add some code.
+$f1->setIndepDeclCode("void main() {}");
 $repo->flush();

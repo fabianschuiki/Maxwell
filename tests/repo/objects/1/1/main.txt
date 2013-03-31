@@ -1,0 +1,6 @@
+Array
+(
+    [range] => some \Source\Range data
+    [humanRange] => some \Source\Range data
+    [name] => some  data
+)

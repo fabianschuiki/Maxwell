@@ -33,6 +33,7 @@
 		"FunctionDefinition": {
 			"root": true,
 			"main": ["@range", "name"],
-			"type": ["@type"]}
+			"type": ["@type"],
+			"code": ["@root_code"]}
 	}
 }

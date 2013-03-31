@@ -194,10 +194,12 @@ class Repository
 			}
 
 			// Iterate through the fragments of the entity that are modified and persist each.
+			$stored = array();
 			foreach ($obj->getFragmentNames() as $fragmentName) {
 				$frag_dirty = $fragmentName."_dirty";
 				if (!$obj->$frag_dirty) continue;
 				$obj->$frag_dirty = false;
+				$stored[] = $fragmentName;
 
 				// Assemble the output file name.
 				$file = $this->dir."/".$this->objects_dir."/".str_replace(".", "/", $id)."/".$fragmentName;
@@ -216,7 +218,9 @@ class Repository
 				if (!file_put_contents($file, json_encode($output))) {
 					throw new \RuntimeException("Unable to persist fragment $fragmentName of object $id to $file.");
 				}
+				file_put_contents($file.".txt", print_r($output, true));
 			}
+			echo "object $id persisted ".implode(", ", $stored)."\n";
 		}
 		$this->objects_modified = array();
 	}

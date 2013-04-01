@@ -7,7 +7,8 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
-	protected $parent_key;
+	protected $parent_key = null;
+	protected $parent_fragment = null;
 	
 	// tree fragment
 	public $tree_dirty  = false;
@@ -20,6 +21,7 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	protected $range;
 	protected $humanRange;
 	protected $name;
+	protected $inner;
 	
 	// type fragment
 	public $type_dirty  = false;
@@ -36,10 +38,11 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	
 	
 	/* GENERAL */
-	public function setParent(\RepositoryObject $parent, $key = null)
+	public function setParent(\RepositoryObject $parent, $key = null, $fragment = null)
 	{
 		$this->parent = $parent;
 		$this->parent_key = $key;
+		$this->parent_fragment = $fragment;
 	}
 	
 	public function getFragmentNames()
@@ -55,7 +58,8 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			case "main": return array(
 				array("name" => "range", "type" => "\Source\Range"), 
 				array("name" => "humanRange", "type" => "\Source\Range"), 
-				array("name" => "name", "type" => "string"));
+				array("name" => "name", "type" => "string"), 
+				array("name" => "inner", "type" => "\Objects\IdentifierExpr"));
 			case "type": return array(
 				array("name" => "type", "type" => "Type"));
 			case "code": return array(
@@ -82,7 +86,7 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 			if ($this->ident !== null) $this->ident->setParent(null);
 			$this->ident = $ident;
-			if ($ident !== null) $ident->setParent($this, "ident");
+			if ($ident !== null) $ident->setParent($this, "ident", "tree");
 			if ($notify) {
 				$this->notifyFragmentDirty('tree');
 			}
@@ -157,6 +161,28 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			$this->loadFragment('main');
 		}
 		return $this->name;
+	}
+	
+	public function setInner(\Objects\IdentifierExpr $inner = null, $notify = true)
+	{
+		if ($this->inner !== $inner) {
+			if (!$this->main_loaded) {
+				$this->loadFragment('main');
+			}
+			if ($this->inner !== null) $this->inner->setParent(null);
+			$this->inner = $inner;
+			if ($inner !== null) $inner->setParent($this, "inner", "main");
+			if ($notify) {
+				$this->notifyFragmentDirty('main');
+			}
+		}
+	}
+	public function getInner()
+	{
+		if (!$this->main_loaded) {
+			$this->loadFragment('main');
+		}
+		return $this->inner;
 	}
 	
 	public function setType(Type $type = null, $notify = true)

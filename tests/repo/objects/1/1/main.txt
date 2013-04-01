@@ -1,0 +1,11 @@
+Array
+(
+    [name] => someFunc
+    [ident] => Array
+        (
+            [name] => helloWorld
+            [class] => IdentifierExpr
+            [id] => 1.1.ident
+        )
+
+)

@@ -5,10 +5,18 @@ class RepositoryObjectSerializer
 {
 	static public function serialize(RepositoryObject $object, $fragment)
 	{
+		static::println("Serializing $fragment", $object->getId());
 		$output = array();
 
-		// Serialize each property.
+		// Serialize each property individually.
 		if (in_array($fragment, $object->getFragmentNames())) {
+			$object->{$fragment."_dirty"} = false;
+
+			// Make sure the fragment is loaded. This helps catching early bugs.
+			if (!$object->{$fragment."_loaded"}) {
+				throw new \RuntimeException("Fragment $fragment of object {$object->getId()} is not loaded.");
+			}
+
 			$properties = $object->getFragment($fragment);
 			foreach ($properties as $property) {
 				$name = $property["name"];
@@ -20,17 +28,15 @@ class RepositoryObjectSerializer
 			}
 		}
 
-		// Serialize the object tree.
-		if (in_array("tree", $object->getFragmentNames())) {
+		// Serialize the tree objects.
+		if ($fragment != "tree" && in_array("tree", $object->getFragmentNames())) {
 			$properties = $object->getFragment("tree");
 			foreach ($properties as $property) {
-				echo "$fragment : $name\n";
 				$name = $property["name"];
 				$getter = "get".ucwords($name);
 				$value = $object->$getter();
-				if ($value instanceof RepositoryObject) {
-					$a = static::serializeValue($value, $fragment);
-					if ($a) $output[$name] = $a;
+				if ($value !== null) {
+					$output[$name] = static::serialize($value, $fragment);
 				}
 			}
 		}
@@ -45,10 +51,18 @@ class RepositoryObjectSerializer
 			return $value;
 
 		// RepositoryObjects require a more elaborate procedure.
-		if ($value instanceof RepositoryObject) {
-			$output = static::serialize($value, $fragment);
+		if ($value instanceof RepositoryNodeObject) {
+			// If the value is inside the tree fragment, only serialize the given fragment.
+			// Otherwise serialize all fragments at once.
+			if ($value->isInTree()) {
+				$output = static::serialize($value, $fragment);
+			} else {
+				$output = array();
+				foreach ($value->getFragmentNames() as $name) {
+					$output = array_merge($output, static::serialize($value, $name));
+				}
+			}
 			$output["class"] = $value->getClass();
-			$output["id"] = $value->getId();
 			return $output;
 		}
 
@@ -63,7 +77,7 @@ class RepositoryObjectSerializer
 	 */
 	static public function unserialize(RepositoryObject $object, $fragment, \stdClass $input)
 	{
-		echo "Unserializing $fragment of {$object->getClass()}\n";
+		static::println("Unserializing $fragment", $object->getId());
 
 		// Unserialize each property individually.
 		if (in_array($fragment, $object->getFragmentNames())) {
@@ -133,5 +147,10 @@ class RepositoryObjectSerializer
 
 		// Complain about the input as we obviously can't process it.
 		throw new \InvalidArgumentException("Unable to unserialize value: ".print_r($value, true));
+	}
+
+	static private function println($ln, $info = null)
+	{
+		Log::println($ln, get_class(), $info);
 	}
 }

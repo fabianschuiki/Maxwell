@@ -19,4 +19,13 @@ abstract class RepositoryObject
 		}
 		echo "}\n";
 	}
+
+	/**
+	 * Writes the given line to the console, prepending it with some metadata
+	 * about the object.
+	 */
+	protected function println($ln)
+	{
+		Log::println($ln, $this->getClass(), $this->getId());
+	}
 }

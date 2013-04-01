@@ -7,7 +7,8 @@ class IdentifierExpr extends \RepositoryNodeObject implements RangeInterface, Bi
 {
 	/* PROPERTIES */
 	protected $parent = null;
-	protected $parent_key;
+	protected $parent_key = null;
+	protected $parent_fragment = null;
 	
 	// main fragment
 	public $main_dirty  = false;
@@ -25,6 +26,7 @@ class IdentifierExpr extends \RepositoryNodeObject implements RangeInterface, Bi
 	public $type_dirty  = false;
 	public $type_loaded = false;
 	protected $type;
+	protected $someText;
 	
 	// code fragment
 	public $code_dirty  = false;
@@ -34,10 +36,11 @@ class IdentifierExpr extends \RepositoryNodeObject implements RangeInterface, Bi
 	
 	
 	/* GENERAL */
-	public function setParent(\RepositoryObject $parent, $key = null)
+	public function setParent(\RepositoryObject $parent, $key = null, $fragment = null)
 	{
 		$this->parent = $parent;
 		$this->parent_key = $key;
+		$this->parent_fragment = $fragment;
 	}
 	
 	public function getFragmentNames()
@@ -55,7 +58,8 @@ class IdentifierExpr extends \RepositoryNodeObject implements RangeInterface, Bi
 			case "binding": return array(
 				array("name" => "bindingTarget", "type" => "Expr"));
 			case "type": return array(
-				array("name" => "type", "type" => "Type"));
+				array("name" => "type", "type" => "Type"), 
+				array("name" => "someText", "type" => "string"));
 			case "code": return array(
 				array("name" => "exprCode", "type" => "string"), 
 				array("name" => "stmtsCode", "type" => "string"));
@@ -171,6 +175,29 @@ class IdentifierExpr extends \RepositoryNodeObject implements RangeInterface, Bi
 			$this->loadFragment('type');
 		}
 		return $this->type;
+	}
+	
+	public function setSomeText($someText, $notify = true)
+	{
+		if (!is_string($someText)) {
+			throw new \InvalidArgumentException("someText needs to be a string");
+		}
+		if ($this->someText !== $someText) {
+			if (!$this->type_loaded) {
+				$this->loadFragment('type');
+			}
+			$this->someText = $someText;
+			if ($notify) {
+				$this->notifyFragmentDirty('type');
+			}
+		}
+	}
+	public function getSomeText()
+	{
+		if (!$this->type_loaded) {
+			$this->loadFragment('type');
+		}
+		return $this->someText;
 	}
 	
 	public function setExprCode($exprCode, $notify = true)

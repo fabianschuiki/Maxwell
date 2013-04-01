@@ -44,9 +44,9 @@ class Repository
 		}
 	}
 
-	private function println($str)
+	private function println($ln)
 	{
-		echo "Repository: ".$str."\n";
+		Log::println($ln, get_class());
 	}
 
 	private function getObjectDir($objectId)
@@ -241,22 +241,28 @@ class Repository
 	}
 
 	/**
-	 * Writes all modified objects to disk.
+	 * Writes all modified objects to disk. This in fact iterates through the
+	 * list of modified objects and writes all modified fragments to disk.
 	 */
 	private function writeObjects()
 	{
-		// Write the object class to disk where needed.
-		foreach ($this->objects_unpersisted as $id) {
+		// All freshly created root objects need to be persisted to disk for the first time.
+		foreach ($this->objects_unpersisted as $id)
+		{
+			// Retrieve the object.
 			$obj = @$this->objects[$id];
 			if (!$obj) {
 				throw new \RuntimeException("Object $id listed as to be persisted, but is not part of the repository.");
 			}
 
+			// Make sure the filesystem is ready to accept the file.
 			$file = $this->getObjectDir($id)."/class";
 			if (file_exists($file)) {
 				throw new \RuntimeException("Trying to persist object $id for the first time, but file $file already exists.");
 			}
 			$this->mkdirIfNeeded(dirname($file));
+
+			// Write the class to the class file.
 			$class = $obj->getClass();
 			if (!file_put_contents($file, $class)) {
 				throw new \RuntimeException("Unable to persist object $id class to $file.");
@@ -265,23 +271,25 @@ class Repository
 		$this->objects_unpersisted = array();
 
 		// Write the modified fragments to disk.
-		foreach ($this->objects_modified as $id) {
+		foreach ($this->objects_modified as $id)
+		{
+			// Retrieve the object.
 			$obj = @$this->objects[$id];
 			if (!$obj) {
 				throw new \RuntimeException("Object $id listed as modified, but is not part of the repository.");
 			}
 
-			// Iterate through the fragments of the entity that are modified and persist each.
+			// Iterate through the fragments of the object that are modified and persist each.
 			$stored = array();
-			foreach ($obj->getFragmentNames() as $fragmentName) {
-				if ($fragmentName == "tree") continue;
+			foreach ($obj->getFragmentNames() as $fragmentName)
+			{
+				// Do not persist fragments that are not dirty.
 				$frag_dirty = $fragmentName."_dirty";
 				if (!$obj->$frag_dirty) continue;
-				$obj->$frag_dirty = false;
 				$stored[] = $fragmentName;
 
-				// Assemble the output file name.
-				$file = $this->getObjectDir($id)."/".$fragmentName;
+				// Assemble the output file name and make sure the filesystem is ready to accept the file.
+				$file = $this->getObjectDir($id)."/".$fragmentName.".out";
 				$this->mkdirIfNeeded(dirname($file));
 
 				// Generate the output for each property.
@@ -291,39 +299,13 @@ class Repository
 				if (!file_put_contents($file, json_encode($output))) {
 					throw new \RuntimeException("Unable to persist fragment $fragmentName of object $id to $file.");
 				}
-				file_put_contents($file.".txt", print_r($output, true));
+
+				// During debugging we also dump a more human-readable form of the output to disk.
+				if ($this->debug) file_put_contents($file.".txt", print_r($output, true));
 			}
-			echo "object $id persisted ".implode(", ", $stored)."\n";
+			if ($this->debug) $this->println("Persisted ".implode(", ", $stored)." of object $id");
 		}
 		$this->objects_modified = array();
-	}
-
-	/**
-	 * Loads the given object's fragment.
-	 */
-	private function readObjectFragment(RepositoryRootObject $object, $fragment)
-	{
-		$object->{$fragment."_loaded"} = true;
-
-		// Attempt to load the fragment information from the fragment file.
-		$file = $this->dir."/".$this->objects_dir."/".str_replace(".", "/", $object->getId())."/".$fragment;
-		if (file_exists($file)) {
-			if ($this->debug) $this->println("Loading fragment $fragment of object ID {$object->getId()} from $file.");
-			$data = file_get_contents($file);
-			if ($data === false) {
-				throw new \RuntimeException("Unable to read file $file.");
-			}
-			$input = json_decode($data);
-			if ($input === false) {
-				throw new \RuntimeException("Unable to parse JSON file $file. JSON error ".json_last_error().".");
-			}
-
-			// Parse the loaded JSON file.
-			RepositoryObjectSerializer::unserialize($object, $fragment, $input);
-
-			// Mark the fragment as not dirty since it now reflects the persisted state.
-			$object->{$fragment."_dirty"} = false;
-		}
 	}
 
 	/**

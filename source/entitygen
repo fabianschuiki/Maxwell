@@ -95,7 +95,10 @@ foreach ($entity_defs as $name => $def)
 
 	// Generate the fragments.
 	$afragments = array();
-	$afragments[] = "protected \$parent = null;\nprotected \$parent_key;";
+	$afragments[] = 
+		"protected \$parent = null;\n".
+		"protected \$parent_key = null;\n".
+		"protected \$parent_fragment = null;";
 	$bfragments = array();
 	$propertiesByFragment = array();
 	foreach ($def as $fragmentName => $properties) {
@@ -174,9 +177,9 @@ foreach ($entity_defs as $name => $def)
 		if (!\$this->$prop_loaded) {
 			\$this->loadFragment('$fragmentName');
 		}";
-			if ($fragmentName == "tree") $bfragment .= "\n\t\tif (\$this->$lcname !== null) \$this->{$lcname}->setParent(null);";
+			if ($property->kind == "object") $bfragment .= "\n\t\tif (\$this->$lcname !== null) \$this->{$lcname}->setParent(null);";
 			$bfragment .= "\n\t\t\$this->$lcname = \$$lcname;";
-			if ($fragmentName == "tree") $bfragment .= "\n\t\tif (\$$lcname !== null) \${$lcname}->setParent(\$this, \"$lcname\");";
+			if ($property->kind == "object") $bfragment .= "\n\t\tif (\$$lcname !== null) \${$lcname}->setParent(\$this, \"$lcname\", \"$fragmentName\");";
 			$bfragment .= "\n\t\tif (\$notify) {"
 				//."\n\t\t\t\$this->$prop_dirty = true;"
 				."\n\t\t\t\$this->notifyFragmentDirty('$fragmentName');"
@@ -201,10 +204,12 @@ foreach ($entity_defs as $name => $def)
 
 	// Assemble the general interface.
 	$general = array();
-	$sp  = "public function setParent(\\RepositoryObject \$parent, \$key = null)\n{\n";
-	$sp .= "\t\$this->parent = \$parent;\n\t\$this->parent_key = \$key;\n";
-	$sp .= "}";
-	$general[] = $sp;
+	$general[] = "public function setParent(\\RepositoryObject \$parent, \$key = null, \$fragment = null)\n".
+		"{\n".
+		"\t\$this->parent = \$parent;\n".
+		"\t\$this->parent_key = \$key;\n".
+		"\t\$this->parent_fragment = \$fragment;\n".
+		"}";
 	$general[] = "public function getFragmentNames()\n{\n\treturn array(\"".implode("\",\"", array_keys(get_object_vars($def)))."\");\n}";
 	$gf = "public function getFragment(\$name)\n{\n\tswitch (\$name) {";
 	foreach (array_keys(get_object_vars($def)) as $fragmentName) {

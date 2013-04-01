@@ -1,0 +1,15 @@
+Array
+(
+    [inner] => Array
+        (
+            [name] => innerIdent
+            [someText] => hahaha
+            [class] => IdentifierExpr
+        )
+
+    [ident] => Array
+        (
+            [name] => helloWorld
+        )
+
+)

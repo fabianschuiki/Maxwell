@@ -1,1 +1,1 @@
-{"ident":{"name":"helloWorld"}}
+{"ident":{"name":"helloWorld"},"inner":{"class":"IdentifierExpr","name":"innerIdent","someText":"blabla"}}

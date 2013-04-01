@@ -7,7 +7,8 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 {
 	/* PROPERTIES */
 	protected $parent = null;
-	protected $parent_key;
+	protected $parent_key = null;
+	protected $parent_fragment = null;
 	
 	// main fragment
 	public $main_dirty  = false;
@@ -31,10 +32,11 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 	
 	
 	/* GENERAL */
-	public function setParent(\RepositoryObject $parent, $key = null)
+	public function setParent(\RepositoryObject $parent, $key = null, $fragment = null)
 	{
 		$this->parent = $parent;
 		$this->parent_key = $key;
+		$this->parent_fragment = $fragment;
 	}
 	
 	public function getFragmentNames()

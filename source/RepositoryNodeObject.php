@@ -9,10 +9,19 @@ abstract class RepositoryNodeObject extends RepositoryObject
 	 */
 	public function getId()
 	{
-		if (!$this->parent) {
-			throw new \RuntimeException("Asked for ID of object which has no parent.");
+		if ($this->parent) {
+			return $this->parent->getId().".".$this->parent_key;
+		} else {
+			return "<parentless>";
 		}
-		return $this->parent->getId().".".$this->parent_key;
+	}
+
+	/**
+	 * Returns true if this object is part of its parent's tree fragment.
+	 */
+	public function isInTree()
+	{
+		return $this->parent_fragment == "tree";
 	}
 
 	/**
@@ -52,6 +61,10 @@ abstract class RepositoryNodeObject extends RepositoryObject
 		if (!$this->parent) {
 			throw new \RuntimeException("Unable to mark fragment $fragment dirty since the object does not have a parent.");
 		}
-		$this->parent->notifyFragmentDirty($fragment);
+		$frag = ($this->parent_fragment == "tree" ? $fragment : $this->parent_fragment);
+		if ($frag != $fragment) {
+			$this->println("Fragment $fragment translated to parent's $frag");
+		}
+		$this->parent->notifyFragmentDirty($frag);
 	}
 }

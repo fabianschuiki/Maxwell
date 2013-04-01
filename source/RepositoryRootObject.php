@@ -51,7 +51,13 @@ abstract class RepositoryRootObject extends RepositoryObject
 	protected function notifyFragmentDirty($fragment)
 	{
 		// If this root object contains this fragment mark it as dirty.
-		if (in_array($fragment, $this->getFragmentNames())) {
+		if (in_array($fragment, $this->getFragmentNames()))
+		{
+			// Make sure the fragment was loaded.
+			if (!$this->{$fragment."_loaded"}) {
+				throw new \RuntimeException("Cannot mark unloaded fragment $fragment of {$this->id} as dirty.");
+			}
+
 			// If the fragment is already marked simply return.
 			if ($this->{$fragment."_dirty"})
 				return;

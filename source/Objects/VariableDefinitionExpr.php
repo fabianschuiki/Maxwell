@@ -83,10 +83,13 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 		}
 	}
-	public function getRange()
+	public function getRange($enforce = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
+		}
+		if ($enforce && $this->range === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null range.");
 		}
 		return $this->range;
 	}
@@ -105,10 +108,13 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 		}
 	}
-	public function getHumanRange()
+	public function getHumanRange($enforce = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
+		}
+		if ($enforce && $this->humanRange === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null humanRange.");
 		}
 		return $this->humanRange;
 	}
@@ -130,10 +136,13 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 		}
 	}
-	public function getName()
+	public function getName($enforce = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
+		}
+		if ($enforce && $this->name === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null name.");
 		}
 		return $this->name;
 	}
@@ -152,10 +161,13 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 		}
 	}
-	public function getTypeExpr()
+	public function getTypeExpr($enforce = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
+		}
+		if ($enforce && $this->typeExpr === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null typeExpr.");
 		}
 		return $this->typeExpr;
 	}
@@ -174,10 +186,13 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 		}
 	}
-	public function getInitialExpr()
+	public function getInitialExpr($enforce = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
+		}
+		if ($enforce && $this->initialExpr === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null initialExpr.");
 		}
 		return $this->initialExpr;
 	}
@@ -196,10 +211,13 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 		}
 	}
-	public function getType()
+	public function getType($enforce = true)
 	{
 		if (!$this->type_loaded) {
 			$this->loadFragment('type');
+		}
+		if ($enforce && $this->type === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null type.");
 		}
 		return $this->type;
 	}
@@ -221,10 +239,13 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 		}
 	}
-	public function getExprCode()
+	public function getExprCode($enforce = true)
 	{
 		if (!$this->code_loaded) {
 			$this->loadFragment('code');
+		}
+		if ($enforce && $this->exprCode === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null exprCode.");
 		}
 		return $this->exprCode;
 	}
@@ -246,10 +267,13 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 		}
 	}
-	public function getStmtsCode()
+	public function getStmtsCode($enforce = true)
 	{
 		if (!$this->code_loaded) {
 			$this->loadFragment('code');
+		}
+		if ($enforce && $this->stmtsCode === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null stmtsCode.");
 		}
 		return $this->stmtsCode;
 	}

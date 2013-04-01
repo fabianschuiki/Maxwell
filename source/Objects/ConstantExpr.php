@@ -62,10 +62,13 @@ class ConstantExpr extends Expr
 			}
 		}
 	}
-	public function getValue()
+	public function getValue($enforce = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
+		}
+		if ($enforce && $this->value === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null value.");
 		}
 		return $this->value;
 	}

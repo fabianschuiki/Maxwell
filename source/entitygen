@@ -191,12 +191,15 @@ foreach ($entity_defs as $name => $def)
 			$bfragment .= "\n}\n";
 
 			// GETTER
-			$bfragment .= "public function get{$ucname}()\n{";
-			$bfragment .= "
-	if (!\$this->$prop_loaded) {
-		\$this->loadFragment('$fragmentName');
-	}
-	return \$this->$lcname;";
+			$bfragment .= "public function get{$ucname}(\$enforce = true)\n{";
+			$bfragment .= 
+				"\n\tif (!\$this->$prop_loaded) {".
+				"\n\t\t\$this->loadFragment('$fragmentName');".
+				"\n\t}".
+				"\n\tif (\$enforce && \$this->$lcname === null) {".
+				"\n\t\tthrow new \\RuntimeException(\"Object {\$this->getId()} expected to have non-null $lcname.\");".
+				"\n\t}".
+				"\n\treturn \$this->$lcname;";
 			$bfragment .= "\n}\n\n";
 		}
 

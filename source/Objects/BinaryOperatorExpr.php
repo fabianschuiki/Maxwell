@@ -68,10 +68,13 @@ class BinaryOperatorExpr extends Expr
 			}
 		}
 	}
-	public function getLhs()
+	public function getLhs($enforce = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
+		}
+		if ($enforce && $this->lhs === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null lhs.");
 		}
 		return $this->lhs;
 	}
@@ -90,10 +93,13 @@ class BinaryOperatorExpr extends Expr
 			}
 		}
 	}
-	public function getRhs()
+	public function getRhs($enforce = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
+		}
+		if ($enforce && $this->rhs === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null rhs.");
 		}
 		return $this->rhs;
 	}
@@ -115,10 +121,13 @@ class BinaryOperatorExpr extends Expr
 			}
 		}
 	}
-	public function getOperator()
+	public function getOperator($enforce = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
+		}
+		if ($enforce && $this->operator === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null operator.");
 		}
 		return $this->operator;
 	}

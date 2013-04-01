@@ -59,10 +59,13 @@ class FunctionBody extends \RepositoryNodeObject
 			}
 		}
 	}
-	public function getStmts()
+	public function getStmts($enforce = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
+		}
+		if ($enforce && $this->stmts === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null stmts.");
 		}
 		return $this->stmts;
 	}

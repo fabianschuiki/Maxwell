@@ -59,10 +59,13 @@ class FunctionArgumentTuple extends \RepositoryNodeObject
 			}
 		}
 	}
-	public function getArguments()
+	public function getArguments($enforce = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
+		}
+		if ($enforce && $this->arguments === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null arguments.");
 		}
 		return $this->arguments;
 	}

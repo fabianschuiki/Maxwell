@@ -94,10 +94,13 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 		}
 	}
-	public function getInputs()
+	public function getInputs($enforce = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
+		}
+		if ($enforce && $this->inputs === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null inputs.");
 		}
 		return $this->inputs;
 	}
@@ -116,10 +119,13 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 		}
 	}
-	public function getOutputs()
+	public function getOutputs($enforce = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
+		}
+		if ($enforce && $this->outputs === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null outputs.");
 		}
 		return $this->outputs;
 	}
@@ -138,10 +144,13 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 		}
 	}
-	public function getBody()
+	public function getBody($enforce = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
+		}
+		if ($enforce && $this->body === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null body.");
 		}
 		return $this->body;
 	}
@@ -160,10 +169,13 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 		}
 	}
-	public function getRange()
+	public function getRange($enforce = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
+		}
+		if ($enforce && $this->range === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null range.");
 		}
 		return $this->range;
 	}
@@ -182,10 +194,13 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 		}
 	}
-	public function getHumanRange()
+	public function getHumanRange($enforce = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
+		}
+		if ($enforce && $this->humanRange === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null humanRange.");
 		}
 		return $this->humanRange;
 	}
@@ -207,10 +222,13 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 		}
 	}
-	public function getName()
+	public function getName($enforce = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
+		}
+		if ($enforce && $this->name === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null name.");
 		}
 		return $this->name;
 	}
@@ -229,10 +247,13 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 		}
 	}
-	public function getType()
+	public function getType($enforce = true)
 	{
 		if (!$this->type_loaded) {
 			$this->loadFragment('type');
+		}
+		if ($enforce && $this->type === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null type.");
 		}
 		return $this->type;
 	}
@@ -254,10 +275,13 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 		}
 	}
-	public function getIndepDeclCode()
+	public function getIndepDeclCode($enforce = true)
 	{
 		if (!$this->code_loaded) {
 			$this->loadFragment('code');
+		}
+		if ($enforce && $this->indepDeclCode === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null indepDeclCode.");
 		}
 		return $this->indepDeclCode;
 	}
@@ -279,10 +303,13 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 		}
 	}
-	public function getDepDeclCode()
+	public function getDepDeclCode($enforce = true)
 	{
 		if (!$this->code_loaded) {
 			$this->loadFragment('code');
+		}
+		if ($enforce && $this->depDeclCode === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null depDeclCode.");
 		}
 		return $this->depDeclCode;
 	}
@@ -304,10 +331,13 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 		}
 	}
-	public function getIndepDefCode()
+	public function getIndepDefCode($enforce = true)
 	{
 		if (!$this->code_loaded) {
 			$this->loadFragment('code');
+		}
+		if ($enforce && $this->indepDefCode === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null indepDefCode.");
 		}
 		return $this->indepDefCode;
 	}
@@ -329,10 +359,13 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 		}
 	}
-	public function getDepDefCode()
+	public function getDepDefCode($enforce = true)
 	{
 		if (!$this->code_loaded) {
 			$this->loadFragment('code');
+		}
+		if ($enforce && $this->depDefCode === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null depDefCode.");
 		}
 		return $this->depDefCode;
 	}

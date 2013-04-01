@@ -88,10 +88,13 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			}
 		}
 	}
-	public function getRange()
+	public function getRange($enforce = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
+		}
+		if ($enforce && $this->range === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null range.");
 		}
 		return $this->range;
 	}
@@ -110,10 +113,13 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			}
 		}
 	}
-	public function getHumanRange()
+	public function getHumanRange($enforce = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
+		}
+		if ($enforce && $this->humanRange === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null humanRange.");
 		}
 		return $this->humanRange;
 	}
@@ -135,10 +141,13 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			}
 		}
 	}
-	public function getName()
+	public function getName($enforce = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
+		}
+		if ($enforce && $this->name === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null name.");
 		}
 		return $this->name;
 	}
@@ -157,10 +166,13 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			}
 		}
 	}
-	public function getBindingTarget()
+	public function getBindingTarget($enforce = true)
 	{
 		if (!$this->binding_loaded) {
 			$this->loadFragment('binding');
+		}
+		if ($enforce && $this->bindingTarget === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null bindingTarget.");
 		}
 		return $this->bindingTarget;
 	}
@@ -179,10 +191,13 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			}
 		}
 	}
-	public function getType()
+	public function getType($enforce = true)
 	{
 		if (!$this->type_loaded) {
 			$this->loadFragment('type');
+		}
+		if ($enforce && $this->type === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null type.");
 		}
 		return $this->type;
 	}
@@ -204,10 +219,13 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			}
 		}
 	}
-	public function getSomeText()
+	public function getSomeText($enforce = true)
 	{
 		if (!$this->type_loaded) {
 			$this->loadFragment('type');
+		}
+		if ($enforce && $this->someText === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null someText.");
 		}
 		return $this->someText;
 	}
@@ -229,10 +247,13 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			}
 		}
 	}
-	public function getExprCode()
+	public function getExprCode($enforce = true)
 	{
 		if (!$this->code_loaded) {
 			$this->loadFragment('code');
+		}
+		if ($enforce && $this->exprCode === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null exprCode.");
 		}
 		return $this->exprCode;
 	}
@@ -254,10 +275,13 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			}
 		}
 	}
-	public function getStmtsCode()
+	public function getStmtsCode($enforce = true)
 	{
 		if (!$this->code_loaded) {
 			$this->loadFragment('code');
+		}
+		if ($enforce && $this->stmtsCode === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null stmtsCode.");
 		}
 		return $this->stmtsCode;
 	}

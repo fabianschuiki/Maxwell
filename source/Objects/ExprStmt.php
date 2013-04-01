@@ -59,10 +59,13 @@ class ExprStmt extends \RepositoryNodeObject
 			}
 		}
 	}
-	public function getExpr()
+	public function getExpr($enforce = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
+		}
+		if ($enforce && $this->expr === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null expr.");
 		}
 		return $this->expr;
 	}

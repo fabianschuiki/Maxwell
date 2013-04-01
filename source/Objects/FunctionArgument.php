@@ -66,10 +66,13 @@ class FunctionArgument extends \RepositoryNodeObject
 			}
 		}
 	}
-	public function getTypeExpr()
+	public function getTypeExpr($enforce = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
+		}
+		if ($enforce && $this->typeExpr === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null typeExpr.");
 		}
 		return $this->typeExpr;
 	}
@@ -91,10 +94,13 @@ class FunctionArgument extends \RepositoryNodeObject
 			}
 		}
 	}
-	public function getName()
+	public function getName($enforce = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
+		}
+		if ($enforce && $this->name === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null name.");
 		}
 		return $this->name;
 	}

@@ -1,1 +1,1 @@
-{"name":"double","body":{"stmts":[{"name":"SomeExprName"},[]]}}
+{"name":"double","body":{"stmts":[{"expr":{"lhs":{"name":"y"},"rhs":{"lhs":{"name":"x"},"rhs":{"value":"2"}}}}]}}

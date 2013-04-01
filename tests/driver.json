@@ -2,20 +2,32 @@
 	"name": "double",
 	"inputs": {
 		"class": "FunctionArgumentTuple"
-	},
+		},
 	"outputs": {
 		"class": "FunctionArgumentTuple"
-	},
+		},
 	"body": {
 		"class": "FunctionBody",
-		"stmts": [
-			{
-				"class": "ExprStmt",
-				"name": "SomeExprName"
-			},
-			{
-				"class": "ExprStmt"
-			}
-		]
-	}
+		"stmts": [{
+			"class": "ExprStmt",
+			"expr": {
+				"class": "AssignmentExpr",
+				"lhs": {
+					"class": "IdentifierExpr",
+					"name": "y"
+					},
+				"rhs": {
+					"class": "BinaryOperatorExpr",
+					"lhs": {
+						"class": "IdentifierExpr",
+						"name": "x"
+						},
+					"rhs": {
+						"class": "ConstantExpr",
+						"value": "2"
+						}
+					}
+				}
+			}]
+		}
 }

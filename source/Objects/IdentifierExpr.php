@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class IdentifierExpr extends \RepositoryNodeObject implements RangeInterface, BindingInterface, TypeInterface, ExprCodeInterface
+class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, TypeInterface, ExprCodeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;

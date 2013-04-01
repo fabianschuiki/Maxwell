@@ -19,6 +19,7 @@
 
 	"entities": {
 		"IdentifierExpr": {
+			"extends": "Expr",
 			"main": ["@range", "string name"],
 			"binding": ["@binding"],
 			"type": ["@type", "string someText"],
@@ -45,7 +46,23 @@
 		},
 
 		"ExprStmt": {
-			"main": ["string name"]
+			"tree": ["Expr expr"]
+		},
+
+		"AssignmentExpr": {
+			"extends": "Expr",
+			"tree": ["Expr lhs", "Expr rhs"]
+		},
+
+		"BinaryOperatorExpr": {
+			"extends": "Expr",
+			"tree": ["Expr lhs", "Expr rhs"],
+			"main": ["string operator"]
+		},
+
+		"ConstantExpr": {
+			"extends": "Expr",
+			"main": ["string value"]
 		}
 	}
 }

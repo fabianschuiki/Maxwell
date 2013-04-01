@@ -1,1 +1,1 @@
-{"inputs":{"class":"FunctionArgumentTuple"},"outputs":{"class":"FunctionArgumentTuple"},"body":{"class":"FunctionBody","stmts":[{"class":"ExprStmt"},{"class":"ExprStmt"}]}}
+{"inputs":{"class":"FunctionArgumentTuple"},"outputs":{"class":"FunctionArgumentTuple"},"body":{"class":"FunctionBody","stmts":[{"class":"ExprStmt","expr":{"class":"AssignmentExpr","lhs":{"class":"IdentifierExpr"},"rhs":{"class":"BinaryOperatorExpr","lhs":{"class":"IdentifierExpr"},"rhs":{"class":"ConstantExpr"}}}}]}}

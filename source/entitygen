@@ -91,6 +91,9 @@ foreach ($entity_defs as $name => $def)
 	else
 		$interfaces = array($implements);
 	$superclass = (isset($def->root) && $def->root === true ? "\\RepositoryRootObject" : "\\RepositoryNodeObject");
+	if (isset($def->extends))
+		$superclass = $def->extends;
+	unset($def->extends);
 	unset($def->root);
 
 	// Generate the fragments.

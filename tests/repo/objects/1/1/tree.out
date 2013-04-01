@@ -1,1 +1,1 @@
-{"inputs":{"class":"FunctionArgumentTuple"},"outputs":{"class":"FunctionArgumentTuple"},"body":{"stmts":[{"class":"ExprStmt"},{"class":"ExprStmt"}],"class":"FunctionBody"}}
+{"inputs":{"class":"FunctionArgumentTuple"},"outputs":{"class":"FunctionArgumentTuple"},"body":{"stmts":[{"class":"ExprStmt"}],"class":"FunctionBody"}}

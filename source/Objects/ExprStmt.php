@@ -10,10 +10,10 @@ class ExprStmt extends \RepositoryNodeObject
 	protected $parent_key = null;
 	protected $parent_fragment = null;
 	
-	// main fragment
-	public $main_dirty  = false;
-	public $main_loaded = false;
-	protected $name;
+	// tree fragment
+	public $tree_dirty  = false;
+	public $tree_loaded = false;
+	protected $expr;
 	
 	
 	/* GENERAL */
@@ -26,14 +26,14 @@ class ExprStmt extends \RepositoryNodeObject
 	
 	public function getFragmentNames()
 	{
-		return array("main");
+		return array("tree");
 	}
 	
 	public function getFragment($name)
 	{
 		switch ($name) {
-			case "main": return array(
-				array("name" => "name", "type" => "string"));
+			case "tree": return array(
+				array("name" => "expr", "type" => "Expr"));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -45,28 +45,25 @@ class ExprStmt extends \RepositoryNodeObject
 	
 	
 	/* ACCESSORS */
-	public function setName($name, $notify = true)
+	public function setExpr(Expr $expr = null, $notify = true)
 	{
-		if (!is_string($name)) {
-			throw new \InvalidArgumentException("name needs to be a string");
-		}
-		if ($this->name !== $name) {
-			if (!$this->main_loaded) {
-				$this->loadFragment('main');
+		if ($this->expr !== $expr) {
+			if (!$this->tree_loaded) {
+				$this->loadFragment('tree');
 			}
-			if ($this->name instanceof \RepositoryNodeObject) $this->name->setParent(null);
-			$this->name = $name;
-			if ($name instanceof \RepositoryNodeObject) $name->setParent($this, "name", "main");
+			if ($this->expr instanceof \RepositoryNodeObject) $this->expr->setParent(null);
+			$this->expr = $expr;
+			if ($expr instanceof \RepositoryNodeObject) $expr->setParent($this, "expr", "tree");
 			if ($notify) {
-				$this->notifyFragmentDirty('main');
+				$this->notifyFragmentDirty('tree');
 			}
 		}
 	}
-	public function getName()
+	public function getExpr()
 	{
-		if (!$this->main_loaded) {
-			$this->loadFragment('main');
+		if (!$this->tree_loaded) {
+			$this->loadFragment('tree');
 		}
-		return $this->name;
+		return $this->expr;
 	}
 }

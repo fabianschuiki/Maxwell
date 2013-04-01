@@ -19,11 +19,6 @@ Array
                             [class] => ExprStmt
                         )
 
-                    [1] => Array
-                        (
-                            [class] => ExprStmt
-                        )
-
                 )
 
             [class] => FunctionBody

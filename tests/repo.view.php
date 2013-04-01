@@ -14,7 +14,7 @@ $stmt = $body->getStmts()->get(0);
 $stmt->print_fragmentStates();
 $f1->print_fragmentStates();
 
-echo "stmt name = ".$stmt->getName()."\n";
+/*echo "stmt name = ".$stmt->getName()."\n";
 $stmt->print_fragmentStates();
 $f1->print_fragmentStates();
 
@@ -25,7 +25,7 @@ $f1->print_fragmentStates();
 
 $f1->tree_dirty = true;
 $repo->notifyObjectFragmentDirty("1.1", "tree");
-$repo->flush();
+$repo->flush();*/
 
 /*$ident = $f1->getIdent();
 $f1->print_fragmentStates();

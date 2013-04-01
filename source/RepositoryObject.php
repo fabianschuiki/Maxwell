@@ -8,6 +8,8 @@ abstract class RepositoryObject
 	/// Returns the class name of this object.
 	abstract public function getClass();
 
+	abstract public function getFragmentNames();
+
 	abstract protected function loadFragment($fragment);
 	abstract protected function notifyFragmentDirty($fragment);
 

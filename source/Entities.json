@@ -32,9 +32,20 @@
 
 		"FunctionDefinition": {
 			"root": true,
-			"tree": ["*IdentifierExpr ident"],
-			"main": ["@range", "string name", "*IdentifierExpr inner"],
+			"tree": ["*FunctionArgumentTuple inputs", "*FunctionArgumentTuple outputs", "*FunctionBody body"],
+			"main": ["@range", "string name"],
 			"type": ["@type"],
-			"code": ["@root_code"]}
+			"code": ["@root_code"]},
+
+		"FunctionArgumentTuple": {
+		},
+
+		"FunctionBody": {
+			"tree": ["\\RepositoryObjectArray stmts"]
+		},
+
+		"ExprStmt": {
+			"main": ["string name"]
+		}
 	}
 }

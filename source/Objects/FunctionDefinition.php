@@ -13,7 +13,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	// tree fragment
 	public $tree_dirty  = false;
 	public $tree_loaded = false;
-	protected $ident;
+	protected $inputs;
+	protected $outputs;
+	protected $body;
 	
 	// main fragment
 	public $main_dirty  = false;
@@ -21,7 +23,6 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	protected $range;
 	protected $humanRange;
 	protected $name;
-	protected $inner;
 	
 	// type fragment
 	public $type_dirty  = false;
@@ -54,12 +55,13 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	{
 		switch ($name) {
 			case "tree": return array(
-				array("name" => "ident", "type" => "\Objects\IdentifierExpr"));
+				array("name" => "inputs", "type" => "\Objects\FunctionArgumentTuple"), 
+				array("name" => "outputs", "type" => "\Objects\FunctionArgumentTuple"), 
+				array("name" => "body", "type" => "\Objects\FunctionBody"));
 			case "main": return array(
 				array("name" => "range", "type" => "\Source\Range"), 
 				array("name" => "humanRange", "type" => "\Source\Range"), 
-				array("name" => "name", "type" => "string"), 
-				array("name" => "inner", "type" => "\Objects\IdentifierExpr"));
+				array("name" => "name", "type" => "string"));
 			case "type": return array(
 				array("name" => "type", "type" => "Type"));
 			case "code": return array(
@@ -78,26 +80,70 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	
 	
 	/* ACCESSORS */
-	public function setIdent(\Objects\IdentifierExpr $ident = null, $notify = true)
+	public function setInputs(\Objects\FunctionArgumentTuple $inputs = null, $notify = true)
 	{
-		if ($this->ident !== $ident) {
+		if ($this->inputs !== $inputs) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment('tree');
 			}
-			if ($this->ident !== null) $this->ident->setParent(null);
-			$this->ident = $ident;
-			if ($ident !== null) $ident->setParent($this, "ident", "tree");
+			if ($this->inputs instanceof \RepositoryNodeObject) $this->inputs->setParent(null);
+			$this->inputs = $inputs;
+			if ($inputs instanceof \RepositoryNodeObject) $inputs->setParent($this, "inputs", "tree");
 			if ($notify) {
 				$this->notifyFragmentDirty('tree');
 			}
 		}
 	}
-	public function getIdent()
+	public function getInputs()
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
 		}
-		return $this->ident;
+		return $this->inputs;
+	}
+	
+	public function setOutputs(\Objects\FunctionArgumentTuple $outputs = null, $notify = true)
+	{
+		if ($this->outputs !== $outputs) {
+			if (!$this->tree_loaded) {
+				$this->loadFragment('tree');
+			}
+			if ($this->outputs instanceof \RepositoryNodeObject) $this->outputs->setParent(null);
+			$this->outputs = $outputs;
+			if ($outputs instanceof \RepositoryNodeObject) $outputs->setParent($this, "outputs", "tree");
+			if ($notify) {
+				$this->notifyFragmentDirty('tree');
+			}
+		}
+	}
+	public function getOutputs()
+	{
+		if (!$this->tree_loaded) {
+			$this->loadFragment('tree');
+		}
+		return $this->outputs;
+	}
+	
+	public function setBody(\Objects\FunctionBody $body = null, $notify = true)
+	{
+		if ($this->body !== $body) {
+			if (!$this->tree_loaded) {
+				$this->loadFragment('tree');
+			}
+			if ($this->body instanceof \RepositoryNodeObject) $this->body->setParent(null);
+			$this->body = $body;
+			if ($body instanceof \RepositoryNodeObject) $body->setParent($this, "body", "tree");
+			if ($notify) {
+				$this->notifyFragmentDirty('tree');
+			}
+		}
+	}
+	public function getBody()
+	{
+		if (!$this->tree_loaded) {
+			$this->loadFragment('tree');
+		}
+		return $this->body;
 	}
 	
 	public function setRange(\Source\Range $range = null, $notify = true)
@@ -106,7 +152,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->main_loaded) {
 				$this->loadFragment('main');
 			}
+			if ($this->range instanceof \RepositoryNodeObject) $this->range->setParent(null);
 			$this->range = $range;
+			if ($range instanceof \RepositoryNodeObject) $range->setParent($this, "range", "main");
 			if ($notify) {
 				$this->notifyFragmentDirty('main');
 			}
@@ -126,7 +174,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->main_loaded) {
 				$this->loadFragment('main');
 			}
+			if ($this->humanRange instanceof \RepositoryNodeObject) $this->humanRange->setParent(null);
 			$this->humanRange = $humanRange;
+			if ($humanRange instanceof \RepositoryNodeObject) $humanRange->setParent($this, "humanRange", "main");
 			if ($notify) {
 				$this->notifyFragmentDirty('main');
 			}
@@ -149,7 +199,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->main_loaded) {
 				$this->loadFragment('main');
 			}
+			if ($this->name instanceof \RepositoryNodeObject) $this->name->setParent(null);
 			$this->name = $name;
+			if ($name instanceof \RepositoryNodeObject) $name->setParent($this, "name", "main");
 			if ($notify) {
 				$this->notifyFragmentDirty('main');
 			}
@@ -163,35 +215,15 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 		return $this->name;
 	}
 	
-	public function setInner(\Objects\IdentifierExpr $inner = null, $notify = true)
-	{
-		if ($this->inner !== $inner) {
-			if (!$this->main_loaded) {
-				$this->loadFragment('main');
-			}
-			if ($this->inner !== null) $this->inner->setParent(null);
-			$this->inner = $inner;
-			if ($inner !== null) $inner->setParent($this, "inner", "main");
-			if ($notify) {
-				$this->notifyFragmentDirty('main');
-			}
-		}
-	}
-	public function getInner()
-	{
-		if (!$this->main_loaded) {
-			$this->loadFragment('main');
-		}
-		return $this->inner;
-	}
-	
 	public function setType(Type $type = null, $notify = true)
 	{
 		if ($this->type !== $type) {
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
+			if ($this->type instanceof \RepositoryNodeObject) $this->type->setParent(null);
 			$this->type = $type;
+			if ($type instanceof \RepositoryNodeObject) $type->setParent($this, "type", "type");
 			if ($notify) {
 				$this->notifyFragmentDirty('type');
 			}
@@ -214,7 +246,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->code_loaded) {
 				$this->loadFragment('code');
 			}
+			if ($this->indepDeclCode instanceof \RepositoryNodeObject) $this->indepDeclCode->setParent(null);
 			$this->indepDeclCode = $indepDeclCode;
+			if ($indepDeclCode instanceof \RepositoryNodeObject) $indepDeclCode->setParent($this, "indepDeclCode", "code");
 			if ($notify) {
 				$this->notifyFragmentDirty('code');
 			}
@@ -237,7 +271,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->code_loaded) {
 				$this->loadFragment('code');
 			}
+			if ($this->depDeclCode instanceof \RepositoryNodeObject) $this->depDeclCode->setParent(null);
 			$this->depDeclCode = $depDeclCode;
+			if ($depDeclCode instanceof \RepositoryNodeObject) $depDeclCode->setParent($this, "depDeclCode", "code");
 			if ($notify) {
 				$this->notifyFragmentDirty('code');
 			}
@@ -260,7 +296,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->code_loaded) {
 				$this->loadFragment('code');
 			}
+			if ($this->indepDefCode instanceof \RepositoryNodeObject) $this->indepDefCode->setParent(null);
 			$this->indepDefCode = $indepDefCode;
+			if ($indepDefCode instanceof \RepositoryNodeObject) $indepDefCode->setParent($this, "indepDefCode", "code");
 			if ($notify) {
 				$this->notifyFragmentDirty('code');
 			}
@@ -283,7 +321,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->code_loaded) {
 				$this->loadFragment('code');
 			}
+			if ($this->depDefCode instanceof \RepositoryNodeObject) $this->depDefCode->setParent(null);
 			$this->depDefCode = $depDefCode;
+			if ($depDefCode instanceof \RepositoryNodeObject) $depDefCode->setParent($this, "depDefCode", "code");
 			if ($notify) {
 				$this->notifyFragmentDirty('code');
 			}

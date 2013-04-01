@@ -67,4 +67,9 @@ abstract class RepositoryNodeObject extends RepositoryObject
 		}
 		$this->parent->notifyFragmentDirty($frag);
 	}
+
+
+	abstract public function setParent(\RepositoryObject $parent, $key = null, $fragment = null);
+	//abstract public function getFragmentNames();
+	//abstract public function getFragment($name);
 }

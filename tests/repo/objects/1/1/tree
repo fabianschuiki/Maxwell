@@ -1,1 +1,1 @@
-{"ident":{"class":"IdentifierExpr"}}
+{"inputs":{"class":"FunctionArgumentTuple"},"outputs":{"class":"FunctionArgumentTuple"},"body":{"class":"FunctionBody","stmts":[{"class":"ExprStmt"},{"class":"ExprStmt"}]}}

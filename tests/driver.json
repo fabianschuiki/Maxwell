@@ -1,0 +1,21 @@
+{
+	"name": "double",
+	"inputs": {
+		"class": "FunctionArgumentTuple"
+	},
+	"outputs": {
+		"class": "FunctionArgumentTuple"
+	},
+	"body": {
+		"class": "FunctionBody",
+		"stmts": [
+			{
+				"class": "ExprStmt",
+				"name": "SomeExprName"
+			},
+			{
+				"class": "ExprStmt"
+			}
+		]
+	}
+}

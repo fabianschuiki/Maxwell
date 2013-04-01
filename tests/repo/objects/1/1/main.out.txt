@@ -1,15 +1,21 @@
 Array
 (
-    [inner] => Array
+    [name] => double
+    [body] => Array
         (
-            [name] => innerIdent
-            [someText] => hahaha
-            [class] => IdentifierExpr
-        )
+            [stmts] => Array
+                (
+                    [0] => Array
+                        (
+                            [name] => SomeOtherName
+                        )
 
-    [ident] => Array
-        (
-            [name] => helloWorld
+                    [1] => Array
+                        (
+                        )
+
+                )
+
         )
 
 )

@@ -1,1 +1,1 @@
-{"ident":{"name":"helloWorld"},"inner":{"class":"IdentifierExpr","name":"innerIdent","someText":"blabla"}}
+{"name":"double","body":{"stmts":[{"name":"SomeExprName"},[]]}}

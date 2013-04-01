@@ -1,8 +1,32 @@
 Array
 (
-    [ident] => Array
+    [inputs] => Array
         (
-            [class] => IdentifierExpr
+            [class] => FunctionArgumentTuple
+        )
+
+    [outputs] => Array
+        (
+            [class] => FunctionArgumentTuple
+        )
+
+    [body] => Array
+        (
+            [stmts] => Array
+                (
+                    [0] => Array
+                        (
+                            [class] => ExprStmt
+                        )
+
+                    [1] => Array
+                        (
+                            [class] => ExprStmt
+                        )
+
+                )
+
+            [class] => FunctionBody
         )
 
 )

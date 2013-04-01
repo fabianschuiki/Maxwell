@@ -13,8 +13,8 @@ function separate($input, &$tree, &$main)
 				$main[$key] = array();
 				echo "parsing $key\n";
 				separate($value, $tree[$key], $main[$key]);
-				if (is_object($input) && count($tree[$key]) == 0) unset($tree[$key]);
-				if (is_object($input) && count($main[$key]) == 0) unset($main[$key]);
+				if (is_object($input) && count($tree[$key]) == 0 && !is_array($value)) unset($tree[$key]);
+				if (is_object($input) && count($main[$key]) == 0 && !is_array($value)) unset($main[$key]);
 			} else {
 				echo "storing $key in main\n";
 				$main[$key] = $value;

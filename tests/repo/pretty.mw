@@ -1,0 +1,4 @@
+func double (int x) -> (int y)
+{
+    y = x * 2;
+}

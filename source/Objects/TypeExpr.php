@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class FunctionArgumentTuple extends \RepositoryNodeObject
+class TypeExpr extends \RepositoryNodeObject
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -13,7 +13,7 @@ class FunctionArgumentTuple extends \RepositoryNodeObject
 	// tree fragment
 	public $tree_dirty  = false;
 	public $tree_loaded = false;
-	protected $arguments;
+	protected $expr;
 	
 	
 	/* GENERAL */
@@ -33,37 +33,37 @@ class FunctionArgumentTuple extends \RepositoryNodeObject
 	{
 		switch ($name) {
 			case "tree": return array(
-				array("name" => "arguments", "type" => "\RepositoryObjectArray"));
+				array("name" => "expr", "type" => "Expr"));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
 	
 	public function getClass()
 	{
-		return "FunctionArgumentTuple";
+		return "TypeExpr";
 	}
 	
 	
 	/* ACCESSORS */
-	public function setArguments(\RepositoryObjectArray $arguments = null, $notify = true)
+	public function setExpr(Expr $expr = null, $notify = true)
 	{
-		if ($this->arguments !== $arguments) {
+		if ($this->expr !== $expr) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment('tree');
 			}
-			if ($this->arguments instanceof \RepositoryNodeObject) $this->arguments->setParent(null);
-			$this->arguments = $arguments;
-			if ($arguments instanceof \RepositoryNodeObject) $arguments->setParent($this, "arguments", "tree");
+			if ($this->expr instanceof \RepositoryNodeObject) $this->expr->setParent(null);
+			$this->expr = $expr;
+			if ($expr instanceof \RepositoryNodeObject) $expr->setParent($this, "expr", "tree");
 			if ($notify) {
 				$this->notifyFragmentDirty('tree');
 			}
 		}
 	}
-	public function getArguments()
+	public function getExpr()
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
 		}
-		return $this->arguments;
+		return $this->expr;
 	}
 }

@@ -128,7 +128,7 @@ class RepositoryObjectSerializer
 				$name = $property["name"];
 				$getter = "get".ucwords($name);
 				if (isset($input->$name)) {
-					echo " - also loading $fragment for $name\n";
+					static::println(2, "Also loading $fragment for $name");
 					$obj = $object->$getter();
 					if (!$obj) {
 						throw new \RuntimeException("Object ID {$object->getId()} is expected to have at least a bare version of $name which is not the case. Maybe the tree fragment was not properly loaded?");
@@ -200,7 +200,7 @@ class RepositoryObjectSerializer
 	}
 
 	// Logging facilities.
-	static public $verbosity = 99;
+	static public $verbosity = 0;
 	static private function println($verbosity, $ln, $info = null)
 	{
 		if (static::$verbosity > $verbosity)

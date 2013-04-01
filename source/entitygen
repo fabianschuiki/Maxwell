@@ -178,7 +178,7 @@ foreach ($entity_defs as $name => $def)
 			$bfragment .= "\n\t\t\$this->$lcname = \$$lcname;";
 			if ($fragmentName == "tree") $bfragment .= "\n\t\tif (\$$lcname !== null) \${$lcname}->setParent(\$this, \"$lcname\");";
 			$bfragment .= "\n\t\tif (\$notify) {"
-				."\n\t\t\t\$this->$prop_dirty = true;"
+				//."\n\t\t\t\$this->$prop_dirty = true;"
 				."\n\t\t\t\$this->notifyFragmentDirty('$fragmentName');"
 				."\n\t\t}"
 				."\n\t}";

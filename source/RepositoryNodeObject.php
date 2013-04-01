@@ -22,24 +22,36 @@ abstract class RepositoryNodeObject extends RepositoryObject
 	 */
 	protected function loadFragment($fragment)
 	{
-		// Check that the fragment exists and has not been loaded. This helps catching early bugs.
-		if (!in_array($fragment, $this->getFragmentNames())) {
-			throw new \InvalidArgumentException("Asked to load fragment $fragment which does not exist.");
+		// If this object contains this fragment make sure it is not already loaded.
+		if (in_array($fragment, $this->getFragmentNames())) {
+			if ($this->{$fragment."_loaded"}) {
+				throw new \InvalidArgumentException("Asked to load fragment $fragment which is already loaded.");
+			}
 		}
-		if ($this->{$fragment."_loaded"}) {
-			throw new \InvalidArgumentException("Asked to load fragment $fragment which is already loaded.");
-		}
-		$this->{$fragment."_loaded"} = true;
 
 		// Ask our parent to load the fragment.
 		if (!$this->parent) {
-			throw new \RuntimeException("Unable to load fragment $fragment of object ID {$this->id} since the object does not have a parent.");
+			throw new \RuntimeException("Unable to load fragment $fragment since the object does not have a parent.");
 		}
 		$this->parent->loadFragment($fragment);
 	}
 
 	protected function notifyFragmentDirty($fragment)
 	{
-		echo "Would notify object {$this->id}'s fragment $fragment dirty\n";
+		// If this object contains this fragment mark it as dirty.
+		if (in_array($fragment, $this->getFragmentNames())) {
+			// If the fragment is already marked simply return.
+			if ($this->{$fragment."_dirty"})
+				return;
+
+			// Otherwise mark it as dirty.
+			$this->{$fragment."_dirty"} = true;
+		}
+
+		// Ask our parent to load the fragment.
+		if (!$this->parent) {
+			throw new \RuntimeException("Unable to mark fragment $fragment dirty since the object does not have a parent.");
+		}
+		$this->parent->notifyFragmentDirty($fragment);
 	}
 }

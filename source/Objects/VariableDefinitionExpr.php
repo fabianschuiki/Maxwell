@@ -75,7 +75,6 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 			$this->range = $range;
 			if ($notify) {
-				$this->main_dirty = true;
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -96,7 +95,6 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 			$this->humanRange = $humanRange;
 			if ($notify) {
-				$this->main_dirty = true;
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -120,7 +118,6 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 			$this->name = $name;
 			if ($notify) {
-				$this->main_dirty = true;
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -141,7 +138,6 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 			$this->typeExpr = $typeExpr;
 			if ($notify) {
-				$this->main_dirty = true;
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -162,7 +158,6 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 			$this->initialExpr = $initialExpr;
 			if ($notify) {
-				$this->main_dirty = true;
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -183,7 +178,6 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 			$this->type = $type;
 			if ($notify) {
-				$this->type_dirty = true;
 				$this->notifyFragmentDirty('type');
 			}
 		}
@@ -207,7 +201,6 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 			$this->exprCode = $exprCode;
 			if ($notify) {
-				$this->code_dirty = true;
 				$this->notifyFragmentDirty('code');
 			}
 		}
@@ -231,7 +224,6 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 			$this->stmtsCode = $stmtsCode;
 			if ($notify) {
-				$this->code_dirty = true;
 				$this->notifyFragmentDirty('code');
 			}
 		}

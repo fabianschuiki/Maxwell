@@ -330,32 +330,17 @@ class Repository
 	 * Called by RepositoryObject instances to notify the repository of changes
 	 * to a given fragment.
 	 */
-	public function notifyObjectFragmentDirty(RepositoryObject $object, $fragment)
+	public function notifyObjectFragmentDirty($oid, $fragment)
 	{
-		$oid = $object->getId();
-		if ($object instanceof RepositoryRootObject) {
-			$rid = $oid;
-		} else {
-			if (!preg_match('/[^\.]*\.[^\.]/', $oid, $m)) {
-				throw new \InvalidArgumentException("Object ID $oid does not contain a valid root portion.");
-			}
-			$rid = $m[0];
+		echo "notifyObjectFragmentDirty($oid, $fragment)\n";
 
-			// TODO: mark all fragments of the root as dirty for now. Needs to be changed later.
+		// Add the object to the list of modified objects.
+		if (!isset($this->objects[$oid])) {
+			throw new \InvalidArgumentException("Unable to mark fragment $fragment of object ID $oid as modified since the object does not exist or is not loaded.");
 		}
-
-		// Mark the corresponding root object as modified.
-		if (!isset($this->objects[$rid])) {
-			throw new \InvalidArgumentException("Unable to mark fragment $fragment of object ID $oid as modified since the root object ID $rid is not part of the repository.");
+		if (!in_array($oid, $this->objects_modified)) {
+			$this->objects_modified[] = $oid;
 		}
-		if (!in_array($rid, $this->objects_modified)) {
-			$this->objects_modified[] = $rid;
-		}
-	}
-
-	public function notifyTreeObjectChanged(RepositoryObject $object, $property)
-	{
-		//
 	}
 
 	/**
@@ -398,28 +383,6 @@ class Repository
 
 			// Parse the loaded JSON file.
 			RepositoryObjectSerializer::unserialize($object, $fragment, $input);
-
-			// Mark the fragment as not dirty since it now reflects the persisted state.
-			//$object->{$fragment."_dirty"} = false;
 		}
-
-		// If this is a root object load the requested fragment. Otherwise load
-		// all root fragments.
-		/*if ($object instanceof RepositoryRootObject) {
-			$this->readObjectFragment($object, $fragment);
-		} else {
-			// Extract the root ID for the object.
-			if (!preg_match('/[^\.]*\.[^\.]/', $oid, $m)) {
-				throw new \InvalidArgumentException("Object ID $oid does not contain a valid root portion.");
-			}
-			$rid = $m[0];
-
-			// Load all the root's fragments.
-			if (!isset($this->objects[$rid])) {
-				throw new \InvalidArgumentException("Root object $rid of object ID $oid is not part of the repository.");
-			}
-			$root = $this->objects[$rid];
-			$this->readObjectFragment($root, $fragment);
-		}*/
 	}
 }

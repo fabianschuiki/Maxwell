@@ -84,7 +84,6 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			$this->ident = $ident;
 			if ($ident !== null) $ident->setParent($this, "ident");
 			if ($notify) {
-				$this->tree_dirty = true;
 				$this->notifyFragmentDirty('tree');
 			}
 		}
@@ -105,7 +104,6 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 			$this->range = $range;
 			if ($notify) {
-				$this->main_dirty = true;
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -126,7 +124,6 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 			$this->humanRange = $humanRange;
 			if ($notify) {
-				$this->main_dirty = true;
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -150,7 +147,6 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 			$this->name = $name;
 			if ($notify) {
-				$this->main_dirty = true;
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -171,7 +167,6 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 			$this->type = $type;
 			if ($notify) {
-				$this->type_dirty = true;
 				$this->notifyFragmentDirty('type');
 			}
 		}
@@ -195,7 +190,6 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 			$this->indepDeclCode = $indepDeclCode;
 			if ($notify) {
-				$this->code_dirty = true;
 				$this->notifyFragmentDirty('code');
 			}
 		}
@@ -219,7 +213,6 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 			$this->depDeclCode = $depDeclCode;
 			if ($notify) {
-				$this->code_dirty = true;
 				$this->notifyFragmentDirty('code');
 			}
 		}
@@ -243,7 +236,6 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 			$this->indepDefCode = $indepDefCode;
 			if ($notify) {
-				$this->code_dirty = true;
 				$this->notifyFragmentDirty('code');
 			}
 		}
@@ -267,7 +259,6 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			}
 			$this->depDefCode = $depDefCode;
 			if ($notify) {
-				$this->code_dirty = true;
 				$this->notifyFragmentDirty('code');
 			}
 		}

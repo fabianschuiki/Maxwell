@@ -31,11 +31,11 @@ abstract class RepositoryRootObject extends RepositoryObject
 	 */
 	protected function loadFragment($fragment)
 	{
-		if (!in_array($fragment, $this->getFragmentNames())) {
-			throw new \InvalidArgumentException("Asked to load fragment $fragment which does not exist.");
-		}
-		if ($this->{$fragment."_loaded"}) {
-			throw new \InvalidArgumentException("Asked to load fragment $fragment which is already loaded.");
+		// If this root object contains the fragment, make sure it is not already loaded.
+		if (in_array($fragment, $this->getFragmentNames())) {
+			if ($this->{$fragment."_loaded"}) {
+				throw new \InvalidArgumentException("Asked to load fragment $fragment which is already loaded.");
+			}
 		}
 
 		// Ask the repository to load the fragment.
@@ -50,6 +50,17 @@ abstract class RepositoryRootObject extends RepositoryObject
 	 */
 	protected function notifyFragmentDirty($fragment)
 	{
-		echo "Would notify root object {$this->id}'s fragment $fragment dirty\n";
+		// If this root object contains this fragment mark it as dirty.
+		if (in_array($fragment, $this->getFragmentNames())) {
+			// If the fragment is already marked simply return.
+			if ($this->{$fragment."_dirty"})
+				return;
+
+			// Otherwise mark it as dirty.
+			$this->{$fragment."_dirty"} = true;
+		}
+
+		// Notify the repository about the fragment being marked as dirty.
+		$this->repository->notifyObjectFragmentDirty($this->id, $fragment);
 	}
 }

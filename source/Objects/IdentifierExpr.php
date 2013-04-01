@@ -78,7 +78,6 @@ class IdentifierExpr extends \RepositoryNodeObject implements RangeInterface, Bi
 			}
 			$this->range = $range;
 			if ($notify) {
-				$this->main_dirty = true;
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -99,7 +98,6 @@ class IdentifierExpr extends \RepositoryNodeObject implements RangeInterface, Bi
 			}
 			$this->humanRange = $humanRange;
 			if ($notify) {
-				$this->main_dirty = true;
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -123,7 +121,6 @@ class IdentifierExpr extends \RepositoryNodeObject implements RangeInterface, Bi
 			}
 			$this->name = $name;
 			if ($notify) {
-				$this->main_dirty = true;
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -144,7 +141,6 @@ class IdentifierExpr extends \RepositoryNodeObject implements RangeInterface, Bi
 			}
 			$this->bindingTarget = $bindingTarget;
 			if ($notify) {
-				$this->binding_dirty = true;
 				$this->notifyFragmentDirty('binding');
 			}
 		}
@@ -165,7 +161,6 @@ class IdentifierExpr extends \RepositoryNodeObject implements RangeInterface, Bi
 			}
 			$this->type = $type;
 			if ($notify) {
-				$this->type_dirty = true;
 				$this->notifyFragmentDirty('type');
 			}
 		}
@@ -189,7 +184,6 @@ class IdentifierExpr extends \RepositoryNodeObject implements RangeInterface, Bi
 			}
 			$this->exprCode = $exprCode;
 			if ($notify) {
-				$this->code_dirty = true;
 				$this->notifyFragmentDirty('code');
 			}
 		}
@@ -213,7 +207,6 @@ class IdentifierExpr extends \RepositoryNodeObject implements RangeInterface, Bi
 			}
 			$this->stmtsCode = $stmtsCode;
 			if ($notify) {
-				$this->code_dirty = true;
 				$this->notifyFragmentDirty('code');
 			}
 		}

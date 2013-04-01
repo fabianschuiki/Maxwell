@@ -15,7 +15,7 @@ abstract class RepositoryObject
 	{
 		echo $this->getClass()." ".$this->getId()." {\n";
 		foreach ($this->getFragmentNames() as $name) {
-			echo "\t$name: ".($this->{$name."_dirty"} ? "dirty" : ($this->{$name."_loaded"} ? "loaded" : "?"))."\n";
+			echo "   $name: ".($this->{$name."_dirty"} ? "dirty" : ($this->{$name."_loaded"} ? "loaded" : "?"))."\n";
 		}
 		echo "}\n";
 	}

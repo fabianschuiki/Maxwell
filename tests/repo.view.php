@@ -12,3 +12,8 @@ $ident->print_fragmentStates();
 
 $n = $ident->getName();
 echo "ident name = $n\n";
+$ident->print_fragmentStates();
+echo "modifying name\n";
+$ident->setName("helloSir");
+$ident->print_fragmentStates();
+$f1->print_fragmentStates();

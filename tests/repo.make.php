@@ -13,18 +13,13 @@ echo "main.mw has ID $sourceId\n";
 $f1 = $repo->makeObject("FunctionDefinition", $sourceId);
 echo "f1 has ID {$f1->getId()}\n";
 $f1->setName("doSomething");
-$repo->flush();
 
 // Create a new identifier.
 $ident = $repo->makeObject("IdentifierExpr", $sourceId, $f1->getId());
 echo "ident has ID {$ident->getId()}\n";
 $ident->setName("myName");
-$repo->flush();
+$ident->setExprCode("test()");
 
 // Set the identifier as a child of the function.
 $f1->setIdent($ident);
-$repo->flush();
-
-// Add some code.
-$f1->setIndepDeclCode("void main() {}");
 $repo->flush();

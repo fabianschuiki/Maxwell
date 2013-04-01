@@ -7,7 +7,4 @@ interface TypeInterface
 {
 	public function setType(Type $type = null);
 	public function getType();
-	
-	public function setHumanRange(\Source\Range $humanRange = null);
-	public function getHumanRange();
 }

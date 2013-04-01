@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class IdentifierExpr extends \RepositoryObject implements RangeInterface, BindingInterface, TypeInterface
+class IdentifierExpr extends \RepositoryObject implements RangeInterface, BindingInterface, TypeInterface, ExprCodeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -26,6 +26,12 @@ class IdentifierExpr extends \RepositoryObject implements RangeInterface, Bindin
 	public $type_loaded = false;
 	protected $type;
 	
+	// code fragment
+	public $code_dirty  = false;
+	public $code_loaded = false;
+	protected $exprCode;
+	protected $stmtsCode;
+	
 	
 	/* GENERAL */
 	public function setParent(\RepositoryObject $parent, $name = null)
@@ -36,7 +42,7 @@ class IdentifierExpr extends \RepositoryObject implements RangeInterface, Bindin
 	
 	public function getFragmentNames()
 	{
-		return array("main","binding","type");
+		return array("main","binding","type","code");
 	}
 	
 	public function getFragment($name)
@@ -50,6 +56,9 @@ class IdentifierExpr extends \RepositoryObject implements RangeInterface, Bindin
 				array("name" => "bindingTarget", "type" => "Expr"));
 			case "type": return array(
 				array("name" => "type", "type" => "Type"));
+			case "code": return array(
+				array("name" => "exprCode", "type" => "string"), 
+				array("name" => "stmtsCode", "type" => "string"));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -157,5 +166,49 @@ class IdentifierExpr extends \RepositoryObject implements RangeInterface, Bindin
 			$this->repository->loadObjectFragment($this, 'type');
 		}
 		return $this->type;
+	}
+	
+	public function setExprCode($exprCode)
+	{
+		if (!is_string($exprCode)) {
+			throw new \InvalidArgumentException("exprCode needs to be a string");
+		}
+		if ($this->exprCode !== $exprCode) {
+			if (!$this->code_loaded) {
+				$this->repository->loadObjectFragment($this, 'code');
+			}
+			$this->exprCode = $exprCode;
+			$this->code_dirty = true;
+			$this->repository->notifyObjectFragmentDirty($this, 'code');
+		}
+	}
+	public function getExprCode()
+	{
+		if (!$this->code_loaded) {
+			$this->repository->loadObjectFragment($this, 'code');
+		}
+		return $this->exprCode;
+	}
+	
+	public function setStmtsCode($stmtsCode)
+	{
+		if (!is_string($stmtsCode)) {
+			throw new \InvalidArgumentException("stmtsCode needs to be a string");
+		}
+		if ($this->stmtsCode !== $stmtsCode) {
+			if (!$this->code_loaded) {
+				$this->repository->loadObjectFragment($this, 'code');
+			}
+			$this->stmtsCode = $stmtsCode;
+			$this->code_dirty = true;
+			$this->repository->notifyObjectFragmentDirty($this, 'code');
+		}
+	}
+	public function getStmtsCode()
+	{
+		if (!$this->code_loaded) {
+			$this->repository->loadObjectFragment($this, 'code');
+		}
+		return $this->stmtsCode;
 	}
 }

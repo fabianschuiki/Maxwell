@@ -9,13 +9,15 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	protected $parent = null;
 	protected $parent_name;
 	
+	// tree fragment
+	protected $ident;
+	
 	// main fragment
 	public $main_dirty  = false;
 	public $main_loaded = false;
 	protected $range;
 	protected $humanRange;
 	protected $name;
-	protected $ident;
 	
 	// type fragment
 	public $type_dirty  = false;
@@ -40,17 +42,18 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	
 	public function getFragmentNames()
 	{
-		return array("main","type","code");
+		return array("tree","main","type","code");
 	}
 	
 	public function getFragment($name)
 	{
 		switch ($name) {
+			case "tree": return array(
+				array("name" => "ident", "type" => "\Objects\IdentifierExpr"));
 			case "main": return array(
 				array("name" => "range", "type" => "\Source\Range"), 
 				array("name" => "humanRange", "type" => "\Source\Range"), 
-				array("name" => "name", "type" => "string"), 
-				array("name" => "ident", "type" => "\Objects\IdentifierExpr"));
+				array("name" => "name", "type" => "string"));
 			case "type": return array(
 				array("name" => "type", "type" => "Type"));
 			case "code": return array(
@@ -69,6 +72,20 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	
 	
 	/* ACCESSORS */
+	public function setIdent(\Objects\IdentifierExpr $ident = null)
+	{
+		if (!$this->ident !== $ident) {
+			if ($this->ident !== null) $this->ident->setParent(null);
+			$this->ident = $ident;
+			if ($ident !== null) $ident->setParent($this, "ident");
+			$this->repository->notifyTreeObjectChanged($this, 'ident');
+		}
+	}
+	public function getIdent()
+	{
+		return $this->ident;
+	}
+	
 	public function setRange(\Source\Range $range = null)
 	{
 		if ($this->range !== $range) {
@@ -127,27 +144,6 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			$this->repository->loadObjectFragment($this, 'main');
 		}
 		return $this->name;
-	}
-	
-	public function setIdent(\Objects\IdentifierExpr $ident = null)
-	{
-		if ($this->ident !== $ident) {
-			if (!$this->main_loaded) {
-				$this->repository->loadObjectFragment($this, 'main');
-			}
-			if ($this->ident !== null) $this->ident->setParent(null);
-			$this->ident = $ident;
-			if ($ident !== null) $ident->setParent($this, "ident");
-			$this->main_dirty = true;
-			$this->repository->notifyObjectFragmentDirty($this, 'main');
-		}
-	}
-	public function getIdent()
-	{
-		if (!$this->main_loaded) {
-			$this->repository->loadObjectFragment($this, 'main');
-		}
-		return $this->ident;
 	}
 	
 	public function setType(Type $type = null)

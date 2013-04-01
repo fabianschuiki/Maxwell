@@ -1,4 +1,0 @@
-Array
-(
-    [indepDeclCode] => void main() {}
-)

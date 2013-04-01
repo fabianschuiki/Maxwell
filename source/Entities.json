@@ -21,7 +21,8 @@
 		"IdentifierExpr": {
 			"main": ["@range", "string name"],
 			"binding": ["@binding"],
-			"type": ["@type"]},
+			"type": ["@type"],
+			"code": ["@expr_code"]},
 
 		"VariableDefinitionExpr": {
 			"implements": "Expr",
@@ -31,7 +32,8 @@
 
 		"FunctionDefinition": {
 			"root": true,
-			"main": ["@range", "string name", "*IdentifierExpr ident"],
+			"tree": ["*IdentifierExpr ident"],
+			"main": ["@range", "string name"],
 			"type": ["@type"],
 			"code": ["@root_code"]}
 	}

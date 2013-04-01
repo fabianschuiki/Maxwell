@@ -10,10 +10,4 @@ interface ExprCodeInterface
 	
 	public function setStmtsCode($stmtsCode);
 	public function getStmtsCode();
-	
-	public function setIndepDefCode($indepDefCode);
-	public function getIndepDefCode();
-	
-	public function setDepDefCode($depDefCode);
-	public function getDepDefCode();
 }

@@ -201,6 +201,11 @@ class Repository
 		if ($rootId === null) {
 			$this->objects_unpersisted[] = $id;
 		}
+
+		// Mark everything in the object as loaded.
+		foreach ($obj->getFragmentNames() as $name) {
+			$obj->{$name."_loaded"} = true;
+		}
 		return $obj;
 	}
 
@@ -264,6 +269,7 @@ class Repository
 			// Iterate through the fragments of the entity that are modified and persist each.
 			$stored = array();
 			foreach ($obj->getFragmentNames() as $fragmentName) {
+				if ($fragmentName == "tree") continue;
 				$frag_dirty = $fragmentName."_dirty";
 				if (!$obj->$frag_dirty) continue;
 				$obj->$frag_dirty = false;
@@ -342,6 +348,11 @@ class Repository
 		}
 	}
 
+	public function notifyTreeObjectChanged(RepositoryObject $object, $property)
+	{
+		//
+	}
+
 	/**
 	 * Reads the requested fragment file for the given object from the disk and
 	 * loads its contents into the object.
@@ -377,9 +388,7 @@ class Repository
 				throw new \InvalidArgumentException("Root object $rid of object ID $oid is not part of the repository.");
 			}
 			$root = $this->objects[$rid];
-			foreach ($root->getFragmentNames() as $name) {
-				$this->readObjectFragment($root, $name);
-			}
+			$this->readObjectFragment($root, $fragment);
 		}
 	}
 }

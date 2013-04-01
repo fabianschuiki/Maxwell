@@ -5,17 +5,33 @@ class RepositoryObjectSerializer
 {
 	static public function serialize(RepositoryObject $object, $fragment)
 	{
-		// Fetch the properties that have to be serialized.
-		$properties = $object->getFragment($fragment);
-
-		// Serialize each property individually.
 		$output = array();
-		foreach ($properties as $property) {
-			$name = $property["name"];
-			$getter = "get".ucwords($name);
-			$value = $object->$getter();
-			if ($value !== null) {
-				$output[$name] = static::serializeValue($value);
+
+		// Serialize each property.
+		if (in_array($fragment, $object->getFragmentNames())) {
+			$properties = $object->getFragment($fragment);
+			foreach ($properties as $property) {
+				$name = $property["name"];
+				$getter = "get".ucwords($name);
+				$value = $object->$getter();
+				if ($value !== null) {
+					$output[$name] = static::serializeValue($value, $fragment);
+				}
+			}
+		}
+
+		// Serialize the object tree.
+		if (in_array("tree", $object->getFragmentNames())) {
+			$properties = $object->getFragment("tree");
+			foreach ($properties as $property) {
+				echo "$fragment : $name\n";
+				$name = $property["name"];
+				$getter = "get".ucwords($name);
+				$value = $object->$getter();
+				if ($value instanceof RepositoryObject) {
+					$a = static::serializeValue($value, $fragment);
+					if ($a) $output[$name] = $a;
+				}
 			}
 		}
 
@@ -32,13 +48,35 @@ class RepositoryObjectSerializer
 			$name = $property["name"];
 			$setter = "set".ucwords($name);
 			if (isset($input->$name)) {
-				$value = static::unserializeValue($input->$name);
+				$value = static::unserializeValue($input->$name, $fragment);
 				$object->$setter($value);
+			}
+		}
+
+		// Unserialize the objects tree.
+		$properties = $object->getFragment("tree");
+		foreach ($properties as $property) {
+			$name = $property["name"];
+			$setter = "set".ucwords($name);
+			$getter = "get".ucwords($name);
+			if (isset($input->$name)) {
+				$obj = $object->$getter();
+				if (!$obj) {
+					if (!isset($input->$name->id) || !isset($input->$name->class)) {
+						throw new \InvalidArgumentException("Unable to unserialize object $name lacking id and/or class.");
+					}
+					$id = $input->$name->id;
+					$class = "\\Objects\\".$input->$name->class;
+					$obj = new $class($object->getRepository(), $id);
+					$object->$setter($obj);
+				}
+				$obj->{$fragment."_loaded"} = true;
+				static::unserialize($obj, $fragment, $input->$name);
 			}
 		}
 	}
 
-	static private function serializeValue($value)
+	static private function serializeValue($value, $fragment)
 	{
 		// Strings, numbers and booleans are easy.
 		if (is_string($value) || is_numeric($value) || is_bool($value))
@@ -46,10 +84,7 @@ class RepositoryObjectSerializer
 
 		// RepositoryObjects require a more elaborate procedure.
 		if ($value instanceof RepositoryObject) {
-			$output = array();
-			foreach ($value->getFragmentNames() as $name) {
-				$output = array_merge($output, static::serialize($value, $name));
-			}
+			$output = static::serialize($value, $fragment);
 			$output["class"] = $value->getClass();
 			$output["id"] = $value->getId();
 			return $output;
@@ -59,7 +94,7 @@ class RepositoryObjectSerializer
 		throw new \InvalidArgumentException("Unable to serialize value ".get_class($value).".");
 	}
 
-	static private function unserializeValue($value)
+	static private function unserializeValue($value, $fragment)
 	{
 		// Strings, numbers and booleans are easy.
 		if (is_string($value) || is_numeric($value) || is_bool($value))

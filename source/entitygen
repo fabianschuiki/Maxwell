@@ -36,7 +36,7 @@ foreach ($interface_defs as $name => $def)
 {
 	$interfaceName = makeInterfaceName($name);
 
-	// Analyze types.
+	// Analyse types.
 	$canonicalProperties = array();
 	foreach ($def as $i => $property) {
 		if (!preg_match('/(([^\s]+)\s+)?(\w+)/', $property, $m)) {
@@ -90,23 +90,21 @@ foreach ($entity_defs as $name => $def)
 		$interfaces = $implements;
 	else
 		$interfaces = array($implements);
-	$superclass = (isset($def->root) && $def->root === true ? "\\RepositoryRootObject" : "\\RepositoryObject");
+	$superclass = (isset($def->root) && $def->root === true ? "\\RepositoryRootObject" : "\\RepositoryNodeObject");
 	unset($def->root);
 
 	// Generate the fragments.
 	$afragments = array();
-	$afragments[] = "protected \$parent = null;\nprotected \$parent_name;";
+	$afragments[] = "protected \$parent = null;\nprotected \$parent_key;";
 	$bfragments = array();
 	$propertiesByFragment = array();
 	foreach ($def as $fragmentName => $properties) {
 		$prop_dirty  = "{$fragmentName}_dirty";
 		$prop_loaded = "{$fragmentName}_loaded";
 
-		$afragment  = "// $fragmentName fragment";
-		if ($fragmentName != "tree") {
-			$afragment .= "\npublic \$$prop_dirty  = false;\n";
-			$afragment .= "public \$$prop_loaded = false;";
-		}
+		$afragment  = "// $fragmentName fragment\n";
+		$afragment .= "public \$$prop_dirty  = false;\n";
+		$afragment .= "public \$$prop_loaded = false;";
 
 		// Resolve interfaces.
 		$canonicalProperties = array();
@@ -160,56 +158,39 @@ foreach ($entity_defs as $name => $def)
 			if (!$scalarType) $bfragment .= $property->type." ";
 			$bfragment .= "\$".$lcname;
 			if (!$scalarType) $bfragment .= " = null";
-			$bfragment .= ")\n{";
+			$bfragment .= ", \$notify = true)\n{";
 			
-			// Tree properties require different accessors.
-			if ($fragmentName == "tree") {
+			// Perform a data type check.
+			if ($property->type == "string") {
 				$bfragment .= "
-	if (!\$this->$lcname !== \$$lcname) {
-		if (\$this->$lcname !== null) \$this->{$lcname}->setParent(null);
-		\$this->$lcname = \$$lcname;
-		if (\$$lcname !== null) \${$lcname}->setParent(\$this, \"$lcname\");
-		\$this->repository->notifyTreeObjectChanged(\$this, '$lcname');
-	}";
-			} else {
-				// Perform a data type check.
-				if ($property->type == "string") {
-					$bfragment .= "
 	if (!is_string(\$$lcname)) {
 		throw new \\InvalidArgumentException(\"$lcname needs to be a string\");
 	}";
-				}
+			}
 
-				// Store the value.
-				$bfragment .= "
+			// Store the value.
+			$bfragment .= "
 	if (\$this->$lcname !== \$$lcname) {
 		if (!\$this->$prop_loaded) {
-			\$this->repository->loadObjectFragment(\$this, '$fragmentName');
+			\$this->loadFragment('$fragmentName');
 		}";
-				/*if ($property->kind == "object") $bfragment .= "
-		if (\$this->$lcname !== null) \$this->{$lcname}->setParent(null);";*/
-				$bfragment .= "
-		\$this->$lcname = \$$lcname;";
-				/*if ($property->kind == "object") $bfragment .= "
-		if (\$$lcname !== null) \${$lcname}->setParent(\$this, \"$lcname\");";*/
-				$bfragment .= "
-		\$this->$prop_dirty = true;
-		\$this->repository->notifyObjectFragmentDirty(\$this, '$fragmentName');
-	}";
-			}
+			if ($fragmentName == "tree") $bfragment .= "\n\t\tif (\$this->$lcname !== null) \$this->{$lcname}->setParent(null);";
+			$bfragment .= "\n\t\t\$this->$lcname = \$$lcname;";
+			if ($fragmentName == "tree") $bfragment .= "\n\t\tif (\$$lcname !== null) \${$lcname}->setParent(\$this, \"$lcname\");";
+			$bfragment .= "\n\t\tif (\$notify) {"
+				."\n\t\t\t\$this->$prop_dirty = true;"
+				."\n\t\t\t\$this->notifyFragmentDirty('$fragmentName');"
+				."\n\t\t}"
+				."\n\t}";
 			$bfragment .= "\n}\n";
 
 			// GETTER
 			$bfragment .= "public function get{$ucname}()\n{";
-			if ($fragmentName == "tree") {
-				$bfragment .= "\n\treturn \$this->$lcname;";
-			} else {
-				$bfragment .= "
+			$bfragment .= "
 	if (!\$this->$prop_loaded) {
-		\$this->repository->loadObjectFragment(\$this, '$fragmentName');
+		\$this->loadFragment('$fragmentName');
 	}
 	return \$this->$lcname;";
-			}
 			$bfragment .= "\n}\n\n";
 		}
 
@@ -220,12 +201,11 @@ foreach ($entity_defs as $name => $def)
 
 	// Assemble the general interface.
 	$general = array();
-	$sp  = "public function setParent(\\RepositoryObject \$parent, \$name = null)\n{\n";
-	$sp .= "\t\$this->parent = \$parent;\n\t\$this->parent_name = \$name;\n";
+	$sp  = "public function setParent(\\RepositoryObject \$parent, \$key = null)\n{\n";
+	$sp .= "\t\$this->parent = \$parent;\n\t\$this->parent_key = \$key;\n";
 	$sp .= "}";
 	$general[] = $sp;
-	$frags = array_keys(get_object_vars($def));
-	$general[] = "public function getFragmentNames()\n{\n\treturn array(\"".implode("\",\"", $frags)."\");\n}";
+	$general[] = "public function getFragmentNames()\n{\n\treturn array(\"".implode("\",\"", array_keys(get_object_vars($def)))."\");\n}";
 	$gf = "public function getFragment(\$name)\n{\n\tswitch (\$name) {";
 	foreach (array_keys(get_object_vars($def)) as $fragmentName) {
 		$ps = array();

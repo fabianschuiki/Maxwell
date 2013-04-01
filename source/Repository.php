@@ -49,6 +49,11 @@ class Repository
 		echo "Repository: ".$str."\n";
 	}
 
+	private function getObjectDir($objectId)
+	{
+		return $this->dir."/".$this->objects_dir."/".str_replace(".", "/", $objectId);
+	}
+
 	/**
 	 * Flushes all changes to the repository to the disk. Changes are not
 	 * persistent before a call to flush().
@@ -217,7 +222,7 @@ class Repository
 	{
 		// If the object has not been loaded yet, attempt to load it from disk.
 		if (!isset($this->objects[$id])) {
-			$file = $this->dir."/".$this->objects_dir."/".str_replace(".", "/", $id)."/class";
+			$file = $this->getObjectDir($id)."/class";
 			if (!file_exists($file)) {
 				throw new \InvalidArgumentException("Object ID $id does not exist at $file.");
 			}
@@ -230,7 +235,7 @@ class Repository
 			$full_class = "\\Objects\\$class";
 			$obj = new $full_class($this, $id);
 			$this->objects[$id] = $obj;
-			if ($this->debug) $this->println("Loaded object ID $id ($full_class) from $file.");
+			if ($this->debug) $this->println("Loaded object ID $id ($full_class)");
 		}
 		return $this->objects[$id];
 	}
@@ -247,7 +252,7 @@ class Repository
 				throw new \RuntimeException("Object $id listed as to be persisted, but is not part of the repository.");
 			}
 
-			$file = $this->dir."/".$this->objects_dir."/".str_replace(".", "/", $id)."/class";
+			$file = $this->getObjectDir($id)."/class";
 			if (file_exists($file)) {
 				throw new \RuntimeException("Trying to persist object $id for the first time, but file $file already exists.");
 			}
@@ -276,7 +281,7 @@ class Repository
 				$stored[] = $fragmentName;
 
 				// Assemble the output file name.
-				$file = $this->dir."/".$this->objects_dir."/".str_replace(".", "/", $id)."/".$fragmentName;
+				$file = $this->getObjectDir($id)."/".$fragmentName;
 				$this->mkdirIfNeeded(dirname($file));
 
 				// Generate the output for each property.
@@ -357,11 +362,17 @@ class Repository
 	 * Reads the requested fragment file for the given object from the disk and
 	 * loads its contents into the object.
 	 */
-	public function loadObjectFragment(RepositoryObject $object, $fragment)
+	public function loadObjectFragment($oid, $fragment)
 	{
+		echo "loadObjectFragment($oid, $fragment)\n";
 		$prop_dirty  = $fragment."_dirty";
 		$prop_loaded = $fragment."_loaded";
-		$oid = $object->getId();
+
+		// Fetch the object with this ID.
+		if (!isset($this->objects[$oid])) {
+			throw new \InvalidArgumentException("Object ID $oid does not exist or is not loaded.");
+		}
+		$object = $this->objects[$oid];
 
 		// Make sure nothing is loaded yet or the loaded data is not dirty.
 		if ($object->$prop_dirty) {
@@ -372,9 +383,29 @@ class Repository
 		}
 		$object->$prop_loaded = true;
 
+		// Attempt to load the fragment information from the fragment file.
+		$file = $this->getObjectDir($oid)."/".$fragment;
+		if (file_exists($file)) {
+			if ($this->debug) $this->println("Loading object ID {$oid} fragment $fragment");
+			$data = file_get_contents($file);
+			if ($data === false) {
+				throw new \RuntimeException("Unable to read file $file.");
+			}
+			$input = json_decode($data);
+			if ($input === false) {
+				throw new \RuntimeException("Unable to parse JSON file $file. JSON error ".json_last_error().".");
+			}
+
+			// Parse the loaded JSON file.
+			RepositoryObjectSerializer::unserialize($object, $fragment, $input);
+
+			// Mark the fragment as not dirty since it now reflects the persisted state.
+			//$object->{$fragment."_dirty"} = false;
+		}
+
 		// If this is a root object load the requested fragment. Otherwise load
 		// all root fragments.
-		if ($object instanceof RepositoryRootObject) {
+		/*if ($object instanceof RepositoryRootObject) {
 			$this->readObjectFragment($object, $fragment);
 		} else {
 			// Extract the root ID for the object.
@@ -389,6 +420,6 @@ class Repository
 			}
 			$root = $this->objects[$rid];
 			$this->readObjectFragment($root, $fragment);
-		}
+		}*/
 	}
 }

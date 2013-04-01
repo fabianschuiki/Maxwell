@@ -3,11 +3,11 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInterface, TypeInterface, ExprCodeInterface
+class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, RangeInterface, TypeInterface, ExprCodeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
-	protected $parent_name;
+	protected $parent_key;
 	
 	// main fragment
 	public $main_dirty  = false;
@@ -31,10 +31,10 @@ class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInt
 	
 	
 	/* GENERAL */
-	public function setParent(\RepositoryObject $parent, $name = null)
+	public function setParent(\RepositoryObject $parent, $key = null)
 	{
 		$this->parent = $parent;
-		$this->parent_name = $name;
+		$this->parent_key = $key;
 	}
 	
 	public function getFragmentNames()
@@ -67,163 +67,179 @@ class VariableDefinitionExpr extends \RepositoryObject implements Expr, RangeInt
 	
 	
 	/* ACCESSORS */
-	public function setRange(\Source\Range $range = null)
+	public function setRange(\Source\Range $range = null, $notify = true)
 	{
 		if ($this->range !== $range) {
 			if (!$this->main_loaded) {
-				$this->repository->loadObjectFragment($this, 'main');
+				$this->loadFragment('main');
 			}
 			$this->range = $range;
-			$this->main_dirty = true;
-			$this->repository->notifyObjectFragmentDirty($this, 'main');
+			if ($notify) {
+				$this->main_dirty = true;
+				$this->notifyFragmentDirty('main');
+			}
 		}
 	}
 	public function getRange()
 	{
 		if (!$this->main_loaded) {
-			$this->repository->loadObjectFragment($this, 'main');
+			$this->loadFragment('main');
 		}
 		return $this->range;
 	}
 	
-	public function setHumanRange(\Source\Range $humanRange = null)
+	public function setHumanRange(\Source\Range $humanRange = null, $notify = true)
 	{
 		if ($this->humanRange !== $humanRange) {
 			if (!$this->main_loaded) {
-				$this->repository->loadObjectFragment($this, 'main');
+				$this->loadFragment('main');
 			}
 			$this->humanRange = $humanRange;
-			$this->main_dirty = true;
-			$this->repository->notifyObjectFragmentDirty($this, 'main');
+			if ($notify) {
+				$this->main_dirty = true;
+				$this->notifyFragmentDirty('main');
+			}
 		}
 	}
 	public function getHumanRange()
 	{
 		if (!$this->main_loaded) {
-			$this->repository->loadObjectFragment($this, 'main');
+			$this->loadFragment('main');
 		}
 		return $this->humanRange;
 	}
 	
-	public function setName($name)
+	public function setName($name, $notify = true)
 	{
 		if (!is_string($name)) {
 			throw new \InvalidArgumentException("name needs to be a string");
 		}
 		if ($this->name !== $name) {
 			if (!$this->main_loaded) {
-				$this->repository->loadObjectFragment($this, 'main');
+				$this->loadFragment('main');
 			}
 			$this->name = $name;
-			$this->main_dirty = true;
-			$this->repository->notifyObjectFragmentDirty($this, 'main');
+			if ($notify) {
+				$this->main_dirty = true;
+				$this->notifyFragmentDirty('main');
+			}
 		}
 	}
 	public function getName()
 	{
 		if (!$this->main_loaded) {
-			$this->repository->loadObjectFragment($this, 'main');
+			$this->loadFragment('main');
 		}
 		return $this->name;
 	}
 	
-	public function setTypeExpr(TypeExpr $typeExpr = null)
+	public function setTypeExpr(TypeExpr $typeExpr = null, $notify = true)
 	{
 		if ($this->typeExpr !== $typeExpr) {
 			if (!$this->main_loaded) {
-				$this->repository->loadObjectFragment($this, 'main');
+				$this->loadFragment('main');
 			}
 			$this->typeExpr = $typeExpr;
-			$this->main_dirty = true;
-			$this->repository->notifyObjectFragmentDirty($this, 'main');
+			if ($notify) {
+				$this->main_dirty = true;
+				$this->notifyFragmentDirty('main');
+			}
 		}
 	}
 	public function getTypeExpr()
 	{
 		if (!$this->main_loaded) {
-			$this->repository->loadObjectFragment($this, 'main');
+			$this->loadFragment('main');
 		}
 		return $this->typeExpr;
 	}
 	
-	public function setInitialExpr(Expr $initialExpr = null)
+	public function setInitialExpr(Expr $initialExpr = null, $notify = true)
 	{
 		if ($this->initialExpr !== $initialExpr) {
 			if (!$this->main_loaded) {
-				$this->repository->loadObjectFragment($this, 'main');
+				$this->loadFragment('main');
 			}
 			$this->initialExpr = $initialExpr;
-			$this->main_dirty = true;
-			$this->repository->notifyObjectFragmentDirty($this, 'main');
+			if ($notify) {
+				$this->main_dirty = true;
+				$this->notifyFragmentDirty('main');
+			}
 		}
 	}
 	public function getInitialExpr()
 	{
 		if (!$this->main_loaded) {
-			$this->repository->loadObjectFragment($this, 'main');
+			$this->loadFragment('main');
 		}
 		return $this->initialExpr;
 	}
 	
-	public function setType(Type $type = null)
+	public function setType(Type $type = null, $notify = true)
 	{
 		if ($this->type !== $type) {
 			if (!$this->type_loaded) {
-				$this->repository->loadObjectFragment($this, 'type');
+				$this->loadFragment('type');
 			}
 			$this->type = $type;
-			$this->type_dirty = true;
-			$this->repository->notifyObjectFragmentDirty($this, 'type');
+			if ($notify) {
+				$this->type_dirty = true;
+				$this->notifyFragmentDirty('type');
+			}
 		}
 	}
 	public function getType()
 	{
 		if (!$this->type_loaded) {
-			$this->repository->loadObjectFragment($this, 'type');
+			$this->loadFragment('type');
 		}
 		return $this->type;
 	}
 	
-	public function setExprCode($exprCode)
+	public function setExprCode($exprCode, $notify = true)
 	{
 		if (!is_string($exprCode)) {
 			throw new \InvalidArgumentException("exprCode needs to be a string");
 		}
 		if ($this->exprCode !== $exprCode) {
 			if (!$this->code_loaded) {
-				$this->repository->loadObjectFragment($this, 'code');
+				$this->loadFragment('code');
 			}
 			$this->exprCode = $exprCode;
-			$this->code_dirty = true;
-			$this->repository->notifyObjectFragmentDirty($this, 'code');
+			if ($notify) {
+				$this->code_dirty = true;
+				$this->notifyFragmentDirty('code');
+			}
 		}
 	}
 	public function getExprCode()
 	{
 		if (!$this->code_loaded) {
-			$this->repository->loadObjectFragment($this, 'code');
+			$this->loadFragment('code');
 		}
 		return $this->exprCode;
 	}
 	
-	public function setStmtsCode($stmtsCode)
+	public function setStmtsCode($stmtsCode, $notify = true)
 	{
 		if (!is_string($stmtsCode)) {
 			throw new \InvalidArgumentException("stmtsCode needs to be a string");
 		}
 		if ($this->stmtsCode !== $stmtsCode) {
 			if (!$this->code_loaded) {
-				$this->repository->loadObjectFragment($this, 'code');
+				$this->loadFragment('code');
 			}
 			$this->stmtsCode = $stmtsCode;
-			$this->code_dirty = true;
-			$this->repository->notifyObjectFragmentDirty($this, 'code');
+			if ($notify) {
+				$this->code_dirty = true;
+				$this->notifyFragmentDirty('code');
+			}
 		}
 	}
 	public function getStmtsCode()
 	{
 		if (!$this->code_loaded) {
-			$this->repository->loadObjectFragment($this, 'code');
+			$this->loadFragment('code');
 		}
 		return $this->stmtsCode;
 	}

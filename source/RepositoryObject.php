@@ -1,26 +1,22 @@
 <?php
 /* Copyright © 2013 Fabian Schuiki */
 
-class RepositoryObject
+abstract class RepositoryObject
 {
-	/// Repository that manages this object.
-	protected $repository;
+	abstract public function getId();
 
-	/// Unique identification number of this object.
-	protected $id;
+	/// Returns the class name of this object.
+	abstract public function getClass();
 
-	/**
-	 * Creates a new bare repository object managed by $repo with the ID $id.
-	 */
-	public function __construct(Repository $repo, $id)
+	abstract protected function loadFragment($fragment);
+	abstract protected function notifyFragmentDirty($fragment);
+
+	public function print_fragmentStates()
 	{
-		if (!is_string($id) && !is_numeric($id)) {
-			throw new InvalidArgumentException("Object ID $id is not valid.");
+		echo $this->getClass()." ".$this->getId()." {\n";
+		foreach ($this->getFragmentNames() as $name) {
+			echo "\t$name: ".($this->{$name."_dirty"} ? "dirty" : ($this->{$name."_loaded"} ? "loaded" : "?"))."\n";
 		}
-		$this->repository = $repo;
-		$this->id = $id;
+		echo "}\n";
 	}
-
-	public function getId() { return $this->id; }
-	public function getRepository() { return $this->repository; }
 }

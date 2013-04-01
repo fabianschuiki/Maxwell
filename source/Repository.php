@@ -23,8 +23,13 @@ class Repository
 	protected $objects_unpersisted = array();
 	protected $objects_modified = array();
 
-	// Logging options.
-	public $debug = true;
+	// Logging facilities.
+	static public $verbosity = 99;
+	private function println($verbosity, $ln, $info = null)
+	{
+		if (static::$verbosity > $verbosity)
+			Log::println($ln, get_class(), $info);
+	}
 
 
 	/// Create a new repository at the location $dir.
@@ -42,11 +47,6 @@ class Repository
 				throw new RuntimeException("Unable to create directory $dir.");
 			}
 		}
-	}
-
-	private function println($ln)
-	{
-		Log::println($ln, get_class());
 	}
 
 	private function getObjectDir($objectId)
@@ -121,7 +121,7 @@ class Repository
 			// Notify any dependencies of the removed entities.
 			foreach ($ids as $id) {
 				//$this->notifyObjectRemoved($id);
-				if ($this->debug) $this->println("Removing object $id due to source clearing.");
+				$this->println(0, "Removing object $id due to source clearing.", $sourceId);
 			}
 
 			// Remove the data stored for this source file.
@@ -235,7 +235,7 @@ class Repository
 			$full_class = "\\Objects\\$class";
 			$obj = new $full_class($this, $id);
 			$this->objects[$id] = $obj;
-			if ($this->debug) $this->println("Loaded object ID $id ($full_class)");
+			$this->println(0, "Loaded object ID $id ($full_class)");
 		}
 		return $this->objects[$id];
 	}
@@ -301,9 +301,9 @@ class Repository
 				}
 
 				// During debugging we also dump a more human-readable form of the output to disk.
-				if ($this->debug) file_put_contents($file.".txt", print_r($output, true));
+				if (static::$verbosity > 0) file_put_contents($file.".txt", print_r($output, true));
 			}
-			if ($this->debug) $this->println("Persisted ".implode(", ", $stored)." of object $id");
+			$this->println(0, "Persisted ".implode(", ", $stored), $id);
 		}
 		$this->objects_modified = array();
 	}
@@ -314,7 +314,7 @@ class Repository
 	 */
 	public function notifyObjectFragmentDirty($oid, $fragment)
 	{
-		echo "notifyObjectFragmentDirty($oid, $fragment)\n";
+		$this->println(1, "Notify fragment $fragment dirty", $oid);
 
 		// Add the object to the list of modified objects.
 		if (!isset($this->objects[$oid])) {
@@ -331,7 +331,7 @@ class Repository
 	 */
 	public function loadObjectFragment($oid, $fragment)
 	{
-		echo "loadObjectFragment($oid, $fragment)\n";
+		$this->println(1, "Load fragment $fragment", $oid);
 		$prop_dirty  = $fragment."_dirty";
 		$prop_loaded = $fragment."_loaded";
 
@@ -353,7 +353,6 @@ class Repository
 		// Attempt to load the fragment information from the fragment file.
 		$file = $this->getObjectDir($oid)."/".$fragment;
 		if (file_exists($file)) {
-			if ($this->debug) $this->println("Loading object ID {$oid} fragment $fragment");
 			$data = file_get_contents($file);
 			if ($data === false) {
 				throw new \RuntimeException("Unable to read file $file.");

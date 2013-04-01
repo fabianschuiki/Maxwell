@@ -31,6 +31,9 @@ $f1->print_fragmentStates();
 
 $repo->flush();
 
+$inner->print_fragmentStates();
+$f1->print_fragmentStates();
+
 /*$f1->setName("someFunc");
 $f1->print_fragmentStates();
 

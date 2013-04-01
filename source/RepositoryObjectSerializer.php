@@ -5,7 +5,7 @@ class RepositoryObjectSerializer
 {
 	static public function serialize(RepositoryObject $object, $fragment)
 	{
-		static::println("Serializing $fragment", $object->getId());
+		static::println(0, "Serializing $fragment", $object->getId());
 		$output = array();
 
 		// Serialize each property individually.
@@ -77,7 +77,7 @@ class RepositoryObjectSerializer
 	 */
 	static public function unserialize(RepositoryObject $object, $fragment, \stdClass $input)
 	{
-		static::println("Unserializing $fragment", $object->getId());
+		static::println(0, "Unserializing $fragment", $object->getId());
 
 		// Unserialize each property individually.
 		if (in_array($fragment, $object->getFragmentNames())) {
@@ -129,7 +129,7 @@ class RepositoryObjectSerializer
 				throw new \InvalidArgumentException("Object value is missing 'class' field required for unserialization: ".print_r($value, true));
 			}
 			$class = "\\Objects\\".$value->class;
-			echo "Will instantiate bare $class\n";
+			static::println(1,"Instantiating bare object $class");
 			$obj = new $class;
 
 			// Unserialize the object's tree if we're currently unserializing the tree fragment.
@@ -149,8 +149,11 @@ class RepositoryObjectSerializer
 		throw new \InvalidArgumentException("Unable to unserialize value: ".print_r($value, true));
 	}
 
-	static private function println($ln, $info = null)
+	// Logging facilities.
+	static public $verbosity = 0;
+	static private function println($verbosity, $ln, $info = null)
 	{
-		Log::println($ln, get_class(), $info);
+		if (static::$verbosity > $verbosity)
+			Log::println($ln, get_class(), $info);
 	}
 }

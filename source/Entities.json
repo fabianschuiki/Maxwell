@@ -20,7 +20,8 @@
 			],
 		"call": [
 			"string callName",
-			"CallArgumentTuple callArguments"
+			"CallArgumentTuple callArguments",
+			"array callCandidates"
 			]
 	},
 
@@ -89,13 +90,20 @@
 
 		"TypeExpr": {
 			"tree": ["Expr expr"],
-			"graph": ["@graph"]
+			"graph": ["@graph"],
+			"type": ["evaluatedType"]
 			},
 
 		"CallArgumentTuple": {
-			"tree": ["array arguments"]},
+			"call": ["array arguments"]},
 		"CallArgument": {
-			"tree": [" expr"],
-			"main": ["string name"]}
+			"call": ["expr", "string name"]},
+		"CallCandidate": {
+			"call": ["ref func"]
+			},
+
+		"ConcreteType": {
+			"main": ["ref definition"]
+			}
 	}
 }

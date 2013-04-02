@@ -217,7 +217,7 @@ foreach ($entity_defs as $name => $def)
 
 	// Assemble the general interface.
 	$general = array();
-	$general[] = "public function setParent(\\RepositoryObject \$parent, \$key = null, \$fragment = null)\n".
+	$general[] = "public function setParent(\\RepositoryObject \$parent = null, \$key = null, \$fragment = null)\n".
 		"{\n".
 		"\t\$this->parent = \$parent;\n".
 		"\t\$this->parent_key = \$key;\n".

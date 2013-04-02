@@ -28,7 +28,7 @@ class BindIdentifiersStage extends DriverStage
 				// Bind to function arguments.
 				if ($current instanceof \Objects\FunctionArgument) {
 					if ($current->getName() == $name) {
-						$target = $current;
+						$target = $current->getId();
 						break;
 					}
 				}
@@ -36,7 +36,7 @@ class BindIdentifiersStage extends DriverStage
 				// Bind to variable definitions.
 				if ($current instanceof \Objects\VariableExpr) {
 					if ($current->getName() == $name) {
-						$target = $current;
+						$target = $current->getId();
 						break;
 					}
 				}
@@ -44,11 +44,21 @@ class BindIdentifiersStage extends DriverStage
 				$current = $current->getGraphPrev()->get();
 			}
 
+			// Find an external entity.
+			if (!$target) {
+				$externals = $this->repository->getImportedNamesForObject($object->getId());
+				foreach ($externals as $externalId => $externalName) {
+					if ($externalName == $name) {
+						$target = $externalId;
+					}
+				}
+			}
+
 			// Check whether we've found something.
 			if (!$target) {
 				$this->println(1, "No object named '$name' found", $object->getId());
 			} else {
-				$this->println(1, "Binding to {$target->getId()}");
+				$this->println(1, "Binding to $target", $object->getId());
 			}
 
 			// Store the binding.

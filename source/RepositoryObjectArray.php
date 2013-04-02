@@ -21,7 +21,14 @@ class RepositoryObjectArray extends RepositoryNodeObject
 		}
 	}
 
-	public function get($key)
+	public function add(RepositoryNodeObject $object)
+	{
+		$i = count($this->elements);
+		while (isset($this->elements[$i])) $i++;
+		$this->set($i, $object);
+	}
+
+	public function get($key, $enforce = false)
 	{
 		// TODO: maybe some loading is necessary?
 		if (!isset($this->elements[$key])) {
@@ -44,7 +51,7 @@ class RepositoryObjectArray extends RepositoryNodeObject
 	protected $parent_key = null;
 	protected $parent_fragment = null;
 
-	public function setParent(\RepositoryObject $parent, $key = null, $fragment = null)
+	public function setParent(\RepositoryObject $parent = null, $key = null, $fragment = null)
 	{
 		$this->parent = $parent;
 		$this->parent_key = $key;

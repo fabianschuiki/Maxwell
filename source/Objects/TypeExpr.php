@@ -20,9 +20,14 @@ class TypeExpr extends \RepositoryNodeObject implements GraphInterface
 	public $graph_loaded = true;
 	protected $graphPrev;
 	
+	// type fragment
+	public $type_dirty  = false;
+	public $type_loaded = true;
+	protected $evaluatedType;
+	
 	
 	/* GENERAL */
-	public function setParent(\RepositoryObject $parent, $key = null, $fragment = null)
+	public function setParent(\RepositoryObject $parent = null, $key = null, $fragment = null)
 	{
 		$this->parent = $parent;
 		$this->parent_key = $key;
@@ -31,7 +36,7 @@ class TypeExpr extends \RepositoryNodeObject implements GraphInterface
 	
 	public function getFragmentNames()
 	{
-		return array("tree","graph");
+		return array("tree","graph","type");
 	}
 	
 	public function getFragment($name)
@@ -41,6 +46,8 @@ class TypeExpr extends \RepositoryNodeObject implements GraphInterface
 				array("name" => "expr", "type" => "Expr"));
 			case "graph": return array(
 				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
+			case "type": return array(
+				array("name" => "evaluatedType", "type" => ""));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -100,5 +107,28 @@ class TypeExpr extends \RepositoryNodeObject implements GraphInterface
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null graphPrev.");
 		}
 		return $this->graphPrev;
+	}
+	
+	public function setEvaluatedType($evaluatedType, $notify = true)
+	{
+		if ($this->evaluatedType !== $evaluatedType) {
+			if (!$this->type_loaded) {
+				$this->loadFragment('type');
+			}
+			$this->evaluatedType = $evaluatedType;
+			if ($notify) {
+				$this->notifyFragmentDirty('type');
+			}
+		}
+	}
+	public function getEvaluatedType($enforce = true)
+	{
+		if (!$this->type_loaded) {
+			$this->loadFragment('type');
+		}
+		if ($enforce && $this->evaluatedType === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null evaluatedType.");
+		}
+		return $this->evaluatedType;
 	}
 }

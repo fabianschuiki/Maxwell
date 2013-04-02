@@ -11,6 +11,10 @@ $bind = new Stage\BindIdentifiersStage($repo);
 $bind->run("1.1");
 $bind = new Stage\ConfigureCallsStage($repo);
 $bind->run("1.1");
+$bind = new Stage\EvaluateTypeExpressionsStage($repo);
+$bind->run("1.1");
+$bind = new Stage\FindCallCandidatesStage($repo);
+$bind->run("1.1");
 
 // Write the changes to disk.
 $repo->flush();

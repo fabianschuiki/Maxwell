@@ -41,7 +41,7 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 	
 	
 	/* GENERAL */
-	public function setParent(\RepositoryObject $parent, $key = null, $fragment = null)
+	public function setParent(\RepositoryObject $parent = null, $key = null, $fragment = null)
 	{
 		$this->parent = $parent;
 		$this->parent_key = $key;

@@ -23,3 +23,9 @@ function exception_handler($exception)
 	exit(1);
 }
 set_exception_handler("exception_handler");
+
+function error_handler($no, $str, $file, $line) {
+    $e = new ErrorException($str, $no, 0, $file, $line);
+    exception_handler($e);
+}
+set_error_handler("error_handler");

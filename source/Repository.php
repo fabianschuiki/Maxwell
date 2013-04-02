@@ -31,8 +31,11 @@ class Repository
 			Log::println($ln, get_class(), $info);
 	}
 
-	// Serializer used in this repo.
+	/// Serializer used in this repo.
 	protected $serializer;
+
+	/// Repository for builtin objects.
+	protected $builtin;
 
 
 	/// Create a new repository at the location $dir.
@@ -41,6 +44,7 @@ class Repository
 		$this->dir = $dir;
 		$this->mkdirIfNeeded($dir);
 		$this->serializer = new RepositoryObjectSerializer($this);
+		$this->builtin = new BuiltinObjects($this);
 	}
 
 	/// Creates the directory $dir if it does't exist.
@@ -224,6 +228,11 @@ class Repository
 	 */
 	public function getObject($id)
 	{
+		// Redirect builtin object requests.
+		if (preg_match('/^0\./', $id)) {
+			return $this->builtin->getObject($id);
+		}
+
 		// If the object has not been loaded yet, attempt to load it from disk.
 		if (!isset($this->objects[$id])) {
 			$file = $this->getObjectDir($id)."/class";
@@ -392,5 +401,15 @@ class Repository
 				$this->recursivelyMarkFragmentLoaded($child, $fragment);
 			}
 		}
+	}
+
+	/**
+	 * Returns a list with id-name pairs of external objects the object given
+	 * by $objectId knows about. This also contains the builtin objects.
+	 */
+	public function getImportedNamesForObject($objectId)
+	{
+		// TODO: Extend this to actually reflect the imported external objects.
+		return $this->builtin->getObjectNames();
 	}
 }

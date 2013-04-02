@@ -10,4 +10,7 @@ interface CallInterface
 	
 	public function setCallArguments(CallArgumentTuple $callArguments = null, $notify = true);
 	public function getCallArguments($enforce = true);
+	
+	public function setCallCandidates(\RepositoryObjectArray $callCandidates = null, $notify = true);
+	public function getCallCandidates($enforce = true);
 }

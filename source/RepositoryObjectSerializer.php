@@ -10,13 +10,15 @@ class RepositoryObjectSerializer
 		$this->repository = $repo;
 	}
 
-	public function serialize(RepositoryObject $object, $fragment)
+	public function serialize(RepositoryObject $object, $fragment, $targetFragment = null)
 	{
-		$this->println(0, "Serializing $fragment", $object->getId());
+		if ($targetFragment === null)
+			$targetFragment = $fragment;
+		$this->println(0, "Serializing $fragment into $targetFragment", $object->getId());
 
 		// Array objects are a special case.
 		if ($object instanceof RepositoryObjectArray) {
-			return $this->serializeValue($object, $fragment);
+			return $this->serializeValue($object, $fragment, $targetFragment);
 		}
 
 		// Otherwise produce regular output.
@@ -37,7 +39,7 @@ class RepositoryObjectSerializer
 				$getter = "get".ucwords($name);
 				$value = $object->$getter(false);
 				if ($value !== null) {
-					$a = $this->serializeValue($value, $fragment);
+					$a = $this->serializeValue($value, $fragment, $targetFragment);
 					if ($a) $output[$name] = $a;
 				}
 			}
@@ -51,10 +53,10 @@ class RepositoryObjectSerializer
 				$getter = "get".ucwords($name);
 				$value = $object->$getter(false);
 				if ($value !== null) {
-					if ($value instanceof RepositoryObjectArray) {
-						$a = $this->serializeValue($value, $fragment);
+					if ($value instanceof RepositoryObjectArray || $value instanceof RepositoryObjectReference) {
+						$a = $this->serializeValue($value, $fragment, $targetFragment);
 					} else {
-						$a = $this->serialize($value, $fragment);
+						$a = $this->serialize($value, $fragment, $targetFragment);
 					}
 					if ($a) $output[$name] = $a;
 				}
@@ -64,7 +66,7 @@ class RepositoryObjectSerializer
 		return $output;
 	}
 
-	private function serializeValue($value, $fragment)
+	private function serializeValue($value, $fragment, $targetFragment)
 	{
 		// Strings, numbers and booleans are easy.
 		if (is_string($value) || is_numeric($value) || is_bool($value))
@@ -74,9 +76,19 @@ class RepositoryObjectSerializer
 		if ($value instanceof RepositoryObjectArray) {
 			$output = array();
 			foreach ($value->getElements() as $index => $v) {
-				$output[$index] = $this->serialize($v, $fragment);
-				if ($fragment == "tree")
-					$output[$index]["class"] = $v->getClass();
+				/*if ($v->isInTree()) {
+					$op = $this->serialize($v, $fragment);
+				} else {
+					$op = array();
+					foreach ($v->getFragmentNames() as $name) {
+						$op = array_merge($output, $this->serialize($v, $name));
+					}
+				}
+				$output[$index] = $op;*/
+				//$output[$index] = $this->serialize($v, $fragment);
+				/*if ($fragment == "tree" || !$v->isInTree())
+					$output[$index]["class"] = $v->getClass();*/
+				$output[$index] = $this->serializeValue($v, $fragment, $targetFragment);
 			}
 			return $output;
 		}
@@ -86,14 +98,15 @@ class RepositoryObjectSerializer
 			// If the value is inside the tree fragment, only serialize the given fragment.
 			// Otherwise serialize all fragments at once.
 			if ($value->isInTree()) {
-				$output = $this->serialize($value, $fragment);
+				$output = $this->serialize($value, $fragment, $targetFragment);
 			} else {
 				$output = array();
 				foreach ($value->getFragmentNames() as $name) {
-					$output = array_merge($output, $this->serialize($value, $name));
+					$output = array_merge($output, $this->serialize($value, $name, $targetFragment));
 				}
 			}
-			$output["class"] = $value->getClass();
+			if ($targetFragment == "tree" || !$value->isInTree())
+				$output["class"] = $value->getClass();
 			return $output;
 		}
 
@@ -112,12 +125,14 @@ class RepositoryObjectSerializer
 	 * $fragment of the given object $object and unserializes its contents into
 	 * $object.
 	 */
-	public function unserialize(RepositoryObject $object, $fragment, $input)
+	public function unserialize(RepositoryObject $object, $fragment, $input, $targetFragment = null)
 	{
 		if (!is_array($input) && !is_object($input)) {
 			throw new \InvalidArgumentException("Input must either be an array or an object.");
 		}
-		$this->println(0, "Unserializing $fragment", $object->getId());
+		if ($targetFragment === null)
+			$targetFragment = $fragment;
+		$this->println(0, "Unserializing $fragment into $targetFragment", $object->getId());
 
 		// Unserialize each property individually.
 		if (in_array($fragment, $object->getFragmentNames())) {
@@ -127,14 +142,14 @@ class RepositoryObjectSerializer
 				$name = $property["name"];
 				$setter = "set".ucwords($name);
 				if (isset($input->$name)) {
-					$value = $this->unserializeValue($input->$name, $fragment);
+					$value = $this->unserializeValue($input->$name, $fragment, $targetFragment);
 					$object->$setter($value, false);
 				}
 			}
 		}
 
 		// Unserialize the tree objects.
-		if ($fragment != "tree" && in_array("tree", $object->getFragmentNames())) {
+		if ($targetFragment != "tree" && in_array("tree", $object->getFragmentNames())) {
 			$properties = $object->getFragment("tree");
 			foreach ($properties as $property) {
 				$object->{$fragment."_loaded"} = true;
@@ -147,9 +162,9 @@ class RepositoryObjectSerializer
 						throw new \RuntimeException("Object ID {$object->getId()} is expected to have at least a bare version of $name which is not the case. Maybe the tree fragment was not properly loaded?");
 					}
 					if ($obj instanceof RepositoryObjectArray) {
-						$this->unserializeArray($obj, $fragment, $input->$name);
+						$this->unserializeArray($obj, $fragment, $input->$name, $targetFragment);
 					} else {
-						$this->unserialize($obj, $fragment, $input->$name);
+						$this->unserialize($obj, $fragment, $input->$name, $targetFragment);
 					}
 				}
 			}
@@ -161,7 +176,7 @@ class RepositoryObjectSerializer
 	 * This function will produce bare RepositoryObject instances where
 	 * appropriate.
 	 */
-	private function unserializeValue($value, $fragment)
+	private function unserializeValue($value, $fragment, $targetFragment)
 	{
 		// References.
 		if (is_string($value) && preg_match("/^@ref (.*)/", $value, $m)) {
@@ -181,15 +196,15 @@ class RepositoryObjectSerializer
 			}
 			$class = "\\Objects\\".$value->class;
 			$this->println(1,"Instantiating bare object $class");
-			$obj = new $class(false);
+			$obj = new $class($targetFragment != "tree");
 
 			// Unserialize the object's tree if we're currently unserializing the tree fragment.
 			// Otherwise unserialize all fragments of the object as it is contained entirely here.
-			if ($fragment == "tree") {
+			if ($fragment == "tree" && $targetFragment == "tree") {
 				$this->unserialize($obj, "tree", $value);
 			} else {
 				foreach ($obj->getFragmentNames() as $name) {
-					$this->unserialize($obj, $name, $value);
+					$this->unserialize($obj, $name, $value, $targetFragment);
 				}
 			}
 
@@ -200,7 +215,7 @@ class RepositoryObjectSerializer
 		if (is_array($value)) {
 			$array = new RepositoryObjectArray;
 			foreach ($value as $i => $v) {
-				$array->set($i, $this->unserializeValue($v, $fragment));
+				$array->set($i, $this->unserializeValue($v, $fragment, $targetFragment));
 			}
 			return $array;
 		}
@@ -212,10 +227,10 @@ class RepositoryObjectSerializer
 	/**
 	 * Performs the same task on arrays as unserialize() performs on objects.
 	 */
-	private function unserializeArray(RepositoryObjectArray $array, $fragment, array $input)
+	private function unserializeArray(RepositoryObjectArray $array, $fragment, array $input, $targetFragment)
 	{
 		foreach ($input as $index => $value) {
-			$this->unserialize($array->get($index), $fragment, $value);
+			$this->unserialize($array->get($index), $fragment, $value, $targetFragment);
 		}
 	}
 

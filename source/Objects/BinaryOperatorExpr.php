@@ -31,10 +31,11 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface
 	public $call_loaded = true;
 	protected $callName;
 	protected $callArguments;
+	protected $callCandidates;
 	
 	
 	/* GENERAL */
-	public function setParent(\RepositoryObject $parent, $key = null, $fragment = null)
+	public function setParent(\RepositoryObject $parent = null, $key = null, $fragment = null)
 	{
 		$this->parent = $parent;
 		$this->parent_key = $key;
@@ -58,7 +59,8 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface
 				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
 			case "call": return array(
 				array("name" => "callName", "type" => "string"), 
-				array("name" => "callArguments", "type" => "CallArgumentTuple"));
+				array("name" => "callArguments", "type" => "CallArgumentTuple"), 
+				array("name" => "callCandidates", "type" => "\RepositoryObjectArray"));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -220,5 +222,30 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null callArguments.");
 		}
 		return $this->callArguments;
+	}
+	
+	public function setCallCandidates(\RepositoryObjectArray $callCandidates = null, $notify = true)
+	{
+		if ($this->callCandidates !== $callCandidates) {
+			if (!$this->call_loaded) {
+				$this->loadFragment('call');
+			}
+			if ($this->callCandidates instanceof \RepositoryObjectParentInterface) $this->callCandidates->setParent(null);
+			$this->callCandidates = $callCandidates;
+			if ($callCandidates instanceof \RepositoryObjectParentInterface) $callCandidates->setParent($this, "callCandidates", "call");
+			if ($notify) {
+				$this->notifyFragmentDirty('call');
+			}
+		}
+	}
+	public function getCallCandidates($enforce = true)
+	{
+		if (!$this->call_loaded) {
+			$this->loadFragment('call');
+		}
+		if ($enforce && $this->callCandidates === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null callCandidates.");
+		}
+		return $this->callCandidates;
 	}
 }

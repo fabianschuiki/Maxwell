@@ -10,19 +10,15 @@ class CallArgument extends \RepositoryNodeObject
 	protected $parent_key = null;
 	protected $parent_fragment = null;
 	
-	// tree fragment
-	public $tree_dirty  = false;
-	public $tree_loaded = true;
+	// call fragment
+	public $call_dirty  = false;
+	public $call_loaded = true;
 	protected $expr;
-	
-	// main fragment
-	public $main_dirty  = false;
-	public $main_loaded = true;
 	protected $name;
 	
 	
 	/* GENERAL */
-	public function setParent(\RepositoryObject $parent, $key = null, $fragment = null)
+	public function setParent(\RepositoryObject $parent = null, $key = null, $fragment = null)
 	{
 		$this->parent = $parent;
 		$this->parent_key = $key;
@@ -31,15 +27,14 @@ class CallArgument extends \RepositoryNodeObject
 	
 	public function getFragmentNames()
 	{
-		return array("tree","main");
+		return array("call");
 	}
 	
 	public function getFragment($name)
 	{
 		switch ($name) {
-			case "tree": return array(
-				array("name" => "expr", "type" => ""));
-			case "main": return array(
+			case "call": return array(
+				array("name" => "expr", "type" => ""), 
 				array("name" => "name", "type" => "string"));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
@@ -55,19 +50,19 @@ class CallArgument extends \RepositoryNodeObject
 	public function setExpr($expr, $notify = true)
 	{
 		if ($this->expr !== $expr) {
-			if (!$this->tree_loaded) {
-				$this->loadFragment('tree');
+			if (!$this->call_loaded) {
+				$this->loadFragment('call');
 			}
 			$this->expr = $expr;
 			if ($notify) {
-				$this->notifyFragmentDirty('tree');
+				$this->notifyFragmentDirty('call');
 			}
 		}
 	}
 	public function getExpr($enforce = true)
 	{
-		if (!$this->tree_loaded) {
-			$this->loadFragment('tree');
+		if (!$this->call_loaded) {
+			$this->loadFragment('call');
 		}
 		if ($enforce && $this->expr === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null expr.");
@@ -81,19 +76,19 @@ class CallArgument extends \RepositoryNodeObject
 			throw new \InvalidArgumentException("name needs to be a string");
 		}
 		if ($this->name !== $name) {
-			if (!$this->main_loaded) {
-				$this->loadFragment('main');
+			if (!$this->call_loaded) {
+				$this->loadFragment('call');
 			}
 			$this->name = $name;
 			if ($notify) {
-				$this->notifyFragmentDirty('main');
+				$this->notifyFragmentDirty('call');
 			}
 		}
 	}
 	public function getName($enforce = true)
 	{
-		if (!$this->main_loaded) {
-			$this->loadFragment('main');
+		if (!$this->call_loaded) {
+			$this->loadFragment('call');
 		}
 		if ($enforce && $this->name === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null name.");

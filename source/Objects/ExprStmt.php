@@ -22,7 +22,7 @@ class ExprStmt extends \RepositoryNodeObject implements GraphInterface
 	
 	
 	/* GENERAL */
-	public function setParent(\RepositoryObject $parent, $key = null, $fragment = null)
+	public function setParent(\RepositoryObject $parent = null, $key = null, $fragment = null)
 	{
 		$this->parent = $parent;
 		$this->parent_key = $key;

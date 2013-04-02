@@ -32,7 +32,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 	
 	
 	/* GENERAL */
-	public function setParent(\RepositoryObject $parent, $key = null, $fragment = null)
+	public function setParent(\RepositoryObject $parent = null, $key = null, $fragment = null)
 	{
 		$this->parent = $parent;
 		$this->parent_key = $key;

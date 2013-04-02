@@ -21,7 +21,11 @@ abstract class RepositoryNodeObject extends RepositoryObject implements Reposito
 	 */
 	public function isInTree()
 	{
-		return $this->parent_fragment == "tree";
+		if ($this->parent_fragment != "tree")
+			return false;
+		if ($this->parent instanceof RepositoryRootObject)
+			return true;
+		return $this->parent->isInTree();
 	}
 
 	/**
@@ -70,7 +74,7 @@ abstract class RepositoryNodeObject extends RepositoryObject implements Reposito
 	}
 
 
-	abstract public function setParent(RepositoryObject $parent, $key = null, $fragment = null);
+	//abstract public function setParent(RepositoryObject $parent = null, $key = null, $fragment = null);
 	//abstract public function getFragmentNames();
 	//abstract public function getFragment($name);
 }

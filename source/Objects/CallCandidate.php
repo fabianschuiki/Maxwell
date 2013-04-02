@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class CallArgumentTuple extends \RepositoryNodeObject
+class CallCandidate extends \RepositoryNodeObject
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -13,7 +13,7 @@ class CallArgumentTuple extends \RepositoryNodeObject
 	// call fragment
 	public $call_dirty  = false;
 	public $call_loaded = true;
-	protected $arguments;
+	protected $func;
 	
 	
 	/* GENERAL */
@@ -33,40 +33,40 @@ class CallArgumentTuple extends \RepositoryNodeObject
 	{
 		switch ($name) {
 			case "call": return array(
-				array("name" => "arguments", "type" => "\RepositoryObjectArray"));
+				array("name" => "func", "type" => "\RepositoryObjectReference"));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
 	
 	public function getClass()
 	{
-		return "CallArgumentTuple";
+		return "CallCandidate";
 	}
 	
 	
 	/* ACCESSORS */
-	public function setArguments(\RepositoryObjectArray $arguments = null, $notify = true)
+	public function setFunc(\RepositoryObjectReference $func = null, $notify = true)
 	{
-		if ($this->arguments !== $arguments) {
+		if ($this->func !== $func) {
 			if (!$this->call_loaded) {
 				$this->loadFragment('call');
 			}
-			if ($this->arguments instanceof \RepositoryObjectParentInterface) $this->arguments->setParent(null);
-			$this->arguments = $arguments;
-			if ($arguments instanceof \RepositoryObjectParentInterface) $arguments->setParent($this, "arguments", "call");
+			if ($this->func instanceof \RepositoryObjectParentInterface) $this->func->setParent(null);
+			$this->func = $func;
+			if ($func instanceof \RepositoryObjectParentInterface) $func->setParent($this, "func", "call");
 			if ($notify) {
 				$this->notifyFragmentDirty('call');
 			}
 		}
 	}
-	public function getArguments($enforce = true)
+	public function getFunc($enforce = true)
 	{
 		if (!$this->call_loaded) {
 			$this->loadFragment('call');
 		}
-		if ($enforce && $this->arguments === null) {
-			throw new \RuntimeException("Object {$this->getId()} expected to have non-null arguments.");
+		if ($enforce && $this->func === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null func.");
 		}
-		return $this->arguments;
+		return $this->func;
 	}
 }

@@ -4,8 +4,7 @@
 			"\\Source\\Range range",
 			"\\Source\\Range humanRange"],
 		"binding": [
-			"Expr bindingTarget",
-			"string bindingDebug"],
+			"\\RepositoryObjectReference bindingTarget"],
 		"type": [
 			"Type type"],
 		"root_code": [

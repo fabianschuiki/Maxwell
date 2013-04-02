@@ -47,4 +47,10 @@ abstract class RepositoryObject
 		}
 		return array();
 	}
+
+	public function get($property, $enforce = true)
+	{
+		$getter = "get".ucfirst($property);
+		return $this->$getter($enforce);
+	}
 }

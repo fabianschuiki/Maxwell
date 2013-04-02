@@ -5,23 +5,55 @@ use DriverStage;
 
 class BindIdentifiersStage extends DriverStage
 {
-	static public $verbosity = 1;
+	static public $verbosity = 20;
 
 	protected function process(\RepositoryObject $object)
 	{
 		foreach ($object->getChildren() as $child) {
 			$this->process($child);
 		}
+		if ($object instanceof \Objects\IdentifierExpr)
+		{
+			// Fetch the reference to the currently bound target.
+			$ref = $object->getBindingTarget(false);
+			if ($ref) return;
+			$ref = new \RepositoryObjectReference($this->repository);
 
-		//$this->println("Processing ".get_class($object), $object->getId());
-		if ($object instanceof \Objects\IdentifierExpr) {
-			$this->println(1, "Binding '{$object->getName()}' {$object->getId()}");
-			$existing = $object->getBindingDebug(false);
-			if ($existing) {
-				$this->println(1, "- Already contains '$existing'");
-			} else {
-				$object->setBindingDebug("<target {$object->getName()}>");
+			// Traverse the graph looking for any object with this name.
+			$current = $object->getGraphPrev()->get();
+			$target = null;
+			$name = $object->getName();
+			while ($current)
+			{
+				// Bind to function arguments.
+				if ($current instanceof \Objects\FunctionArgument) {
+					if ($current->getName() == $name) {
+						$target = $current;
+						break;
+					}
+				}
+
+				// Bind to variable definitions.
+				if ($current instanceof \Objects\VariableExpr) {
+					if ($current->getName() == $name) {
+						$target = $current;
+						break;
+					}
+				}
+
+				$current = $current->getGraphPrev()->get();
 			}
+
+			// Check whether we've found something.
+			if (!$target) {
+				$this->println(1, "No object named '$name' found", $object->getId());
+			} else {
+				$this->println(1, "Binding to {$target->getId()}");
+			}
+
+			// Store the binding.
+			$ref->set($target);
+			$object->setBindingTarget($ref);
 		}
 	}
 }

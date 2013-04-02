@@ -44,7 +44,18 @@ class RepositoryObjectReference implements RepositoryObjectParentInterface
 			$this->obj_dirty = false;
 			$this->println(0, "Resolving ID ".($this->id !== null ? $this->id : "<null>"));
 			if ($this->id !== null) {
-				$this->obj = $this->repository->getObject($this->id);
+				if (!preg_match('/^(\d+\.\d+)(\.(.*))?/', $this->id, $m)) {
+					throw new \RuntimeException("Referenced ID '{$this->id}'' is invalid.");
+				}
+				$rid = $m[1];
+				$object = $this->repository->getObject($rid);
+				if (isset($m[3])) {
+					$path = $m[3];
+					foreach (explode(".", $path) as $property) {
+						$object = $object->get($property);
+					}
+				}
+				$this->obj = $object;
 			} else {
 				$this->obj = null;
 			}

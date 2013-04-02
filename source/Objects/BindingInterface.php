@@ -5,9 +5,6 @@ namespace Objects;
 
 interface BindingInterface
 {
-	public function setBindingTarget(Expr $bindingTarget = null, $notify = true);
+	public function setBindingTarget(\RepositoryObjectReference $bindingTarget = null, $notify = true);
 	public function getBindingTarget($enforce = true);
-	
-	public function setBindingDebug($bindingDebug, $notify = true);
-	public function getBindingDebug($enforce = true);
 }

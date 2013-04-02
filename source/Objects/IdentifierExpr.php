@@ -26,7 +26,6 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 	public $binding_dirty  = false;
 	public $binding_loaded = false;
 	protected $bindingTarget;
-	protected $bindingDebug;
 	
 	// type fragment
 	public $type_dirty  = false;
@@ -64,8 +63,7 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 			case "graph": return array(
 				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
 			case "binding": return array(
-				array("name" => "bindingTarget", "type" => "Expr"), 
-				array("name" => "bindingDebug", "type" => "string"));
+				array("name" => "bindingTarget", "type" => "\RepositoryObjectReference"));
 			case "type": return array(
 				array("name" => "type", "type" => "Type"), 
 				array("name" => "someText", "type" => "string"));
@@ -184,7 +182,7 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 		return $this->graphPrev;
 	}
 	
-	public function setBindingTarget(Expr $bindingTarget = null, $notify = true)
+	public function setBindingTarget(\RepositoryObjectReference $bindingTarget = null, $notify = true)
 	{
 		if ($this->bindingTarget !== $bindingTarget) {
 			if (!$this->binding_loaded) {
@@ -207,32 +205,6 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null bindingTarget.");
 		}
 		return $this->bindingTarget;
-	}
-	
-	public function setBindingDebug($bindingDebug, $notify = true)
-	{
-		if (!is_string($bindingDebug)) {
-			throw new \InvalidArgumentException("bindingDebug needs to be a string");
-		}
-		if ($this->bindingDebug !== $bindingDebug) {
-			if (!$this->binding_loaded) {
-				$this->loadFragment('binding');
-			}
-			$this->bindingDebug = $bindingDebug;
-			if ($notify) {
-				$this->notifyFragmentDirty('binding');
-			}
-		}
-	}
-	public function getBindingDebug($enforce = true)
-	{
-		if (!$this->binding_loaded) {
-			$this->loadFragment('binding');
-		}
-		if ($enforce && $this->bindingDebug === null) {
-			throw new \RuntimeException("Object {$this->getId()} expected to have non-null bindingDebug.");
-		}
-		return $this->bindingDebug;
 	}
 	
 	public function setType(Type $type = null, $notify = true)

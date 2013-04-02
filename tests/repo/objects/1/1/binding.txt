@@ -10,7 +10,7 @@ Array
                                 (
                                     [expr] => Array
                                         (
-                                            [bindingDebug] => <target int>
+                                            [bindingTarget] => @ref <null>
                                         )
 
                                 )
@@ -31,7 +31,7 @@ Array
                                 (
                                     [expr] => Array
                                         (
-                                            [bindingDebug] => <target int>
+                                            [bindingTarget] => @ref <null>
                                         )
 
                                 )
@@ -52,14 +52,14 @@ Array
                                 (
                                     [lhs] => Array
                                         (
-                                            [bindingDebug] => <target y>
+                                            [bindingTarget] => @ref 1.1.outputs.arguments.0
                                         )
 
                                     [rhs] => Array
                                         (
                                             [lhs] => Array
                                                 (
-                                                    [bindingDebug] => <target x>
+                                                    [bindingTarget] => @ref 1.1.inputs.arguments.0
                                                 )
 
                                         )

@@ -4,7 +4,8 @@
 			"\\Source\\Range range",
 			"\\Source\\Range humanRange"],
 		"binding": [
-			"Expr bindingTarget"],
+			"Expr bindingTarget",
+			"string bindingDebug"],
 		"type": [
 			"Type type"],
 		"root_code": [
@@ -36,7 +37,8 @@
 			"tree": ["*FunctionArgumentTuple inputs", "*FunctionArgumentTuple outputs", "*FunctionBody body"],
 			"main": ["@range", "string name"],
 			"type": ["@type"],
-			"code": ["@root_code"]},
+			"code": ["@root_code"],
+			"binding": []},
 
 		"FunctionArgumentTuple": {
 			"tree": ["\\RepositoryObjectArray arguments"]

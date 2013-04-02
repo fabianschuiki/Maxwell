@@ -289,7 +289,8 @@ class Repository
 				$stored[] = $fragmentName;
 
 				// Assemble the output file name and make sure the filesystem is ready to accept the file.
-				$file = $this->getObjectDir($id)."/".$fragmentName.".out";
+				$file = $this->getObjectDir($id)."/".$fragmentName;
+				if ($fragmentName == "tree" || $fragmentName == "main") $file .= ".out"; //DEBUG
 				$this->mkdirIfNeeded(dirname($file));
 
 				// Generate the output for each property.
@@ -341,6 +342,11 @@ class Repository
 		}
 		$object = $this->objects[$oid];
 
+		// Check whether the object supports this fragment.
+		if (!isset($object->$prop_loaded)) {
+			throw new \RuntimeException("Object $oid does not support fragment '$fragment'. Maybe one of its children contains this fragment and the root wrongly does not?");
+		}
+
 		// Make sure nothing is loaded yet or the loaded data is not dirty.
 		if ($object->$prop_dirty) {
 			throw new \RuntimeException("Asked to load fragment $fragment of object ID $oid, but the loaded data is marked as dirty.");
@@ -348,7 +354,9 @@ class Repository
 		if ($object->$prop_loaded) {
 			throw new \RuntimeException("Asked to load fragment $fragment of object ID $oid which is already loaded.");
 		}
-		$object->$prop_loaded = true;
+
+		// Mark the fragment as loaded.
+		$this->recursivelyMarkFragmentLoaded($object, $fragment);
 
 		// Attempt to load the fragment information from the fragment file.
 		$file = $this->getObjectDir($oid)."/".$fragment;
@@ -364,6 +372,21 @@ class Repository
 
 			// Parse the loaded JSON file.
 			RepositoryObjectSerializer::unserialize($object, $fragment, $input);
+		}
+	}
+
+	/**
+	 * Marks the object and object's children as having loaded the fragment.
+	 */
+	private function recursivelyMarkFragmentLoaded(RepositoryObject $object, $fragment)
+	{
+		if (isset($object->{$fragment."_loaded"})) {
+			$object->{$fragment."_loaded"} = true;
+		}
+		if ($fragment != "tree") {
+			foreach ($object->getChildren() as $child) {
+				$this->recursivelyMarkFragmentLoaded($child, $fragment);
+			}
 		}
 	}
 }

@@ -37,6 +37,10 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	protected $indepDefCode;
 	protected $depDefCode;
 	
+	// binding fragment
+	public $binding_dirty  = false;
+	public $binding_loaded = false;
+	
 	
 	/* GENERAL */
 	public function setParent(\RepositoryObject $parent, $key = null, $fragment = null)
@@ -48,7 +52,7 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	
 	public function getFragmentNames()
 	{
-		return array("tree","main","type","code");
+		return array("tree","main","type","code","binding");
 	}
 	
 	public function getFragment($name)
@@ -69,6 +73,7 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 				array("name" => "depDeclCode", "type" => "string"), 
 				array("name" => "indepDefCode", "type" => "string"), 
 				array("name" => "depDefCode", "type" => "string"));
+			case "binding": return array();
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}

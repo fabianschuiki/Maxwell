@@ -28,7 +28,7 @@ class RepositoryObjectSerializer
 			foreach ($properties as $property) {
 				$name = $property["name"];
 				$getter = "get".ucwords($name);
-				$value = $object->$getter();
+				$value = $object->$getter(false);
 				if ($value !== null) {
 					$a = static::serializeValue($value, $fragment);
 					if ($a) $output[$name] = $a;
@@ -42,7 +42,7 @@ class RepositoryObjectSerializer
 			foreach ($properties as $property) {
 				$name = $property["name"];
 				$getter = "get".ucwords($name);
-				$value = $object->$getter();
+				$value = $object->$getter(false);
 				if ($value !== null) {
 					if ($value instanceof RepositoryObjectArray) {
 						$a = static::serializeValue($value, $fragment);

@@ -1,0 +1,75 @@
+Array
+(
+    [inputs] => Array
+        (
+            [arguments] => Array
+                (
+                    [0] => Array
+                        (
+                            [typeExpr] => Array
+                                (
+                                    [expr] => Array
+                                        (
+                                            [bindingDebug] => <target int>
+                                        )
+
+                                )
+
+                        )
+
+                )
+
+        )
+
+    [outputs] => Array
+        (
+            [arguments] => Array
+                (
+                    [0] => Array
+                        (
+                            [typeExpr] => Array
+                                (
+                                    [expr] => Array
+                                        (
+                                            [bindingDebug] => <target int>
+                                        )
+
+                                )
+
+                        )
+
+                )
+
+        )
+
+    [body] => Array
+        (
+            [stmts] => Array
+                (
+                    [0] => Array
+                        (
+                            [expr] => Array
+                                (
+                                    [lhs] => Array
+                                        (
+                                            [bindingDebug] => <target y>
+                                        )
+
+                                    [rhs] => Array
+                                        (
+                                            [lhs] => Array
+                                                (
+                                                    [bindingDebug] => <target x>
+                                                )
+
+                                        )
+
+                                )
+
+                        )
+
+                )
+
+        )
+
+)

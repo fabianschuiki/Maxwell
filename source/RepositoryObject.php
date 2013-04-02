@@ -9,6 +9,7 @@ abstract class RepositoryObject
 	abstract public function getClass();
 
 	abstract public function getFragmentNames();
+	abstract public function getFragment($fragment);
 
 	abstract protected function loadFragment($fragment);
 	abstract protected function notifyFragmentDirty($fragment);
@@ -29,5 +30,21 @@ abstract class RepositoryObject
 	protected function println($ln)
 	{
 		Log::println($ln, $this->getClass(), $this->getId());
+	}
+
+	/**
+	 * Returns the objects in the tree fragment.
+	 */
+	public function getChildren()
+	{
+		if (in_array("tree", $this->getFragmentNames())) {
+			$props = $this->getFragment("tree");
+			foreach ($props as $i => $p) {
+				$getter = "get".ucwords($p["name"]);
+				$props[$i] = $this->$getter();
+			}
+			return $props;
+		}
+		return array();
 	}
 }

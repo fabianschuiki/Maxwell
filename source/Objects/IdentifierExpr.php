@@ -21,6 +21,7 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 	public $binding_dirty  = false;
 	public $binding_loaded = false;
 	protected $bindingTarget;
+	protected $bindingDebug;
 	
 	// type fragment
 	public $type_dirty  = false;
@@ -56,7 +57,8 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 				array("name" => "humanRange", "type" => "\Source\Range"), 
 				array("name" => "name", "type" => "string"));
 			case "binding": return array(
-				array("name" => "bindingTarget", "type" => "Expr"));
+				array("name" => "bindingTarget", "type" => "Expr"), 
+				array("name" => "bindingDebug", "type" => "string"));
 			case "type": return array(
 				array("name" => "type", "type" => "Type"), 
 				array("name" => "someText", "type" => "string"));
@@ -175,6 +177,34 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null bindingTarget.");
 		}
 		return $this->bindingTarget;
+	}
+	
+	public function setBindingDebug($bindingDebug, $notify = true)
+	{
+		if (!is_string($bindingDebug)) {
+			throw new \InvalidArgumentException("bindingDebug needs to be a string");
+		}
+		if ($this->bindingDebug !== $bindingDebug) {
+			if (!$this->binding_loaded) {
+				$this->loadFragment('binding');
+			}
+			if ($this->bindingDebug instanceof \RepositoryNodeObject) $this->bindingDebug->setParent(null);
+			$this->bindingDebug = $bindingDebug;
+			if ($bindingDebug instanceof \RepositoryNodeObject) $bindingDebug->setParent($this, "bindingDebug", "binding");
+			if ($notify) {
+				$this->notifyFragmentDirty('binding');
+			}
+		}
+	}
+	public function getBindingDebug($enforce = true)
+	{
+		if (!$this->binding_loaded) {
+			$this->loadFragment('binding');
+		}
+		if ($enforce && $this->bindingDebug === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null bindingDebug.");
+		}
+		return $this->bindingDebug;
 	}
 	
 	public function setType(Type $type = null, $notify = true)

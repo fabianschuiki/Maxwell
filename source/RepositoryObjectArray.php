@@ -7,10 +7,8 @@ class RepositoryObjectArray extends RepositoryNodeObject
 
 	public function getClass() { return null; }
 
-	public function getFragmentNames()
-	{
-		return array();
-	}
+	public function getFragmentNames() { return array(); }
+	public function getFragment($fragment) { throw new \RuntimeException("getFragment() should never be called on arrays"); }
 
 	public function set($key, RepositoryNodeObject $object)
 	{
@@ -33,6 +31,11 @@ class RepositoryObjectArray extends RepositoryNodeObject
 	}
 
 	public function getElements()
+	{
+		return $this->elements;
+	}
+	
+	public function getChildren()
 	{
 		return $this->elements;
 	}

@@ -1,0 +1,1 @@
+{"inputs":{"arguments":[{"typeExpr":{"expr":{"bindingDebug":"<target int>"}}}]},"outputs":{"arguments":[{"typeExpr":{"expr":{"bindingDebug":"<target int>"}}}]},"body":{"stmts":[{"expr":{"lhs":{"bindingDebug":"<target y>"},"rhs":{"lhs":{"bindingDebug":"<target x>"}}}}]}}

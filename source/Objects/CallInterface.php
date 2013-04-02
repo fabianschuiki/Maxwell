@@ -1,0 +1,13 @@
+<?php
+/* Copyright © 2013 Fabian Schuiki.
+ * Automatically generated interface. */
+namespace Objects;
+
+interface CallInterface
+{
+	public function setCallName($callName, $notify = true);
+	public function getCallName($enforce = true);
+	
+	public function setCallArguments(CallArgumentTuple $callArguments = null, $notify = true);
+	public function getCallArguments($enforce = true);
+}

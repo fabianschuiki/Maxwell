@@ -30,6 +30,14 @@ function makeInterfaceName($n)
 	return str_replace(" ", "", ucwords(str_replace("_", " ", $n)))."Interface";
 }
 
+function processType($t)
+{
+	return str_replace(
+		array(".", "array", "ref"),
+		array("\\", "\\RepositoryObjectArray", "\\RepositoryObjectReference"),
+		$t);
+}
+
 // Create an interface file for each interface.
 $interface_defs = $defs->interfaces;
 foreach ($interface_defs as $name => $def)
@@ -45,7 +53,7 @@ foreach ($interface_defs as $name => $def)
 		}
 		$p = new stdClass;
 		$p->name = $m[3];
-		$p->type = str_replace(".", "\\", $m[2]);
+		$p->type = processType($m[2]);
 		$canonicalProperties[$i] = $p;
 	}
 
@@ -110,10 +118,14 @@ foreach ($entity_defs as $name => $def)
 
 		$afragment  = "// $fragmentName fragment\n";
 		$afragment .= "public \$$prop_dirty  = false;\n";
-		$afragment .= "public \$$prop_loaded = false;";
+		$afragment .= "public \$$prop_loaded = true;";
 
 		// Resolve interfaces.
 		$canonicalProperties = array();
+		if (!is_array($properties)) {
+			echo "Invalid list of properties in {$name}.{$fragmentName}\n";
+			exit(1);
+		}
 		foreach ($properties as $property) {
 			if ($property[0] === "@") {
 				$interfaceName = substr($property, 1);
@@ -137,12 +149,7 @@ foreach ($entity_defs as $name => $def)
 			}
 			$p = new stdClass;
 			$p->name = $m[3];
-			$p->type = str_replace(".", "\\", $m[2]);
-			$p->kind = "standard";
-			if ($p->type[0] == "*") {
-				$p->type = "\\Objects\\".substr($p->type, 1);
-				$p->kind = "object";
-			}
+			$p->type = processType($m[2]);
 			$canonicalProperties[$i] = $p;
 		}
 		$propertiesByFragment[$fragmentName] = $canonicalProperties;

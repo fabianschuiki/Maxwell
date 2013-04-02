@@ -12,12 +12,12 @@ class ConstantExpr extends Expr implements GraphInterface
 	
 	// main fragment
 	public $main_dirty  = false;
-	public $main_loaded = false;
+	public $main_loaded = true;
 	protected $value;
 	
 	// graph fragment
 	public $graph_dirty  = false;
-	public $graph_loaded = false;
+	public $graph_loaded = true;
 	protected $graphPrev;
 	
 	

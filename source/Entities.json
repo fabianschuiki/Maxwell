@@ -4,7 +4,7 @@
 			"\\Source\\Range range",
 			"\\Source\\Range humanRange"],
 		"binding": [
-			"\\RepositoryObjectReference bindingTarget"],
+			"ref bindingTarget"],
 		"type": [
 			"Type type"],
 		"root_code": [
@@ -16,7 +16,11 @@
 			"string exprCode",
 			"string stmtsCode"],
 		"graph": [
-			"\\RepositoryObjectReference graphPrev"
+			"ref graphPrev"
+			],
+		"call": [
+			"string callName",
+			"CallArgumentTuple callArguments"
 			]
 	},
 
@@ -37,15 +41,15 @@
 
 		"FunctionDefinition": {
 			"root": true,
-			"tree": ["*FunctionArgumentTuple inputs", "*FunctionArgumentTuple outputs", "*FunctionBody body"],
+			"tree": ["FunctionArgumentTuple inputs", "FunctionArgumentTuple outputs", "FunctionBody body"],
 			"main": ["@range", "string name"],
 			"graph": ["@graph"],
 			"type": ["@type"],
 			"code": ["@root_code"],
-			"binding": []},
+			"binding":[], "call":[]},
 
 		"FunctionArgumentTuple": {
-			"tree": ["\\RepositoryObjectArray arguments"],
+			"tree": ["array arguments"],
 			"graph": ["@graph"]
 		},
 
@@ -56,7 +60,7 @@
 			},
 
 		"FunctionBody": {
-			"tree": ["\\RepositoryObjectArray stmts"]
+			"tree": ["array stmts"]
 		},
 
 		"ExprStmt": {
@@ -74,8 +78,8 @@
 			"extends": "Expr",
 			"tree": ["Expr lhs", "Expr rhs"],
 			"main": ["string operator"],
-			"graph": ["@graph"]
-		},
+			"graph": ["@graph"],
+			"call": ["@call"]},
 
 		"ConstantExpr": {
 			"extends": "Expr",
@@ -86,6 +90,12 @@
 		"TypeExpr": {
 			"tree": ["Expr expr"],
 			"graph": ["@graph"]
-			}
+			},
+
+		"CallArgumentTuple": {
+			"tree": ["array arguments"]},
+		"CallArgument": {
+			"tree": [" expr"],
+			"main": ["string name"]}
 	}
 }

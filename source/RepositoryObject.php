@@ -32,6 +32,15 @@ abstract class RepositoryObject
 		Log::println($ln, $this->getClass(), $this->getId());
 	}
 
+	public function __construct($loaded = true)
+	{
+		if (!$loaded) {
+			foreach ($this->getFragmentNames() as $name) {
+				$this->{$name."_loaded"} = false;
+			}
+		}
+	}
+
 	/**
 	 * Returns the objects in the tree fragment.
 	 */

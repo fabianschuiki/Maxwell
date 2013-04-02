@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class FunctionArgumentTuple extends \RepositoryNodeObject implements GraphInterface
+class CallArgumentTuple extends \RepositoryNodeObject
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -14,11 +14,6 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements GraphInterf
 	public $tree_dirty  = false;
 	public $tree_loaded = true;
 	protected $arguments;
-	
-	// graph fragment
-	public $graph_dirty  = false;
-	public $graph_loaded = true;
-	protected $graphPrev;
 	
 	
 	/* GENERAL */
@@ -31,7 +26,7 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements GraphInterf
 	
 	public function getFragmentNames()
 	{
-		return array("tree","graph");
+		return array("tree");
 	}
 	
 	public function getFragment($name)
@@ -39,15 +34,13 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements GraphInterf
 		switch ($name) {
 			case "tree": return array(
 				array("name" => "arguments", "type" => "\RepositoryObjectArray"));
-			case "graph": return array(
-				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
 	
 	public function getClass()
 	{
-		return "FunctionArgumentTuple";
+		return "CallArgumentTuple";
 	}
 	
 	
@@ -75,30 +68,5 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements GraphInterf
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null arguments.");
 		}
 		return $this->arguments;
-	}
-	
-	public function setGraphPrev(\RepositoryObjectReference $graphPrev = null, $notify = true)
-	{
-		if ($this->graphPrev !== $graphPrev) {
-			if (!$this->graph_loaded) {
-				$this->loadFragment('graph');
-			}
-			if ($this->graphPrev instanceof \RepositoryObjectParentInterface) $this->graphPrev->setParent(null);
-			$this->graphPrev = $graphPrev;
-			if ($graphPrev instanceof \RepositoryObjectParentInterface) $graphPrev->setParent($this, "graphPrev", "graph");
-			if ($notify) {
-				$this->notifyFragmentDirty('graph');
-			}
-		}
-	}
-	public function getGraphPrev($enforce = true)
-	{
-		if (!$this->graph_loaded) {
-			$this->loadFragment('graph');
-		}
-		if ($enforce && $this->graphPrev === null) {
-			throw new \RuntimeException("Object {$this->getId()} expected to have non-null graphPrev.");
-		}
-		return $this->graphPrev;
 	}
 }

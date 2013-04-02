@@ -12,30 +12,30 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 	
 	// main fragment
 	public $main_dirty  = false;
-	public $main_loaded = false;
+	public $main_loaded = true;
 	protected $range;
 	protected $humanRange;
 	protected $name;
 	
 	// graph fragment
 	public $graph_dirty  = false;
-	public $graph_loaded = false;
+	public $graph_loaded = true;
 	protected $graphPrev;
 	
 	// binding fragment
 	public $binding_dirty  = false;
-	public $binding_loaded = false;
+	public $binding_loaded = true;
 	protected $bindingTarget;
 	
 	// type fragment
 	public $type_dirty  = false;
-	public $type_loaded = false;
+	public $type_loaded = true;
 	protected $type;
 	protected $someText;
 	
 	// code fragment
 	public $code_dirty  = false;
-	public $code_loaded = false;
+	public $code_loaded = true;
 	protected $exprCode;
 	protected $stmtsCode;
 	

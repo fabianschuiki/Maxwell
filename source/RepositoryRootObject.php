@@ -14,6 +14,7 @@ abstract class RepositoryRootObject extends RepositoryObject
 	 */
 	public function __construct(Repository $repo, $id)
 	{
+		parent::__construct(false);
 		if (!is_string($id) && !is_numeric($id)) {
 			throw new InvalidArgumentException("Object ID $id is not valid.");
 		}

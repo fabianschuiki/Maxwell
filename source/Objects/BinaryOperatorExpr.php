@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class BinaryOperatorExpr extends Expr implements GraphInterface
+class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -12,19 +12,25 @@ class BinaryOperatorExpr extends Expr implements GraphInterface
 	
 	// tree fragment
 	public $tree_dirty  = false;
-	public $tree_loaded = false;
+	public $tree_loaded = true;
 	protected $lhs;
 	protected $rhs;
 	
 	// main fragment
 	public $main_dirty  = false;
-	public $main_loaded = false;
+	public $main_loaded = true;
 	protected $operator;
 	
 	// graph fragment
 	public $graph_dirty  = false;
-	public $graph_loaded = false;
+	public $graph_loaded = true;
 	protected $graphPrev;
+	
+	// call fragment
+	public $call_dirty  = false;
+	public $call_loaded = true;
+	protected $callName;
+	protected $callArguments;
 	
 	
 	/* GENERAL */
@@ -37,7 +43,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface
 	
 	public function getFragmentNames()
 	{
-		return array("tree","main","graph");
+		return array("tree","main","graph","call");
 	}
 	
 	public function getFragment($name)
@@ -50,6 +56,9 @@ class BinaryOperatorExpr extends Expr implements GraphInterface
 				array("name" => "operator", "type" => "string"));
 			case "graph": return array(
 				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
+			case "call": return array(
+				array("name" => "callName", "type" => "string"), 
+				array("name" => "callArguments", "type" => "CallArgumentTuple"));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -160,5 +169,56 @@ class BinaryOperatorExpr extends Expr implements GraphInterface
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null graphPrev.");
 		}
 		return $this->graphPrev;
+	}
+	
+	public function setCallName($callName, $notify = true)
+	{
+		if (!is_string($callName)) {
+			throw new \InvalidArgumentException("callName needs to be a string");
+		}
+		if ($this->callName !== $callName) {
+			if (!$this->call_loaded) {
+				$this->loadFragment('call');
+			}
+			$this->callName = $callName;
+			if ($notify) {
+				$this->notifyFragmentDirty('call');
+			}
+		}
+	}
+	public function getCallName($enforce = true)
+	{
+		if (!$this->call_loaded) {
+			$this->loadFragment('call');
+		}
+		if ($enforce && $this->callName === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null callName.");
+		}
+		return $this->callName;
+	}
+	
+	public function setCallArguments(CallArgumentTuple $callArguments = null, $notify = true)
+	{
+		if ($this->callArguments !== $callArguments) {
+			if (!$this->call_loaded) {
+				$this->loadFragment('call');
+			}
+			if ($this->callArguments instanceof \RepositoryObjectParentInterface) $this->callArguments->setParent(null);
+			$this->callArguments = $callArguments;
+			if ($callArguments instanceof \RepositoryObjectParentInterface) $callArguments->setParent($this, "callArguments", "call");
+			if ($notify) {
+				$this->notifyFragmentDirty('call');
+			}
+		}
+	}
+	public function getCallArguments($enforce = true)
+	{
+		if (!$this->call_loaded) {
+			$this->loadFragment('call');
+		}
+		if ($enforce && $this->callArguments === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null callArguments.");
+		}
+		return $this->callArguments;
 	}
 }

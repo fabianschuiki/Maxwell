@@ -12,31 +12,31 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	
 	// tree fragment
 	public $tree_dirty  = false;
-	public $tree_loaded = false;
+	public $tree_loaded = true;
 	protected $inputs;
 	protected $outputs;
 	protected $body;
 	
 	// main fragment
 	public $main_dirty  = false;
-	public $main_loaded = false;
+	public $main_loaded = true;
 	protected $range;
 	protected $humanRange;
 	protected $name;
 	
 	// graph fragment
 	public $graph_dirty  = false;
-	public $graph_loaded = false;
+	public $graph_loaded = true;
 	protected $graphPrev;
 	
 	// type fragment
 	public $type_dirty  = false;
-	public $type_loaded = false;
+	public $type_loaded = true;
 	protected $type;
 	
 	// code fragment
 	public $code_dirty  = false;
-	public $code_loaded = false;
+	public $code_loaded = true;
 	protected $indepDeclCode;
 	protected $depDeclCode;
 	protected $indepDefCode;
@@ -44,7 +44,11 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	
 	// binding fragment
 	public $binding_dirty  = false;
-	public $binding_loaded = false;
+	public $binding_loaded = true;
+	
+	// call fragment
+	public $call_dirty  = false;
+	public $call_loaded = true;
 	
 	
 	/* GENERAL */
@@ -57,16 +61,16 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	
 	public function getFragmentNames()
 	{
-		return array("tree","main","graph","type","code","binding");
+		return array("tree","main","graph","type","code","binding","call");
 	}
 	
 	public function getFragment($name)
 	{
 		switch ($name) {
 			case "tree": return array(
-				array("name" => "inputs", "type" => "\Objects\FunctionArgumentTuple"), 
-				array("name" => "outputs", "type" => "\Objects\FunctionArgumentTuple"), 
-				array("name" => "body", "type" => "\Objects\FunctionBody"));
+				array("name" => "inputs", "type" => "FunctionArgumentTuple"), 
+				array("name" => "outputs", "type" => "FunctionArgumentTuple"), 
+				array("name" => "body", "type" => "FunctionBody"));
 			case "main": return array(
 				array("name" => "range", "type" => "\Source\Range"), 
 				array("name" => "humanRange", "type" => "\Source\Range"), 
@@ -81,6 +85,7 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 				array("name" => "indepDefCode", "type" => "string"), 
 				array("name" => "depDefCode", "type" => "string"));
 			case "binding": return array();
+			case "call": return array();
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -92,7 +97,7 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	
 	
 	/* ACCESSORS */
-	public function setInputs(\Objects\FunctionArgumentTuple $inputs = null, $notify = true)
+	public function setInputs(FunctionArgumentTuple $inputs = null, $notify = true)
 	{
 		if ($this->inputs !== $inputs) {
 			if (!$this->tree_loaded) {
@@ -117,7 +122,7 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 		return $this->inputs;
 	}
 	
-	public function setOutputs(\Objects\FunctionArgumentTuple $outputs = null, $notify = true)
+	public function setOutputs(FunctionArgumentTuple $outputs = null, $notify = true)
 	{
 		if ($this->outputs !== $outputs) {
 			if (!$this->tree_loaded) {
@@ -142,7 +147,7 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 		return $this->outputs;
 	}
 	
-	public function setBody(\Objects\FunctionBody $body = null, $notify = true)
+	public function setBody(FunctionBody $body = null, $notify = true)
 	{
 		if ($this->body !== $body) {
 			if (!$this->tree_loaded) {

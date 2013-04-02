@@ -1,0 +1,69 @@
+Array
+(
+    [inputs] => Array
+        (
+            [arguments] => Array
+                (
+                    [0] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+    [outputs] => Array
+        (
+            [arguments] => Array
+                (
+                    [0] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+    [body] => Array
+        (
+            [stmts] => Array
+                (
+                    [0] => Array
+                        (
+                            [expr] => Array
+                                (
+                                    [rhs] => Array
+                                        (
+                                            [callName] => *
+                                            [callArguments] => Array
+                                                (
+                                                    [arguments] => Array
+                                                        (
+                                                            [0] => Array
+                                                                (
+                                                                    [expr] => @ref 1.1.body.stmts.0.expr.rhs.lhs
+                                                                    [class] => CallArgument
+                                                                )
+
+                                                            [1] => Array
+                                                                (
+                                                                    [expr] => @ref 1.1.body.stmts.0.expr.rhs.rhs
+                                                                    [class] => CallArgument
+                                                                )
+
+                                                        )
+
+                                                    [class] => CallArgumentTuple
+                                                )
+
+                                        )
+
+                                )
+
+                        )
+
+                )
+
+        )
+
+)

@@ -12,17 +12,17 @@ class FunctionArgument extends \RepositoryNodeObject implements GraphInterface
 	
 	// tree fragment
 	public $tree_dirty  = false;
-	public $tree_loaded = false;
+	public $tree_loaded = true;
 	protected $typeExpr;
 	
 	// main fragment
 	public $main_dirty  = false;
-	public $main_loaded = false;
+	public $main_loaded = true;
 	protected $name;
 	
 	// graph fragment
 	public $graph_dirty  = false;
-	public $graph_loaded = false;
+	public $graph_loaded = true;
 	protected $graphPrev;
 	
 	

@@ -12,7 +12,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 	
 	// main fragment
 	public $main_dirty  = false;
-	public $main_loaded = false;
+	public $main_loaded = true;
 	protected $range;
 	protected $humanRange;
 	protected $name;
@@ -21,12 +21,12 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 	
 	// type fragment
 	public $type_dirty  = false;
-	public $type_loaded = false;
+	public $type_loaded = true;
 	protected $type;
 	
 	// code fragment
 	public $code_dirty  = false;
-	public $code_loaded = false;
+	public $code_loaded = true;
 	protected $exprCode;
 	protected $stmtsCode;
 	

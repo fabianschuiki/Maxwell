@@ -1,0 +1,1 @@
+{"inputs":{"arguments":[[]]},"outputs":{"arguments":[[]]},"body":{"stmts":[{"expr":{"rhs":{"callName":"*","callArguments":{"arguments":[{"expr":"@ref 1.1.body.stmts.0.expr.rhs.lhs","class":"CallArgument"},{"expr":"@ref 1.1.body.stmts.0.expr.rhs.rhs","class":"CallArgument"}],"class":"CallArgumentTuple"}}}}]}}

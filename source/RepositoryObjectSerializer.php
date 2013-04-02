@@ -181,7 +181,7 @@ class RepositoryObjectSerializer
 			}
 			$class = "\\Objects\\".$value->class;
 			$this->println(1,"Instantiating bare object $class");
-			$obj = new $class;
+			$obj = new $class(false);
 
 			// Unserialize the object's tree if we're currently unserializing the tree fragment.
 			// Otherwise unserialize all fragments of the object as it is contained entirely here.

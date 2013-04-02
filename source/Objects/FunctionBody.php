@@ -12,7 +12,7 @@ class FunctionBody extends \RepositoryNodeObject
 	
 	// tree fragment
 	public $tree_dirty  = false;
-	public $tree_loaded = false;
+	public $tree_loaded = true;
 	protected $stmts;
 	
 	

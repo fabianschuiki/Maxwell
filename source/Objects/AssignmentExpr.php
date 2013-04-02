@@ -12,13 +12,13 @@ class AssignmentExpr extends Expr implements GraphInterface
 	
 	// tree fragment
 	public $tree_dirty  = false;
-	public $tree_loaded = false;
+	public $tree_loaded = true;
 	protected $lhs;
 	protected $rhs;
 	
 	// graph fragment
 	public $graph_dirty  = false;
-	public $graph_loaded = false;
+	public $graph_loaded = true;
 	protected $graphPrev;
 	
 	

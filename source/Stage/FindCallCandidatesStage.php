@@ -16,6 +16,10 @@ class FindCallCandidatesStage extends DriverStage
 		// Everything that has a call interface.
 		if ($object instanceof \Objects\CallInterface)
 		{
+			// Do not perform any search if there are candidates around already.
+			if ($object->getCallCandidates(false))
+				return;
+
 			// Create the array that will hold the candidates.
 			$array = new \RepositoryObjectArray;
 			$name = $object->getCallName();

@@ -61,10 +61,10 @@ foreach ($interface_defs as $name => $def)
 		if (!$scalarType) $body .= $property->type." ";
 		$body .= "\$".$lcname;
 		if (!$scalarType) $body .= " = null";
-		$body .= ");\n";
+		$body .= ", \$notify = true);\n";
 
 		// GETTER
-		$body .= "public function get{$ucname}();\n\n";
+		$body .= "public function get{$ucname}(\$enforce = true);\n\n";
 	}
 
 	// Generate the class creation code.
@@ -180,9 +180,9 @@ foreach ($entity_defs as $name => $def)
 		if (!\$this->$prop_loaded) {
 			\$this->loadFragment('$fragmentName');
 		}";
-			/*if ($property->kind == "object") */$bfragment .= "\n\t\tif (\$this->$lcname instanceof \\RepositoryNodeObject) \$this->{$lcname}->setParent(null);";
+			if (!$scalarType) $bfragment .= "\n\t\tif (\$this->$lcname instanceof \\RepositoryObjectParentInterface) \$this->{$lcname}->setParent(null);";
 			$bfragment .= "\n\t\t\$this->$lcname = \$$lcname;";
-			/*if ($property->kind == "object") */$bfragment .= "\n\t\tif (\$$lcname instanceof \\RepositoryNodeObject) \${$lcname}->setParent(\$this, \"$lcname\", \"$fragmentName\");";
+			if (!$scalarType) $bfragment .= "\n\t\tif (\$$lcname instanceof \\RepositoryObjectParentInterface) \${$lcname}->setParent(\$this, \"$lcname\", \"$fragmentName\");";
 			$bfragment .= "\n\t\tif (\$notify) {"
 				//."\n\t\t\t\$this->$prop_dirty = true;"
 				."\n\t\t\t\$this->notifyFragmentDirty('$fragmentName');"

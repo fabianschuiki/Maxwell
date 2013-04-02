@@ -31,12 +31,16 @@ class Repository
 			Log::println($ln, get_class(), $info);
 	}
 
+	// Serializer used in this repo.
+	protected $serializer;
+
 
 	/// Create a new repository at the location $dir.
 	public function __construct($dir)
 	{
 		$this->dir = $dir;
 		$this->mkdirIfNeeded($dir);
+		$this->serializer = new RepositoryObjectSerializer($this);
 	}
 
 	/// Creates the directory $dir if it does't exist.
@@ -294,7 +298,7 @@ class Repository
 				$this->mkdirIfNeeded(dirname($file));
 
 				// Generate the output for each property.
-				$output = RepositoryObjectSerializer::serialize($obj, $fragmentName);
+				$output = $this->serializer->serialize($obj, $fragmentName);
 
 				// Store the output file.
 				if (!file_put_contents($file, json_encode($output))) {
@@ -371,7 +375,7 @@ class Repository
 			}
 
 			// Parse the loaded JSON file.
-			RepositoryObjectSerializer::unserialize($object, $fragment, $input);
+			$this->serializer->unserialize($object, $fragment, $input);
 		}
 	}
 

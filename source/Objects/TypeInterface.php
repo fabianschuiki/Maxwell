@@ -5,6 +5,6 @@ namespace Objects;
 
 interface TypeInterface
 {
-	public function setType(Type $type = null);
-	public function getType();
+	public function setType(Type $type = null, $notify = true);
+	public function getType($enforce = true);
 }

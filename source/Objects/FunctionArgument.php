@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class FunctionArgument extends \RepositoryNodeObject
+class FunctionArgument extends \RepositoryNodeObject implements GraphInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -20,6 +20,11 @@ class FunctionArgument extends \RepositoryNodeObject
 	public $main_loaded = false;
 	protected $name;
 	
+	// graph fragment
+	public $graph_dirty  = false;
+	public $graph_loaded = false;
+	protected $graphPrev;
+	
 	
 	/* GENERAL */
 	public function setParent(\RepositoryObject $parent, $key = null, $fragment = null)
@@ -31,7 +36,7 @@ class FunctionArgument extends \RepositoryNodeObject
 	
 	public function getFragmentNames()
 	{
-		return array("tree","main");
+		return array("tree","main","graph");
 	}
 	
 	public function getFragment($name)
@@ -41,6 +46,8 @@ class FunctionArgument extends \RepositoryNodeObject
 				array("name" => "typeExpr", "type" => "TypeExpr"));
 			case "main": return array(
 				array("name" => "name", "type" => "string"));
+			case "graph": return array(
+				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -58,9 +65,9 @@ class FunctionArgument extends \RepositoryNodeObject
 			if (!$this->tree_loaded) {
 				$this->loadFragment('tree');
 			}
-			if ($this->typeExpr instanceof \RepositoryNodeObject) $this->typeExpr->setParent(null);
+			if ($this->typeExpr instanceof \RepositoryObjectParentInterface) $this->typeExpr->setParent(null);
 			$this->typeExpr = $typeExpr;
-			if ($typeExpr instanceof \RepositoryNodeObject) $typeExpr->setParent($this, "typeExpr", "tree");
+			if ($typeExpr instanceof \RepositoryObjectParentInterface) $typeExpr->setParent($this, "typeExpr", "tree");
 			if ($notify) {
 				$this->notifyFragmentDirty('tree');
 			}
@@ -86,9 +93,7 @@ class FunctionArgument extends \RepositoryNodeObject
 			if (!$this->main_loaded) {
 				$this->loadFragment('main');
 			}
-			if ($this->name instanceof \RepositoryNodeObject) $this->name->setParent(null);
 			$this->name = $name;
-			if ($name instanceof \RepositoryNodeObject) $name->setParent($this, "name", "main");
 			if ($notify) {
 				$this->notifyFragmentDirty('main');
 			}
@@ -103,5 +108,30 @@ class FunctionArgument extends \RepositoryNodeObject
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null name.");
 		}
 		return $this->name;
+	}
+	
+	public function setGraphPrev(\RepositoryObjectReference $graphPrev = null, $notify = true)
+	{
+		if ($this->graphPrev !== $graphPrev) {
+			if (!$this->graph_loaded) {
+				$this->loadFragment('graph');
+			}
+			if ($this->graphPrev instanceof \RepositoryObjectParentInterface) $this->graphPrev->setParent(null);
+			$this->graphPrev = $graphPrev;
+			if ($graphPrev instanceof \RepositoryObjectParentInterface) $graphPrev->setParent($this, "graphPrev", "graph");
+			if ($notify) {
+				$this->notifyFragmentDirty('graph');
+			}
+		}
+	}
+	public function getGraphPrev($enforce = true)
+	{
+		if (!$this->graph_loaded) {
+			$this->loadFragment('graph');
+		}
+		if ($enforce && $this->graphPrev === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null graphPrev.");
+		}
+		return $this->graphPrev;
 	}
 }

@@ -51,9 +51,9 @@ class FunctionBody extends \RepositoryNodeObject
 			if (!$this->tree_loaded) {
 				$this->loadFragment('tree');
 			}
-			if ($this->stmts instanceof \RepositoryNodeObject) $this->stmts->setParent(null);
+			if ($this->stmts instanceof \RepositoryObjectParentInterface) $this->stmts->setParent(null);
 			$this->stmts = $stmts;
-			if ($stmts instanceof \RepositoryNodeObject) $stmts->setParent($this, "stmts", "tree");
+			if ($stmts instanceof \RepositoryObjectParentInterface) $stmts->setParent($this, "stmts", "tree");
 			if ($notify) {
 				$this->notifyFragmentDirty('tree');
 			}

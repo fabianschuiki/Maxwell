@@ -5,9 +5,9 @@ namespace Objects;
 
 interface ExprCodeInterface
 {
-	public function setExprCode($exprCode);
-	public function getExprCode();
+	public function setExprCode($exprCode, $notify = true);
+	public function getExprCode($enforce = true);
 	
-	public function setStmtsCode($stmtsCode);
-	public function getStmtsCode();
+	public function setStmtsCode($stmtsCode, $notify = true);
+	public function getStmtsCode($enforce = true);
 }

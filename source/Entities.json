@@ -15,13 +15,17 @@
 			"string depDefCode"],
 		"expr_code": [
 			"string exprCode",
-			"string stmtsCode"]
+			"string stmtsCode"],
+		"graph": [
+			"\\RepositoryObjectReference graphPrev"
+			]
 	},
 
 	"entities": {
 		"IdentifierExpr": {
 			"extends": "Expr",
 			"main": ["@range", "string name"],
+			"graph": ["@graph"],
 			"binding": ["@binding"],
 			"type": ["@type", "string someText"],
 			"code": ["@expr_code"]},
@@ -36,17 +40,20 @@
 			"root": true,
 			"tree": ["*FunctionArgumentTuple inputs", "*FunctionArgumentTuple outputs", "*FunctionBody body"],
 			"main": ["@range", "string name"],
+			"graph": ["@graph"],
 			"type": ["@type"],
 			"code": ["@root_code"],
 			"binding": []},
 
 		"FunctionArgumentTuple": {
-			"tree": ["\\RepositoryObjectArray arguments"]
+			"tree": ["\\RepositoryObjectArray arguments"],
+			"graph": ["@graph"]
 		},
 
 		"FunctionArgument": {
 			"tree": ["TypeExpr typeExpr"],
-			"main": ["string name"]
+			"main": ["string name"],
+			"graph": ["@graph"]
 			},
 
 		"FunctionBody": {
@@ -54,27 +61,32 @@
 		},
 
 		"ExprStmt": {
-			"tree": ["Expr expr"]
+			"tree": ["Expr expr"],
+			"graph": ["@graph"]
 		},
 
 		"AssignmentExpr": {
 			"extends": "Expr",
-			"tree": ["Expr lhs", "Expr rhs"]
+			"tree": ["Expr lhs", "Expr rhs"],
+			"graph": ["@graph"]
 		},
 
 		"BinaryOperatorExpr": {
 			"extends": "Expr",
 			"tree": ["Expr lhs", "Expr rhs"],
-			"main": ["string operator"]
+			"main": ["string operator"],
+			"graph": ["@graph"]
 		},
 
 		"ConstantExpr": {
 			"extends": "Expr",
-			"main": ["string value"]
+			"main": ["string value"],
+			"graph": ["@graph"]
 		},
 
 		"TypeExpr": {
-			"tree": ["Expr expr"]
+			"tree": ["Expr expr"],
+			"graph": ["@graph"]
 			}
 	}
 }

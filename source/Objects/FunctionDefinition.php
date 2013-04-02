@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class FunctionDefinition extends \RepositoryRootObject implements RangeInterface, TypeInterface, RootCodeInterface
+class FunctionDefinition extends \RepositoryRootObject implements RangeInterface, GraphInterface, TypeInterface, RootCodeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -23,6 +23,11 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	protected $range;
 	protected $humanRange;
 	protected $name;
+	
+	// graph fragment
+	public $graph_dirty  = false;
+	public $graph_loaded = false;
+	protected $graphPrev;
 	
 	// type fragment
 	public $type_dirty  = false;
@@ -52,7 +57,7 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 	
 	public function getFragmentNames()
 	{
-		return array("tree","main","type","code","binding");
+		return array("tree","main","graph","type","code","binding");
 	}
 	
 	public function getFragment($name)
@@ -66,6 +71,8 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 				array("name" => "range", "type" => "\Source\Range"), 
 				array("name" => "humanRange", "type" => "\Source\Range"), 
 				array("name" => "name", "type" => "string"));
+			case "graph": return array(
+				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
 			case "type": return array(
 				array("name" => "type", "type" => "Type"));
 			case "code": return array(
@@ -91,9 +98,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->tree_loaded) {
 				$this->loadFragment('tree');
 			}
-			if ($this->inputs instanceof \RepositoryNodeObject) $this->inputs->setParent(null);
+			if ($this->inputs instanceof \RepositoryObjectParentInterface) $this->inputs->setParent(null);
 			$this->inputs = $inputs;
-			if ($inputs instanceof \RepositoryNodeObject) $inputs->setParent($this, "inputs", "tree");
+			if ($inputs instanceof \RepositoryObjectParentInterface) $inputs->setParent($this, "inputs", "tree");
 			if ($notify) {
 				$this->notifyFragmentDirty('tree');
 			}
@@ -116,9 +123,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->tree_loaded) {
 				$this->loadFragment('tree');
 			}
-			if ($this->outputs instanceof \RepositoryNodeObject) $this->outputs->setParent(null);
+			if ($this->outputs instanceof \RepositoryObjectParentInterface) $this->outputs->setParent(null);
 			$this->outputs = $outputs;
-			if ($outputs instanceof \RepositoryNodeObject) $outputs->setParent($this, "outputs", "tree");
+			if ($outputs instanceof \RepositoryObjectParentInterface) $outputs->setParent($this, "outputs", "tree");
 			if ($notify) {
 				$this->notifyFragmentDirty('tree');
 			}
@@ -141,9 +148,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->tree_loaded) {
 				$this->loadFragment('tree');
 			}
-			if ($this->body instanceof \RepositoryNodeObject) $this->body->setParent(null);
+			if ($this->body instanceof \RepositoryObjectParentInterface) $this->body->setParent(null);
 			$this->body = $body;
-			if ($body instanceof \RepositoryNodeObject) $body->setParent($this, "body", "tree");
+			if ($body instanceof \RepositoryObjectParentInterface) $body->setParent($this, "body", "tree");
 			if ($notify) {
 				$this->notifyFragmentDirty('tree');
 			}
@@ -166,9 +173,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->main_loaded) {
 				$this->loadFragment('main');
 			}
-			if ($this->range instanceof \RepositoryNodeObject) $this->range->setParent(null);
+			if ($this->range instanceof \RepositoryObjectParentInterface) $this->range->setParent(null);
 			$this->range = $range;
-			if ($range instanceof \RepositoryNodeObject) $range->setParent($this, "range", "main");
+			if ($range instanceof \RepositoryObjectParentInterface) $range->setParent($this, "range", "main");
 			if ($notify) {
 				$this->notifyFragmentDirty('main');
 			}
@@ -191,9 +198,9 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->main_loaded) {
 				$this->loadFragment('main');
 			}
-			if ($this->humanRange instanceof \RepositoryNodeObject) $this->humanRange->setParent(null);
+			if ($this->humanRange instanceof \RepositoryObjectParentInterface) $this->humanRange->setParent(null);
 			$this->humanRange = $humanRange;
-			if ($humanRange instanceof \RepositoryNodeObject) $humanRange->setParent($this, "humanRange", "main");
+			if ($humanRange instanceof \RepositoryObjectParentInterface) $humanRange->setParent($this, "humanRange", "main");
 			if ($notify) {
 				$this->notifyFragmentDirty('main');
 			}
@@ -219,9 +226,7 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->main_loaded) {
 				$this->loadFragment('main');
 			}
-			if ($this->name instanceof \RepositoryNodeObject) $this->name->setParent(null);
 			$this->name = $name;
-			if ($name instanceof \RepositoryNodeObject) $name->setParent($this, "name", "main");
 			if ($notify) {
 				$this->notifyFragmentDirty('main');
 			}
@@ -238,15 +243,40 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 		return $this->name;
 	}
 	
+	public function setGraphPrev(\RepositoryObjectReference $graphPrev = null, $notify = true)
+	{
+		if ($this->graphPrev !== $graphPrev) {
+			if (!$this->graph_loaded) {
+				$this->loadFragment('graph');
+			}
+			if ($this->graphPrev instanceof \RepositoryObjectParentInterface) $this->graphPrev->setParent(null);
+			$this->graphPrev = $graphPrev;
+			if ($graphPrev instanceof \RepositoryObjectParentInterface) $graphPrev->setParent($this, "graphPrev", "graph");
+			if ($notify) {
+				$this->notifyFragmentDirty('graph');
+			}
+		}
+	}
+	public function getGraphPrev($enforce = true)
+	{
+		if (!$this->graph_loaded) {
+			$this->loadFragment('graph');
+		}
+		if ($enforce && $this->graphPrev === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null graphPrev.");
+		}
+		return $this->graphPrev;
+	}
+	
 	public function setType(Type $type = null, $notify = true)
 	{
 		if ($this->type !== $type) {
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
-			if ($this->type instanceof \RepositoryNodeObject) $this->type->setParent(null);
+			if ($this->type instanceof \RepositoryObjectParentInterface) $this->type->setParent(null);
 			$this->type = $type;
-			if ($type instanceof \RepositoryNodeObject) $type->setParent($this, "type", "type");
+			if ($type instanceof \RepositoryObjectParentInterface) $type->setParent($this, "type", "type");
 			if ($notify) {
 				$this->notifyFragmentDirty('type');
 			}
@@ -272,9 +302,7 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->code_loaded) {
 				$this->loadFragment('code');
 			}
-			if ($this->indepDeclCode instanceof \RepositoryNodeObject) $this->indepDeclCode->setParent(null);
 			$this->indepDeclCode = $indepDeclCode;
-			if ($indepDeclCode instanceof \RepositoryNodeObject) $indepDeclCode->setParent($this, "indepDeclCode", "code");
 			if ($notify) {
 				$this->notifyFragmentDirty('code');
 			}
@@ -300,9 +328,7 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->code_loaded) {
 				$this->loadFragment('code');
 			}
-			if ($this->depDeclCode instanceof \RepositoryNodeObject) $this->depDeclCode->setParent(null);
 			$this->depDeclCode = $depDeclCode;
-			if ($depDeclCode instanceof \RepositoryNodeObject) $depDeclCode->setParent($this, "depDeclCode", "code");
 			if ($notify) {
 				$this->notifyFragmentDirty('code');
 			}
@@ -328,9 +354,7 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->code_loaded) {
 				$this->loadFragment('code');
 			}
-			if ($this->indepDefCode instanceof \RepositoryNodeObject) $this->indepDefCode->setParent(null);
 			$this->indepDefCode = $indepDefCode;
-			if ($indepDefCode instanceof \RepositoryNodeObject) $indepDefCode->setParent($this, "indepDefCode", "code");
 			if ($notify) {
 				$this->notifyFragmentDirty('code');
 			}
@@ -356,9 +380,7 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			if (!$this->code_loaded) {
 				$this->loadFragment('code');
 			}
-			if ($this->depDefCode instanceof \RepositoryNodeObject) $this->depDefCode->setParent(null);
 			$this->depDefCode = $depDefCode;
-			if ($depDefCode instanceof \RepositoryNodeObject) $depDefCode->setParent($this, "depDefCode", "code");
 			if ($notify) {
 				$this->notifyFragmentDirty('code');
 			}

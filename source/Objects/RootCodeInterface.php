@@ -5,15 +5,15 @@ namespace Objects;
 
 interface RootCodeInterface
 {
-	public function setIndepDeclCode($indepDeclCode);
-	public function getIndepDeclCode();
+	public function setIndepDeclCode($indepDeclCode, $notify = true);
+	public function getIndepDeclCode($enforce = true);
 	
-	public function setDepDeclCode($depDeclCode);
-	public function getDepDeclCode();
+	public function setDepDeclCode($depDeclCode, $notify = true);
+	public function getDepDeclCode($enforce = true);
 	
-	public function setIndepDefCode($indepDefCode);
-	public function getIndepDefCode();
+	public function setIndepDefCode($indepDefCode, $notify = true);
+	public function getIndepDefCode($enforce = true);
 	
-	public function setDepDefCode($depDefCode);
-	public function getDepDefCode();
+	public function setDepDefCode($depDefCode, $notify = true);
+	public function getDepDefCode($enforce = true);
 }

@@ -3,13 +3,20 @@
 
 class RepositoryObjectSerializer
 {
-	static public function serialize(RepositoryObject $object, $fragment)
+	protected $repository;
+
+	public function __construct(Repository $repo)
 	{
-		static::println(0, "Serializing $fragment", $object->getId());
+		$this->repository = $repo;
+	}
+
+	public function serialize(RepositoryObject $object, $fragment)
+	{
+		$this->println(0, "Serializing $fragment", $object->getId());
 
 		// Array objects are a special case.
 		if ($object instanceof RepositoryObjectArray) {
-			return static::serializeValue($object, $fragment);
+			return $this->serializeValue($object, $fragment);
 		}
 
 		// Otherwise produce regular output.
@@ -30,7 +37,7 @@ class RepositoryObjectSerializer
 				$getter = "get".ucwords($name);
 				$value = $object->$getter(false);
 				if ($value !== null) {
-					$a = static::serializeValue($value, $fragment);
+					$a = $this->serializeValue($value, $fragment);
 					if ($a) $output[$name] = $a;
 				}
 			}
@@ -45,9 +52,9 @@ class RepositoryObjectSerializer
 				$value = $object->$getter(false);
 				if ($value !== null) {
 					if ($value instanceof RepositoryObjectArray) {
-						$a = static::serializeValue($value, $fragment);
+						$a = $this->serializeValue($value, $fragment);
 					} else {
-						$a = static::serialize($value, $fragment);
+						$a = $this->serialize($value, $fragment);
 					}
 					if ($a) $output[$name] = $a;
 				}
@@ -57,7 +64,7 @@ class RepositoryObjectSerializer
 		return $output;
 	}
 
-	static private function serializeValue($value, $fragment)
+	private function serializeValue($value, $fragment)
 	{
 		// Strings, numbers and booleans are easy.
 		if (is_string($value) || is_numeric($value) || is_bool($value))
@@ -67,7 +74,7 @@ class RepositoryObjectSerializer
 		if ($value instanceof RepositoryObjectArray) {
 			$output = array();
 			foreach ($value->getElements() as $index => $v) {
-				$output[$index] = static::serialize($v, $fragment);
+				$output[$index] = $this->serialize($v, $fragment);
 				if ($fragment == "tree")
 					$output[$index]["class"] = $v->getClass();
 			}
@@ -79,15 +86,21 @@ class RepositoryObjectSerializer
 			// If the value is inside the tree fragment, only serialize the given fragment.
 			// Otherwise serialize all fragments at once.
 			if ($value->isInTree()) {
-				$output = static::serialize($value, $fragment);
+				$output = $this->serialize($value, $fragment);
 			} else {
 				$output = array();
 				foreach ($value->getFragmentNames() as $name) {
-					$output = array_merge($output, static::serialize($value, $name));
+					$output = array_merge($output, $this->serialize($value, $name));
 				}
 			}
 			$output["class"] = $value->getClass();
 			return $output;
+		}
+
+		// References.
+		if ($value instanceof RepositoryObjectReference) {
+			$id = $value->getId();
+			return "@ref ".($id !== null ? $id : "<null>");
 		}
 
 		// Complain about the input value now since we're unable to process it.
@@ -99,12 +112,12 @@ class RepositoryObjectSerializer
 	 * $fragment of the given object $object and unserializes its contents into
 	 * $object.
 	 */
-	static public function unserialize(RepositoryObject $object, $fragment, $input)
+	public function unserialize(RepositoryObject $object, $fragment, $input)
 	{
 		if (!is_array($input) && !is_object($input)) {
 			throw new \InvalidArgumentException("Input must either be an array or an object.");
 		}
-		static::println(0, "Unserializing $fragment", $object->getId());
+		$this->println(0, "Unserializing $fragment", $object->getId());
 
 		// Unserialize each property individually.
 		if (in_array($fragment, $object->getFragmentNames())) {
@@ -114,7 +127,7 @@ class RepositoryObjectSerializer
 				$name = $property["name"];
 				$setter = "set".ucwords($name);
 				if (isset($input->$name)) {
-					$value = static::unserializeValue($input->$name, $fragment);
+					$value = $this->unserializeValue($input->$name, $fragment);
 					$object->$setter($value, false);
 				}
 			}
@@ -128,15 +141,15 @@ class RepositoryObjectSerializer
 				$name = $property["name"];
 				$getter = "get".ucwords($name);
 				if (isset($input->$name)) {
-					static::println(2, "Also loading $fragment for $name");
+					$this->println(2, "Also loading $fragment for $name");
 					$obj = $object->$getter();
 					if (!$obj) {
 						throw new \RuntimeException("Object ID {$object->getId()} is expected to have at least a bare version of $name which is not the case. Maybe the tree fragment was not properly loaded?");
 					}
 					if ($obj instanceof RepositoryObjectArray) {
-						static::unserializeArray($obj, $fragment, $input->$name);
+						$this->unserializeArray($obj, $fragment, $input->$name);
 					} else {
-						static::unserialize($obj, $fragment, $input->$name);
+						$this->unserialize($obj, $fragment, $input->$name);
 					}
 				}
 			}
@@ -148,8 +161,15 @@ class RepositoryObjectSerializer
 	 * This function will produce bare RepositoryObject instances where
 	 * appropriate.
 	 */
-	static private function unserializeValue($value, $fragment)
+	private function unserializeValue($value, $fragment)
 	{
+		// References.
+		if (is_string($value) && preg_match("/^@ref (.*)/", $value, $m)) {
+			$obj = new RepositoryObjectReference($this->repository);
+			$obj->set($m[1] == "<null>" ? null : $m[1]);
+			return $obj;
+		}
+
 		// Strings, numbers and booleans are easy.
 		if (is_string($value) || is_numeric($value) || is_bool($value))
 			return $value;
@@ -160,16 +180,16 @@ class RepositoryObjectSerializer
 				throw new \InvalidArgumentException("Object value is missing 'class' field required for unserialization: ".print_r($value, true));
 			}
 			$class = "\\Objects\\".$value->class;
-			static::println(1,"Instantiating bare object $class");
+			$this->println(1,"Instantiating bare object $class");
 			$obj = new $class;
 
 			// Unserialize the object's tree if we're currently unserializing the tree fragment.
 			// Otherwise unserialize all fragments of the object as it is contained entirely here.
 			if ($fragment == "tree") {
-				static::unserialize($obj, "tree", $value);
+				$this->unserialize($obj, "tree", $value);
 			} else {
 				foreach ($obj->getFragmentNames() as $name) {
-					static::unserialize($obj, $name, $value);
+					$this->unserialize($obj, $name, $value);
 				}
 			}
 
@@ -180,7 +200,7 @@ class RepositoryObjectSerializer
 		if (is_array($value)) {
 			$array = new RepositoryObjectArray;
 			foreach ($value as $i => $v) {
-				$array->set($i, static::unserializeValue($v, $fragment));
+				$array->set($i, $this->unserializeValue($v, $fragment));
 			}
 			return $array;
 		}
@@ -192,16 +212,16 @@ class RepositoryObjectSerializer
 	/**
 	 * Performs the same task on arrays as unserialize() performs on objects.
 	 */
-	static private function unserializeArray(RepositoryObjectArray $array, $fragment, array $input)
+	private function unserializeArray(RepositoryObjectArray $array, $fragment, array $input)
 	{
 		foreach ($input as $index => $value) {
-			static::unserialize($array->get($index), $fragment, $value);
+			$this->unserialize($array->get($index), $fragment, $value);
 		}
 	}
 
 	// Logging facilities.
 	static public $verbosity = 0;
-	static private function println($verbosity, $ln, $info = null)
+	private function println($verbosity, $ln, $info = null)
 	{
 		if (static::$verbosity > $verbosity)
 			Log::println($ln, get_class(), $info);

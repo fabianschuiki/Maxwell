@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, TypeInterface, ExprCodeInterface
+class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, BindingInterface, TypeInterface, ExprCodeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -16,6 +16,11 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 	protected $range;
 	protected $humanRange;
 	protected $name;
+	
+	// graph fragment
+	public $graph_dirty  = false;
+	public $graph_loaded = false;
+	protected $graphPrev;
 	
 	// binding fragment
 	public $binding_dirty  = false;
@@ -46,7 +51,7 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 	
 	public function getFragmentNames()
 	{
-		return array("main","binding","type","code");
+		return array("main","graph","binding","type","code");
 	}
 	
 	public function getFragment($name)
@@ -56,6 +61,8 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 				array("name" => "range", "type" => "\Source\Range"), 
 				array("name" => "humanRange", "type" => "\Source\Range"), 
 				array("name" => "name", "type" => "string"));
+			case "graph": return array(
+				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
 			case "binding": return array(
 				array("name" => "bindingTarget", "type" => "Expr"), 
 				array("name" => "bindingDebug", "type" => "string"));
@@ -82,9 +89,9 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			if (!$this->main_loaded) {
 				$this->loadFragment('main');
 			}
-			if ($this->range instanceof \RepositoryNodeObject) $this->range->setParent(null);
+			if ($this->range instanceof \RepositoryObjectParentInterface) $this->range->setParent(null);
 			$this->range = $range;
-			if ($range instanceof \RepositoryNodeObject) $range->setParent($this, "range", "main");
+			if ($range instanceof \RepositoryObjectParentInterface) $range->setParent($this, "range", "main");
 			if ($notify) {
 				$this->notifyFragmentDirty('main');
 			}
@@ -107,9 +114,9 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			if (!$this->main_loaded) {
 				$this->loadFragment('main');
 			}
-			if ($this->humanRange instanceof \RepositoryNodeObject) $this->humanRange->setParent(null);
+			if ($this->humanRange instanceof \RepositoryObjectParentInterface) $this->humanRange->setParent(null);
 			$this->humanRange = $humanRange;
-			if ($humanRange instanceof \RepositoryNodeObject) $humanRange->setParent($this, "humanRange", "main");
+			if ($humanRange instanceof \RepositoryObjectParentInterface) $humanRange->setParent($this, "humanRange", "main");
 			if ($notify) {
 				$this->notifyFragmentDirty('main');
 			}
@@ -135,9 +142,7 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			if (!$this->main_loaded) {
 				$this->loadFragment('main');
 			}
-			if ($this->name instanceof \RepositoryNodeObject) $this->name->setParent(null);
 			$this->name = $name;
-			if ($name instanceof \RepositoryNodeObject) $name->setParent($this, "name", "main");
 			if ($notify) {
 				$this->notifyFragmentDirty('main');
 			}
@@ -154,15 +159,40 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 		return $this->name;
 	}
 	
+	public function setGraphPrev(\RepositoryObjectReference $graphPrev = null, $notify = true)
+	{
+		if ($this->graphPrev !== $graphPrev) {
+			if (!$this->graph_loaded) {
+				$this->loadFragment('graph');
+			}
+			if ($this->graphPrev instanceof \RepositoryObjectParentInterface) $this->graphPrev->setParent(null);
+			$this->graphPrev = $graphPrev;
+			if ($graphPrev instanceof \RepositoryObjectParentInterface) $graphPrev->setParent($this, "graphPrev", "graph");
+			if ($notify) {
+				$this->notifyFragmentDirty('graph');
+			}
+		}
+	}
+	public function getGraphPrev($enforce = true)
+	{
+		if (!$this->graph_loaded) {
+			$this->loadFragment('graph');
+		}
+		if ($enforce && $this->graphPrev === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null graphPrev.");
+		}
+		return $this->graphPrev;
+	}
+	
 	public function setBindingTarget(Expr $bindingTarget = null, $notify = true)
 	{
 		if ($this->bindingTarget !== $bindingTarget) {
 			if (!$this->binding_loaded) {
 				$this->loadFragment('binding');
 			}
-			if ($this->bindingTarget instanceof \RepositoryNodeObject) $this->bindingTarget->setParent(null);
+			if ($this->bindingTarget instanceof \RepositoryObjectParentInterface) $this->bindingTarget->setParent(null);
 			$this->bindingTarget = $bindingTarget;
-			if ($bindingTarget instanceof \RepositoryNodeObject) $bindingTarget->setParent($this, "bindingTarget", "binding");
+			if ($bindingTarget instanceof \RepositoryObjectParentInterface) $bindingTarget->setParent($this, "bindingTarget", "binding");
 			if ($notify) {
 				$this->notifyFragmentDirty('binding');
 			}
@@ -188,9 +218,7 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			if (!$this->binding_loaded) {
 				$this->loadFragment('binding');
 			}
-			if ($this->bindingDebug instanceof \RepositoryNodeObject) $this->bindingDebug->setParent(null);
 			$this->bindingDebug = $bindingDebug;
-			if ($bindingDebug instanceof \RepositoryNodeObject) $bindingDebug->setParent($this, "bindingDebug", "binding");
 			if ($notify) {
 				$this->notifyFragmentDirty('binding');
 			}
@@ -213,9 +241,9 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
-			if ($this->type instanceof \RepositoryNodeObject) $this->type->setParent(null);
+			if ($this->type instanceof \RepositoryObjectParentInterface) $this->type->setParent(null);
 			$this->type = $type;
-			if ($type instanceof \RepositoryNodeObject) $type->setParent($this, "type", "type");
+			if ($type instanceof \RepositoryObjectParentInterface) $type->setParent($this, "type", "type");
 			if ($notify) {
 				$this->notifyFragmentDirty('type');
 			}
@@ -241,9 +269,7 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
-			if ($this->someText instanceof \RepositoryNodeObject) $this->someText->setParent(null);
 			$this->someText = $someText;
-			if ($someText instanceof \RepositoryNodeObject) $someText->setParent($this, "someText", "type");
 			if ($notify) {
 				$this->notifyFragmentDirty('type');
 			}
@@ -269,9 +295,7 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			if (!$this->code_loaded) {
 				$this->loadFragment('code');
 			}
-			if ($this->exprCode instanceof \RepositoryNodeObject) $this->exprCode->setParent(null);
 			$this->exprCode = $exprCode;
-			if ($exprCode instanceof \RepositoryNodeObject) $exprCode->setParent($this, "exprCode", "code");
 			if ($notify) {
 				$this->notifyFragmentDirty('code');
 			}
@@ -297,9 +321,7 @@ class IdentifierExpr extends Expr implements RangeInterface, BindingInterface, T
 			if (!$this->code_loaded) {
 				$this->loadFragment('code');
 			}
-			if ($this->stmtsCode instanceof \RepositoryNodeObject) $this->stmtsCode->setParent(null);
 			$this->stmtsCode = $stmtsCode;
-			if ($stmtsCode instanceof \RepositoryNodeObject) $stmtsCode->setParent($this, "stmtsCode", "code");
 			if ($notify) {
 				$this->notifyFragmentDirty('code');
 			}

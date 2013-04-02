@@ -1,7 +1,7 @@
 <?php
 /* Copyright © 2013 Fabian Schuiki */
 
-abstract class RepositoryNodeObject extends RepositoryObject
+abstract class RepositoryNodeObject extends RepositoryObject implements RepositoryObjectParentInterface
 {
 	/**
 	 * Returns the object's ID which consists of the root ID and the tree path
@@ -45,7 +45,7 @@ abstract class RepositoryNodeObject extends RepositoryObject
 		$this->parent->loadFragment($fragment);
 	}
 
-	protected function notifyFragmentDirty($fragment)
+	public function notifyFragmentDirty($fragment)
 	{
 		// If this object contains this fragment mark it as dirty.
 		if (in_array($fragment, $this->getFragmentNames())) {
@@ -69,7 +69,7 @@ abstract class RepositoryNodeObject extends RepositoryObject
 	}
 
 
-	abstract public function setParent(\RepositoryObject $parent, $key = null, $fragment = null);
+	abstract public function setParent(RepositoryObject $parent, $key = null, $fragment = null);
 	//abstract public function getFragmentNames();
 	//abstract public function getFragment($name);
 }

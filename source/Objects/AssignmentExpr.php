@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class AssignmentExpr extends Expr
+class AssignmentExpr extends Expr implements GraphInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -16,6 +16,11 @@ class AssignmentExpr extends Expr
 	protected $lhs;
 	protected $rhs;
 	
+	// graph fragment
+	public $graph_dirty  = false;
+	public $graph_loaded = false;
+	protected $graphPrev;
+	
 	
 	/* GENERAL */
 	public function setParent(\RepositoryObject $parent, $key = null, $fragment = null)
@@ -27,7 +32,7 @@ class AssignmentExpr extends Expr
 	
 	public function getFragmentNames()
 	{
-		return array("tree");
+		return array("tree","graph");
 	}
 	
 	public function getFragment($name)
@@ -36,6 +41,8 @@ class AssignmentExpr extends Expr
 			case "tree": return array(
 				array("name" => "lhs", "type" => "Expr"), 
 				array("name" => "rhs", "type" => "Expr"));
+			case "graph": return array(
+				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -53,9 +60,9 @@ class AssignmentExpr extends Expr
 			if (!$this->tree_loaded) {
 				$this->loadFragment('tree');
 			}
-			if ($this->lhs instanceof \RepositoryNodeObject) $this->lhs->setParent(null);
+			if ($this->lhs instanceof \RepositoryObjectParentInterface) $this->lhs->setParent(null);
 			$this->lhs = $lhs;
-			if ($lhs instanceof \RepositoryNodeObject) $lhs->setParent($this, "lhs", "tree");
+			if ($lhs instanceof \RepositoryObjectParentInterface) $lhs->setParent($this, "lhs", "tree");
 			if ($notify) {
 				$this->notifyFragmentDirty('tree');
 			}
@@ -78,9 +85,9 @@ class AssignmentExpr extends Expr
 			if (!$this->tree_loaded) {
 				$this->loadFragment('tree');
 			}
-			if ($this->rhs instanceof \RepositoryNodeObject) $this->rhs->setParent(null);
+			if ($this->rhs instanceof \RepositoryObjectParentInterface) $this->rhs->setParent(null);
 			$this->rhs = $rhs;
-			if ($rhs instanceof \RepositoryNodeObject) $rhs->setParent($this, "rhs", "tree");
+			if ($rhs instanceof \RepositoryObjectParentInterface) $rhs->setParent($this, "rhs", "tree");
 			if ($notify) {
 				$this->notifyFragmentDirty('tree');
 			}
@@ -95,5 +102,30 @@ class AssignmentExpr extends Expr
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null rhs.");
 		}
 		return $this->rhs;
+	}
+	
+	public function setGraphPrev(\RepositoryObjectReference $graphPrev = null, $notify = true)
+	{
+		if ($this->graphPrev !== $graphPrev) {
+			if (!$this->graph_loaded) {
+				$this->loadFragment('graph');
+			}
+			if ($this->graphPrev instanceof \RepositoryObjectParentInterface) $this->graphPrev->setParent(null);
+			$this->graphPrev = $graphPrev;
+			if ($graphPrev instanceof \RepositoryObjectParentInterface) $graphPrev->setParent($this, "graphPrev", "graph");
+			if ($notify) {
+				$this->notifyFragmentDirty('graph');
+			}
+		}
+	}
+	public function getGraphPrev($enforce = true)
+	{
+		if (!$this->graph_loaded) {
+			$this->loadFragment('graph');
+		}
+		if ($enforce && $this->graphPrev === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null graphPrev.");
+		}
+		return $this->graphPrev;
 	}
 }

@@ -15,10 +15,10 @@ class BindIdentifiersStage extends DriverStage
 
 		//$this->println("Processing ".get_class($object), $object->getId());
 		if ($object instanceof \Objects\IdentifierExpr) {
-			$this->println(0, "Binding '{$object->getName()}' {$object->getId()}", $object->getId());
+			$this->println(1, "Binding '{$object->getName()}' {$object->getId()}");
 			$existing = $object->getBindingDebug(false);
 			if ($existing) {
-				$this->println(0, "- Already contains '$existing'", $object->getId());
+				$this->println(1, "- Already contains '$existing'");
 			} else {
 				$object->setBindingDebug("<target {$object->getName()}>");
 			}

@@ -6,15 +6,6 @@ Array
                 (
                     [0] => Array
                         (
-                            [typeExpr] => Array
-                                (
-                                    [expr] => Array
-                                        (
-                                            [bindingTarget] => @ref <null>
-                                        )
-
-                                )
-
                         )
 
                 )
@@ -27,15 +18,6 @@ Array
                 (
                     [0] => Array
                         (
-                            [typeExpr] => Array
-                                (
-                                    [expr] => Array
-                                        (
-                                            [bindingTarget] => @ref <null>
-                                        )
-
-                                )
-
                         )
 
                 )

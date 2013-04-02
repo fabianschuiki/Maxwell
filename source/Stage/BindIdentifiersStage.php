@@ -53,7 +53,7 @@ class BindIdentifiersStage extends DriverStage
 
 			// Store the binding.
 			$ref->set($target);
-			$object->setBindingTarget($ref);
+			$object->setBindingTarget($target !== null ? $ref : null);
 		}
 	}
 }

@@ -1,1 +1,1 @@
-{"inputs":{"arguments":[{"typeExpr":{"expr":{"bindingTarget":"@ref <null>"}}}]},"outputs":{"arguments":[{"typeExpr":{"expr":{"bindingTarget":"@ref <null>"}}}]},"body":{"stmts":[{"expr":{"lhs":{"bindingTarget":"@ref 1.1.outputs.arguments.0"},"rhs":{"lhs":{"bindingTarget":"@ref 1.1.inputs.arguments.0"}}}}]}}
+{"inputs":{"arguments":[[]]},"outputs":{"arguments":[[]]},"body":{"stmts":[{"expr":{"lhs":{"bindingTarget":"@ref 1.1.outputs.arguments.0"},"rhs":{"lhs":{"bindingTarget":"@ref 1.1.inputs.arguments.0"}}}}]}}

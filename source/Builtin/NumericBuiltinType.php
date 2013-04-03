@@ -2,7 +2,7 @@
 /* Copyright © 2013 Fabian Schuiki */
 namespace Builtin;
 
-class NumericBuiltinType extends BuiltinObject implements \NamedObject
+class NumericBuiltinType extends BuiltinRootObject implements \NamedObject
 {
 	protected $name;
 

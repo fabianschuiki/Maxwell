@@ -104,6 +104,15 @@
 
 		"ConcreteType": {
 			"main": ["ref definition"]
+			},
+		"FunctionType": {
+			"main": ["FunctionArgumentTupleType inputs", "FunctionArgumentTupleType outputs"]
+			},
+		"FunctionArgumentTupleType": {
+			"main": ["array arguments"]
+			},
+		"FunctionArgumentType": {
+			"main": ["string name", "type"]
 			}
 	}
 }

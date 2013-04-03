@@ -23,11 +23,9 @@ class BuiltinObjects
 		$this->add($type_real);
 
 		// Operators on int and real
-		$mul_ii = new Builtin\BinaryBuiltinOperator($repo, $this->makeId());
-		$mul_ii->setName("*");
+		$mul_ii = new Builtin\BinaryBuiltinOperator($repo, $this->makeId(), "*", $type_int, $type_int, $type_int);
 		$this->add($mul_ii);
-		$mul_ir = new Builtin\BinaryBuiltinOperator($repo, $this->makeId());
-		$mul_ir->setName("*");
+		$mul_ir = new Builtin\BinaryBuiltinOperator($repo, $this->makeId(), "*", $type_int, $type_real, $type_real);
 		$this->add($mul_ir);
 	}
 

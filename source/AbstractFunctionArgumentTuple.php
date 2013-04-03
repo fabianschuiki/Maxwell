@@ -3,6 +3,5 @@
 
 interface AbstractFunctionArgumentTuple
 {
-	public function setArguments(RepositoryObjectArray $arguments = null, $notify = true);
 	public function getArguments($enforce = true);
 }

@@ -2,17 +2,13 @@
 /* Copyright © 2013 Fabian Schuiki */
 namespace Builtin;
 
-class BuiltinObject
+abstract class BuiltinObject
 {
-	protected $repository;
-	protected $id;
-
-	public function __construct(\Repository $repo, $id)
+	abstract public function getId();
+	
+	public function get($property, $enforce = true)
 	{
-		$this->repository = $repo;
-		$this->id = $id;
+		$getter = "get".ucfirst($property);
+		return $this->$getter($enforce);
 	}
-
-	public function getId() { return $this->id; }
-	public function getRepository() { return $this->repository; }
 }

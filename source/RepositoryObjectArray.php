@@ -47,6 +47,11 @@ class RepositoryObjectArray extends RepositoryNodeObject
 		return $this->elements;
 	}
 
+	public function getCount()
+	{
+		return count($this->elements);
+	}
+
 	protected $parent = null;
 	protected $parent_key = null;
 	protected $parent_fragment = null;

@@ -30,7 +30,7 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 	// type fragment
 	public $type_dirty  = false;
 	public $type_loaded = true;
-	protected $type;
+	protected $possibleType;
 	protected $someText;
 	
 	// code fragment
@@ -65,7 +65,7 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 			case "binding": return array(
 				array("name" => "bindingTarget", "type" => "\RepositoryObjectReference"));
 			case "type": return array(
-				array("name" => "type", "type" => "Type"), 
+				array("name" => "possibleType", "type" => "Type"), 
 				array("name" => "someText", "type" => "string"));
 			case "code": return array(
 				array("name" => "exprCode", "type" => "string"), 
@@ -207,29 +207,29 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 		return $this->bindingTarget;
 	}
 	
-	public function setType(Type $type = null, $notify = true)
+	public function setPossibleType(Type $possibleType = null, $notify = true)
 	{
-		if ($this->type !== $type) {
+		if ($this->possibleType !== $possibleType) {
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
-			if ($this->type instanceof \RepositoryObjectParentInterface) $this->type->setParent(null);
-			$this->type = $type;
-			if ($type instanceof \RepositoryObjectParentInterface) $type->setParent($this, "type", "type");
+			if ($this->possibleType instanceof \RepositoryObjectParentInterface) $this->possibleType->setParent(null);
+			$this->possibleType = $possibleType;
+			if ($possibleType instanceof \RepositoryObjectParentInterface) $possibleType->setParent($this, "possibleType", "type");
 			if ($notify) {
 				$this->notifyFragmentDirty('type');
 			}
 		}
 	}
-	public function getType($enforce = true)
+	public function getPossibleType($enforce = true)
 	{
 		if (!$this->type_loaded) {
 			$this->loadFragment('type');
 		}
-		if ($enforce && $this->type === null) {
-			throw new \RuntimeException("Object {$this->getId()} expected to have non-null type.");
+		if ($enforce && $this->possibleType === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null possibleType.");
 		}
-		return $this->type;
+		return $this->possibleType;
 	}
 	
 	public function setSomeText($someText, $notify = true)

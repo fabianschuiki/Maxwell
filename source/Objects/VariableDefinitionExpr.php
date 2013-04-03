@@ -22,7 +22,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 	// type fragment
 	public $type_dirty  = false;
 	public $type_loaded = true;
-	protected $type;
+	protected $possibleType;
 	
 	// code fragment
 	public $code_dirty  = false;
@@ -54,7 +54,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 				array("name" => "typeExpr", "type" => "TypeExpr"), 
 				array("name" => "initialExpr", "type" => "Expr"));
 			case "type": return array(
-				array("name" => "type", "type" => "Type"));
+				array("name" => "possibleType", "type" => "Type"));
 			case "code": return array(
 				array("name" => "exprCode", "type" => "string"), 
 				array("name" => "stmtsCode", "type" => "string"));
@@ -195,29 +195,29 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 		return $this->initialExpr;
 	}
 	
-	public function setType(Type $type = null, $notify = true)
+	public function setPossibleType(Type $possibleType = null, $notify = true)
 	{
-		if ($this->type !== $type) {
+		if ($this->possibleType !== $possibleType) {
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
-			if ($this->type instanceof \RepositoryObjectParentInterface) $this->type->setParent(null);
-			$this->type = $type;
-			if ($type instanceof \RepositoryObjectParentInterface) $type->setParent($this, "type", "type");
+			if ($this->possibleType instanceof \RepositoryObjectParentInterface) $this->possibleType->setParent(null);
+			$this->possibleType = $possibleType;
+			if ($possibleType instanceof \RepositoryObjectParentInterface) $possibleType->setParent($this, "possibleType", "type");
 			if ($notify) {
 				$this->notifyFragmentDirty('type');
 			}
 		}
 	}
-	public function getType($enforce = true)
+	public function getPossibleType($enforce = true)
 	{
 		if (!$this->type_loaded) {
 			$this->loadFragment('type');
 		}
-		if ($enforce && $this->type === null) {
-			throw new \RuntimeException("Object {$this->getId()} expected to have non-null type.");
+		if ($enforce && $this->possibleType === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null possibleType.");
 		}
-		return $this->type;
+		return $this->possibleType;
 	}
 	
 	public function setExprCode($exprCode, $notify = true)

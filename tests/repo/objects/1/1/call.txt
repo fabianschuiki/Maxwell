@@ -64,6 +64,12 @@ Array
                                                             [class] => CallCandidate
                                                         )
 
+                                                    [1] => Array
+                                                        (
+                                                            [func] => @ref 0.4
+                                                            [class] => CallCandidate
+                                                        )
+
                                                 )
 
                                         )

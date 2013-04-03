@@ -2,7 +2,7 @@
 /* Copyright © 2013 Fabian Schuiki */
 namespace Builtin;
 
-class BinaryBuiltinOperator extends BuiltinObject implements \NameInterface
+class BinaryBuiltinOperator extends BuiltinObject implements \NamedObject
 {
 	protected $name;
 	

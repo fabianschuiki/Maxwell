@@ -6,7 +6,7 @@
 		"binding": [
 			"ref bindingTarget"],
 		"type": [
-			"Type type"],
+			"Type possibleType"],
 		"root_code": [
 			"string indepDeclCode",
 			"string depDeclCode",

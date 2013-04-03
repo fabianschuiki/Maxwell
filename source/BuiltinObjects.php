@@ -1,6 +1,9 @@
 <?php
 /* Copyright © 2013 Fabian Schuiki */
 
+/**
+ * Container class for all the builtin types of the language.
+ */
 class BuiltinObjects
 {
 	protected $objects = array();
@@ -20,12 +23,15 @@ class BuiltinObjects
 		$this->add($type_real);
 
 		// Operators on int and real
-		$mul_int_int = new Builtin\BinaryBuiltinOperator($repo, $this->makeId());
-		$mul_int_int->setName("*");
-		$this->add($mul_int_int);
+		$mul_ii = new Builtin\BinaryBuiltinOperator($repo, $this->makeId());
+		$mul_ii->setName("*");
+		$this->add($mul_ii);
+		$mul_ir = new Builtin\BinaryBuiltinOperator($repo, $this->makeId());
+		$mul_ir->setName("*");
+		$this->add($mul_ir);
 	}
 
-	private function add(\NameInterface $object)
+	private function add(NamedObject $object)
 	{
 		$this->objects[$object->getId()] = $object;
 		$this->names[$object->getId()] = $object->getName();

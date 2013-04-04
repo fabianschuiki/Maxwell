@@ -60,13 +60,13 @@ Array
                                                 (
                                                     [0] => Array
                                                         (
-                                                            [func] => @ref 0.3
+                                                            [func] => @ref 0.4
                                                             [class] => CallCandidate
                                                         )
 
                                                     [1] => Array
                                                         (
-                                                            [func] => @ref 0.4
+                                                            [func] => @ref 0.5
                                                             [class] => CallCandidate
                                                         )
 

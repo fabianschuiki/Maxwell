@@ -11,7 +11,7 @@ Array
                                     [name] => x
                                     [type] => Array
                                         (
-                                            [definition] => @ref 0.1
+                                            [definition] => @ref 0.2
                                             [class] => ConcreteType
                                         )
 
@@ -32,7 +32,7 @@ Array
                                     [name] => y
                                     [type] => Array
                                         (
-                                            [definition] => @ref 0.1
+                                            [definition] => @ref 0.2
                                             [class] => ConcreteType
                                         )
 
@@ -58,7 +58,7 @@ Array
                                     [name] => x
                                     [type] => Array
                                         (
-                                            [definition] => @ref 0.1
+                                            [definition] => @ref 0.2
                                             [class] => ConcreteType
                                         )
 
@@ -79,7 +79,7 @@ Array
                                     [name] => x
                                     [type] => Array
                                         (
-                                            [definition] => @ref 0.1
+                                            [definition] => @ref 0.2
                                             [class] => ConcreteType
                                         )
 
@@ -90,7 +90,7 @@ Array
                                 (
                                     [evaluatedType] => Array
                                         (
-                                            [definition] => @ref 0.1
+                                            [definition] => @ref 0.2
                                             [class] => ConcreteType
                                         )
 
@@ -113,7 +113,7 @@ Array
                                     [name] => y
                                     [type] => Array
                                         (
-                                            [definition] => @ref 0.1
+                                            [definition] => @ref 0.2
                                             [class] => ConcreteType
                                         )
 
@@ -134,7 +134,7 @@ Array
                                     [name] => y
                                     [type] => Array
                                         (
-                                            [definition] => @ref 0.1
+                                            [definition] => @ref 0.2
                                             [class] => ConcreteType
                                         )
 
@@ -145,7 +145,7 @@ Array
                                 (
                                     [evaluatedType] => Array
                                         (
-                                            [definition] => @ref 0.1
+                                            [definition] => @ref 0.2
                                             [class] => ConcreteType
                                         )
 
@@ -165,6 +165,22 @@ Array
                         (
                             [expr] => Array
                                 (
+                                    [possibleType] => Array
+                                        (
+                                            [definition] => @ref 0.2
+                                            [class] => ConcreteType
+                                        )
+
+                                    [lhs] => Array
+                                        (
+                                            [possibleType] => Array
+                                                (
+                                                    [definition] => @ref 0.2
+                                                    [class] => ConcreteType
+                                                )
+
+                                        )
+
                                     [rhs] => Array
                                         (
                                             [possibleType] => Array
@@ -173,49 +189,29 @@ Array
                                                         (
                                                             [0] => Array
                                                                 (
-                                                                    [arguments] => Array
-                                                                        (
-                                                                            [0] => Array
-                                                                                (
-                                                                                    [types] => Array
-                                                                                        (
-                                                                                            [0] => Array
-                                                                                                (
-                                                                                                    [name] => r
-                                                                                                    [type] => Array
-                                                                                                        (
-                                                                                                            [definition] => @ref 0.1
-                                                                                                            [class] => ConcreteType
-                                                                                                        )
+                                                                    [definition] => @ref 0.2
+                                                                    [class] => ConcreteType
+                                                                )
 
-                                                                                                    [class] => FunctionArgumentType
-                                                                                                )
-
-                                                                                            [1] => Array
-                                                                                                (
-                                                                                                    [name] => r
-                                                                                                    [type] => Array
-                                                                                                        (
-                                                                                                            [definition] => @ref 0.2
-                                                                                                            [class] => ConcreteType
-                                                                                                        )
-
-                                                                                                    [class] => FunctionArgumentType
-                                                                                                )
-
-                                                                                        )
-
-                                                                                    [class] => TypeSet
-                                                                                )
-
-                                                                        )
-
-                                                                    [class] => FunctionArgumentTupleType
+                                                            [1] => Array
+                                                                (
+                                                                    [definition] => @ref 0.3
+                                                                    [class] => ConcreteType
                                                                 )
 
                                                         )
 
                                                     [class] => TypeSet
+                                                )
+
+                                            [lhs] => Array
+                                                (
+                                                    [possibleType] => Array
+                                                        (
+                                                            [definition] => @ref 0.2
+                                                            [class] => ConcreteType
+                                                        )
+
                                                 )
 
                                         )

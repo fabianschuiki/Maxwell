@@ -75,8 +75,8 @@
 		"AssignmentExpr": {
 			"extends": "Expr",
 			"tree": ["Expr lhs", "Expr rhs"],
-			"graph": ["@graph"]
-		},
+			"graph": ["@graph"],
+			"type": ["@type"]},
 
 		"BinaryOperatorExpr": {
 			"extends": "Expr",
@@ -107,18 +107,15 @@
 			},
 
 		"ConcreteType": {
-			"main": ["ref definition"]
-			},
+			"main": ["ref definition"]},
 		"FunctionType": {
-			"main": ["FunctionArgumentTupleType inputs", "FunctionArgumentTupleType outputs"]
-			},
+			"main": ["FunctionArgumentTupleType inputs", "FunctionArgumentTupleType outputs"]},
 		"FunctionArgumentTupleType": {
-			"main": ["array arguments"]
-			},
+			"main": ["array arguments"]},
 		"FunctionArgumentType": {
-			"main": ["string name", "type"]
-			},
+			"main": ["string name", "type"]},
 		"TypeSet": {
-			"main": ["array types"]}
+			"main": ["array types"]},
+		"GenericType": {}
 	}
 }

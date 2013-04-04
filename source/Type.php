@@ -11,8 +11,15 @@ class Type
 		// DEBUG: remove this later!!!
 		if ($object === null) return "<null>";
 
+		// Concrete types are shown either with their referenced definition's name if the reference has been resolved or the type is builtin, or the referenced definition ID.
 		if ($object instanceof \Objects\ConcreteType) {
-			return "@".$object->getDefinition()->getId();
+			$ref = $object->getDefinition();
+			$def = $ref->get(!preg_match('/^0\./', $ref->getId())); // causes references to builtin types to be resolved
+			if ($def !== null) {
+				return $def->getName();
+			} else {
+				return "@".$ref->getId();
+			}
 		}
 		if ($object instanceof \Objects\FunctionArgumentType) {
 			return static::describe($object->getType())." ".$object->getName();

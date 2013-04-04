@@ -19,7 +19,7 @@ class CalculatePossibleTypesStage extends DriverStage
 
 		// Functions, Function Arguments and Function Argument Tuples
 		if ($object instanceof \AbstractFunctionArgument) {
-			$this->println(1, "Argument {$object->getId()}", $object->getId());
+			//$this->println(1, "Argument {$object->getId()}", $object->getId());
 			$a = new \Objects\FunctionArgumentType;
 			$a->setName($object->getName());
 			$a->setType($object->getTypeExpr()->getEvaluatedType());
@@ -27,7 +27,7 @@ class CalculatePossibleTypesStage extends DriverStage
 			//$object->setPossibleType($object->getTypeExpr()->getEvaluatedType());
 		}
 		if ($object instanceof \AbstractFunctionArgumentTuple) {
-			$this->println(1, "Argument Tuple {$object->getId()}", $object->getId());
+			//$this->println(1, "Argument Tuple {$object->getId()}", $object->getId());
 			$a = new \RepositoryObjectArray($this->repository);
 			foreach ($object->getArguments()->getElements() as $argument) {
 				$a->add($argument->getPossibleType());
@@ -36,8 +36,8 @@ class CalculatePossibleTypesStage extends DriverStage
 			$t->setArguments($a);
 			$object->setPossibleType($t);
 		}
-		if ($object instanceof \AbstractFunctionDefinition) {
-			$this->println(1, "Function {$object->getId()}", $object->getId());
+		if ($object instanceof \AbstractFunction) {
+			//$this->println(1, "Function {$object->getId()}", $object->getId());
 			$f = new \Objects\FunctionType;
 			$f->setInputs($object->getInputs()->getPossibleType());
 			$f->setOutputs($object->getOutputs()->getPossibleType());
@@ -53,7 +53,34 @@ class CalculatePossibleTypesStage extends DriverStage
 				$outputTuples[] = $t->getOutputs();
 			}
 			$t = $this->unifyArgumentTupleTypes($outputTuples);
+			$this->println(2, "unified tuple = ".\Type::describe($t), $object->getId());
+
+			// At the moment only single return values are supported, which is why we strip the output arguments.
+			foreach ($t->getTypes()->getElements() as $type) {
+				$argc = $type->getArguments()->getCount();
+				if ($argc > 1) {
+					throw new \RuntimeException("Only single or no return value is supported at the moment. Call {$object->getId()} has unified output type ".\Type::describe($t).".");
+				}
+				if ($argc == 1) {
+					$t = $type->getArguments()->get(0)->getType();
+				} else {
+					$t = null;
+				}
+				break;
+			}
+
 			$object->setPossibleType($t);
+		}
+
+		// General expressions.
+		if ($object instanceof \Objects\IdentifierExpr) {
+			$target = $object->getBindingTarget()->get();
+			if ($target instanceof \AbstractFunctionArgument) {
+				$object->setPossibleType($target->getPossibleType()->getType());
+			}
+		}
+		if ($object instanceof \Objects\AssignmentExpr) {
+			$object->setPossibleType($object->getLhs()->getPossibleType());
 		}
 
 		// Show the output of the stage.
@@ -75,15 +102,15 @@ class CalculatePossibleTypesStage extends DriverStage
 				$ua = $unifiedArguments->get($index, false);
 				if (!$ua) {
 					$unifiedArguments->set($index, $argument);
-				} else if ($ua instanceof \Objects\TypeSet) {
-					$ua->getTypes()->add($argument);
+				} else if ($ua->getType() instanceof \Objects\TypeSet) {
+					$ua->getType()->getTypes()->add($argument);
 				} else {
 					$a = new \RepositoryObjectArray;
-					$a->add($ua);
-					$a->add($argument);
+					$a->add($ua->getType());
+					$a->add($argument->getType());
 					$s = new \Objects\TypeSet;
 					$s->setTypes($a);
-					$unifiedArguments->set($index, $s);
+					$ua->setType($s);
 				}
 			}
 		}

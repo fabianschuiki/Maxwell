@@ -14,12 +14,14 @@ class BuiltinObjects
 	 */
 	public function __construct(Repository $repo)
 	{
+		// Root type for all types.
+		$type = new Builtin\NumericBuiltinType($repo, $this->makeId(), "_type");
+		$this->add($type);
+
 		// int and real
-		$type_int = new Builtin\NumericBuiltinType($repo, $this->makeId());
-		$type_int->setName("int");
+		$type_int = new Builtin\NumericBuiltinType($repo, $this->makeId(), "int", $type);
 		$this->add($type_int);
-		$type_real = new Builtin\NumericBuiltinType($repo, $this->makeId());
-		$type_real->setName("real");
+		$type_real = new Builtin\NumericBuiltinType($repo, $this->makeId(), "real", $type);
 		$this->add($type_real);
 
 		// Operators on int and real

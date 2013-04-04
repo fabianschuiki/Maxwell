@@ -38,9 +38,10 @@ class RepositoryObjectReference implements RepositoryObjectParentInterface
 		}
 	}
 
-	public function get()
+	public function get($passive = false)
 	{
 		if ($this->obj_dirty) {
+			if ($passive) return null;
 			$this->obj_dirty = false;
 			$this->println(0, "Resolving ID ".($this->id !== null ? $this->id : "<null>"));
 			if ($this->id !== null) {

@@ -2,6 +2,7 @@
 /* Copyright © 2013 Fabian Schuiki */
 use Objects\ConcreteType;
 use Objects\TypeSet;
+use Objects\InvalidType;
 
 /**
  * Class containing helper functions for dealing with type objects.
@@ -79,7 +80,10 @@ class Type
 					$a->add($argument->getType());
 					$s = new TypeSet;
 					$s->setTypes($a);
-					$ua->setType($s);
+					$at = new \Objects\FunctionArgumentType;
+					$at->setName($ua->getName());
+					$at->setType($s);
+					$unifiedArguments->set($index, $at);
 				}
 			}
 		}
@@ -160,5 +164,35 @@ class Type
 			return $a->getDefinition()->getId() === $b->getDefinition()->getId();
 		}
 		return false;
+	}
+
+
+	static public function intersectSetOrConcreteType(\RepositoryObject $a, \RepositoryObject $b)
+	{
+		// Set and set.
+		if ($a instanceof TypeSet && $b instanceof TypeSet) {
+			throw new \RuntimeException("Intersecting two type sets not yet implemented. Do that!");
+		}
+
+		// Concrete and concrete.
+		if ($a instanceof ConcreteType && $b instanceof ConcreteType) {
+			return static::equal($a,$b) ? $a : new InvalidType;
+		}
+
+		// Set and concrete, or vice versa.
+		if ($a instanceof TypeSet) {
+			$x = $a;
+			$y = $b;
+		} else if ($b instanceof TypeSet) {
+			$x = $b;
+			$y = $a;
+		} else {
+			throw new \InvalidArgumentException("At least one of the types needs to be a set if they are neither both sets nor both concrete types.");
+		}
+		foreach ($x->getTypes()->getElements() as $t) {
+			if (\Type::equal($t, $y))
+				return $y;
+		}
+		return new InvalidType;
 	}
 }

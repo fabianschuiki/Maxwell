@@ -32,12 +32,14 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 	protected $callName;
 	protected $callArguments;
 	protected $callCandidates;
+	protected $selectedCallCandidate;
 	
 	// type fragment
 	public $type_dirty  = false;
 	public $type_loaded = true;
 	protected $possibleType;
 	protected $requiredType;
+	protected $actualType;
 	
 	
 	/* GENERAL */
@@ -66,10 +68,12 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 			case "call": return array(
 				array("name" => "callName", "type" => "string"), 
 				array("name" => "callArguments", "type" => "CallArgumentTuple"), 
-				array("name" => "callCandidates", "type" => "\RepositoryObjectArray"));
+				array("name" => "callCandidates", "type" => "\RepositoryObjectArray"), 
+				array("name" => "selectedCallCandidate", "type" => "CallCandidate"));
 			case "type": return array(
 				array("name" => "possibleType", "type" => ""), 
-				array("name" => "requiredType", "type" => ""));
+				array("name" => "requiredType", "type" => ""), 
+				array("name" => "actualType", "type" => ""));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -258,6 +262,31 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		return $this->callCandidates;
 	}
 	
+	public function setSelectedCallCandidate(CallCandidate $selectedCallCandidate = null, $notify = true)
+	{
+		if ($this->selectedCallCandidate !== $selectedCallCandidate) {
+			if (!$this->call_loaded) {
+				$this->loadFragment('call');
+			}
+			if ($this->selectedCallCandidate instanceof \RepositoryObjectParentInterface) $this->selectedCallCandidate->setParent(null);
+			$this->selectedCallCandidate = $selectedCallCandidate;
+			if ($selectedCallCandidate instanceof \RepositoryObjectParentInterface) $selectedCallCandidate->setParent($this, "selectedCallCandidate", "call");
+			if ($notify) {
+				$this->notifyFragmentDirty('call');
+			}
+		}
+	}
+	public function getSelectedCallCandidate($enforce = true)
+	{
+		if (!$this->call_loaded) {
+			$this->loadFragment('call');
+		}
+		if ($enforce && $this->selectedCallCandidate === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null selectedCallCandidate.");
+		}
+		return $this->selectedCallCandidate;
+	}
+	
 	public function setPossibleType($possibleType, $notify = true)
 	{
 		if ($this->possibleType !== $possibleType) {
@@ -302,5 +331,28 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null requiredType.");
 		}
 		return $this->requiredType;
+	}
+	
+	public function setActualType($actualType, $notify = true)
+	{
+		if ($this->actualType !== $actualType) {
+			if (!$this->type_loaded) {
+				$this->loadFragment('type');
+			}
+			$this->actualType = $actualType;
+			if ($notify) {
+				$this->notifyFragmentDirty('type');
+			}
+		}
+	}
+	public function getActualType($enforce = true)
+	{
+		if (!$this->type_loaded) {
+			$this->loadFragment('type');
+		}
+		if ($enforce && $this->actualType === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null actualType.");
+		}
+		return $this->actualType;
 	}
 }

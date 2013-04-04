@@ -5,12 +5,18 @@ use DriverStage;
 
 class CalculatePossibleTypesStage extends DriverStage
 {
-	static public $verbosity = 99;
+	static public $verbosity = 0;
 
 	protected function process(\RepositoryObject $object)
 	{
+		$object->setRequiredType(new \Objects\GenericType);
+		$this->processChildren($object);
+	}
+
+	protected function processChildren(\RepositoryObject $object)
+	{
 		foreach ($object->getChildren() as $child) {
-			$this->process($child);
+			$this->processChildren($child);
 		}
 
 		// Ignore objects that do not have some form of type interface.
@@ -49,7 +55,10 @@ class CalculatePossibleTypesStage extends DriverStage
 		if ($object instanceof \Objects\CallInterface) {
 			$outputTuples = array();
 			foreach ($object->getCallCandidates()->getChildren() as $candidate) {
-				$t = $candidate->getFunc()->get()->getPossibleType();
+				$f = $candidate->getFunc()->get();
+				$t = $f->getActualType(false);
+				if (!$t)
+					$t = $f->getPossibleType();
 				$outputTuples[] = $t->getOutputs();
 			}
 			$t = \Type::unifyArgumentTuples($outputTuples);

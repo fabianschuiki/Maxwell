@@ -25,6 +25,7 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFu
 	public $type_loaded = true;
 	protected $possibleType;
 	protected $requiredType;
+	protected $actualType;
 	
 	
 	/* GENERAL */
@@ -49,7 +50,8 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFu
 				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
 			case "type": return array(
 				array("name" => "possibleType", "type" => ""), 
-				array("name" => "requiredType", "type" => ""));
+				array("name" => "requiredType", "type" => ""), 
+				array("name" => "actualType", "type" => ""));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -155,5 +157,28 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFu
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null requiredType.");
 		}
 		return $this->requiredType;
+	}
+	
+	public function setActualType($actualType, $notify = true)
+	{
+		if ($this->actualType !== $actualType) {
+			if (!$this->type_loaded) {
+				$this->loadFragment('type');
+			}
+			$this->actualType = $actualType;
+			if ($notify) {
+				$this->notifyFragmentDirty('type');
+			}
+		}
+	}
+	public function getActualType($enforce = true)
+	{
+		if (!$this->type_loaded) {
+			$this->loadFragment('type');
+		}
+		if ($enforce && $this->actualType === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null actualType.");
+		}
+		return $this->actualType;
 	}
 }

@@ -14,6 +14,7 @@ class CallCandidate extends \RepositoryNodeObject
 	public $call_dirty  = false;
 	public $call_loaded = true;
 	protected $func;
+	protected $feasible;
 	
 	
 	/* GENERAL */
@@ -33,7 +34,8 @@ class CallCandidate extends \RepositoryNodeObject
 	{
 		switch ($name) {
 			case "call": return array(
-				array("name" => "func", "type" => "\RepositoryObjectReference"));
+				array("name" => "func", "type" => "\RepositoryObjectReference"), 
+				array("name" => "feasible", "type" => "bool"));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -68,5 +70,31 @@ class CallCandidate extends \RepositoryNodeObject
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null func.");
 		}
 		return $this->func;
+	}
+	
+	public function setFeasible($feasible, $notify = true)
+	{
+		if (!is_bool($feasible)) {
+			throw new \InvalidArgumentException("feasible needs to be a boolean");
+		}
+		if ($this->feasible !== $feasible) {
+			if (!$this->call_loaded) {
+				$this->loadFragment('call');
+			}
+			$this->feasible = $feasible;
+			if ($notify) {
+				$this->notifyFragmentDirty('call');
+			}
+		}
+	}
+	public function getFeasible($enforce = true)
+	{
+		if (!$this->call_loaded) {
+			$this->loadFragment('call');
+		}
+		if ($enforce && $this->feasible === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null feasible.");
+		}
+		return $this->feasible;
 	}
 }

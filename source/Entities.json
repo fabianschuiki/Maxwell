@@ -7,7 +7,8 @@
 			"ref bindingTarget"],
 		"type": [
 			"possibleType",
-			"requiredType"],
+			"requiredType",
+			"actualType"],
 		"root_code": [
 			"string indepDeclCode",
 			"string depDeclCode",
@@ -22,8 +23,8 @@
 		"call": [
 			"string callName",
 			"CallArgumentTuple callArguments",
-			"array callCandidates"
-			]
+			"array callCandidates",
+			"CallCandidate selectedCallCandidate"]
 	},
 
 	"entities": {
@@ -104,7 +105,7 @@
 		"CallArgument": {
 			"call": ["expr", "string name"]},
 		"CallCandidate": {
-			"call": ["ref func"]
+			"call": ["ref func", "bool feasible"]
 			},
 
 		"ConcreteType": {

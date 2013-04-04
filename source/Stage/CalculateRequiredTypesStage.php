@@ -5,7 +5,7 @@ use DriverStage;
 
 class CalculateRequiredTypesStage extends DriverStage
 {
-	static public $verbosity = 99;
+	static public $verbosity = 0;
 
 	protected function process(\RepositoryObject $object)
 	{
@@ -18,7 +18,10 @@ class CalculateRequiredTypesStage extends DriverStage
 		if ($object instanceof \Objects\CallInterface) {
 			$inputTuples = array();
 			foreach ($object->getCallCandidates()->getChildren() as $candidate) {
-				$t = $candidate->getFunc()->get()->getPossibleType();
+				$f = $candidate->getFunc()->get();
+				$t = $f->getActualType(false);
+				if (!$t)
+					$t = $f->getPossibleType();
 				$inputTuples[] = $t->getInputs();
 			}
 			$t = \Type::unifyArgumentTuples($inputTuples);
@@ -44,7 +47,7 @@ class CalculateRequiredTypesStage extends DriverStage
 			}
 		}
 
-		// Each child that does not have a type requirement has its required type set to <invalid>.
+		// Each child that does not have a type requirement has its required type set to the generic type.
 		foreach ($object->getChildren() as $child) {
 			$this->process($child);
 			if ($child instanceof \Objects\TypeInterface) {

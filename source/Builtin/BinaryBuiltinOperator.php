@@ -75,4 +75,8 @@ class BinaryBuiltinOperator extends BuiltinRootObject implements \AbstractFuncti
 	{
 		return $this->type;
 	}
+	public function getActualType()
+	{
+		return $this->type;
+	}
 }

@@ -47,6 +47,58 @@ Array
             [class] => FunctionType
         )
 
+    [requiredType] => Array
+        (
+            [class] => GenericType
+        )
+
+    [actualType] => Array
+        (
+            [inputs] => Array
+                (
+                    [arguments] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [name] => x
+                                    [type] => Array
+                                        (
+                                            [definition] => @ref 0.2
+                                            [class] => ConcreteType
+                                        )
+
+                                    [class] => FunctionArgumentType
+                                )
+
+                        )
+
+                    [class] => FunctionArgumentTupleType
+                )
+
+            [outputs] => Array
+                (
+                    [arguments] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [name] => y
+                                    [type] => Array
+                                        (
+                                            [definition] => @ref 0.2
+                                            [class] => ConcreteType
+                                        )
+
+                                    [class] => FunctionArgumentType
+                                )
+
+                        )
+
+                    [class] => FunctionArgumentTupleType
+                )
+
+            [class] => FunctionType
+        )
+
     [inputs] => Array
         (
             [possibleType] => Array
@@ -75,6 +127,27 @@ Array
                     [class] => GenericType
                 )
 
+            [actualType] => Array
+                (
+                    [arguments] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [name] => x
+                                    [type] => Array
+                                        (
+                                            [definition] => @ref 0.2
+                                            [class] => ConcreteType
+                                        )
+
+                                    [class] => FunctionArgumentType
+                                )
+
+                        )
+
+                    [class] => FunctionArgumentTupleType
+                )
+
             [arguments] => Array
                 (
                     [0] => Array
@@ -96,6 +169,18 @@ Array
                                     [class] => GenericType
                                 )
 
+                            [actualType] => Array
+                                (
+                                    [name] => x
+                                    [type] => Array
+                                        (
+                                            [definition] => @ref 0.2
+                                            [class] => ConcreteType
+                                        )
+
+                                    [class] => FunctionArgumentType
+                                )
+
                             [typeExpr] => Array
                                 (
                                     [evaluatedType] => Array
@@ -114,6 +199,11 @@ Array
                                             [requiredType] => Array
                                                 (
                                                     [class] => GenericType
+                                                )
+
+                                            [actualType] => Array
+                                                (
+                                                    [class] => InvalidType
                                                 )
 
                                         )
@@ -154,6 +244,27 @@ Array
                     [class] => GenericType
                 )
 
+            [actualType] => Array
+                (
+                    [arguments] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [name] => y
+                                    [type] => Array
+                                        (
+                                            [definition] => @ref 0.2
+                                            [class] => ConcreteType
+                                        )
+
+                                    [class] => FunctionArgumentType
+                                )
+
+                        )
+
+                    [class] => FunctionArgumentTupleType
+                )
+
             [arguments] => Array
                 (
                     [0] => Array
@@ -175,6 +286,18 @@ Array
                                     [class] => GenericType
                                 )
 
+                            [actualType] => Array
+                                (
+                                    [name] => y
+                                    [type] => Array
+                                        (
+                                            [definition] => @ref 0.2
+                                            [class] => ConcreteType
+                                        )
+
+                                    [class] => FunctionArgumentType
+                                )
+
                             [typeExpr] => Array
                                 (
                                     [evaluatedType] => Array
@@ -193,6 +316,11 @@ Array
                                             [requiredType] => Array
                                                 (
                                                     [class] => GenericType
+                                                )
+
+                                            [actualType] => Array
+                                                (
+                                                    [class] => InvalidType
                                                 )
 
                                         )
@@ -224,6 +352,12 @@ Array
                                             [class] => GenericType
                                         )
 
+                                    [actualType] => Array
+                                        (
+                                            [definition] => @ref 0.2
+                                            [class] => ConcreteType
+                                        )
+
                                     [lhs] => Array
                                         (
                                             [possibleType] => Array
@@ -235,6 +369,12 @@ Array
                                             [requiredType] => Array
                                                 (
                                                     [class] => GenericType
+                                                )
+
+                                            [actualType] => Array
+                                                (
+                                                    [definition] => @ref 0.2
+                                                    [class] => ConcreteType
                                                 )
 
                                         )
@@ -263,6 +403,12 @@ Array
                                                 )
 
                                             [requiredType] => Array
+                                                (
+                                                    [definition] => @ref 0.2
+                                                    [class] => ConcreteType
+                                                )
+
+                                            [actualType] => Array
                                                 (
                                                     [definition] => @ref 0.2
                                                     [class] => ConcreteType
@@ -297,6 +443,12 @@ Array
                                                             [class] => TypeSet
                                                         )
 
+                                                    [actualType] => Array
+                                                        (
+                                                            [definition] => @ref 0.2
+                                                            [class] => ConcreteType
+                                                        )
+
                                                 )
 
                                             [rhs] => Array
@@ -326,6 +478,12 @@ Array
                                                                 )
 
                                                             [class] => TypeSet
+                                                        )
+
+                                                    [actualType] => Array
+                                                        (
+                                                            [definition] => @ref 0.2
+                                                            [class] => ConcreteType
                                                         )
 
                                                 )

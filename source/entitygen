@@ -62,7 +62,7 @@ foreach ($interface_defs as $name => $def)
 	foreach ($canonicalProperties as $property) {
 		$lcname = $property->name;
 		$ucname = ucfirst($lcname);
-		$scalarType = (!$property->type || $property->type == "string");
+		$scalarType = (!$property->type || $property->type == "string" || $property->type == "bool");
 
 		// SETTER
 		$body .= "public function set{$ucname}(";
@@ -164,7 +164,7 @@ foreach ($entity_defs as $name => $def)
 		foreach ($canonicalProperties as $property) {
 			$lcname = $property->name;
 			$ucname = ucfirst($lcname);
-			$scalarType = (!$property->type || $property->type == "string");
+			$scalarType = (!$property->type || $property->type == "string" || $property->type == "bool");
 
 			// SETTER
 			$bfragment .= "public function set{$ucname}(";
@@ -179,6 +179,11 @@ foreach ($entity_defs as $name => $def)
 	if (!is_string(\$$lcname)) {
 		throw new \\InvalidArgumentException(\"$lcname needs to be a string\");
 	}";
+			}
+			if ($property->type == "bool") {
+				$bfragment .= "\n\tif (!is_bool(\$$lcname)) {".
+					"\n\t\tthrow new \\InvalidArgumentException(\"$lcname needs to be a boolean\");".
+					"\n\t}";
 			}
 
 			// Store the value.

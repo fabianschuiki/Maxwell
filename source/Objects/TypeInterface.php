@@ -10,4 +10,7 @@ interface TypeInterface
 	
 	public function setRequiredType($requiredType, $notify = true);
 	public function getRequiredType($enforce = true);
+	
+	public function setActualType($actualType, $notify = true);
+	public function getActualType($enforce = true);
 }

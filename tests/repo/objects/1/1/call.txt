@@ -61,21 +61,31 @@ Array
                                                     [0] => Array
                                                         (
                                                             [func] => @ref 0.4
+                                                            [feasible] => 1
                                                             [class] => CallCandidate
                                                         )
 
                                                     [1] => Array
                                                         (
                                                             [func] => @ref 0.5
+                                                            [feasible] => 
                                                             [class] => CallCandidate
                                                         )
 
                                                     [2] => Array
                                                         (
                                                             [func] => @ref 0.6
+                                                            [feasible] => 
                                                             [class] => CallCandidate
                                                         )
 
+                                                )
+
+                                            [selectedCallCandidate] => Array
+                                                (
+                                                    [func] => @ref 0.4
+                                                    [feasible] => 1
+                                                    [class] => CallCandidate
                                                 )
 
                                         )

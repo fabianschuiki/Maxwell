@@ -5,10 +5,22 @@ abstract class DriverStage
 {
 	protected $repository;
 	protected $currentObject = null;
+	protected $name = null;
 
 	public function __construct(\Repository $repo)
 	{
 		$this->repository = $repo;
+	}
+
+	/**
+	 * Returns the stage's name.
+	 */
+	public function getName()
+	{
+		if ($this->name === null) {
+			$this->name = preg_replace('/^([^\\\\]*\\\\)+/', "", get_class($this));
+		}
+		return $this->name;
 	}
 
 	/**
@@ -19,10 +31,12 @@ abstract class DriverStage
 	public function run($objectId)
 	{
 		$this->println(0, "Running on $objectId");
+		$this->repository->resetStageDependencies($this->getName(), $objectId);
 		$object = $this->repository->getObject($objectId);
 		$this->currentObject = $object;
 		$this->process($object);
 		$this->currentObject = null;
+		$this->repository->setObjectStageState($objectId, $this->getName(), true);
 	}
 
 	/// Process the given object.
@@ -40,6 +54,36 @@ abstract class DriverStage
 				$info = ($this->currentObject ? $this->currentObject->getId() : null);
 			}
 			Log::println($ln, get_class($this), $info);
+		}
+	}
+
+	/**
+	 * Adds a dependency to the repository linking this stage and the current
+	 * object to the given dependency object. Whenever the given $object
+	 * changes the stage needs to be re-run.
+	 */
+	protected function addDependency($object)
+	{
+		if ($object instanceof Builtin\BuiltinObject) {
+			return;
+		}
+		if (!$object instanceof RepositoryObject) {
+			throw new InvalidArgumentException("Dependency object must be a RepositoryObject.");
+		}
+		$id = (is_object($object) ? $object->getId() : $object);
+		if (preg_match('/<parentless>/', $id)) {
+			throw new InvalidArgumentException("Dependency object $id is invalid as it is not part of the root object.");
+		}
+		if (preg_match('/^0\./', $id)) {
+			return;
+		}
+
+		$canonical = array($id);
+		foreach ($canonical as $id) {
+			$this->repository->addStageDependency(
+				$this->getName(),
+				$this->currentObject->getId(),
+				$id);
 		}
 	}
 }

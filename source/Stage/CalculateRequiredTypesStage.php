@@ -5,13 +5,15 @@ use DriverStage;
 
 class CalculateRequiredTypesStage extends DriverStage
 {
-	static public $verbosity = 0;
+	static public $verbosity = 1;
 
 	protected function process(\RepositoryObject $object)
 	{
 		// Assignments require the rhs to match the lhs.
 		if ($object instanceof \Objects\AssignmentExpr) {
-			$object->getRhs()->setRequiredType($object->getLhs()->getPossibleType());
+			$t = $object->getLhs()->getPossibleType();
+			$this->addDependency($t);
+			$object->getRhs()->setRequiredType(clone $t);
 		}
 
 		// For objects that contain a call, the procedure is similar to the one performed in the CalculatePossibleTypesStage. The input argument tuples are unified and then assigned as a requirement to each call argument individually.
@@ -19,6 +21,7 @@ class CalculateRequiredTypesStage extends DriverStage
 			$inputTuples = array();
 			foreach ($object->getCallCandidates()->getChildren() as $candidate) {
 				$f = $candidate->getFunc()->get();
+				$this->addDependency($f);
 				$t = $f->getActualType(false);
 				if (!$t)
 					$t = $f->getPossibleType();
@@ -33,7 +36,7 @@ class CalculateRequiredTypesStage extends DriverStage
 				foreach ($t->getTypes()->getElements() as $tuple) {
 					$ta = $tuple->getArguments()->get($index, false);
 					if ($ta !== null) {
-						$a->add($ta->getType());
+						$a->add(clone $ta->getType());
 					}
 				}
 				if ($a->getCount() > 0) {

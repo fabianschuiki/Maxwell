@@ -34,11 +34,21 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 	
 	
 	/* GENERAL */
-	public function setParent(\RepositoryObject $parent = null, $key = null, $fragment = null)
+	public function setParent(\IdedObject $parent = null, $key = null, $fragment = null)
 	{
+		if ($this->parent !== null && $parent !== null) {
+			throw new \RuntimeException("Setting parent to {$parent->getId()} when object already has parent {$this->parent->getId()}.");
+		}
 		$this->parent = $parent;
 		$this->parent_key = $key;
 		$this->parent_fragment = $fragment;
+	}
+	
+	public function __clone()
+	{
+		$this->parent = null;
+		$this->parent_key = null;
+		$this->parent_fragment = null;
 	}
 	
 	public function getFragmentNames()
@@ -83,6 +93,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			$this->range = $range;
 			if ($range instanceof \RepositoryObjectParentInterface) $range->setParent($this, "range", "main");
 			if ($notify) {
+				$this->notifyObjectDirty('range');
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -108,6 +119,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			$this->humanRange = $humanRange;
 			if ($humanRange instanceof \RepositoryObjectParentInterface) $humanRange->setParent($this, "humanRange", "main");
 			if ($notify) {
+				$this->notifyObjectDirty('humanRange');
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -134,6 +146,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 			$this->name = $name;
 			if ($notify) {
+				$this->notifyObjectDirty('name');
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -159,6 +172,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			$this->typeExpr = $typeExpr;
 			if ($typeExpr instanceof \RepositoryObjectParentInterface) $typeExpr->setParent($this, "typeExpr", "main");
 			if ($notify) {
+				$this->notifyObjectDirty('typeExpr');
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -184,6 +198,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			$this->initialExpr = $initialExpr;
 			if ($initialExpr instanceof \RepositoryObjectParentInterface) $initialExpr->setParent($this, "initialExpr", "main");
 			if ($notify) {
+				$this->notifyObjectDirty('initialExpr');
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -205,8 +220,11 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
+			if ($this->possibleType instanceof \RepositoryObjectParentInterface) $this->possibleType->setParent(null);
 			$this->possibleType = $possibleType;
+			if ($possibleType instanceof \RepositoryObjectParentInterface) $possibleType->setParent($this, "possibleType", "type");
 			if ($notify) {
+				$this->notifyObjectDirty('possibleType');
 				$this->notifyFragmentDirty('type');
 			}
 		}
@@ -228,8 +246,11 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
+			if ($this->requiredType instanceof \RepositoryObjectParentInterface) $this->requiredType->setParent(null);
 			$this->requiredType = $requiredType;
+			if ($requiredType instanceof \RepositoryObjectParentInterface) $requiredType->setParent($this, "requiredType", "type");
 			if ($notify) {
+				$this->notifyObjectDirty('requiredType');
 				$this->notifyFragmentDirty('type');
 			}
 		}
@@ -251,8 +272,11 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
+			if ($this->actualType instanceof \RepositoryObjectParentInterface) $this->actualType->setParent(null);
 			$this->actualType = $actualType;
+			if ($actualType instanceof \RepositoryObjectParentInterface) $actualType->setParent($this, "actualType", "type");
 			if ($notify) {
+				$this->notifyObjectDirty('actualType');
 				$this->notifyFragmentDirty('type');
 			}
 		}
@@ -279,6 +303,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 			$this->exprCode = $exprCode;
 			if ($notify) {
+				$this->notifyObjectDirty('exprCode');
 				$this->notifyFragmentDirty('code');
 			}
 		}
@@ -305,6 +330,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 			}
 			$this->stmtsCode = $stmtsCode;
 			if ($notify) {
+				$this->notifyObjectDirty('stmtsCode');
 				$this->notifyFragmentDirty('code');
 			}
 		}

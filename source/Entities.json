@@ -24,7 +24,7 @@
 			"string callName",
 			"CallArgumentTuple callArguments",
 			"array callCandidates",
-			"CallCandidate selectedCallCandidate"]
+			"ref selectedCallCandidate"]
 	},
 
 	"entities": {

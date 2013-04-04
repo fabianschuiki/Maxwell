@@ -1,7 +1,7 @@
 <?php
 /* Copyright © 2013 Fabian Schuiki */
 
-abstract class RepositoryObject
+abstract class RepositoryObject implements IdedObject
 {
 	abstract public function getId();
 
@@ -13,6 +13,7 @@ abstract class RepositoryObject
 
 	abstract protected function loadFragment($fragment);
 	abstract protected function notifyFragmentDirty($fragment);
+	abstract protected function notifyObjectDirty($id);
 
 	public function print_fragmentStates()
 	{

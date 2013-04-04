@@ -71,13 +71,13 @@ class Type
 			foreach ($tuple->getArguments()->getElements() as $index => $argument) {
 				$ua = $unifiedArguments->get($index, false);
 				if (!$ua) {
-					$unifiedArguments->set($index, $argument);
+					$unifiedArguments->set($index, clone $argument);
 				} else if ($ua->getType() instanceof TypeSet) {
-					$ua->getType()->getTypes()->add($argument->getType());
+					$ua->getType()->getTypes()->add(clone $argument->getType());
 				} else {
 					$a = new RepositoryObjectArray;
-					$a->add($ua->getType());
-					$a->add($argument->getType());
+					$a->add(clone $ua->getType());
+					$a->add(clone $argument->getType());
 					$s = new TypeSet;
 					$s->setTypes($a);
 					$at = new \Objects\FunctionArgumentType;
@@ -143,7 +143,7 @@ class Type
 				}
 			}
 			if (!$duplicate)
-				$a->add($child);
+				$a->add(clone $child);
 		}
 
 		if ($a->getCount() > 1) {
@@ -176,7 +176,7 @@ class Type
 
 		// Concrete and concrete.
 		if ($a instanceof ConcreteType && $b instanceof ConcreteType) {
-			return static::equal($a,$b) ? $a : new InvalidType;
+			return static::equal($a,$b) ? clone $a : new InvalidType;
 		}
 
 		// Set and concrete, or vice versa.
@@ -191,7 +191,7 @@ class Type
 		}
 		foreach ($x->getTypes()->getElements() as $t) {
 			if (\Type::equal($t, $y))
-				return $y;
+				return clone $y;
 		}
 		return new InvalidType;
 	}

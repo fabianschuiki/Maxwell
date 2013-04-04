@@ -62,13 +62,13 @@ foreach ($interface_defs as $name => $def)
 	foreach ($canonicalProperties as $property) {
 		$lcname = $property->name;
 		$ucname = ucfirst($lcname);
-		$scalarType = (!$property->type || $property->type == "string" || $property->type == "bool");
+		$scalarType = ($property->type == "string" || $property->type == "bool");
 
 		// SETTER
 		$body .= "public function set{$ucname}(";
-		if (!$scalarType) $body .= $property->type." ";
+		if (!$scalarType && $property->type) $body .= $property->type." ";
 		$body .= "\$".$lcname;
-		if (!$scalarType) $body .= " = null";
+		if (!$scalarType && $property->type) $body .= " = null";
 		$body .= ", \$notify = true);\n";
 
 		// GETTER
@@ -164,13 +164,13 @@ foreach ($entity_defs as $name => $def)
 		foreach ($canonicalProperties as $property) {
 			$lcname = $property->name;
 			$ucname = ucfirst($lcname);
-			$scalarType = (!$property->type || $property->type == "string" || $property->type == "bool");
+			$scalarType = ($property->type == "string" || $property->type == "bool");
 
 			// SETTER
 			$bfragment .= "public function set{$ucname}(";
-			if (!$scalarType) $bfragment .= $property->type." ";
+			if (!$scalarType && $property->type) $bfragment .= $property->type." ";
 			$bfragment .= "\$".$lcname;
-			if (!$scalarType) $bfragment .= " = null";
+			if (!$scalarType && $property->type) $bfragment .= " = null";
 			$bfragment .= ", \$notify = true)\n{";
 			
 			// Perform a data type check.
@@ -195,11 +195,11 @@ foreach ($entity_defs as $name => $def)
 			if (!$scalarType) $bfragment .= "\n\t\tif (\$this->$lcname instanceof \\RepositoryObjectParentInterface) \$this->{$lcname}->setParent(null);";
 			$bfragment .= "\n\t\t\$this->$lcname = \$$lcname;";
 			if (!$scalarType) $bfragment .= "\n\t\tif (\$$lcname instanceof \\RepositoryObjectParentInterface) \${$lcname}->setParent(\$this, \"$lcname\", \"$fragmentName\");";
-			$bfragment .= "\n\t\tif (\$notify) {"
-				//."\n\t\t\t\$this->$prop_dirty = true;"
-				."\n\t\t\t\$this->notifyFragmentDirty('$fragmentName');"
-				."\n\t\t}"
-				."\n\t}";
+			$bfragment .= "\n\t\tif (\$notify) {".
+				"\n\t\t\t\$this->notifyObjectDirty('$lcname');".
+				"\n\t\t\t\$this->notifyFragmentDirty('$fragmentName');".
+				"\n\t\t}".
+				"\n\t}";
 			$bfragment .= "\n}\n";
 
 			// GETTER
@@ -222,11 +222,20 @@ foreach ($entity_defs as $name => $def)
 
 	// Assemble the general interface.
 	$general = array();
-	$general[] = "public function setParent(\\RepositoryObject \$parent = null, \$key = null, \$fragment = null)\n".
+	$general[] = "public function setParent(\\IdedObject \$parent = null, \$key = null, \$fragment = null)\n".
 		"{\n".
+		"\tif (\$this->parent !== null && \$parent !== null) {\n".
+		"\t\tthrow new \\RuntimeException(\"Setting parent to {\$parent->getId()} when object already has parent {\$this->parent->getId()}.\");\n".
+		"\t}\n".
 		"\t\$this->parent = \$parent;\n".
 		"\t\$this->parent_key = \$key;\n".
 		"\t\$this->parent_fragment = \$fragment;\n".
+		"}";
+	$general[] = "public function __clone()\n".
+		"{\n".
+		"\t\$this->parent = null;\n".
+		"\t\$this->parent_key = null;\n".
+		"\t\$this->parent_fragment = null;\n".
 		"}";
 	$fragNames = array_map(function($n){ return "\"$n\""; }, array_keys(get_object_vars($def)));
 	$general[] = "public function getFragmentNames()\n{\n\treturn array(".implode(",", $fragNames).");\n}";

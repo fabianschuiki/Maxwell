@@ -54,11 +54,21 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 	
 	
 	/* GENERAL */
-	public function setParent(\RepositoryObject $parent = null, $key = null, $fragment = null)
+	public function setParent(\IdedObject $parent = null, $key = null, $fragment = null)
 	{
+		if ($this->parent !== null && $parent !== null) {
+			throw new \RuntimeException("Setting parent to {$parent->getId()} when object already has parent {$this->parent->getId()}.");
+		}
 		$this->parent = $parent;
 		$this->parent_key = $key;
 		$this->parent_fragment = $fragment;
+	}
+	
+	public function __clone()
+	{
+		$this->parent = null;
+		$this->parent_key = null;
+		$this->parent_fragment = null;
 	}
 	
 	public function getFragmentNames()
@@ -111,6 +121,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			$this->inputs = $inputs;
 			if ($inputs instanceof \RepositoryObjectParentInterface) $inputs->setParent($this, "inputs", "tree");
 			if ($notify) {
+				$this->notifyObjectDirty('inputs');
 				$this->notifyFragmentDirty('tree');
 			}
 		}
@@ -136,6 +147,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			$this->outputs = $outputs;
 			if ($outputs instanceof \RepositoryObjectParentInterface) $outputs->setParent($this, "outputs", "tree");
 			if ($notify) {
+				$this->notifyObjectDirty('outputs');
 				$this->notifyFragmentDirty('tree');
 			}
 		}
@@ -161,6 +173,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			$this->body = $body;
 			if ($body instanceof \RepositoryObjectParentInterface) $body->setParent($this, "body", "tree");
 			if ($notify) {
+				$this->notifyObjectDirty('body');
 				$this->notifyFragmentDirty('tree');
 			}
 		}
@@ -186,6 +199,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			$this->range = $range;
 			if ($range instanceof \RepositoryObjectParentInterface) $range->setParent($this, "range", "main");
 			if ($notify) {
+				$this->notifyObjectDirty('range');
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -211,6 +225,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			$this->humanRange = $humanRange;
 			if ($humanRange instanceof \RepositoryObjectParentInterface) $humanRange->setParent($this, "humanRange", "main");
 			if ($notify) {
+				$this->notifyObjectDirty('humanRange');
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -237,6 +252,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			}
 			$this->name = $name;
 			if ($notify) {
+				$this->notifyObjectDirty('name');
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -262,6 +278,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			$this->graphPrev = $graphPrev;
 			if ($graphPrev instanceof \RepositoryObjectParentInterface) $graphPrev->setParent($this, "graphPrev", "graph");
 			if ($notify) {
+				$this->notifyObjectDirty('graphPrev');
 				$this->notifyFragmentDirty('graph');
 			}
 		}
@@ -283,8 +300,11 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
+			if ($this->possibleType instanceof \RepositoryObjectParentInterface) $this->possibleType->setParent(null);
 			$this->possibleType = $possibleType;
+			if ($possibleType instanceof \RepositoryObjectParentInterface) $possibleType->setParent($this, "possibleType", "type");
 			if ($notify) {
+				$this->notifyObjectDirty('possibleType');
 				$this->notifyFragmentDirty('type');
 			}
 		}
@@ -306,8 +326,11 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
+			if ($this->requiredType instanceof \RepositoryObjectParentInterface) $this->requiredType->setParent(null);
 			$this->requiredType = $requiredType;
+			if ($requiredType instanceof \RepositoryObjectParentInterface) $requiredType->setParent($this, "requiredType", "type");
 			if ($notify) {
+				$this->notifyObjectDirty('requiredType');
 				$this->notifyFragmentDirty('type');
 			}
 		}
@@ -329,8 +352,11 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
+			if ($this->actualType instanceof \RepositoryObjectParentInterface) $this->actualType->setParent(null);
 			$this->actualType = $actualType;
+			if ($actualType instanceof \RepositoryObjectParentInterface) $actualType->setParent($this, "actualType", "type");
 			if ($notify) {
+				$this->notifyObjectDirty('actualType');
 				$this->notifyFragmentDirty('type');
 			}
 		}
@@ -357,6 +383,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			}
 			$this->indepDeclCode = $indepDeclCode;
 			if ($notify) {
+				$this->notifyObjectDirty('indepDeclCode');
 				$this->notifyFragmentDirty('code');
 			}
 		}
@@ -383,6 +410,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			}
 			$this->depDeclCode = $depDeclCode;
 			if ($notify) {
+				$this->notifyObjectDirty('depDeclCode');
 				$this->notifyFragmentDirty('code');
 			}
 		}
@@ -409,6 +437,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			}
 			$this->indepDefCode = $indepDefCode;
 			if ($notify) {
+				$this->notifyObjectDirty('indepDefCode');
 				$this->notifyFragmentDirty('code');
 			}
 		}
@@ -435,6 +464,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			}
 			$this->depDefCode = $depDefCode;
 			if ($notify) {
+				$this->notifyObjectDirty('depDefCode');
 				$this->notifyFragmentDirty('code');
 			}
 		}

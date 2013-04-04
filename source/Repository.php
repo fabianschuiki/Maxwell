@@ -24,7 +24,7 @@ class Repository
 	protected $objects_modified = array();
 
 	// Logging facilities.
-	static public $verbosity = 99;
+	static public $verbosity = 3;
 	private function println($verbosity, $ln, $info = null)
 	{
 		if (static::$verbosity > $verbosity)
@@ -36,6 +36,14 @@ class Repository
 
 	/// Repository for builtin objects.
 	protected $builtin;
+
+	// Object IDs the individual stages depend upon.
+	protected $dependencies = array();
+	protected $dependencies_modified = array();
+
+	// State of the stages of the individual objects.
+	protected $objectStageStates = array();
+	protected $objectStageStates_modified = array();
 
 
 	/// Create a new repository at the location $dir.
@@ -70,6 +78,8 @@ class Repository
 	{
 		if ($this->sources_modified) $this->writeSources();
 		if ($this->objects_modified || $this->objects_unpersisted) $this->writeObjects();
+		if ($this->dependencies_modified) $this->writeDependencies();
+		if ($this->objectStageStates_modified) $this->writeObjectStageStates();
 	}
 
 	/**
@@ -424,5 +434,183 @@ class Repository
 				return $this->builtin->getObject($id);
 		}
 		throw new \InvalidArgumentException("No internal object named '$name' exists.");
+	}
+
+	/**
+	 * Removes all dependencies for this stage.
+	 */
+	public function resetStageDependencies($stage, $objectId)
+	{
+		$this->println(2, "Resetting dependencies of stage $stage", $objectId);
+		if (!isset($this->dependencies[$objectId])) {
+			$this->readDependencies($objectId);
+		}
+		if (isset($this->dependencies[$objectId][$stage])) {
+			unset($this->dependencies[$objectId][$stage]);
+			if (!in_array($objectId, $this->dependencies_modified)) {
+				$this->dependencies_modified[] = $objectId;
+			}
+		}
+	}
+
+	/**
+	 * Marks the given object ID at the given stage depending on the given
+	 * other object.
+	 */
+	public function addStageDependency($stage, $objectId, $dependsOnId)
+	{
+		if (!isset($this->dependencies[$objectId])) {
+			$this->readDependencies($objectId);
+		}
+		if (!isset($this->dependencies[$objectId][$stage]) || !in_array($dependsOnId, $this->dependencies[$objectId][$stage])) {
+			$this->dependencies[$objectId][$stage][] = $dependsOnId;
+			$this->println(2, "Stage $stage depends on $dependsOnId", $objectId);
+			if (!in_array($objectId, $this->dependencies_modified)) {
+				$this->dependencies_modified[] = $objectId;
+			}
+		}
+	}
+
+	/**
+	 * Writes the dependencies to disk for all objects listed under
+	 * dependencies_modified.
+	 */
+	private function writeDependencies()
+	{
+		foreach ($this->dependencies_modified as $objectId) {
+			if (!isset($this->dependencies[$objectId])) {
+				throw new \RuntimeException("Dependencies for object ID $objectId marked as modified, but the dependencies themselves don't exist.");
+			}
+			$this->println(1, "Write dependencies", $objectId);
+			$deps = $this->dependencies[$objectId];
+			$path = $this->getObjectDir($objectId)."/dependencies";
+			if (!file_put_contents($path, json_encode($deps))) {
+				throw new \RuntimeException("Unable to write dependencies of object ID $objectId to $path.");
+			}
+			if (static::$verbosity > 0) {
+				file_put_contents($path.".txt", print_r($deps, true));
+			}
+		}
+		$this->dependencies_modified = array();
+	}
+
+	/**
+	 * Reads the dependencies for the given object ID and stores them in the
+	 * dependencies tree.
+	 */
+	private function readDependencies($objectId)
+	{
+		if (in_array($objectId, $this->dependencies_modified)) {
+			throw new \RuntimeException("Loading dependencies of object ID $objectId which are marked as modified.");
+		}
+		$path = $this->getObjectDir($objectId)."/dependencies";
+		$this->println(1, "Read dependencies", $objectId);
+
+		if (file_exists($path)) {
+			$source = file_get_contents($path);
+			if ($source === null) {
+				throw new \RuntimeException("Unable to read dependencies file $path.");
+			}
+			$deps = json_decode($source, true);
+			if ($deps === null) {
+				throw new \RuntimeException("Unable to parse dependencies in file $path. JSON error ".json_last_error().".");
+			}
+			$this->dependencies[$objectId] = $deps;
+		}
+	}
+
+	/**
+	 * Called by objects in the repository whenever an object changes. This
+	 * information is used to invalidate certain object stages.
+	 */
+	public function notifyObjectDirty($objectId, $path)
+	{
+		$this->println(3, "Modified $path", $objectId);
+
+		// Look for such a dependency.
+		foreach ($this->dependencies as $oid => $deps) {
+			foreach ($deps as $stage => $ids) {
+				if (in_array($objectId.".".$path, $ids)) {
+					$this->println(2, "- Invalidates $oid stage $stage", $objectId);
+					$this->setObjectStageState($oid, $stage, false);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Writes all modified stage states to disk.
+	 */
+	private function writeObjectStageStates()
+	{
+		foreach ($this->objectStageStates_modified as $objectId) {
+			if (!isset($this->objectStageStates[$objectId])) {
+				throw new \RuntimeException("Stage states for object ID $objectId marked as modified, but the stage states themselves don't exist.");
+			}
+			$this->println(1, "Write stage states", $objectId);
+			$states = $this->objectStageStates[$objectId];
+			$path = $this->getObjectDir($objectId)."/stages";
+			if (!file_put_contents($path, json_encode($states))) {
+				throw new \RuntimeException("Unable to write stage states of object ID $objectId to $path.");
+			}
+			if (static::$verbosity > 0) {
+				file_put_contents($path.".txt", print_r($states, true));
+			}
+		}
+	}
+
+	/**
+	 * Reads the stage states for the given object from disk. You should not
+	 * have to call this function directly as it is called loaded through the
+	 * accessors.
+	 */
+	private function readObjectStageStates($objectId)
+	{
+		if (in_array($objectId, $this->objectStageStates_modified)) {
+			throw new \RuntimeException("Loading stage states of object ID $objectId which are marked as modified.");
+		}
+		$path = $this->getObjectDir($objectId)."/stages";
+		$this->println(1, "Read stage states", $objectId);
+
+		if (file_exists($path)) {
+			$source = file_get_contents($path);
+			if ($source === null) {
+				throw new \RuntimeException("Unable to read stage states file $path.");
+			}
+			$states = json_decode($source, true);
+			if ($deps === null) {
+				throw new \RuntimeException("Unable to parse stage states in file $path. JSON error ".json_last_error().".");
+			}
+			$this->objectStageStates[$objectId] = $states;
+		}
+	}
+
+	/**
+	 * Returns the state of the given stage for the given object, i.e. true if
+	 * the stage has been executed and is valid, or false if it either has not
+	 * been executed yet or is invalid due to changes to dependencies.
+	 */
+	public function getObjectStageState($objectId, $stage)
+	{
+		if (!isset($this->objectStageStates[$objectId]))
+			$this->readObjectStageStates($objectId);
+
+		if (isset($this->objectStageStates[$objectId][$stage])) {
+			return $this->objectStageStates[$objectId][$stage];
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Sets the state of the given stage for the given object. True means the
+	 * stage is valid, false means the stage needs to be run again.
+	 */
+	public function setObjectStageState($objectId, $stage, $state)
+	{
+		$this->objectStageStates[$objectId][$stage] = $state;
+		if (!in_array($objectId, $this->objectStageStates_modified)) {
+			$this->objectStageStates_modified[] = $objectId;
+		}
 	}
 }

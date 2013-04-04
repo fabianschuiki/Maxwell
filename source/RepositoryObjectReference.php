@@ -80,7 +80,7 @@ class RepositoryObjectReference implements RepositoryObjectParentInterface
 		return $s;
 	}
 
-	public function setParent(RepositoryObject $parent = null, $key = null, $fragment = null)
+	public function setParent(IdedObject $parent = null, $key = null, $fragment = null)
 	{
 		$this->parent = $parent;
 		$this->parent_fragment = $fragment;

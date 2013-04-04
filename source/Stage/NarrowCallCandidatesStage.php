@@ -5,7 +5,7 @@ use DriverStage;
 
 class NarrowCallCandidatesStage extends DriverStage
 {
-	static public $verbosity = 2;
+	static public $verbosity = 3;
 
 	protected function process(\RepositoryObject $object)
 	{
@@ -25,6 +25,7 @@ class NarrowCallCandidatesStage extends DriverStage
 				foreach ($object->getCallArguments()->getArguments()->getElements() as $index => $argument) {
 					$candType = $candidateType->getInputs()->getArguments()->get($index)->getType();
 					$callType = $argument->getExpr()->get()->getActualType();
+					$this->addDependency($callType);
 					$this->println(2, "Matching input ".\Type::describe($callType)." against ".\Type::describe($candType), $argument->getId());
 					if (!\Type::equal($candType, $callType)) {
 						$feasible = false;
@@ -38,6 +39,7 @@ class NarrowCallCandidatesStage extends DriverStage
 					$candOutArgs = $candidateType->getOutputs()->getArguments();
 					if ($candOutArgs->getCount() == 1) {
 						$candOutArg = $candOutArgs->get(0)->getType();
+						$this->addDependency($candOutArg);
 						$this->println(2, "Matching output ".\Type::describe($callType)." against ".\Type::describe($candOutArg), $object->getId());
 						$feasible = \Type::equal($callType, $candOutArg);
 					}

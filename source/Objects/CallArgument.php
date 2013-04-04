@@ -18,11 +18,21 @@ class CallArgument extends \RepositoryNodeObject
 	
 	
 	/* GENERAL */
-	public function setParent(\RepositoryObject $parent = null, $key = null, $fragment = null)
+	public function setParent(\IdedObject $parent = null, $key = null, $fragment = null)
 	{
+		if ($this->parent !== null && $parent !== null) {
+			throw new \RuntimeException("Setting parent to {$parent->getId()} when object already has parent {$this->parent->getId()}.");
+		}
 		$this->parent = $parent;
 		$this->parent_key = $key;
 		$this->parent_fragment = $fragment;
+	}
+	
+	public function __clone()
+	{
+		$this->parent = null;
+		$this->parent_key = null;
+		$this->parent_fragment = null;
 	}
 	
 	public function getFragmentNames()
@@ -53,8 +63,11 @@ class CallArgument extends \RepositoryNodeObject
 			if (!$this->call_loaded) {
 				$this->loadFragment('call');
 			}
+			if ($this->expr instanceof \RepositoryObjectParentInterface) $this->expr->setParent(null);
 			$this->expr = $expr;
+			if ($expr instanceof \RepositoryObjectParentInterface) $expr->setParent($this, "expr", "call");
 			if ($notify) {
+				$this->notifyObjectDirty('expr');
 				$this->notifyFragmentDirty('call');
 			}
 		}
@@ -81,6 +94,7 @@ class CallArgument extends \RepositoryNodeObject
 			}
 			$this->name = $name;
 			if ($notify) {
+				$this->notifyObjectDirty('name');
 				$this->notifyFragmentDirty('call');
 			}
 		}

@@ -3,5 +3,5 @@
 
 interface RepositoryObjectParentInterface
 {
-	public function setParent(RepositoryObject $parent = null, $key = null, $fragment = null);
+	public function setParent(IdedObject $parent = null, $key = null, $fragment = null);
 }

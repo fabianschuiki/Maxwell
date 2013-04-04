@@ -5,7 +5,7 @@ use DriverStage;
 
 class CalculatePossibleTypesStage extends DriverStage
 {
-	static public $verbosity = 0;
+	static public $verbosity = 1;
 
 	protected function process(\RepositoryObject $object)
 	{
@@ -25,28 +25,32 @@ class CalculatePossibleTypesStage extends DriverStage
 
 		// Functions, Function Arguments and Function Argument Tuples
 		if ($object instanceof \AbstractFunctionArgument) {
-			//$this->println(1, "Argument {$object->getId()}", $object->getId());
+			$t = $object->getTypeExpr()->getEvaluatedType();
+			$this->addDependency($t);
 			$a = new \Objects\FunctionArgumentType;
 			$a->setName($object->getName());
-			$a->setType($object->getTypeExpr()->getEvaluatedType());
+			$a->setType(clone $t);
 			$object->setPossibleType($a);
-			//$object->setPossibleType($object->getTypeExpr()->getEvaluatedType());
 		}
 		if ($object instanceof \AbstractFunctionArgumentTuple) {
-			//$this->println(1, "Argument Tuple {$object->getId()}", $object->getId());
 			$a = new \RepositoryObjectArray($this->repository);
 			foreach ($object->getArguments()->getElements() as $argument) {
-				$a->add($argument->getPossibleType());
+				$t = $argument->getPossibleType();
+				$this->addDependency($t);
+				$a->add(clone $t);
 			}
 			$t = new \Objects\FunctionArgumentTupleType;
 			$t->setArguments($a);
 			$object->setPossibleType($t);
 		}
 		if ($object instanceof \AbstractFunction) {
-			//$this->println(1, "Function {$object->getId()}", $object->getId());
+			$ti = $object->getInputs()->getPossibleType();
+			$to = $object->getOutputs()->getPossibleType();
+			$this->addDependency($ti);
+			$this->addDependency($to);
 			$f = new \Objects\FunctionType;
-			$f->setInputs($object->getInputs()->getPossibleType());
-			$f->setOutputs($object->getOutputs()->getPossibleType());
+			$f->setInputs(clone $ti);
+			$f->setOutputs(clone $to);
 			$object->setPossibleType($f);
 		}
 
@@ -56,6 +60,7 @@ class CalculatePossibleTypesStage extends DriverStage
 			$outputTuples = array();
 			foreach ($object->getCallCandidates()->getChildren() as $candidate) {
 				$f = $candidate->getFunc()->get();
+				$this->addDependency($f);
 				$t = $f->getActualType(false);
 				if (!$t)
 					$t = $f->getPossibleType();
@@ -71,7 +76,7 @@ class CalculatePossibleTypesStage extends DriverStage
 					throw new \RuntimeException("Only single or no return value is supported at the moment. Call {$object->getId()} has unified output type ".\Type::describe($t).".");
 				}
 				if ($argc == 1) {
-					$t = $type->getArguments()->get(0)->getType();
+					$t = clone $type->getArguments()->get(0)->getType();
 				} else {
 					$t = null;
 				}
@@ -85,13 +90,17 @@ class CalculatePossibleTypesStage extends DriverStage
 		if ($object instanceof \Objects\IdentifierExpr) {
 			$target = $object->getBindingTarget()->get();
 			if ($target instanceof \AbstractFunctionArgument) {
-				$object->setPossibleType($target->getPossibleType()->getType());
+				$t = $target->getPossibleType()->getType();
+				$this->addDependency($t);
+				$object->setPossibleType(clone $t);
 			} else {
 				$object->setPossibleType(new \Objects\InvalidType);
 			}
 		}
 		if ($object instanceof \Objects\AssignmentExpr) {
-			$object->setPossibleType($object->getLhs()->getPossibleType());
+			$t = $object->getLhs()->getPossibleType();
+			$this->addDependency($t);
+			$object->setPossibleType(clone $t);
 		}
 		if ($object instanceof \Objects\ConstantExpr) {
 			$name = null;

@@ -18,11 +18,21 @@ class CallCandidate extends \RepositoryNodeObject
 	
 	
 	/* GENERAL */
-	public function setParent(\RepositoryObject $parent = null, $key = null, $fragment = null)
+	public function setParent(\IdedObject $parent = null, $key = null, $fragment = null)
 	{
+		if ($this->parent !== null && $parent !== null) {
+			throw new \RuntimeException("Setting parent to {$parent->getId()} when object already has parent {$this->parent->getId()}.");
+		}
 		$this->parent = $parent;
 		$this->parent_key = $key;
 		$this->parent_fragment = $fragment;
+	}
+	
+	public function __clone()
+	{
+		$this->parent = null;
+		$this->parent_key = null;
+		$this->parent_fragment = null;
 	}
 	
 	public function getFragmentNames()
@@ -57,6 +67,7 @@ class CallCandidate extends \RepositoryNodeObject
 			$this->func = $func;
 			if ($func instanceof \RepositoryObjectParentInterface) $func->setParent($this, "func", "call");
 			if ($notify) {
+				$this->notifyObjectDirty('func');
 				$this->notifyFragmentDirty('call');
 			}
 		}
@@ -83,6 +94,7 @@ class CallCandidate extends \RepositoryNodeObject
 			}
 			$this->feasible = $feasible;
 			if ($notify) {
+				$this->notifyObjectDirty('feasible');
 				$this->notifyFragmentDirty('call');
 			}
 		}

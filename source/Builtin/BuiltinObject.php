@@ -2,7 +2,7 @@
 /* Copyright © 2013 Fabian Schuiki */
 namespace Builtin;
 
-abstract class BuiltinObject
+abstract class BuiltinObject implements \IdedObject
 {
 	abstract public function getId();
 	

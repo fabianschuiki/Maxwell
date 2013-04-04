@@ -8,7 +8,7 @@ use Objects\TypeSet;
 
 class CalculateActualTypesStage extends DriverStage
 {
-	static public $verbosity = 2;
+	static public $verbosity = 99;
 
 	protected function process(\RepositoryObject $object)
 	{
@@ -21,9 +21,13 @@ class CalculateActualTypesStage extends DriverStage
 			$required = $object->getRequiredType();
 			$this->println(2, "intersecting ".\Type::describe($possible)." and ".\Type::describe($required), $object->getId());
 
+			// Add the required dependency.
+			$this->addDependency($possible);
+			$this->addDependency($required);
+
 			// Catch the easy cases.
 			if ($possible instanceof InvalidType or $required instanceof GenericType) {
-				$object->setActualType($possible);
+				$object->setActualType(clone $possible);
 			} else if ($required instanceof InvalidType) {
 				throw new \RuntimeException("Required type of {$object->getId()} should not be the invalid type.");
 			}

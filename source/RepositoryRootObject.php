@@ -70,4 +70,9 @@ abstract class RepositoryRootObject extends RepositoryObject
 		// Notify the repository about the fragment being marked as dirty.
 		$this->repository->notifyObjectFragmentDirty($this->id, $fragment);
 	}
+
+	protected function notifyObjectDirty($id)
+	{
+		$this->repository->notifyObjectDirty($this->id, $id);
+	}
 }

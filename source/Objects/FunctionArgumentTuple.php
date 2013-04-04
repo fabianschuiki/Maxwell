@@ -29,11 +29,21 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFu
 	
 	
 	/* GENERAL */
-	public function setParent(\RepositoryObject $parent = null, $key = null, $fragment = null)
+	public function setParent(\IdedObject $parent = null, $key = null, $fragment = null)
 	{
+		if ($this->parent !== null && $parent !== null) {
+			throw new \RuntimeException("Setting parent to {$parent->getId()} when object already has parent {$this->parent->getId()}.");
+		}
 		$this->parent = $parent;
 		$this->parent_key = $key;
 		$this->parent_fragment = $fragment;
+	}
+	
+	public function __clone()
+	{
+		$this->parent = null;
+		$this->parent_key = null;
+		$this->parent_fragment = null;
 	}
 	
 	public function getFragmentNames()
@@ -73,6 +83,7 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFu
 			$this->arguments = $arguments;
 			if ($arguments instanceof \RepositoryObjectParentInterface) $arguments->setParent($this, "arguments", "tree");
 			if ($notify) {
+				$this->notifyObjectDirty('arguments');
 				$this->notifyFragmentDirty('tree');
 			}
 		}
@@ -98,6 +109,7 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFu
 			$this->graphPrev = $graphPrev;
 			if ($graphPrev instanceof \RepositoryObjectParentInterface) $graphPrev->setParent($this, "graphPrev", "graph");
 			if ($notify) {
+				$this->notifyObjectDirty('graphPrev');
 				$this->notifyFragmentDirty('graph');
 			}
 		}
@@ -119,8 +131,11 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFu
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
+			if ($this->possibleType instanceof \RepositoryObjectParentInterface) $this->possibleType->setParent(null);
 			$this->possibleType = $possibleType;
+			if ($possibleType instanceof \RepositoryObjectParentInterface) $possibleType->setParent($this, "possibleType", "type");
 			if ($notify) {
+				$this->notifyObjectDirty('possibleType');
 				$this->notifyFragmentDirty('type');
 			}
 		}
@@ -142,8 +157,11 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFu
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
+			if ($this->requiredType instanceof \RepositoryObjectParentInterface) $this->requiredType->setParent(null);
 			$this->requiredType = $requiredType;
+			if ($requiredType instanceof \RepositoryObjectParentInterface) $requiredType->setParent($this, "requiredType", "type");
 			if ($notify) {
+				$this->notifyObjectDirty('requiredType');
 				$this->notifyFragmentDirty('type');
 			}
 		}
@@ -165,8 +183,11 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFu
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
+			if ($this->actualType instanceof \RepositoryObjectParentInterface) $this->actualType->setParent(null);
 			$this->actualType = $actualType;
+			if ($actualType instanceof \RepositoryObjectParentInterface) $actualType->setParent($this, "actualType", "type");
 			if ($notify) {
+				$this->notifyObjectDirty('actualType');
 				$this->notifyFragmentDirty('type');
 			}
 		}

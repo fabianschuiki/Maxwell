@@ -54,6 +54,7 @@ class BinaryBuiltinOperator extends BuiltinRootObject implements \AbstractFuncti
 		$f->setInputs($in);
 		$f->setOutputs($out);
 		$this->type = $f;
+		$f->setParent($this, "actualType", null);
 	}
 
 	public function getName()

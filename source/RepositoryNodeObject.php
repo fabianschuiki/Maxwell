@@ -73,8 +73,14 @@ abstract class RepositoryNodeObject extends RepositoryObject implements Reposito
 		$this->parent->notifyFragmentDirty($frag);
 	}
 
-
-	//abstract public function setParent(RepositoryObject $parent = null, $key = null, $fragment = null);
-	//abstract public function getFragmentNames();
-	//abstract public function getFragment($name);
+	protected function notifyObjectDirty($id)
+	{
+		if ($this->parent) {
+			$cid = $this->parent_key;
+			if ($id !== null) {
+				$cid = $cid.".".$id;
+			}
+			$this->parent->notifyObjectDirty($cid);
+		}
+	}
 }

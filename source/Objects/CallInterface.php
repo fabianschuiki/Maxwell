@@ -14,6 +14,6 @@ interface CallInterface
 	public function setCallCandidates(\RepositoryObjectArray $callCandidates = null, $notify = true);
 	public function getCallCandidates($enforce = true);
 	
-	public function setSelectedCallCandidate(CallCandidate $selectedCallCandidate = null, $notify = true);
+	public function setSelectedCallCandidate(\RepositoryObjectReference $selectedCallCandidate = null, $notify = true);
 	public function getSelectedCallCandidate($enforce = true);
 }

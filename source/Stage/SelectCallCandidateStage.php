@@ -26,10 +26,12 @@ class SelectCallCandidateStage extends DriverStage
 		} else if (count($candidates) > 1) {
 			throw new \RuntimeException("Call {$object->getId()} is ambiguous.");
 		} else {
-			$object->setSelectedCallCandidate(array_pop($candidates));
+			$r = new \RepositoryObjectReference($this->repository);
+			$r->set(array_pop($candidates));
+			$object->setSelectedCallCandidate($r);
 		}
 
 		// Show the output of the stage.
-		$this->println(1, "Selected call candidate ".\Type::describe($object->getSelectedCallCandidate()->getFunc()->get()->getActualType()), $object->getId());
+		$this->println(1, "Selected call candidate ".\Type::describe($object->getSelectedCallCandidate()->get()->getFunc()->get()->getActualType()), $object->getId());
 	}
 }

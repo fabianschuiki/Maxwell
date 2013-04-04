@@ -43,11 +43,21 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 	
 	
 	/* GENERAL */
-	public function setParent(\RepositoryObject $parent = null, $key = null, $fragment = null)
+	public function setParent(\IdedObject $parent = null, $key = null, $fragment = null)
 	{
+		if ($this->parent !== null && $parent !== null) {
+			throw new \RuntimeException("Setting parent to {$parent->getId()} when object already has parent {$this->parent->getId()}.");
+		}
 		$this->parent = $parent;
 		$this->parent_key = $key;
 		$this->parent_fragment = $fragment;
+	}
+	
+	public function __clone()
+	{
+		$this->parent = null;
+		$this->parent_key = null;
+		$this->parent_fragment = null;
 	}
 	
 	public function getFragmentNames()
@@ -69,7 +79,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 				array("name" => "callName", "type" => "string"), 
 				array("name" => "callArguments", "type" => "CallArgumentTuple"), 
 				array("name" => "callCandidates", "type" => "\RepositoryObjectArray"), 
-				array("name" => "selectedCallCandidate", "type" => "CallCandidate"));
+				array("name" => "selectedCallCandidate", "type" => "\RepositoryObjectReference"));
 			case "type": return array(
 				array("name" => "possibleType", "type" => ""), 
 				array("name" => "requiredType", "type" => ""), 
@@ -95,6 +105,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 			$this->lhs = $lhs;
 			if ($lhs instanceof \RepositoryObjectParentInterface) $lhs->setParent($this, "lhs", "tree");
 			if ($notify) {
+				$this->notifyObjectDirty('lhs');
 				$this->notifyFragmentDirty('tree');
 			}
 		}
@@ -120,6 +131,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 			$this->rhs = $rhs;
 			if ($rhs instanceof \RepositoryObjectParentInterface) $rhs->setParent($this, "rhs", "tree");
 			if ($notify) {
+				$this->notifyObjectDirty('rhs');
 				$this->notifyFragmentDirty('tree');
 			}
 		}
@@ -146,6 +158,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 			}
 			$this->operator = $operator;
 			if ($notify) {
+				$this->notifyObjectDirty('operator');
 				$this->notifyFragmentDirty('main');
 			}
 		}
@@ -171,6 +184,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 			$this->graphPrev = $graphPrev;
 			if ($graphPrev instanceof \RepositoryObjectParentInterface) $graphPrev->setParent($this, "graphPrev", "graph");
 			if ($notify) {
+				$this->notifyObjectDirty('graphPrev');
 				$this->notifyFragmentDirty('graph');
 			}
 		}
@@ -197,6 +211,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 			}
 			$this->callName = $callName;
 			if ($notify) {
+				$this->notifyObjectDirty('callName');
 				$this->notifyFragmentDirty('call');
 			}
 		}
@@ -222,6 +237,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 			$this->callArguments = $callArguments;
 			if ($callArguments instanceof \RepositoryObjectParentInterface) $callArguments->setParent($this, "callArguments", "call");
 			if ($notify) {
+				$this->notifyObjectDirty('callArguments');
 				$this->notifyFragmentDirty('call');
 			}
 		}
@@ -247,6 +263,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 			$this->callCandidates = $callCandidates;
 			if ($callCandidates instanceof \RepositoryObjectParentInterface) $callCandidates->setParent($this, "callCandidates", "call");
 			if ($notify) {
+				$this->notifyObjectDirty('callCandidates');
 				$this->notifyFragmentDirty('call');
 			}
 		}
@@ -262,7 +279,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		return $this->callCandidates;
 	}
 	
-	public function setSelectedCallCandidate(CallCandidate $selectedCallCandidate = null, $notify = true)
+	public function setSelectedCallCandidate(\RepositoryObjectReference $selectedCallCandidate = null, $notify = true)
 	{
 		if ($this->selectedCallCandidate !== $selectedCallCandidate) {
 			if (!$this->call_loaded) {
@@ -272,6 +289,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 			$this->selectedCallCandidate = $selectedCallCandidate;
 			if ($selectedCallCandidate instanceof \RepositoryObjectParentInterface) $selectedCallCandidate->setParent($this, "selectedCallCandidate", "call");
 			if ($notify) {
+				$this->notifyObjectDirty('selectedCallCandidate');
 				$this->notifyFragmentDirty('call');
 			}
 		}
@@ -293,8 +311,11 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
+			if ($this->possibleType instanceof \RepositoryObjectParentInterface) $this->possibleType->setParent(null);
 			$this->possibleType = $possibleType;
+			if ($possibleType instanceof \RepositoryObjectParentInterface) $possibleType->setParent($this, "possibleType", "type");
 			if ($notify) {
+				$this->notifyObjectDirty('possibleType');
 				$this->notifyFragmentDirty('type');
 			}
 		}
@@ -316,8 +337,11 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
+			if ($this->requiredType instanceof \RepositoryObjectParentInterface) $this->requiredType->setParent(null);
 			$this->requiredType = $requiredType;
+			if ($requiredType instanceof \RepositoryObjectParentInterface) $requiredType->setParent($this, "requiredType", "type");
 			if ($notify) {
+				$this->notifyObjectDirty('requiredType');
 				$this->notifyFragmentDirty('type');
 			}
 		}
@@ -339,8 +363,11 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
+			if ($this->actualType instanceof \RepositoryObjectParentInterface) $this->actualType->setParent(null);
 			$this->actualType = $actualType;
+			if ($actualType instanceof \RepositoryObjectParentInterface) $actualType->setParent($this, "actualType", "type");
 			if ($notify) {
+				$this->notifyObjectDirty('actualType');
 				$this->notifyFragmentDirty('type');
 			}
 		}

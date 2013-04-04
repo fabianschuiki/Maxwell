@@ -578,7 +578,7 @@ class Repository
 				throw new \RuntimeException("Unable to read stage states file $path.");
 			}
 			$states = json_decode($source, true);
-			if ($deps === null) {
+			if ($states === null) {
 				throw new \RuntimeException("Unable to parse stage states in file $path. JSON error ".json_last_error().".");
 			}
 			$this->objectStageStates[$objectId] = $states;

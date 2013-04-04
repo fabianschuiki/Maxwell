@@ -6,7 +6,8 @@
 		"binding": [
 			"ref bindingTarget"],
 		"type": [
-			"possibleType"],
+			"possibleType",
+			"requiredType"],
 		"root_code": [
 			"string indepDeclCode",
 			"string depDeclCode",
@@ -89,8 +90,8 @@
 		"ConstantExpr": {
 			"extends": "Expr",
 			"main": ["string value"],
-			"graph": ["@graph"]
-		},
+			"graph": ["@graph"],
+			"type": ["@type"]},
 
 		"TypeExpr": {
 			"tree": ["Expr expr"],
@@ -116,6 +117,7 @@
 			"main": ["string name", "type"]},
 		"TypeSet": {
 			"main": ["array types"]},
-		"GenericType": {}
+		"GenericType": {},
+		"InvalidType": {}
 	}
 }

@@ -33,6 +33,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 	public $type_dirty  = false;
 	public $type_loaded = true;
 	protected $possibleType;
+	protected $requiredType;
 	
 	// code fragment
 	public $code_dirty  = false;
@@ -78,7 +79,8 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			case "graph": return array(
 				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
 			case "type": return array(
-				array("name" => "possibleType", "type" => ""));
+				array("name" => "possibleType", "type" => ""), 
+				array("name" => "requiredType", "type" => ""));
 			case "code": return array(
 				array("name" => "indepDeclCode", "type" => "string"), 
 				array("name" => "depDeclCode", "type" => "string"), 
@@ -294,6 +296,29 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null possibleType.");
 		}
 		return $this->possibleType;
+	}
+	
+	public function setRequiredType($requiredType, $notify = true)
+	{
+		if ($this->requiredType !== $requiredType) {
+			if (!$this->type_loaded) {
+				$this->loadFragment('type');
+			}
+			$this->requiredType = $requiredType;
+			if ($notify) {
+				$this->notifyFragmentDirty('type');
+			}
+		}
+	}
+	public function getRequiredType($enforce = true)
+	{
+		if (!$this->type_loaded) {
+			$this->loadFragment('type');
+		}
+		if ($enforce && $this->requiredType === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null requiredType.");
+		}
+		return $this->requiredType;
 	}
 	
 	public function setIndepDeclCode($indepDeclCode, $notify = true)

@@ -31,6 +31,7 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 	public $type_dirty  = false;
 	public $type_loaded = true;
 	protected $possibleType;
+	protected $requiredType;
 	protected $someText;
 	
 	// code fragment
@@ -66,6 +67,7 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 				array("name" => "bindingTarget", "type" => "\RepositoryObjectReference"));
 			case "type": return array(
 				array("name" => "possibleType", "type" => ""), 
+				array("name" => "requiredType", "type" => ""), 
 				array("name" => "someText", "type" => "string"));
 			case "code": return array(
 				array("name" => "exprCode", "type" => "string"), 
@@ -228,6 +230,29 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null possibleType.");
 		}
 		return $this->possibleType;
+	}
+	
+	public function setRequiredType($requiredType, $notify = true)
+	{
+		if ($this->requiredType !== $requiredType) {
+			if (!$this->type_loaded) {
+				$this->loadFragment('type');
+			}
+			$this->requiredType = $requiredType;
+			if ($notify) {
+				$this->notifyFragmentDirty('type');
+			}
+		}
+	}
+	public function getRequiredType($enforce = true)
+	{
+		if (!$this->type_loaded) {
+			$this->loadFragment('type');
+		}
+		if ($enforce && $this->requiredType === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null requiredType.");
+		}
+		return $this->requiredType;
 	}
 	
 	public function setSomeText($someText, $notify = true)

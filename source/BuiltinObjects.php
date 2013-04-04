@@ -29,6 +29,8 @@ class BuiltinObjects
 		$this->add($mul_ii);
 		$mul_ir = new Builtin\BinaryBuiltinOperator($repo, $this->makeId(), "*", $type_int, $type_real, $type_real);
 		$this->add($mul_ir);
+		$mul_rr = new Builtin\BinaryBuiltinOperator($repo, $this->makeId(), "*", $type_real, $type_real, $type_real);
+		$this->add($mul_rr);
 	}
 
 	private function add(NamedObject $object)

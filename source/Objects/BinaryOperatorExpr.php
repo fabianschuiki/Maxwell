@@ -37,6 +37,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 	public $type_dirty  = false;
 	public $type_loaded = true;
 	protected $possibleType;
+	protected $requiredType;
 	
 	
 	/* GENERAL */
@@ -67,7 +68,8 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 				array("name" => "callArguments", "type" => "CallArgumentTuple"), 
 				array("name" => "callCandidates", "type" => "\RepositoryObjectArray"));
 			case "type": return array(
-				array("name" => "possibleType", "type" => ""));
+				array("name" => "possibleType", "type" => ""), 
+				array("name" => "requiredType", "type" => ""));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -277,5 +279,28 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null possibleType.");
 		}
 		return $this->possibleType;
+	}
+	
+	public function setRequiredType($requiredType, $notify = true)
+	{
+		if ($this->requiredType !== $requiredType) {
+			if (!$this->type_loaded) {
+				$this->loadFragment('type');
+			}
+			$this->requiredType = $requiredType;
+			if ($notify) {
+				$this->notifyFragmentDirty('type');
+			}
+		}
+	}
+	public function getRequiredType($enforce = true)
+	{
+		if (!$this->type_loaded) {
+			$this->loadFragment('type');
+		}
+		if ($enforce && $this->requiredType === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null requiredType.");
+		}
+		return $this->requiredType;
 	}
 }

@@ -12,3 +12,9 @@ Calculates a rough estimate of each object's possible types.
 	- AbstractFunctionArgument: `possibleType.type`
 	- otherwise: *null*
 - **AssignmentExpr**: `lhs.possibleType`
+
+### CalculateRequiredTypes
+Calculates the type constraints objects impose on their children.
+
+- **AssignmentExpr**: `rhs.requiredType` = `lhs.possibleType`
+- **CallInterface**: Each argument's type is the set of types of the input arguments at this location of all candidates.

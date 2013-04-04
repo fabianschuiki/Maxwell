@@ -7,4 +7,7 @@ interface TypeInterface
 {
 	public function setPossibleType($possibleType, $notify = true);
 	public function getPossibleType($enforce = true);
+	
+	public function setRequiredType($requiredType, $notify = true);
+	public function getRequiredType($enforce = true);
 }

@@ -70,6 +70,11 @@ Array
                     [class] => FunctionArgumentTupleType
                 )
 
+            [requiredType] => Array
+                (
+                    [class] => GenericType
+                )
+
             [arguments] => Array
                 (
                     [0] => Array
@@ -86,12 +91,31 @@ Array
                                     [class] => FunctionArgumentType
                                 )
 
+                            [requiredType] => Array
+                                (
+                                    [class] => GenericType
+                                )
+
                             [typeExpr] => Array
                                 (
                                     [evaluatedType] => Array
                                         (
                                             [definition] => @ref 0.2
                                             [class] => ConcreteType
+                                        )
+
+                                    [expr] => Array
+                                        (
+                                            [possibleType] => Array
+                                                (
+                                                    [class] => InvalidType
+                                                )
+
+                                            [requiredType] => Array
+                                                (
+                                                    [class] => GenericType
+                                                )
+
                                         )
 
                                 )
@@ -125,6 +149,11 @@ Array
                     [class] => FunctionArgumentTupleType
                 )
 
+            [requiredType] => Array
+                (
+                    [class] => GenericType
+                )
+
             [arguments] => Array
                 (
                     [0] => Array
@@ -141,12 +170,31 @@ Array
                                     [class] => FunctionArgumentType
                                 )
 
+                            [requiredType] => Array
+                                (
+                                    [class] => GenericType
+                                )
+
                             [typeExpr] => Array
                                 (
                                     [evaluatedType] => Array
                                         (
                                             [definition] => @ref 0.2
                                             [class] => ConcreteType
+                                        )
+
+                                    [expr] => Array
+                                        (
+                                            [possibleType] => Array
+                                                (
+                                                    [class] => InvalidType
+                                                )
+
+                                            [requiredType] => Array
+                                                (
+                                                    [class] => GenericType
+                                                )
+
                                         )
 
                                 )
@@ -171,12 +219,22 @@ Array
                                             [class] => ConcreteType
                                         )
 
+                                    [requiredType] => Array
+                                        (
+                                            [class] => GenericType
+                                        )
+
                                     [lhs] => Array
                                         (
                                             [possibleType] => Array
                                                 (
                                                     [definition] => @ref 0.2
                                                     [class] => ConcreteType
+                                                )
+
+                                            [requiredType] => Array
+                                                (
+                                                    [class] => GenericType
                                                 )
 
                                         )
@@ -204,12 +262,70 @@ Array
                                                     [class] => TypeSet
                                                 )
 
+                                            [requiredType] => Array
+                                                (
+                                                    [definition] => @ref 0.2
+                                                    [class] => ConcreteType
+                                                )
+
                                             [lhs] => Array
                                                 (
                                                     [possibleType] => Array
                                                         (
                                                             [definition] => @ref 0.2
                                                             [class] => ConcreteType
+                                                        )
+
+                                                    [requiredType] => Array
+                                                        (
+                                                            [types] => Array
+                                                                (
+                                                                    [0] => Array
+                                                                        (
+                                                                            [definition] => @ref 0.2
+                                                                            [class] => ConcreteType
+                                                                        )
+
+                                                                    [1] => Array
+                                                                        (
+                                                                            [definition] => @ref 0.3
+                                                                            [class] => ConcreteType
+                                                                        )
+
+                                                                )
+
+                                                            [class] => TypeSet
+                                                        )
+
+                                                )
+
+                                            [rhs] => Array
+                                                (
+                                                    [possibleType] => Array
+                                                        (
+                                                            [definition] => @ref 0.2
+                                                            [class] => ConcreteType
+                                                        )
+
+                                                    [requiredType] => Array
+                                                        (
+                                                            [types] => Array
+                                                                (
+                                                                    [0] => Array
+                                                                        (
+                                                                            [definition] => @ref 0.2
+                                                                            [class] => ConcreteType
+                                                                        )
+
+                                                                    [1] => Array
+                                                                        (
+                                                                            [definition] => @ref 0.3
+                                                                            [class] => ConcreteType
+                                                                        )
+
+                                                                )
+
+                                                            [class] => TypeSet
                                                         )
 
                                                 )

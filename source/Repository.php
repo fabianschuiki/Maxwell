@@ -412,4 +412,17 @@ class Repository
 		// TODO: Extend this to actually reflect the imported external objects.
 		return $this->builtin->getObjectNames();
 	}
+
+	/**
+	 * Returns the given builtin type or throws an exception if it does not
+	 * exist.
+	 */
+	public function getBuiltinType($name)
+	{
+		foreach ($this->builtin->getObjectNames() as $id => $n) {
+			if ($n === $name)
+				return $this->builtin->getObject($id);
+		}
+		throw new \InvalidArgumentException("No internal object named '$name' exists.");
+	}
 }

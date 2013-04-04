@@ -52,8 +52,8 @@ class CalculatePossibleTypesStage extends DriverStage
 				$t = $candidate->getFunc()->get()->getPossibleType();
 				$outputTuples[] = $t->getOutputs();
 			}
-			$t = $this->unifyArgumentTupleTypes($outputTuples);
-			$this->println(2, "unified tuple = ".\Type::describe($t), $object->getId());
+			$t = \Type::unifyArgumentTuples($outputTuples);
+			$this->println(2, "Unified outputs = ".\Type::describe($t), $object->getId());
 
 			// At the moment only single return values are supported, which is why we strip the output arguments.
 			foreach ($t->getTypes()->getElements() as $type) {
@@ -77,51 +77,29 @@ class CalculatePossibleTypesStage extends DriverStage
 			$target = $object->getBindingTarget()->get();
 			if ($target instanceof \AbstractFunctionArgument) {
 				$object->setPossibleType($target->getPossibleType()->getType());
+			} else {
+				$object->setPossibleType(new \Objects\InvalidType);
 			}
 		}
 		if ($object instanceof \Objects\AssignmentExpr) {
 			$object->setPossibleType($object->getLhs()->getPossibleType());
 		}
+		if ($object instanceof \Objects\ConstantExpr) {
+			$name = null;
+			$value = $object->getValue();
+			if (preg_match('/\./', $value)) {
+				$name = "real";
+			} else {
+				$name = "int";
+			}
+			$t = new \RepositoryObjectReference($this->repository);
+			$t->set($this->repository->getBuiltinType($name));
+			$ct = new \Objects\ConcreteType;
+			$ct->setDefinition($t);
+			$object->setPossibleType($ct);
+		}
 
 		// Show the output of the stage.
-		$this->println(1, \Type::describe($object->getPossibleType(false)), $object->getId());
-	}
-
-	private function unifyArgumentTupleTypes(array $tuples)
-	{
-		$unified = array(); // unified tuples indexed by their lengths
-		foreach ($tuples as $tuple) {
-			$l = $tuple->getArguments()->getCount();
-			if (!isset($unified[$l])) {
-				$u = new \Objects\FunctionArgumentTupleType;
-				$u->setArguments(new \RepositoryObjectArray);
-				$unified[$l] = $u;
-			}
-			$unifiedArguments = $u->getArguments();
-			foreach ($tuple->getArguments()->getElements() as $index => $argument) {
-				$ua = $unifiedArguments->get($index, false);
-				if (!$ua) {
-					$unifiedArguments->set($index, $argument);
-				} else if ($ua->getType() instanceof \Objects\TypeSet) {
-					$ua->getType()->getTypes()->add($argument);
-				} else {
-					$a = new \RepositoryObjectArray;
-					$a->add($ua->getType());
-					$a->add($argument->getType());
-					$s = new \Objects\TypeSet;
-					$s->setTypes($a);
-					$ua->setType($s);
-				}
-			}
-		}
-
-		// Transform the array of unified tuples into a set of types.
-		$a = new \RepositoryObjectArray;
-		foreach ($unified as $u) {
-			$a->add($u);
-		}
-		$s = new \Objects\TypeSet;
-		$s->setTypes($a);
-		return $s;
+		$this->println(1, \Type::describe($object->getPossibleType()), $object->getId());
 	}
 }

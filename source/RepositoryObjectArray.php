@@ -32,7 +32,10 @@ class RepositoryObjectArray extends RepositoryNodeObject
 	{
 		// TODO: maybe some loading is necessary?
 		if (!isset($this->elements[$key])) {
-			throw new \InvalidArgumentException("Requested element $key does not exist.");
+			if ($enforce)
+				throw new \InvalidArgumentException("Requested element $key does not exist.");
+			else
+				return null;
 		}
 		return $this->elements[$key];
 	}

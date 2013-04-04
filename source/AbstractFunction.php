@@ -1,8 +1,8 @@
 <?php
 /* Copyright © 2013 Fabian Schuiki */
 
-interface AbstractFunction extends NamedObject
+interface AbstractFunction extends NamedObject, TypedObject
 {
-	public function getInputs($enforce = true);
-	public function getOutputs($enforce = true);
+	public function getInputs();
+	public function getOutputs();
 }

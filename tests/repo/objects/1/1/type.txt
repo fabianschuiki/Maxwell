@@ -1,11 +1,91 @@
 Array
 (
+    [possibleType] => Array
+        (
+            [inputs] => Array
+                (
+                    [arguments] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [name] => x
+                                    [type] => Array
+                                        (
+                                            [definition] => @ref 0.1
+                                            [class] => ConcreteType
+                                        )
+
+                                    [class] => FunctionArgumentType
+                                )
+
+                        )
+
+                    [class] => FunctionArgumentTupleType
+                )
+
+            [outputs] => Array
+                (
+                    [arguments] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [name] => y
+                                    [type] => Array
+                                        (
+                                            [definition] => @ref 0.1
+                                            [class] => ConcreteType
+                                        )
+
+                                    [class] => FunctionArgumentType
+                                )
+
+                        )
+
+                    [class] => FunctionArgumentTupleType
+                )
+
+            [class] => FunctionType
+        )
+
     [inputs] => Array
         (
+            [possibleType] => Array
+                (
+                    [arguments] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [name] => x
+                                    [type] => Array
+                                        (
+                                            [definition] => @ref 0.1
+                                            [class] => ConcreteType
+                                        )
+
+                                    [class] => FunctionArgumentType
+                                )
+
+                        )
+
+                    [class] => FunctionArgumentTupleType
+                )
+
             [arguments] => Array
                 (
                     [0] => Array
                         (
+                            [possibleType] => Array
+                                (
+                                    [name] => x
+                                    [type] => Array
+                                        (
+                                            [definition] => @ref 0.1
+                                            [class] => ConcreteType
+                                        )
+
+                                    [class] => FunctionArgumentType
+                                )
+
                             [typeExpr] => Array
                                 (
                                     [evaluatedType] => Array
@@ -24,10 +104,43 @@ Array
 
     [outputs] => Array
         (
+            [possibleType] => Array
+                (
+                    [arguments] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [name] => y
+                                    [type] => Array
+                                        (
+                                            [definition] => @ref 0.1
+                                            [class] => ConcreteType
+                                        )
+
+                                    [class] => FunctionArgumentType
+                                )
+
+                        )
+
+                    [class] => FunctionArgumentTupleType
+                )
+
             [arguments] => Array
                 (
                     [0] => Array
                         (
+                            [possibleType] => Array
+                                (
+                                    [name] => y
+                                    [type] => Array
+                                        (
+                                            [definition] => @ref 0.1
+                                            [class] => ConcreteType
+                                        )
+
+                                    [class] => FunctionArgumentType
+                                )
+
                             [typeExpr] => Array
                                 (
                                     [evaluatedType] => Array
@@ -50,6 +163,65 @@ Array
                 (
                     [0] => Array
                         (
+                            [expr] => Array
+                                (
+                                    [rhs] => Array
+                                        (
+                                            [possibleType] => Array
+                                                (
+                                                    [types] => Array
+                                                        (
+                                                            [0] => Array
+                                                                (
+                                                                    [arguments] => Array
+                                                                        (
+                                                                            [0] => Array
+                                                                                (
+                                                                                    [types] => Array
+                                                                                        (
+                                                                                            [0] => Array
+                                                                                                (
+                                                                                                    [name] => r
+                                                                                                    [type] => Array
+                                                                                                        (
+                                                                                                            [definition] => @ref 0.1
+                                                                                                            [class] => ConcreteType
+                                                                                                        )
+
+                                                                                                    [class] => FunctionArgumentType
+                                                                                                )
+
+                                                                                            [1] => Array
+                                                                                                (
+                                                                                                    [name] => r
+                                                                                                    [type] => Array
+                                                                                                        (
+                                                                                                            [definition] => @ref 0.2
+                                                                                                            [class] => ConcreteType
+                                                                                                        )
+
+                                                                                                    [class] => FunctionArgumentType
+                                                                                                )
+
+                                                                                        )
+
+                                                                                    [class] => TypeSet
+                                                                                )
+
+                                                                        )
+
+                                                                    [class] => FunctionArgumentTupleType
+                                                                )
+
+                                                        )
+
+                                                    [class] => TypeSet
+                                                )
+
+                                        )
+
+                                )
+
                         )
 
                 )

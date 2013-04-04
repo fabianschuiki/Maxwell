@@ -65,7 +65,7 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 			case "binding": return array(
 				array("name" => "bindingTarget", "type" => "\RepositoryObjectReference"));
 			case "type": return array(
-				array("name" => "possibleType", "type" => "Type"), 
+				array("name" => "possibleType", "type" => ""), 
 				array("name" => "someText", "type" => "string"));
 			case "code": return array(
 				array("name" => "exprCode", "type" => "string"), 
@@ -207,15 +207,13 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 		return $this->bindingTarget;
 	}
 	
-	public function setPossibleType(Type $possibleType = null, $notify = true)
+	public function setPossibleType($possibleType, $notify = true)
 	{
 		if ($this->possibleType !== $possibleType) {
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
-			if ($this->possibleType instanceof \RepositoryObjectParentInterface) $this->possibleType->setParent(null);
 			$this->possibleType = $possibleType;
-			if ($possibleType instanceof \RepositoryObjectParentInterface) $possibleType->setParent($this, "possibleType", "type");
 			if ($notify) {
 				$this->notifyFragmentDirty('type');
 			}

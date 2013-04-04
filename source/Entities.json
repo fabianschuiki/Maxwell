@@ -6,7 +6,7 @@
 		"binding": [
 			"ref bindingTarget"],
 		"type": [
-			"Type possibleType"],
+			"possibleType"],
 		"root_code": [
 			"string indepDeclCode",
 			"string depDeclCode",
@@ -42,6 +42,7 @@
 
 		"FunctionDefinition": {
 			"root": true,
+			"implements": ["\\AbstractFunction"],
 			"tree": ["FunctionArgumentTuple inputs", "FunctionArgumentTuple outputs", "FunctionBody body"],
 			"main": ["@range", "string name"],
 			"graph": ["@graph"],
@@ -50,15 +51,17 @@
 			"binding":[], "call":[]},
 
 		"FunctionArgumentTuple": {
+			"implements": ["\\AbstractFunctionArgumentTuple"],
 			"tree": ["array arguments"],
-			"graph": ["@graph"]
-		},
+			"graph": ["@graph"],
+			"type": ["@type"]},
 
 		"FunctionArgument": {
+			"implements": ["\\AbstractFunctionArgument"],
 			"tree": ["TypeExpr typeExpr"],
 			"main": ["string name"],
-			"graph": ["@graph"]
-			},
+			"graph": ["@graph"],
+			"type": ["@type"]},
 
 		"FunctionBody": {
 			"tree": ["array stmts"]
@@ -80,7 +83,8 @@
 			"tree": ["Expr lhs", "Expr rhs"],
 			"main": ["string operator"],
 			"graph": ["@graph"],
-			"call": ["@call"]},
+			"call": ["@call"],
+			"type": ["@type"]},
 
 		"ConstantExpr": {
 			"extends": "Expr",
@@ -113,6 +117,8 @@
 			},
 		"FunctionArgumentType": {
 			"main": ["string name", "type"]
-			}
+			},
+		"TypeSet": {
+			"main": ["array types"]}
 	}
 }

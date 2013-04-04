@@ -19,4 +19,5 @@ $bind = new Stage\CalculatePossibleTypesStage($repo);
 $bind->run("1.1");
 
 // Write the changes to disk.
+echo "Flushing changes to disk\n";
 $repo->flush();

@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class FunctionArgumentTuple extends \RepositoryNodeObject implements GraphInterface
+class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFunctionArgumentTuple, GraphInterface, TypeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -20,6 +20,11 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements GraphInterf
 	public $graph_loaded = true;
 	protected $graphPrev;
 	
+	// type fragment
+	public $type_dirty  = false;
+	public $type_loaded = true;
+	protected $possibleType;
+	
 	
 	/* GENERAL */
 	public function setParent(\RepositoryObject $parent = null, $key = null, $fragment = null)
@@ -31,7 +36,7 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements GraphInterf
 	
 	public function getFragmentNames()
 	{
-		return array("tree","graph");
+		return array("tree","graph","type");
 	}
 	
 	public function getFragment($name)
@@ -41,6 +46,8 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements GraphInterf
 				array("name" => "arguments", "type" => "\RepositoryObjectArray"));
 			case "graph": return array(
 				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
+			case "type": return array(
+				array("name" => "possibleType", "type" => ""));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -100,5 +107,28 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements GraphInterf
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null graphPrev.");
 		}
 		return $this->graphPrev;
+	}
+	
+	public function setPossibleType($possibleType, $notify = true)
+	{
+		if ($this->possibleType !== $possibleType) {
+			if (!$this->type_loaded) {
+				$this->loadFragment('type');
+			}
+			$this->possibleType = $possibleType;
+			if ($notify) {
+				$this->notifyFragmentDirty('type');
+			}
+		}
+	}
+	public function getPossibleType($enforce = true)
+	{
+		if (!$this->type_loaded) {
+			$this->loadFragment('type');
+		}
+		if ($enforce && $this->possibleType === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null possibleType.");
+		}
+		return $this->possibleType;
 	}
 }

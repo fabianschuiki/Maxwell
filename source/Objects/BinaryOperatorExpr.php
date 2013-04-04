@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface
+class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, TypeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -33,6 +33,11 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface
 	protected $callArguments;
 	protected $callCandidates;
 	
+	// type fragment
+	public $type_dirty  = false;
+	public $type_loaded = true;
+	protected $possibleType;
+	
 	
 	/* GENERAL */
 	public function setParent(\RepositoryObject $parent = null, $key = null, $fragment = null)
@@ -44,7 +49,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface
 	
 	public function getFragmentNames()
 	{
-		return array("tree","main","graph","call");
+		return array("tree","main","graph","call","type");
 	}
 	
 	public function getFragment($name)
@@ -61,6 +66,8 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface
 				array("name" => "callName", "type" => "string"), 
 				array("name" => "callArguments", "type" => "CallArgumentTuple"), 
 				array("name" => "callCandidates", "type" => "\RepositoryObjectArray"));
+			case "type": return array(
+				array("name" => "possibleType", "type" => ""));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -247,5 +254,28 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null callCandidates.");
 		}
 		return $this->callCandidates;
+	}
+	
+	public function setPossibleType($possibleType, $notify = true)
+	{
+		if ($this->possibleType !== $possibleType) {
+			if (!$this->type_loaded) {
+				$this->loadFragment('type');
+			}
+			$this->possibleType = $possibleType;
+			if ($notify) {
+				$this->notifyFragmentDirty('type');
+			}
+		}
+	}
+	public function getPossibleType($enforce = true)
+	{
+		if (!$this->type_loaded) {
+			$this->loadFragment('type');
+		}
+		if ($enforce && $this->possibleType === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null possibleType.");
+		}
+		return $this->possibleType;
 	}
 }

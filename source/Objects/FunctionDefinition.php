@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class FunctionDefinition extends \RepositoryRootObject implements RangeInterface, GraphInterface, TypeInterface, RootCodeInterface
+class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunction, RangeInterface, GraphInterface, TypeInterface, RootCodeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -78,7 +78,7 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 			case "graph": return array(
 				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
 			case "type": return array(
-				array("name" => "possibleType", "type" => "Type"));
+				array("name" => "possibleType", "type" => ""));
 			case "code": return array(
 				array("name" => "indepDeclCode", "type" => "string"), 
 				array("name" => "depDeclCode", "type" => "string"), 
@@ -273,15 +273,13 @@ class FunctionDefinition extends \RepositoryRootObject implements RangeInterface
 		return $this->graphPrev;
 	}
 	
-	public function setPossibleType(Type $possibleType = null, $notify = true)
+	public function setPossibleType($possibleType, $notify = true)
 	{
 		if ($this->possibleType !== $possibleType) {
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
-			if ($this->possibleType instanceof \RepositoryObjectParentInterface) $this->possibleType->setParent(null);
 			$this->possibleType = $possibleType;
-			if ($possibleType instanceof \RepositoryObjectParentInterface) $possibleType->setParent($this, "possibleType", "type");
 			if ($notify) {
 				$this->notifyFragmentDirty('type');
 			}

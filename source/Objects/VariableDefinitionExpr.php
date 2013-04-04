@@ -54,7 +54,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 				array("name" => "typeExpr", "type" => "TypeExpr"), 
 				array("name" => "initialExpr", "type" => "Expr"));
 			case "type": return array(
-				array("name" => "possibleType", "type" => "Type"));
+				array("name" => "possibleType", "type" => ""));
 			case "code": return array(
 				array("name" => "exprCode", "type" => "string"), 
 				array("name" => "stmtsCode", "type" => "string"));
@@ -195,15 +195,13 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 		return $this->initialExpr;
 	}
 	
-	public function setPossibleType(Type $possibleType = null, $notify = true)
+	public function setPossibleType($possibleType, $notify = true)
 	{
 		if ($this->possibleType !== $possibleType) {
 			if (!$this->type_loaded) {
 				$this->loadFragment('type');
 			}
-			if ($this->possibleType instanceof \RepositoryObjectParentInterface) $this->possibleType->setParent(null);
 			$this->possibleType = $possibleType;
-			if ($possibleType instanceof \RepositoryObjectParentInterface) $possibleType->setParent($this, "possibleType", "type");
 			if ($notify) {
 				$this->notifyFragmentDirty('type');
 			}

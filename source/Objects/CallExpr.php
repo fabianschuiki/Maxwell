@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class CallExpr extends \RepositoryNodeObject implements CallInterface
+class CallExpr extends \RepositoryNodeObject implements CallInterface, TypeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -28,6 +28,13 @@ class CallExpr extends \RepositoryNodeObject implements CallInterface
 	protected $callCandidates;
 	protected $selectedCallCandidate;
 	
+	// type fragment
+	public $type_dirty  = false;
+	public $type_loaded = true;
+	protected $possibleType;
+	protected $requiredType;
+	protected $actualType;
+	
 	
 	/* GENERAL */
 	public function setParent(\IdedObject $parent = null, $key = null, $fragment = null)
@@ -49,7 +56,7 @@ class CallExpr extends \RepositoryNodeObject implements CallInterface
 	
 	public function getFragmentNames()
 	{
-		return array("tree","main","call");
+		return array("tree","main","call","type");
 	}
 	
 	public function getFragment($name)
@@ -64,6 +71,10 @@ class CallExpr extends \RepositoryNodeObject implements CallInterface
 				array("name" => "callArguments", "type" => "CallArgumentTuple"), 
 				array("name" => "callCandidates", "type" => "\RepositoryObjectArray"), 
 				array("name" => "selectedCallCandidate", "type" => "CallCandidate"));
+			case "type": return array(
+				array("name" => "possibleType", "type" => ""), 
+				array("name" => "requiredType", "type" => ""), 
+				array("name" => "actualType", "type" => ""));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -329,6 +340,141 @@ class CallExpr extends \RepositoryNodeObject implements CallInterface
 			$v = $this->selectedCallCandidate->get(!$enforce);
 		} else {
 			$v = $this->selectedCallCandidate;
+		}
+		return $v;
+	}
+	
+	public function setPossibleType($possibleType, $notify = true)
+	{
+		if ($this->hasPropertyChanged($this->possibleType, $possibleType)) {
+			if (!$this->type_loaded) {
+				$this->loadFragment("type");
+			}
+			if ($this->possibleType instanceof \RepositoryObjectParentInterface) {
+				$this->possibleType->setParent(null);
+			}
+			if ($possibleType instanceof \RepositoryObjectParentInterface) {
+				$possibleType->setParent($this, "possibleType", "type");
+			}
+			$this->possibleType = $possibleType;
+			if ($notify) {
+				$this->notifyObjectDirty("possibleType");
+				$this->notifyFragmentDirty("type");
+			}
+		}
+	}
+	public function setPossibleTypeRef($possibleType, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($possibleType instanceof \RepositoryObjectReference) {
+			$v->set($possibleType->getRefId());
+		} else {
+			$v->set($possibleType);
+		}
+		$this->setPossibleType($v, $notify);
+	}
+	public function getPossibleType($enforce = true, $unref = true)
+	{
+		if (!$this->type_loaded) {
+			$this->loadFragment('type');
+		}
+		if ($enforce && $this->possibleType === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null possibleType.");
+		}
+		if ($unref && $this->possibleType instanceof \RepositoryObjectReference) {
+			$v = $this->possibleType->get(!$enforce);
+		} else {
+			$v = $this->possibleType;
+		}
+		return $v;
+	}
+	
+	public function setRequiredType($requiredType, $notify = true)
+	{
+		if ($this->hasPropertyChanged($this->requiredType, $requiredType)) {
+			if (!$this->type_loaded) {
+				$this->loadFragment("type");
+			}
+			if ($this->requiredType instanceof \RepositoryObjectParentInterface) {
+				$this->requiredType->setParent(null);
+			}
+			if ($requiredType instanceof \RepositoryObjectParentInterface) {
+				$requiredType->setParent($this, "requiredType", "type");
+			}
+			$this->requiredType = $requiredType;
+			if ($notify) {
+				$this->notifyObjectDirty("requiredType");
+				$this->notifyFragmentDirty("type");
+			}
+		}
+	}
+	public function setRequiredTypeRef($requiredType, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($requiredType instanceof \RepositoryObjectReference) {
+			$v->set($requiredType->getRefId());
+		} else {
+			$v->set($requiredType);
+		}
+		$this->setRequiredType($v, $notify);
+	}
+	public function getRequiredType($enforce = true, $unref = true)
+	{
+		if (!$this->type_loaded) {
+			$this->loadFragment('type');
+		}
+		if ($enforce && $this->requiredType === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null requiredType.");
+		}
+		if ($unref && $this->requiredType instanceof \RepositoryObjectReference) {
+			$v = $this->requiredType->get(!$enforce);
+		} else {
+			$v = $this->requiredType;
+		}
+		return $v;
+	}
+	
+	public function setActualType($actualType, $notify = true)
+	{
+		if ($this->hasPropertyChanged($this->actualType, $actualType)) {
+			if (!$this->type_loaded) {
+				$this->loadFragment("type");
+			}
+			if ($this->actualType instanceof \RepositoryObjectParentInterface) {
+				$this->actualType->setParent(null);
+			}
+			if ($actualType instanceof \RepositoryObjectParentInterface) {
+				$actualType->setParent($this, "actualType", "type");
+			}
+			$this->actualType = $actualType;
+			if ($notify) {
+				$this->notifyObjectDirty("actualType");
+				$this->notifyFragmentDirty("type");
+			}
+		}
+	}
+	public function setActualTypeRef($actualType, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($actualType instanceof \RepositoryObjectReference) {
+			$v->set($actualType->getRefId());
+		} else {
+			$v->set($actualType);
+		}
+		$this->setActualType($v, $notify);
+	}
+	public function getActualType($enforce = true, $unref = true)
+	{
+		if (!$this->type_loaded) {
+			$this->loadFragment('type');
+		}
+		if ($enforce && $this->actualType === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null actualType.");
+		}
+		if ($unref && $this->actualType instanceof \RepositoryObjectReference) {
+			$v = $this->actualType->get(!$enforce);
+		} else {
+			$v = $this->actualType;
 		}
 		return $v;
 	}

@@ -59,7 +59,7 @@ class CalculateRequiredTypesStage extends DriverStage
 					$s = new \Objects\TypeSet;
 					$s->setTypes($a);
 					$s = \Type::simplifySet($s);
-					$argument->getExpr()->setRequiredType($s);
+					$argument->getExpr()->setRequiredType(clone $s);
 				} else {
 					$argument->getExpr()->setRequiredType(new \Objects\InvalidType);
 				}

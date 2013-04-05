@@ -36,12 +36,16 @@ $input = json_decode(file_get_contents($path));
 if (!is_array($input)) {
 	$input = array($input);
 }
+$names = array();
 foreach ($input as $index => $data) {
 	$class = null;
 	if (isset($data->class)) {
 		$class = $data->class;
 	}
 	unset($data->class);
+	if (isset($data->name)) {
+		$names["1.".($index+1)] = $data->name;
+	}
 
 	// Split up the rest of the data.
 	$tree = array();
@@ -59,3 +63,4 @@ foreach ($input as $index => $data) {
 		file_put_contents($path."/class", $class);
 	}
 }
+file_put_contents(__DIR__."/repo/objects/1/names-local", json_encode($names));

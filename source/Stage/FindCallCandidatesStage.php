@@ -46,7 +46,7 @@ class FindCallCandidatesStage extends DriverStage
 			// Store the candidates.
 			$object->setCallCandidates($array);
 			if (!$object->getCallCandidates()->getCount()) {
-				throw new \RuntimeException("Called function '$name' is not known.");
+				throw new \RuntimeException("Called function '$name' is not known. Known names: ".print_r($externals, true));
 			}
 
 			// Dump the call to the console.

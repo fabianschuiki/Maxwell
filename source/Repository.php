@@ -45,6 +45,10 @@ class Repository
 	protected $objectStageStates = array();
 	protected $objectStageStates_modified = array();
 
+	// List of local names per source.
+	protected $localNames = array();
+	protected $localNames_modified = array(); // unused as of now
+
 
 	/// Create a new repository at the location $dir.
 	public function __construct($dir)
@@ -419,8 +423,22 @@ class Repository
 	 */
 	public function getImportedNamesForObject($objectId)
 	{
-		// TODO: Extend this to actually reflect the imported external objects.
-		return $this->builtin->getObjectNames();
+		$a = array();
+		$a = array_merge($a, $this->getLocalNamesForObject($objectId));
+		$a = array_merge($a, $this->builtin->getObjectNames());
+		return $a;
+	}
+
+	/**
+	 * Returns a list of local names and IDs, i.e. the list of locally declared
+	 * functions and types for the given object's source.
+	 */
+	public function getLocalNamesForObject($objectId)
+	{
+		if (!preg_match('/^(\d*)\./', $objectId, $m)) {
+			throw new \InvalidArgumentException("Object ID $objectId has no valid source segment.");
+		}
+		return $this->getLocalNames($m[1]);
 	}
 
 	/**
@@ -508,7 +526,7 @@ class Repository
 
 		if (file_exists($path)) {
 			$source = file_get_contents($path);
-			if ($source === null) {
+			if ($source === false) {
 				throw new \RuntimeException("Unable to read dependencies file $path.");
 			}
 			$deps = json_decode($source, true);
@@ -574,7 +592,7 @@ class Repository
 
 		if (file_exists($path)) {
 			$source = file_get_contents($path);
-			if ($source === null) {
+			if ($source === false) {
 				throw new \RuntimeException("Unable to read stage states file $path.");
 			}
 			$states = json_decode($source, true);
@@ -612,5 +630,48 @@ class Repository
 		if (!in_array($objectId, $this->objectStageStates_modified)) {
 			$this->objectStageStates_modified[] = $objectId;
 		}
+	}
+
+	/**
+	 * Returns a list of locally names declared locally in the given source.
+	 */
+	public function getLocalNames($sourceId)
+	{
+		if (!isset($this->localNames[$sourceId])) {
+			$this->readLocalNames($sourceId);
+		}
+		return $this->localNames[$sourceId];
+	}
+
+	/**
+	 * Returns the path to the local names store for the given source ID.
+	 */
+	private function getLocalNamesPath($sourceId)
+	{
+		return $path = $this->dir."/".$this->objects_dir."/".$sourceId."/names-local";
+	}
+
+	/**
+	 * Reads the list of local names for the given source ID.
+	 */
+	private function readLocalNames($sourceId)
+	{
+		if (in_array($sourceId, $this->localNames_modified)) {
+			throw new \RuntimeException("Loading local names of source ID $sourceId which are marked as modified.");
+		}
+
+		$path = $this->getLocalNamesPath($sourceId);
+		$names = array();
+		if (file_exists($path)) {
+			$source = file_get_contents($path);
+			if ($source === false) {
+				throw new \RuntimeException("Unable to read local names file $path.");
+			}
+			$names = json_decode($source, true);
+			if ($names === null) {
+				throw new \RuntimeException("Unable to parse local names in file $path. JSON error ".json_last_error().".");
+			}
+		}
+		$this->localNames[$sourceId] = $names;
 	}
 }

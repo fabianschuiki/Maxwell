@@ -31,14 +31,16 @@ class BuiltinObjects
 		$this->add($cast_ri);
 
 		// Operators on int and real
-		$mul_ii = new Builtin\BinaryBuiltinOperator($repo, $this->makeId(), "*", $type_int, $type_int, $type_int);
-		$this->add($mul_ii);
-		$mul_ir = new Builtin\BinaryBuiltinOperator($repo, $this->makeId(), "*", $type_int, $type_real, $type_real);
-		$this->add($mul_ir);
-		$mul_ri = new Builtin\BinaryBuiltinOperator($repo, $this->makeId(), "*", $type_real, $type_int, $type_real);
-		$this->add($mul_ri);
-		$mul_rr = new Builtin\BinaryBuiltinOperator($repo, $this->makeId(), "*", $type_real, $type_real, $type_real);
-		$this->add($mul_rr);
+		foreach (array("*", "+", "-") as $op) {
+			$mul_ii = new Builtin\BinaryBuiltinOperator($repo, $this->makeId(), $op, $type_int, $type_int, $type_int);
+			$this->add($mul_ii);
+			$mul_ir = new Builtin\BinaryBuiltinOperator($repo, $this->makeId(), $op, $type_int, $type_real, $type_real);
+			$this->add($mul_ir);
+			$mul_ri = new Builtin\BinaryBuiltinOperator($repo, $this->makeId(), $op, $type_real, $type_int, $type_real);
+			$this->add($mul_ri);
+			$mul_rr = new Builtin\BinaryBuiltinOperator($repo, $this->makeId(), $op, $type_real, $type_real, $type_real);
+			$this->add($mul_rr);
+		}
 	}
 
 	private function add(NamedObject $object)

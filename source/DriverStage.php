@@ -67,8 +67,8 @@ abstract class DriverStage
 		if ($object instanceof Builtin\BuiltinObject) {
 			return;
 		}
-		if (!$object instanceof RepositoryObject) {
-			throw new InvalidArgumentException("Dependency object must be a RepositoryObject.");
+		if (!$object instanceof RepositoryObject && !is_string($object)) {
+			throw new InvalidArgumentException("Dependency object must be a RepositoryObject or ID.");
 		}
 		$id = (is_object($object) ? ($object instanceof \RepositoryObjectReference ? $object->getRefId() : $object->getId()) : $object);
 		if (preg_match('/<parentless>/', $id)) {

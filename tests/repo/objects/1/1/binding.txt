@@ -57,9 +57,17 @@ Array
 
                                     [rhs] => Array
                                         (
-                                            [lhs] => Array
+                                            [rhs] => Array
                                                 (
-                                                    [bindingTarget] => @ref 1.1.inputs.arguments.0
+                                                    [arguments] => Array
+                                                        (
+                                                            [0] => Array
+                                                                (
+                                                                    [bindingTarget] => @ref 1.1.inputs.arguments.0
+                                                                )
+
+                                                        )
+
                                                 )
 
                                         )

@@ -545,6 +545,16 @@ class Repository
 	{
 		$this->println(3, "Modified $path", $objectId);
 
+		// Make sure stuff is around.
+		if (!isset($this->dependencies["1.1"])) {
+			$this->println(0, "Forcefully loading dependencies of 1.1 during debugging.");
+			$this->readDependencies("1.1");
+		}
+		if (!isset($this->dependencies["1.2"])) {
+			$this->println(0, "Forcefully loading dependencies of 1.2 during debugging.");
+			$this->readDependencies("1.2");
+		}
+
 		// Look for such a dependency.
 		foreach ($this->dependencies as $oid => $deps) {
 			foreach ($deps as $stage => $ids) {

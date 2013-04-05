@@ -61,10 +61,15 @@ class CalculatePossibleTypesStage extends DriverStage
 			foreach ($object->getCallCandidates()->getChildren() as $candidate) {
 				// Fetch the function type this candidate is pointing at.
 				$f = $candidate->getFunc();
-				$this->addDependency($candidate);
+				$this->addDependency($f->getId().".possibleType");
+				$this->addDependency($f->getId().".actualType");
 				$t = $f->getActualType(false);
 				if (!$t)
-					$t = $f->getPossibleType();
+					$t = $f->getPossibleType(false);
+				if (!$t) {
+					$this->println(3, "Skipping candidate {$f->getId()} due to unfinished possible type analysis", $object->getId());
+					continue;
+				}
 
 				// Calculate the possible types for each call candidate's arguments.
 				foreach ($candidate->getArguments()->getElements() as $index => $argument) {
@@ -90,17 +95,21 @@ class CalculatePossibleTypesStage extends DriverStage
 			$this->println(2, "Unified outputs = ".\Type::describe($t), $object->getId());
 
 			// At the moment only single return values are supported, which is why we strip the output arguments.
-			foreach ($t->getTypes()->getElements() as $type) {
-				$argc = $type->getArguments()->getCount();
-				if ($argc > 1) {
-					throw new \RuntimeException("Only single or no return value is supported at the moment. Call {$object->getId()} has unified output type ".\Type::describe($t).".");
+			if ($t->getTypes()->getCount()) {
+				foreach ($t->getTypes()->getElements() as $type) {
+					$argc = $type->getArguments()->getCount();
+					if ($argc > 1) {
+						throw new \RuntimeException("Only single or no return value is supported at the moment. Call {$object->getId()} has unified output type ".\Type::describe($t).".");
+					}
+					if ($argc == 1) {
+						$t = clone $type->getArguments()->get(0)->getType();
+					} else {
+						$t = null;
+					}
+					break;
 				}
-				if ($argc == 1) {
-					$t = clone $type->getArguments()->get(0)->getType();
-				} else {
-					$t = null;
-				}
-				break;
+			} else {
+				$t = new \Objects\InvalidType;
 			}
 
 			$object->setPossibleType($t);

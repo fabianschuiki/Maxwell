@@ -74,15 +74,7 @@ Array
 
                                             [rhs] => Array
                                                 (
-                                                    [arguments] => Array
-                                                        (
-                                                            [0] => Array
-                                                                (
-                                                                    [graphPrev] => @ref 1.2.body.stmts.0.expr.rhs.lhs
-                                                                )
-
-                                                        )
-
+                                                    [graphPrev] => @ref 1.2.body.stmts.0.expr.rhs.lhs
                                                 )
 
                                         )

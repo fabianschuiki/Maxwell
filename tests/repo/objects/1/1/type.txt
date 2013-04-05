@@ -486,6 +486,32 @@ Array
                                                             [class] => ConcreteType
                                                         )
 
+                                                    [arguments] => Array
+                                                        (
+                                                            [0] => Array
+                                                                (
+                                                                    [possibleType] => Array
+                                                                        (
+                                                                            [definition] => @ref 0.2
+                                                                            [class] => ConcreteType
+                                                                        )
+
+                                                                    [requiredType] => Array
+                                                                        (
+                                                                            [definition] => @ref 0.2
+                                                                            [class] => ConcreteType
+                                                                        )
+
+                                                                    [actualType] => Array
+                                                                        (
+                                                                            [definition] => @ref 0.2
+                                                                            [class] => ConcreteType
+                                                                        )
+
+                                                                )
+
+                                                        )
+
                                                 )
 
                                         )

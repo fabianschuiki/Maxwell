@@ -21,10 +21,10 @@ $bind = new Stage\CalculateRequiredTypesStage($repo);
 $bind->run("1.1");
 $bind = new Stage\CalculateActualTypesStage($repo);
 $bind->run("1.1");
-/*$bind = new Stage\NarrowCallCandidatesStage($repo);
+$bind = new Stage\NarrowCallCandidatesStage($repo);
 $bind->run("1.1");
 $bind = new Stage\SelectCallCandidateStage($repo);
-$bind->run("1.1");*/
+$bind->run("1.1");
 
 // Write the changes to disk.
 echo "Flushing changes to disk\n";

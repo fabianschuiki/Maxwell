@@ -66,7 +66,7 @@ Array
                                                                         (
                                                                             [argument] => @ref 1.1.body.stmts.0.expr.rhs.callArguments.arguments.0
                                                                             [possibleType] => @ref 1.1.body.stmts.0.expr.rhs.lhs.possibleType
-                                                                            [requiredType] => @ref 0.4.actualType.inputs.arguments.0.type
+                                                                            [requiredType] => @ref 0.6.actualType.inputs.arguments.0.type
                                                                             [actualType] => Array
                                                                                 (
                                                                                     [definition] => @ref 0.2
@@ -80,19 +80,16 @@ Array
                                                                         (
                                                                             [argument] => @ref 1.1.body.stmts.0.expr.rhs.callArguments.arguments.1
                                                                             [possibleType] => @ref 1.1.body.stmts.0.expr.rhs.rhs.possibleType
-                                                                            [requiredType] => @ref 0.4.actualType.inputs.arguments.1.type
-                                                                            [actualType] => Array
-                                                                                (
-                                                                                    [class] => InvalidType
-                                                                                )
-
+                                                                            [requiredType] => @ref 0.6.actualType.inputs.arguments.1.type
+                                                                            [actualType] => @ref 0.5.actualType.outputs.arguments.0.type
                                                                             [class] => CallCandidateArgument
                                                                         )
 
                                                                 )
 
-                                                            [func] => @ref 0.4
-                                                            [possibleType] => @ref 0.4.actualType.outputs.arguments.0.type
+                                                            [func] => @ref 0.6
+                                                            [feasible] => 1
+                                                            [possibleType] => @ref 0.6.actualType.outputs.arguments.0.type
                                                             [requiredType] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
                                                             [actualType] => Array
                                                                 (
@@ -111,98 +108,11 @@ Array
                                                                         (
                                                                             [argument] => @ref 1.1.body.stmts.0.expr.rhs.callArguments.arguments.0
                                                                             [possibleType] => @ref 1.1.body.stmts.0.expr.rhs.lhs.possibleType
-                                                                            [requiredType] => @ref 0.5.actualType.inputs.arguments.0.type
+                                                                            [requiredType] => @ref 0.7.actualType.inputs.arguments.0.type
                                                                             [actualType] => Array
                                                                                 (
                                                                                     [definition] => @ref 0.2
                                                                                     [class] => ConcreteType
-                                                                                )
-
-                                                                            [class] => CallCandidateArgument
-                                                                        )
-
-                                                                    [1] => Array
-                                                                        (
-                                                                            [argument] => @ref 1.1.body.stmts.0.expr.rhs.callArguments.arguments.1
-                                                                            [possibleType] => @ref 1.1.body.stmts.0.expr.rhs.rhs.possibleType
-                                                                            [requiredType] => @ref 0.5.actualType.inputs.arguments.1.type
-                                                                            [actualType] => Array
-                                                                                (
-                                                                                    [definition] => @ref 0.3
-                                                                                    [class] => ConcreteType
-                                                                                )
-
-                                                                            [class] => CallCandidateArgument
-                                                                        )
-
-                                                                )
-
-                                                            [func] => @ref 0.5
-                                                            [possibleType] => @ref 0.5.actualType.outputs.arguments.0.type
-                                                            [requiredType] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
-                                                            [actualType] => Array
-                                                                (
-                                                                    [class] => InvalidType
-                                                                )
-
-                                                            [class] => CallCandidate
-                                                        )
-
-                                                    [2] => Array
-                                                        (
-                                                            [arguments] => Array
-                                                                (
-                                                                    [0] => Array
-                                                                        (
-                                                                            [argument] => @ref 1.1.body.stmts.0.expr.rhs.callArguments.arguments.0
-                                                                            [possibleType] => @ref 1.1.body.stmts.0.expr.rhs.lhs.possibleType
-                                                                            [requiredType] => @ref 0.6.actualType.inputs.arguments.0.type
-                                                                            [actualType] => Array
-                                                                                (
-                                                                                    [class] => InvalidType
-                                                                                )
-
-                                                                            [class] => CallCandidateArgument
-                                                                        )
-
-                                                                    [1] => Array
-                                                                        (
-                                                                            [argument] => @ref 1.1.body.stmts.0.expr.rhs.callArguments.arguments.1
-                                                                            [possibleType] => @ref 1.1.body.stmts.0.expr.rhs.rhs.possibleType
-                                                                            [requiredType] => @ref 0.6.actualType.inputs.arguments.1.type
-                                                                            [actualType] => Array
-                                                                                (
-                                                                                    [class] => InvalidType
-                                                                                )
-
-                                                                            [class] => CallCandidateArgument
-                                                                        )
-
-                                                                )
-
-                                                            [func] => @ref 0.6
-                                                            [possibleType] => @ref 0.6.actualType.outputs.arguments.0.type
-                                                            [requiredType] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
-                                                            [actualType] => Array
-                                                                (
-                                                                    [class] => InvalidType
-                                                                )
-
-                                                            [class] => CallCandidate
-                                                        )
-
-                                                    [3] => Array
-                                                        (
-                                                            [arguments] => Array
-                                                                (
-                                                                    [0] => Array
-                                                                        (
-                                                                            [argument] => @ref 1.1.body.stmts.0.expr.rhs.callArguments.arguments.0
-                                                                            [possibleType] => @ref 1.1.body.stmts.0.expr.rhs.lhs.possibleType
-                                                                            [requiredType] => @ref 0.7.actualType.inputs.arguments.0.type
-                                                                            [actualType] => Array
-                                                                                (
-                                                                                    [class] => InvalidType
                                                                                 )
 
                                                                             [class] => CallCandidateArgument
@@ -225,18 +135,85 @@ Array
                                                                 )
 
                                                             [func] => @ref 0.7
+                                                            [feasible] => 
                                                             [possibleType] => @ref 0.7.actualType.outputs.arguments.0.type
                                                             [requiredType] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
-                                                            [actualType] => Array
+                                                            [actualType] => @ref 0.5.actualType.outputs.arguments.0.type
+                                                            [class] => CallCandidate
+                                                        )
+
+                                                    [2] => Array
+                                                        (
+                                                            [arguments] => Array
                                                                 (
-                                                                    [class] => InvalidType
+                                                                    [0] => Array
+                                                                        (
+                                                                            [argument] => @ref 1.1.body.stmts.0.expr.rhs.callArguments.arguments.0
+                                                                            [possibleType] => @ref 1.1.body.stmts.0.expr.rhs.lhs.possibleType
+                                                                            [requiredType] => @ref 0.8.actualType.inputs.arguments.0.type
+                                                                            [actualType] => @ref 0.4.actualType.outputs.arguments.0.type
+                                                                            [class] => CallCandidateArgument
+                                                                        )
+
+                                                                    [1] => Array
+                                                                        (
+                                                                            [argument] => @ref 1.1.body.stmts.0.expr.rhs.callArguments.arguments.1
+                                                                            [possibleType] => @ref 1.1.body.stmts.0.expr.rhs.rhs.possibleType
+                                                                            [requiredType] => @ref 0.8.actualType.inputs.arguments.1.type
+                                                                            [actualType] => @ref 0.5.actualType.outputs.arguments.0.type
+                                                                            [class] => CallCandidateArgument
+                                                                        )
+
                                                                 )
 
+                                                            [func] => @ref 0.8
+                                                            [feasible] => 
+                                                            [possibleType] => @ref 0.8.actualType.outputs.arguments.0.type
+                                                            [requiredType] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
+                                                            [actualType] => @ref 0.5.actualType.outputs.arguments.0.type
+                                                            [class] => CallCandidate
+                                                        )
+
+                                                    [3] => Array
+                                                        (
+                                                            [arguments] => Array
+                                                                (
+                                                                    [0] => Array
+                                                                        (
+                                                                            [argument] => @ref 1.1.body.stmts.0.expr.rhs.callArguments.arguments.0
+                                                                            [possibleType] => @ref 1.1.body.stmts.0.expr.rhs.lhs.possibleType
+                                                                            [requiredType] => @ref 0.9.actualType.inputs.arguments.0.type
+                                                                            [actualType] => @ref 0.4.actualType.outputs.arguments.0.type
+                                                                            [class] => CallCandidateArgument
+                                                                        )
+
+                                                                    [1] => Array
+                                                                        (
+                                                                            [argument] => @ref 1.1.body.stmts.0.expr.rhs.callArguments.arguments.1
+                                                                            [possibleType] => @ref 1.1.body.stmts.0.expr.rhs.rhs.possibleType
+                                                                            [requiredType] => @ref 0.9.actualType.inputs.arguments.1.type
+                                                                            [actualType] => Array
+                                                                                (
+                                                                                    [definition] => @ref 0.3
+                                                                                    [class] => ConcreteType
+                                                                                )
+
+                                                                            [class] => CallCandidateArgument
+                                                                        )
+
+                                                                )
+
+                                                            [func] => @ref 0.9
+                                                            [feasible] => 
+                                                            [possibleType] => @ref 0.9.actualType.outputs.arguments.0.type
+                                                            [requiredType] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
+                                                            [actualType] => @ref 0.5.actualType.outputs.arguments.0.type
                                                             [class] => CallCandidate
                                                         )
 
                                                 )
 
+                                            [selectedCallCandidate] => @ref 1.1.body.stmts.0.expr.rhs.callCandidates.0
                                         )
 
                                 )

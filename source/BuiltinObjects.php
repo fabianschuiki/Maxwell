@@ -24,6 +24,12 @@ class BuiltinObjects
 		$type_real = new Builtin\NumericBuiltinType($repo, $this->makeId(), "real", $type);
 		$this->add($type_real);
 
+		// Casts.
+		$cast_ir = new Builtin\BuiltinCast($repo, $this->makeId(), $type_int, $type_real);
+		$this->add($cast_ir);
+		$cast_ri = new Builtin\BuiltinCast($repo, $this->makeId(), $type_real, $type_int);
+		$this->add($cast_ri);
+
 		// Operators on int and real
 		$mul_ii = new Builtin\BinaryBuiltinOperator($repo, $this->makeId(), "*", $type_int, $type_int, $type_int);
 		$this->add($mul_ii);

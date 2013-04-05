@@ -21,7 +21,7 @@ class BuildGraphStage extends DriverStage
 	{
 		if ($object instanceof GraphInterface) {
 			$this->println(1, "graphPrev = ".($carry ? $carry->getId() : "<none>"), $object->getId());
-			$ref = $object->getGraphPrev(false);
+			$ref = $object->getGraphPrev(false, false);
 			if (!$ref) {
 				$ref = new \RepositoryObjectReference($this->repository);
 			}

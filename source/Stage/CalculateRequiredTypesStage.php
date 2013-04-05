@@ -20,7 +20,7 @@ class CalculateRequiredTypesStage extends DriverStage
 		if ($object instanceof \Objects\CallInterface) {
 			$inputTuples = array();
 			foreach ($object->getCallCandidates()->getChildren() as $candidate) {
-				$f = $candidate->getFunc()->get();
+				$f = $candidate->getFunc();
 				$this->addDependency($f);
 				$t = $f->getActualType(false);
 				if (!$t)
@@ -43,9 +43,9 @@ class CalculateRequiredTypesStage extends DriverStage
 					$s = new \Objects\TypeSet;
 					$s->setTypes($a);
 					$s = \Type::simplifySet($s);
-					$argument->getExpr()->get()->setRequiredType($s);
+					$argument->getExpr()->setRequiredType($s);
 				} else {
-					$argument->getExpr()->get()->setRequiredType(new \Objects\InvalidType);
+					$argument->getExpr()->setRequiredType(new \Objects\InvalidType);
 				}
 			}
 		}

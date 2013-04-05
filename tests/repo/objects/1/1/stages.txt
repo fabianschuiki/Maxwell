@@ -5,9 +5,9 @@ Array
     [ConfigureCallsStage] => 1
     [EvaluateTypeExpressionsStage] => 1
     [FindCallCandidatesStage] => 1
-    [CalculatePossibleTypesStage] => 1
-    [CalculateRequiredTypesStage] => 1
     [CalculateActualTypesStage] => 1
+    [CalculateRequiredTypesStage] => 1
+    [CalculatePossibleTypesStage] => 1
     [NarrowCallCandidatesStage] => 1
     [SelectCallCandidateStage] => 1
 )

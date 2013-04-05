@@ -111,22 +111,42 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 	
 	
 	/* ACCESSORS */
-	public function setInputs(FunctionArgumentTuple $inputs = null, $notify = true)
+	public function setInputs($inputs, $notify = true)
 	{
-		if ($this->inputs !== $inputs) {
+		if (!$inputs instanceof FunctionArgumentTuple && !$inputs instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs inputs to be an instance of FunctionArgumentTuple or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->inputs, $inputs)) {
 			if (!$this->tree_loaded) {
-				$this->loadFragment('tree');
+				$this->loadFragment("tree");
 			}
-			if ($this->inputs instanceof \RepositoryObjectParentInterface) $this->inputs->setParent(null);
+			if ($this->inputs instanceof \RepositoryObjectParentInterface) {
+				$this->inputs->setParent(null);
+			}
+			if ($inputs instanceof \RepositoryObjectParentInterface) {
+				$inputs->setParent($this, "inputs", "tree");
+			}
 			$this->inputs = $inputs;
-			if ($inputs instanceof \RepositoryObjectParentInterface) $inputs->setParent($this, "inputs", "tree");
 			if ($notify) {
-				$this->notifyObjectDirty('inputs');
-				$this->notifyFragmentDirty('tree');
+				$this->notifyObjectDirty("inputs");
+				$this->notifyFragmentDirty("tree");
 			}
 		}
 	}
-	public function getInputs($enforce = true)
+	public function setInputsRef($inputs, \Repository $repository, $notify = true)
+	{
+		if (!$inputs instanceof FunctionArgumentTuple && !$inputs instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs inputs to be an instance of FunctionArgumentTuple or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($inputs instanceof \RepositoryObjectReference) {
+			$v->set($inputs->getRefId());
+		} else {
+			$v->set($inputs);
+		}
+		$this->setInputs($v, $notify);
+	}
+	public function getInputs($enforce = true, $unref = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
@@ -134,25 +154,50 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		if ($enforce && $this->inputs === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null inputs.");
 		}
-		return $this->inputs;
+		if ($unref && $this->inputs instanceof \RepositoryObjectReference) {
+			$v = $this->inputs->get(!$enforce);
+		} else {
+			$v = $this->inputs;
+		}
+		return $v;
 	}
 	
-	public function setOutputs(FunctionArgumentTuple $outputs = null, $notify = true)
+	public function setOutputs($outputs, $notify = true)
 	{
-		if ($this->outputs !== $outputs) {
+		if (!$outputs instanceof FunctionArgumentTuple && !$outputs instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs outputs to be an instance of FunctionArgumentTuple or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->outputs, $outputs)) {
 			if (!$this->tree_loaded) {
-				$this->loadFragment('tree');
+				$this->loadFragment("tree");
 			}
-			if ($this->outputs instanceof \RepositoryObjectParentInterface) $this->outputs->setParent(null);
+			if ($this->outputs instanceof \RepositoryObjectParentInterface) {
+				$this->outputs->setParent(null);
+			}
+			if ($outputs instanceof \RepositoryObjectParentInterface) {
+				$outputs->setParent($this, "outputs", "tree");
+			}
 			$this->outputs = $outputs;
-			if ($outputs instanceof \RepositoryObjectParentInterface) $outputs->setParent($this, "outputs", "tree");
 			if ($notify) {
-				$this->notifyObjectDirty('outputs');
-				$this->notifyFragmentDirty('tree');
+				$this->notifyObjectDirty("outputs");
+				$this->notifyFragmentDirty("tree");
 			}
 		}
 	}
-	public function getOutputs($enforce = true)
+	public function setOutputsRef($outputs, \Repository $repository, $notify = true)
+	{
+		if (!$outputs instanceof FunctionArgumentTuple && !$outputs instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs outputs to be an instance of FunctionArgumentTuple or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($outputs instanceof \RepositoryObjectReference) {
+			$v->set($outputs->getRefId());
+		} else {
+			$v->set($outputs);
+		}
+		$this->setOutputs($v, $notify);
+	}
+	public function getOutputs($enforce = true, $unref = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
@@ -160,25 +205,50 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		if ($enforce && $this->outputs === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null outputs.");
 		}
-		return $this->outputs;
+		if ($unref && $this->outputs instanceof \RepositoryObjectReference) {
+			$v = $this->outputs->get(!$enforce);
+		} else {
+			$v = $this->outputs;
+		}
+		return $v;
 	}
 	
-	public function setBody(FunctionBody $body = null, $notify = true)
+	public function setBody($body, $notify = true)
 	{
-		if ($this->body !== $body) {
+		if (!$body instanceof FunctionBody && !$body instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs body to be an instance of FunctionBody or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->body, $body)) {
 			if (!$this->tree_loaded) {
-				$this->loadFragment('tree');
+				$this->loadFragment("tree");
 			}
-			if ($this->body instanceof \RepositoryObjectParentInterface) $this->body->setParent(null);
+			if ($this->body instanceof \RepositoryObjectParentInterface) {
+				$this->body->setParent(null);
+			}
+			if ($body instanceof \RepositoryObjectParentInterface) {
+				$body->setParent($this, "body", "tree");
+			}
 			$this->body = $body;
-			if ($body instanceof \RepositoryObjectParentInterface) $body->setParent($this, "body", "tree");
 			if ($notify) {
-				$this->notifyObjectDirty('body');
-				$this->notifyFragmentDirty('tree');
+				$this->notifyObjectDirty("body");
+				$this->notifyFragmentDirty("tree");
 			}
 		}
 	}
-	public function getBody($enforce = true)
+	public function setBodyRef($body, \Repository $repository, $notify = true)
+	{
+		if (!$body instanceof FunctionBody && !$body instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs body to be an instance of FunctionBody or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($body instanceof \RepositoryObjectReference) {
+			$v->set($body->getRefId());
+		} else {
+			$v->set($body);
+		}
+		$this->setBody($v, $notify);
+	}
+	public function getBody($enforce = true, $unref = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
@@ -186,25 +256,50 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		if ($enforce && $this->body === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null body.");
 		}
-		return $this->body;
+		if ($unref && $this->body instanceof \RepositoryObjectReference) {
+			$v = $this->body->get(!$enforce);
+		} else {
+			$v = $this->body;
+		}
+		return $v;
 	}
 	
-	public function setRange(\Source\Range $range = null, $notify = true)
+	public function setRange($range, $notify = true)
 	{
-		if ($this->range !== $range) {
+		if (!$range instanceof \Source\Range && !$range instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs range to be an instance of \Source\Range or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->range, $range)) {
 			if (!$this->main_loaded) {
-				$this->loadFragment('main');
+				$this->loadFragment("main");
 			}
-			if ($this->range instanceof \RepositoryObjectParentInterface) $this->range->setParent(null);
+			if ($this->range instanceof \RepositoryObjectParentInterface) {
+				$this->range->setParent(null);
+			}
+			if ($range instanceof \RepositoryObjectParentInterface) {
+				$range->setParent($this, "range", "main");
+			}
 			$this->range = $range;
-			if ($range instanceof \RepositoryObjectParentInterface) $range->setParent($this, "range", "main");
 			if ($notify) {
-				$this->notifyObjectDirty('range');
-				$this->notifyFragmentDirty('main');
+				$this->notifyObjectDirty("range");
+				$this->notifyFragmentDirty("main");
 			}
 		}
 	}
-	public function getRange($enforce = true)
+	public function setRangeRef($range, \Repository $repository, $notify = true)
+	{
+		if (!$range instanceof \Source\Range && !$range instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs range to be an instance of \Source\Range or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($range instanceof \RepositoryObjectReference) {
+			$v->set($range->getRefId());
+		} else {
+			$v->set($range);
+		}
+		$this->setRange($v, $notify);
+	}
+	public function getRange($enforce = true, $unref = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
@@ -212,25 +307,50 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		if ($enforce && $this->range === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null range.");
 		}
-		return $this->range;
+		if ($unref && $this->range instanceof \RepositoryObjectReference) {
+			$v = $this->range->get(!$enforce);
+		} else {
+			$v = $this->range;
+		}
+		return $v;
 	}
 	
-	public function setHumanRange(\Source\Range $humanRange = null, $notify = true)
+	public function setHumanRange($humanRange, $notify = true)
 	{
-		if ($this->humanRange !== $humanRange) {
+		if (!$humanRange instanceof \Source\Range && !$humanRange instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs humanRange to be an instance of \Source\Range or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->humanRange, $humanRange)) {
 			if (!$this->main_loaded) {
-				$this->loadFragment('main');
+				$this->loadFragment("main");
 			}
-			if ($this->humanRange instanceof \RepositoryObjectParentInterface) $this->humanRange->setParent(null);
+			if ($this->humanRange instanceof \RepositoryObjectParentInterface) {
+				$this->humanRange->setParent(null);
+			}
+			if ($humanRange instanceof \RepositoryObjectParentInterface) {
+				$humanRange->setParent($this, "humanRange", "main");
+			}
 			$this->humanRange = $humanRange;
-			if ($humanRange instanceof \RepositoryObjectParentInterface) $humanRange->setParent($this, "humanRange", "main");
 			if ($notify) {
-				$this->notifyObjectDirty('humanRange');
-				$this->notifyFragmentDirty('main');
+				$this->notifyObjectDirty("humanRange");
+				$this->notifyFragmentDirty("main");
 			}
 		}
 	}
-	public function getHumanRange($enforce = true)
+	public function setHumanRangeRef($humanRange, \Repository $repository, $notify = true)
+	{
+		if (!$humanRange instanceof \Source\Range && !$humanRange instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs humanRange to be an instance of \Source\Range or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($humanRange instanceof \RepositoryObjectReference) {
+			$v->set($humanRange->getRefId());
+		} else {
+			$v->set($humanRange);
+		}
+		$this->setHumanRange($v, $notify);
+	}
+	public function getHumanRange($enforce = true, $unref = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
@@ -238,7 +358,12 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		if ($enforce && $this->humanRange === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null humanRange.");
 		}
-		return $this->humanRange;
+		if ($unref && $this->humanRange instanceof \RepositoryObjectReference) {
+			$v = $this->humanRange->get(!$enforce);
+		} else {
+			$v = $this->humanRange;
+		}
+		return $v;
 	}
 	
 	public function setName($name, $notify = true)
@@ -248,12 +373,12 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		}
 		if ($this->name !== $name) {
 			if (!$this->main_loaded) {
-				$this->loadFragment('main');
+				$this->loadFragment("main");
 			}
 			$this->name = $name;
 			if ($notify) {
-				$this->notifyObjectDirty('name');
-				$this->notifyFragmentDirty('main');
+				$this->notifyObjectDirty("name");
+				$this->notifyFragmentDirty("main");
 			}
 		}
 	}
@@ -268,22 +393,42 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		return $this->name;
 	}
 	
-	public function setGraphPrev(\RepositoryObjectReference $graphPrev = null, $notify = true)
+	public function setGraphPrev($graphPrev, $notify = true)
 	{
-		if ($this->graphPrev !== $graphPrev) {
+		if (!$graphPrev instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->graphPrev, $graphPrev)) {
 			if (!$this->graph_loaded) {
-				$this->loadFragment('graph');
+				$this->loadFragment("graph");
 			}
-			if ($this->graphPrev instanceof \RepositoryObjectParentInterface) $this->graphPrev->setParent(null);
+			if ($this->graphPrev instanceof \RepositoryObjectParentInterface) {
+				$this->graphPrev->setParent(null);
+			}
+			if ($graphPrev instanceof \RepositoryObjectParentInterface) {
+				$graphPrev->setParent($this, "graphPrev", "graph");
+			}
 			$this->graphPrev = $graphPrev;
-			if ($graphPrev instanceof \RepositoryObjectParentInterface) $graphPrev->setParent($this, "graphPrev", "graph");
 			if ($notify) {
-				$this->notifyObjectDirty('graphPrev');
-				$this->notifyFragmentDirty('graph');
+				$this->notifyObjectDirty("graphPrev");
+				$this->notifyFragmentDirty("graph");
 			}
 		}
 	}
-	public function getGraphPrev($enforce = true)
+	public function setGraphPrevRef($graphPrev, \Repository $repository, $notify = true)
+	{
+		if (!$graphPrev instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($graphPrev instanceof \RepositoryObjectReference) {
+			$v->set($graphPrev->getRefId());
+		} else {
+			$v->set($graphPrev);
+		}
+		$this->setGraphPrev($v, $notify);
+	}
+	public function getGraphPrev($enforce = true, $unref = true)
 	{
 		if (!$this->graph_loaded) {
 			$this->loadFragment('graph');
@@ -291,25 +436,44 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		if ($enforce && $this->graphPrev === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null graphPrev.");
 		}
-		return $this->graphPrev;
+		if ($unref && $this->graphPrev instanceof \RepositoryObjectReference) {
+			$v = $this->graphPrev->get(!$enforce);
+		} else {
+			$v = $this->graphPrev;
+		}
+		return $v;
 	}
 	
 	public function setPossibleType($possibleType, $notify = true)
 	{
-		if ($this->possibleType !== $possibleType) {
+		if ($this->hasPropertyChanged($this->possibleType, $possibleType)) {
 			if (!$this->type_loaded) {
-				$this->loadFragment('type');
+				$this->loadFragment("type");
 			}
-			if ($this->possibleType instanceof \RepositoryObjectParentInterface) $this->possibleType->setParent(null);
+			if ($this->possibleType instanceof \RepositoryObjectParentInterface) {
+				$this->possibleType->setParent(null);
+			}
+			if ($possibleType instanceof \RepositoryObjectParentInterface) {
+				$possibleType->setParent($this, "possibleType", "type");
+			}
 			$this->possibleType = $possibleType;
-			if ($possibleType instanceof \RepositoryObjectParentInterface) $possibleType->setParent($this, "possibleType", "type");
 			if ($notify) {
-				$this->notifyObjectDirty('possibleType');
-				$this->notifyFragmentDirty('type');
+				$this->notifyObjectDirty("possibleType");
+				$this->notifyFragmentDirty("type");
 			}
 		}
 	}
-	public function getPossibleType($enforce = true)
+	public function setPossibleTypeRef($possibleType, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($possibleType instanceof \RepositoryObjectReference) {
+			$v->set($possibleType->getRefId());
+		} else {
+			$v->set($possibleType);
+		}
+		$this->setPossibleType($v, $notify);
+	}
+	public function getPossibleType($enforce = true, $unref = true)
 	{
 		if (!$this->type_loaded) {
 			$this->loadFragment('type');
@@ -317,25 +481,44 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		if ($enforce && $this->possibleType === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null possibleType.");
 		}
-		return $this->possibleType;
+		if ($unref && $this->possibleType instanceof \RepositoryObjectReference) {
+			$v = $this->possibleType->get(!$enforce);
+		} else {
+			$v = $this->possibleType;
+		}
+		return $v;
 	}
 	
 	public function setRequiredType($requiredType, $notify = true)
 	{
-		if ($this->requiredType !== $requiredType) {
+		if ($this->hasPropertyChanged($this->requiredType, $requiredType)) {
 			if (!$this->type_loaded) {
-				$this->loadFragment('type');
+				$this->loadFragment("type");
 			}
-			if ($this->requiredType instanceof \RepositoryObjectParentInterface) $this->requiredType->setParent(null);
+			if ($this->requiredType instanceof \RepositoryObjectParentInterface) {
+				$this->requiredType->setParent(null);
+			}
+			if ($requiredType instanceof \RepositoryObjectParentInterface) {
+				$requiredType->setParent($this, "requiredType", "type");
+			}
 			$this->requiredType = $requiredType;
-			if ($requiredType instanceof \RepositoryObjectParentInterface) $requiredType->setParent($this, "requiredType", "type");
 			if ($notify) {
-				$this->notifyObjectDirty('requiredType');
-				$this->notifyFragmentDirty('type');
+				$this->notifyObjectDirty("requiredType");
+				$this->notifyFragmentDirty("type");
 			}
 		}
 	}
-	public function getRequiredType($enforce = true)
+	public function setRequiredTypeRef($requiredType, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($requiredType instanceof \RepositoryObjectReference) {
+			$v->set($requiredType->getRefId());
+		} else {
+			$v->set($requiredType);
+		}
+		$this->setRequiredType($v, $notify);
+	}
+	public function getRequiredType($enforce = true, $unref = true)
 	{
 		if (!$this->type_loaded) {
 			$this->loadFragment('type');
@@ -343,25 +526,44 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		if ($enforce && $this->requiredType === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null requiredType.");
 		}
-		return $this->requiredType;
+		if ($unref && $this->requiredType instanceof \RepositoryObjectReference) {
+			$v = $this->requiredType->get(!$enforce);
+		} else {
+			$v = $this->requiredType;
+		}
+		return $v;
 	}
 	
 	public function setActualType($actualType, $notify = true)
 	{
-		if ($this->actualType !== $actualType) {
+		if ($this->hasPropertyChanged($this->actualType, $actualType)) {
 			if (!$this->type_loaded) {
-				$this->loadFragment('type');
+				$this->loadFragment("type");
 			}
-			if ($this->actualType instanceof \RepositoryObjectParentInterface) $this->actualType->setParent(null);
+			if ($this->actualType instanceof \RepositoryObjectParentInterface) {
+				$this->actualType->setParent(null);
+			}
+			if ($actualType instanceof \RepositoryObjectParentInterface) {
+				$actualType->setParent($this, "actualType", "type");
+			}
 			$this->actualType = $actualType;
-			if ($actualType instanceof \RepositoryObjectParentInterface) $actualType->setParent($this, "actualType", "type");
 			if ($notify) {
-				$this->notifyObjectDirty('actualType');
-				$this->notifyFragmentDirty('type');
+				$this->notifyObjectDirty("actualType");
+				$this->notifyFragmentDirty("type");
 			}
 		}
 	}
-	public function getActualType($enforce = true)
+	public function setActualTypeRef($actualType, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($actualType instanceof \RepositoryObjectReference) {
+			$v->set($actualType->getRefId());
+		} else {
+			$v->set($actualType);
+		}
+		$this->setActualType($v, $notify);
+	}
+	public function getActualType($enforce = true, $unref = true)
 	{
 		if (!$this->type_loaded) {
 			$this->loadFragment('type');
@@ -369,7 +571,12 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		if ($enforce && $this->actualType === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null actualType.");
 		}
-		return $this->actualType;
+		if ($unref && $this->actualType instanceof \RepositoryObjectReference) {
+			$v = $this->actualType->get(!$enforce);
+		} else {
+			$v = $this->actualType;
+		}
+		return $v;
 	}
 	
 	public function setIndepDeclCode($indepDeclCode, $notify = true)
@@ -379,12 +586,12 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		}
 		if ($this->indepDeclCode !== $indepDeclCode) {
 			if (!$this->code_loaded) {
-				$this->loadFragment('code');
+				$this->loadFragment("code");
 			}
 			$this->indepDeclCode = $indepDeclCode;
 			if ($notify) {
-				$this->notifyObjectDirty('indepDeclCode');
-				$this->notifyFragmentDirty('code');
+				$this->notifyObjectDirty("indepDeclCode");
+				$this->notifyFragmentDirty("code");
 			}
 		}
 	}
@@ -406,12 +613,12 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		}
 		if ($this->depDeclCode !== $depDeclCode) {
 			if (!$this->code_loaded) {
-				$this->loadFragment('code');
+				$this->loadFragment("code");
 			}
 			$this->depDeclCode = $depDeclCode;
 			if ($notify) {
-				$this->notifyObjectDirty('depDeclCode');
-				$this->notifyFragmentDirty('code');
+				$this->notifyObjectDirty("depDeclCode");
+				$this->notifyFragmentDirty("code");
 			}
 		}
 	}
@@ -433,12 +640,12 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		}
 		if ($this->indepDefCode !== $indepDefCode) {
 			if (!$this->code_loaded) {
-				$this->loadFragment('code');
+				$this->loadFragment("code");
 			}
 			$this->indepDefCode = $indepDefCode;
 			if ($notify) {
-				$this->notifyObjectDirty('indepDefCode');
-				$this->notifyFragmentDirty('code');
+				$this->notifyObjectDirty("indepDefCode");
+				$this->notifyFragmentDirty("code");
 			}
 		}
 	}
@@ -460,12 +667,12 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		}
 		if ($this->depDefCode !== $depDefCode) {
 			if (!$this->code_loaded) {
-				$this->loadFragment('code');
+				$this->loadFragment("code");
 			}
 			$this->depDefCode = $depDefCode;
 			if ($notify) {
-				$this->notifyObjectDirty('depDefCode');
-				$this->notifyFragmentDirty('code');
+				$this->notifyObjectDirty("depDefCode");
+				$this->notifyFragmentDirty("code");
 			}
 		}
 	}

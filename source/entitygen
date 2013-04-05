@@ -63,16 +63,18 @@ foreach ($interface_defs as $name => $def)
 		$lcname = $property->name;
 		$ucname = ucfirst($lcname);
 		$scalarType = ($property->type == "string" || $property->type == "bool");
+		$refable = !$scalarType;
 
 		// SETTER
-		$body .= "public function set{$ucname}(";
-		if (!$scalarType && $property->type) $body .= $property->type." ";
-		$body .= "\$".$lcname;
-		if (!$scalarType && $property->type) $body .= " = null";
-		$body .= ", \$notify = true);\n";
+		$body .= "public function set{$ucname}(\$$lcname, \$notify = true);\n";
+		if ($refable) {
+			$body .= "public function set{$ucname}Ref(\$$lcname, \\Repository \$repository, \$notify = true);\n";
+		}
 
 		// GETTER
-		$body .= "public function get{$ucname}(\$enforce = true);\n\n";
+		$body .= "public function get{$ucname}(\$enforce = true";
+		if ($refable) $body .= ", \$unref = true";
+		$body .= ");\n\n";
 	}
 
 	// Generate the class creation code.
@@ -165,54 +167,121 @@ foreach ($entity_defs as $name => $def)
 			$lcname = $property->name;
 			$ucname = ucfirst($lcname);
 			$scalarType = ($property->type == "string" || $property->type == "bool");
+			$refable = !$scalarType;
 
 			// SETTER
-			$bfragment .= "public function set{$ucname}(";
-			if (!$scalarType && $property->type) $bfragment .= $property->type." ";
-			$bfragment .= "\$".$lcname;
-			if (!$scalarType && $property->type) $bfragment .= " = null";
-			$bfragment .= ", \$notify = true)\n{";
+			$bfragment .= "public function set{$ucname}(\$$lcname, \$notify = true)\n{\n";
 			
 			// Perform a data type check.
 			if ($property->type == "string") {
-				$bfragment .= "
-	if (!is_string(\$$lcname)) {
-		throw new \\InvalidArgumentException(\"$lcname needs to be a string\");
-	}";
+				$bfragment .= 
+					"\tif (!is_string(\$$lcname)) {\n".
+					"\t\tthrow new \\InvalidArgumentException(\"$lcname needs to be a string\");\n".
+					"\t}\n";
 			}
 			if ($property->type == "bool") {
-				$bfragment .= "\n\tif (!is_bool(\$$lcname)) {".
-					"\n\t\tthrow new \\InvalidArgumentException(\"$lcname needs to be a boolean\");".
-					"\n\t}";
+				$bfragment .=
+					"\tif (!is_bool(\$$lcname)) {\n".
+					"\t\tthrow new \\InvalidArgumentException(\"$lcname needs to be a boolean\");\n".
+					"\t}\n";
+			}
+			$types = array_filter(preg_split('/\s*\|\s*/', $property->type));
+			$typecheck = "";
+			if ($types && !$scalarType) {
+				$checktypes = $types;
+				$objrefclass = "\\RepositoryObjectReference";
+				if (!in_array($objrefclass, $checktypes)) {
+					$checktypes[] = $objrefclass;
+				}
+				$iof = array_map(function($t) use ($lcname) {
+					return "!\$$lcname instanceof $t";
+					}, $checktypes);
+				$typecheck =
+					"\tif (".implode(" && ", $iof).") {\n".
+					"\t\tthrow new \\InvalidArgumentException('Object '.\$this->getId().' needs $lcname to be an instance of ".implode(" or ", $checktypes)."');\n".
+					"\t}\n";
+			}
+			$bfragment .= $typecheck;
+
+			// Check whether the property has changed or needs to be loaded.
+			if ($scalarType) {
+				$changeCheck = "\$this->$lcname !== \$$lcname";
+			} else {
+				$changeCheck = "\$this->hasPropertyChanged(\$this->$lcname, \$$lcname)";
+			}
+			$bfragment .=
+				"\tif ($changeCheck) {\n".
+				"\t\tif (!\$this->$prop_loaded) {\n".
+				"\t\t\t\$this->loadFragment(\"$fragmentName\");\n".
+				"\t\t}\n";
+
+			// Maintain the object hierarchy.
+			if (!$scalarType) {
+				$bfragment .=
+					"\t\tif (\$this->$lcname instanceof \\RepositoryObjectParentInterface) {\n".
+					"\t\t\t\$this->{$lcname}->setParent(null);\n".
+					"\t\t}\n".
+					"\t\tif (\$$lcname instanceof \\RepositoryObjectParentInterface) {\n".
+					"\t\t\t\${$lcname}->setParent(\$this, \"$lcname\", \"$fragmentName\");\n".
+					"\t\t}\n";
 			}
 
-			// Store the value.
-			$bfragment .= "
-	if (\$this->$lcname !== \$$lcname) {
-		if (!\$this->$prop_loaded) {
-			\$this->loadFragment('$fragmentName');
-		}";
-			if (!$scalarType) $bfragment .= "\n\t\tif (\$this->$lcname instanceof \\RepositoryObjectParentInterface) \$this->{$lcname}->setParent(null);";
-			$bfragment .= "\n\t\t\$this->$lcname = \$$lcname;";
-			if (!$scalarType) $bfragment .= "\n\t\tif (\$$lcname instanceof \\RepositoryObjectParentInterface) \${$lcname}->setParent(\$this, \"$lcname\", \"$fragmentName\");";
-			$bfragment .= "\n\t\tif (\$notify) {".
-				"\n\t\t\t\$this->notifyObjectDirty('$lcname');".
-				"\n\t\t\t\$this->notifyFragmentDirty('$fragmentName');".
-				"\n\t\t}".
-				"\n\t}";
-			$bfragment .= "\n}\n";
+			// Store the new value and notify the object hierarchy about the change.
+			$bfragment .= "\t\t\$this->$lcname = \$$lcname;\n";
+			$bfragment .=
+				"\t\tif (\$notify) {\n".
+				"\t\t\t\$this->notifyObjectDirty(\"$lcname\");\n".
+				"\t\t\t\$this->notifyFragmentDirty(\"$fragmentName\");\n".
+				"\t\t}\n".
+				"\t}\n".
+				"}\n";
+
+			// REFERENCING SETTER
+			if ($refable) {
+				$bfragment .= "public function set{$ucname}Ref(\$$lcname, \\Repository \$repository, \$notify = true)\n{\n";
+				$bfragment .= $typecheck;
+				$bfragment .=
+					"\t\$v = new \\RepositoryObjectReference(\$repository);\n".
+					"\tif (\$$lcname instanceof \\RepositoryObjectReference) {\n".
+					"\t\t\$v->set(\${$lcname}->getRefId());\n".
+					"\t} else {\n".
+					"\t\t\$v->set(\$$lcname);\n".
+					"\t}\n".
+					"\t\$this->set{$ucname}(\$v, \$notify);\n";
+				$bfragment .= "}\n";
+			}
+
 
 			// GETTER
-			$bfragment .= "public function get{$ucname}(\$enforce = true)\n{";
+			$bfragment .= "public function get{$ucname}(\$enforce = true";
+			if ($refable) {
+				$bfragment .= ", \$unref = true";
+			}
+			$bfragment .= ")\n{\n";
 			$bfragment .= 
-				"\n\tif (!\$this->$prop_loaded) {".
-				"\n\t\t\$this->loadFragment('$fragmentName');".
-				"\n\t}".
-				"\n\tif (\$enforce && \$this->$lcname === null) {".
-				"\n\t\tthrow new \\RuntimeException(\"Object {\$this->getId()} expected to have non-null $lcname.\");".
-				"\n\t}".
-				"\n\treturn \$this->$lcname;";
-			$bfragment .= "\n}\n\n";
+				"\tif (!\$this->$prop_loaded) {\n".
+				"\t\t\$this->loadFragment('$fragmentName');\n".
+				"\t}\n".
+				"\tif (\$enforce && \$this->$lcname === null) {\n".
+				"\t\tthrow new \\RuntimeException(\"Object {\$this->getId()} expected to have non-null $lcname.\");\n".
+				"\t}\n";
+
+			// Unreference if required.
+			if ($refable) {
+				$bfragment .=
+					"\tif (\$unref && \$this->$lcname instanceof \\RepositoryObjectReference) {\n".
+					"\t\t\$v = \$this->{$lcname}->get(!\$enforce);\n".
+					"\t} else {\n".
+					"\t\t\$v = \$this->{$lcname};\n".
+					"\t}\n".
+					"\treturn \$v;\n";
+			} else {
+				$bfragment .=
+					"\treturn \$this->$lcname;\n";
+			}
+
+			// Return the value.
+			$bfragment .= "}\n\n";
 		}
 
 		// Store the generated fragment.

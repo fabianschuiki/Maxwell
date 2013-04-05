@@ -59,7 +59,7 @@ class CalculatePossibleTypesStage extends DriverStage
 		if ($object instanceof \Objects\CallInterface) {
 			$outputTuples = array();
 			foreach ($object->getCallCandidates()->getChildren() as $candidate) {
-				$f = $candidate->getFunc()->get();
+				$f = $candidate->getFunc();
 				$this->addDependency($f);
 				$t = $f->getActualType(false);
 				if (!$t)
@@ -88,7 +88,7 @@ class CalculatePossibleTypesStage extends DriverStage
 
 		// General expressions.
 		if ($object instanceof \Objects\IdentifierExpr) {
-			$target = $object->getBindingTarget()->get();
+			$target = $object->getBindingTarget();
 			if ($target instanceof \AbstractFunctionArgument) {
 				$t = $target->getPossibleType()->getType();
 				$this->addDependency($t);

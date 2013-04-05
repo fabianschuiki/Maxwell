@@ -63,4 +63,17 @@ abstract class RepositoryObject implements IdedObject
 		$getter = "get".ucfirst($property);
 		return $this->$getter($enforce);
 	}
+
+	public function hasPropertyChanged($a,$b)
+	{
+		if ($a === $b)
+			return false;
+		if ($a === null || $b === null)
+			return true;
+		if (get_class($a) !== get_class($b))
+			return true;
+		if ($a instanceof EqualInterface)
+			return !$a->isEqualTo($b);
+		return true;
+	}
 }

@@ -57,22 +57,42 @@ class FunctionType extends \RepositoryNodeObject
 	
 	
 	/* ACCESSORS */
-	public function setInputs(FunctionArgumentTupleType $inputs = null, $notify = true)
+	public function setInputs($inputs, $notify = true)
 	{
-		if ($this->inputs !== $inputs) {
+		if (!$inputs instanceof FunctionArgumentTupleType && !$inputs instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs inputs to be an instance of FunctionArgumentTupleType or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->inputs, $inputs)) {
 			if (!$this->main_loaded) {
-				$this->loadFragment('main');
+				$this->loadFragment("main");
 			}
-			if ($this->inputs instanceof \RepositoryObjectParentInterface) $this->inputs->setParent(null);
+			if ($this->inputs instanceof \RepositoryObjectParentInterface) {
+				$this->inputs->setParent(null);
+			}
+			if ($inputs instanceof \RepositoryObjectParentInterface) {
+				$inputs->setParent($this, "inputs", "main");
+			}
 			$this->inputs = $inputs;
-			if ($inputs instanceof \RepositoryObjectParentInterface) $inputs->setParent($this, "inputs", "main");
 			if ($notify) {
-				$this->notifyObjectDirty('inputs');
-				$this->notifyFragmentDirty('main');
+				$this->notifyObjectDirty("inputs");
+				$this->notifyFragmentDirty("main");
 			}
 		}
 	}
-	public function getInputs($enforce = true)
+	public function setInputsRef($inputs, \Repository $repository, $notify = true)
+	{
+		if (!$inputs instanceof FunctionArgumentTupleType && !$inputs instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs inputs to be an instance of FunctionArgumentTupleType or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($inputs instanceof \RepositoryObjectReference) {
+			$v->set($inputs->getRefId());
+		} else {
+			$v->set($inputs);
+		}
+		$this->setInputs($v, $notify);
+	}
+	public function getInputs($enforce = true, $unref = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
@@ -80,25 +100,50 @@ class FunctionType extends \RepositoryNodeObject
 		if ($enforce && $this->inputs === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null inputs.");
 		}
-		return $this->inputs;
+		if ($unref && $this->inputs instanceof \RepositoryObjectReference) {
+			$v = $this->inputs->get(!$enforce);
+		} else {
+			$v = $this->inputs;
+		}
+		return $v;
 	}
 	
-	public function setOutputs(FunctionArgumentTupleType $outputs = null, $notify = true)
+	public function setOutputs($outputs, $notify = true)
 	{
-		if ($this->outputs !== $outputs) {
+		if (!$outputs instanceof FunctionArgumentTupleType && !$outputs instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs outputs to be an instance of FunctionArgumentTupleType or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->outputs, $outputs)) {
 			if (!$this->main_loaded) {
-				$this->loadFragment('main');
+				$this->loadFragment("main");
 			}
-			if ($this->outputs instanceof \RepositoryObjectParentInterface) $this->outputs->setParent(null);
+			if ($this->outputs instanceof \RepositoryObjectParentInterface) {
+				$this->outputs->setParent(null);
+			}
+			if ($outputs instanceof \RepositoryObjectParentInterface) {
+				$outputs->setParent($this, "outputs", "main");
+			}
 			$this->outputs = $outputs;
-			if ($outputs instanceof \RepositoryObjectParentInterface) $outputs->setParent($this, "outputs", "main");
 			if ($notify) {
-				$this->notifyObjectDirty('outputs');
-				$this->notifyFragmentDirty('main');
+				$this->notifyObjectDirty("outputs");
+				$this->notifyFragmentDirty("main");
 			}
 		}
 	}
-	public function getOutputs($enforce = true)
+	public function setOutputsRef($outputs, \Repository $repository, $notify = true)
+	{
+		if (!$outputs instanceof FunctionArgumentTupleType && !$outputs instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs outputs to be an instance of FunctionArgumentTupleType or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($outputs instanceof \RepositoryObjectReference) {
+			$v->set($outputs->getRefId());
+		} else {
+			$v->set($outputs);
+		}
+		$this->setOutputs($v, $notify);
+	}
+	public function getOutputs($enforce = true, $unref = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
@@ -106,6 +151,11 @@ class FunctionType extends \RepositoryNodeObject
 		if ($enforce && $this->outputs === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null outputs.");
 		}
-		return $this->outputs;
+		if ($unref && $this->outputs instanceof \RepositoryObjectReference) {
+			$v = $this->outputs->get(!$enforce);
+		} else {
+			$v = $this->outputs;
+		}
+		return $v;
 	}
 }

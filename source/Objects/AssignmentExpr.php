@@ -75,22 +75,42 @@ class AssignmentExpr extends Expr implements GraphInterface, TypeInterface
 	
 	
 	/* ACCESSORS */
-	public function setLhs(Expr $lhs = null, $notify = true)
+	public function setLhs($lhs, $notify = true)
 	{
-		if ($this->lhs !== $lhs) {
+		if (!$lhs instanceof Expr && !$lhs instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs lhs to be an instance of Expr or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->lhs, $lhs)) {
 			if (!$this->tree_loaded) {
-				$this->loadFragment('tree');
+				$this->loadFragment("tree");
 			}
-			if ($this->lhs instanceof \RepositoryObjectParentInterface) $this->lhs->setParent(null);
+			if ($this->lhs instanceof \RepositoryObjectParentInterface) {
+				$this->lhs->setParent(null);
+			}
+			if ($lhs instanceof \RepositoryObjectParentInterface) {
+				$lhs->setParent($this, "lhs", "tree");
+			}
 			$this->lhs = $lhs;
-			if ($lhs instanceof \RepositoryObjectParentInterface) $lhs->setParent($this, "lhs", "tree");
 			if ($notify) {
-				$this->notifyObjectDirty('lhs');
-				$this->notifyFragmentDirty('tree');
+				$this->notifyObjectDirty("lhs");
+				$this->notifyFragmentDirty("tree");
 			}
 		}
 	}
-	public function getLhs($enforce = true)
+	public function setLhsRef($lhs, \Repository $repository, $notify = true)
+	{
+		if (!$lhs instanceof Expr && !$lhs instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs lhs to be an instance of Expr or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($lhs instanceof \RepositoryObjectReference) {
+			$v->set($lhs->getRefId());
+		} else {
+			$v->set($lhs);
+		}
+		$this->setLhs($v, $notify);
+	}
+	public function getLhs($enforce = true, $unref = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
@@ -98,25 +118,50 @@ class AssignmentExpr extends Expr implements GraphInterface, TypeInterface
 		if ($enforce && $this->lhs === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null lhs.");
 		}
-		return $this->lhs;
+		if ($unref && $this->lhs instanceof \RepositoryObjectReference) {
+			$v = $this->lhs->get(!$enforce);
+		} else {
+			$v = $this->lhs;
+		}
+		return $v;
 	}
 	
-	public function setRhs(Expr $rhs = null, $notify = true)
+	public function setRhs($rhs, $notify = true)
 	{
-		if ($this->rhs !== $rhs) {
+		if (!$rhs instanceof Expr && !$rhs instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs rhs to be an instance of Expr or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->rhs, $rhs)) {
 			if (!$this->tree_loaded) {
-				$this->loadFragment('tree');
+				$this->loadFragment("tree");
 			}
-			if ($this->rhs instanceof \RepositoryObjectParentInterface) $this->rhs->setParent(null);
+			if ($this->rhs instanceof \RepositoryObjectParentInterface) {
+				$this->rhs->setParent(null);
+			}
+			if ($rhs instanceof \RepositoryObjectParentInterface) {
+				$rhs->setParent($this, "rhs", "tree");
+			}
 			$this->rhs = $rhs;
-			if ($rhs instanceof \RepositoryObjectParentInterface) $rhs->setParent($this, "rhs", "tree");
 			if ($notify) {
-				$this->notifyObjectDirty('rhs');
-				$this->notifyFragmentDirty('tree');
+				$this->notifyObjectDirty("rhs");
+				$this->notifyFragmentDirty("tree");
 			}
 		}
 	}
-	public function getRhs($enforce = true)
+	public function setRhsRef($rhs, \Repository $repository, $notify = true)
+	{
+		if (!$rhs instanceof Expr && !$rhs instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs rhs to be an instance of Expr or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($rhs instanceof \RepositoryObjectReference) {
+			$v->set($rhs->getRefId());
+		} else {
+			$v->set($rhs);
+		}
+		$this->setRhs($v, $notify);
+	}
+	public function getRhs($enforce = true, $unref = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
@@ -124,25 +169,50 @@ class AssignmentExpr extends Expr implements GraphInterface, TypeInterface
 		if ($enforce && $this->rhs === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null rhs.");
 		}
-		return $this->rhs;
+		if ($unref && $this->rhs instanceof \RepositoryObjectReference) {
+			$v = $this->rhs->get(!$enforce);
+		} else {
+			$v = $this->rhs;
+		}
+		return $v;
 	}
 	
-	public function setGraphPrev(\RepositoryObjectReference $graphPrev = null, $notify = true)
+	public function setGraphPrev($graphPrev, $notify = true)
 	{
-		if ($this->graphPrev !== $graphPrev) {
+		if (!$graphPrev instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->graphPrev, $graphPrev)) {
 			if (!$this->graph_loaded) {
-				$this->loadFragment('graph');
+				$this->loadFragment("graph");
 			}
-			if ($this->graphPrev instanceof \RepositoryObjectParentInterface) $this->graphPrev->setParent(null);
+			if ($this->graphPrev instanceof \RepositoryObjectParentInterface) {
+				$this->graphPrev->setParent(null);
+			}
+			if ($graphPrev instanceof \RepositoryObjectParentInterface) {
+				$graphPrev->setParent($this, "graphPrev", "graph");
+			}
 			$this->graphPrev = $graphPrev;
-			if ($graphPrev instanceof \RepositoryObjectParentInterface) $graphPrev->setParent($this, "graphPrev", "graph");
 			if ($notify) {
-				$this->notifyObjectDirty('graphPrev');
-				$this->notifyFragmentDirty('graph');
+				$this->notifyObjectDirty("graphPrev");
+				$this->notifyFragmentDirty("graph");
 			}
 		}
 	}
-	public function getGraphPrev($enforce = true)
+	public function setGraphPrevRef($graphPrev, \Repository $repository, $notify = true)
+	{
+		if (!$graphPrev instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($graphPrev instanceof \RepositoryObjectReference) {
+			$v->set($graphPrev->getRefId());
+		} else {
+			$v->set($graphPrev);
+		}
+		$this->setGraphPrev($v, $notify);
+	}
+	public function getGraphPrev($enforce = true, $unref = true)
 	{
 		if (!$this->graph_loaded) {
 			$this->loadFragment('graph');
@@ -150,25 +220,44 @@ class AssignmentExpr extends Expr implements GraphInterface, TypeInterface
 		if ($enforce && $this->graphPrev === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null graphPrev.");
 		}
-		return $this->graphPrev;
+		if ($unref && $this->graphPrev instanceof \RepositoryObjectReference) {
+			$v = $this->graphPrev->get(!$enforce);
+		} else {
+			$v = $this->graphPrev;
+		}
+		return $v;
 	}
 	
 	public function setPossibleType($possibleType, $notify = true)
 	{
-		if ($this->possibleType !== $possibleType) {
+		if ($this->hasPropertyChanged($this->possibleType, $possibleType)) {
 			if (!$this->type_loaded) {
-				$this->loadFragment('type');
+				$this->loadFragment("type");
 			}
-			if ($this->possibleType instanceof \RepositoryObjectParentInterface) $this->possibleType->setParent(null);
+			if ($this->possibleType instanceof \RepositoryObjectParentInterface) {
+				$this->possibleType->setParent(null);
+			}
+			if ($possibleType instanceof \RepositoryObjectParentInterface) {
+				$possibleType->setParent($this, "possibleType", "type");
+			}
 			$this->possibleType = $possibleType;
-			if ($possibleType instanceof \RepositoryObjectParentInterface) $possibleType->setParent($this, "possibleType", "type");
 			if ($notify) {
-				$this->notifyObjectDirty('possibleType');
-				$this->notifyFragmentDirty('type');
+				$this->notifyObjectDirty("possibleType");
+				$this->notifyFragmentDirty("type");
 			}
 		}
 	}
-	public function getPossibleType($enforce = true)
+	public function setPossibleTypeRef($possibleType, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($possibleType instanceof \RepositoryObjectReference) {
+			$v->set($possibleType->getRefId());
+		} else {
+			$v->set($possibleType);
+		}
+		$this->setPossibleType($v, $notify);
+	}
+	public function getPossibleType($enforce = true, $unref = true)
 	{
 		if (!$this->type_loaded) {
 			$this->loadFragment('type');
@@ -176,25 +265,44 @@ class AssignmentExpr extends Expr implements GraphInterface, TypeInterface
 		if ($enforce && $this->possibleType === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null possibleType.");
 		}
-		return $this->possibleType;
+		if ($unref && $this->possibleType instanceof \RepositoryObjectReference) {
+			$v = $this->possibleType->get(!$enforce);
+		} else {
+			$v = $this->possibleType;
+		}
+		return $v;
 	}
 	
 	public function setRequiredType($requiredType, $notify = true)
 	{
-		if ($this->requiredType !== $requiredType) {
+		if ($this->hasPropertyChanged($this->requiredType, $requiredType)) {
 			if (!$this->type_loaded) {
-				$this->loadFragment('type');
+				$this->loadFragment("type");
 			}
-			if ($this->requiredType instanceof \RepositoryObjectParentInterface) $this->requiredType->setParent(null);
+			if ($this->requiredType instanceof \RepositoryObjectParentInterface) {
+				$this->requiredType->setParent(null);
+			}
+			if ($requiredType instanceof \RepositoryObjectParentInterface) {
+				$requiredType->setParent($this, "requiredType", "type");
+			}
 			$this->requiredType = $requiredType;
-			if ($requiredType instanceof \RepositoryObjectParentInterface) $requiredType->setParent($this, "requiredType", "type");
 			if ($notify) {
-				$this->notifyObjectDirty('requiredType');
-				$this->notifyFragmentDirty('type');
+				$this->notifyObjectDirty("requiredType");
+				$this->notifyFragmentDirty("type");
 			}
 		}
 	}
-	public function getRequiredType($enforce = true)
+	public function setRequiredTypeRef($requiredType, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($requiredType instanceof \RepositoryObjectReference) {
+			$v->set($requiredType->getRefId());
+		} else {
+			$v->set($requiredType);
+		}
+		$this->setRequiredType($v, $notify);
+	}
+	public function getRequiredType($enforce = true, $unref = true)
 	{
 		if (!$this->type_loaded) {
 			$this->loadFragment('type');
@@ -202,25 +310,44 @@ class AssignmentExpr extends Expr implements GraphInterface, TypeInterface
 		if ($enforce && $this->requiredType === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null requiredType.");
 		}
-		return $this->requiredType;
+		if ($unref && $this->requiredType instanceof \RepositoryObjectReference) {
+			$v = $this->requiredType->get(!$enforce);
+		} else {
+			$v = $this->requiredType;
+		}
+		return $v;
 	}
 	
 	public function setActualType($actualType, $notify = true)
 	{
-		if ($this->actualType !== $actualType) {
+		if ($this->hasPropertyChanged($this->actualType, $actualType)) {
 			if (!$this->type_loaded) {
-				$this->loadFragment('type');
+				$this->loadFragment("type");
 			}
-			if ($this->actualType instanceof \RepositoryObjectParentInterface) $this->actualType->setParent(null);
+			if ($this->actualType instanceof \RepositoryObjectParentInterface) {
+				$this->actualType->setParent(null);
+			}
+			if ($actualType instanceof \RepositoryObjectParentInterface) {
+				$actualType->setParent($this, "actualType", "type");
+			}
 			$this->actualType = $actualType;
-			if ($actualType instanceof \RepositoryObjectParentInterface) $actualType->setParent($this, "actualType", "type");
 			if ($notify) {
-				$this->notifyObjectDirty('actualType');
-				$this->notifyFragmentDirty('type');
+				$this->notifyObjectDirty("actualType");
+				$this->notifyFragmentDirty("type");
 			}
 		}
 	}
-	public function getActualType($enforce = true)
+	public function setActualTypeRef($actualType, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($actualType instanceof \RepositoryObjectReference) {
+			$v->set($actualType->getRefId());
+		} else {
+			$v->set($actualType);
+		}
+		$this->setActualType($v, $notify);
+	}
+	public function getActualType($enforce = true, $unref = true)
 	{
 		if (!$this->type_loaded) {
 			$this->loadFragment('type');
@@ -228,6 +355,11 @@ class AssignmentExpr extends Expr implements GraphInterface, TypeInterface
 		if ($enforce && $this->actualType === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null actualType.");
 		}
-		return $this->actualType;
+		if ($unref && $this->actualType instanceof \RepositoryObjectReference) {
+			$v = $this->actualType->get(!$enforce);
+		} else {
+			$v = $this->actualType;
+		}
+		return $v;
 	}
 }

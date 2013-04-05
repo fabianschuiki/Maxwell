@@ -64,12 +64,12 @@ class FunctionArgumentType extends \RepositoryNodeObject
 		}
 		if ($this->name !== $name) {
 			if (!$this->main_loaded) {
-				$this->loadFragment('main');
+				$this->loadFragment("main");
 			}
 			$this->name = $name;
 			if ($notify) {
-				$this->notifyObjectDirty('name');
-				$this->notifyFragmentDirty('main');
+				$this->notifyObjectDirty("name");
+				$this->notifyFragmentDirty("main");
 			}
 		}
 	}
@@ -86,20 +86,34 @@ class FunctionArgumentType extends \RepositoryNodeObject
 	
 	public function setType($type, $notify = true)
 	{
-		if ($this->type !== $type) {
+		if ($this->hasPropertyChanged($this->type, $type)) {
 			if (!$this->main_loaded) {
-				$this->loadFragment('main');
+				$this->loadFragment("main");
 			}
-			if ($this->type instanceof \RepositoryObjectParentInterface) $this->type->setParent(null);
+			if ($this->type instanceof \RepositoryObjectParentInterface) {
+				$this->type->setParent(null);
+			}
+			if ($type instanceof \RepositoryObjectParentInterface) {
+				$type->setParent($this, "type", "main");
+			}
 			$this->type = $type;
-			if ($type instanceof \RepositoryObjectParentInterface) $type->setParent($this, "type", "main");
 			if ($notify) {
-				$this->notifyObjectDirty('type');
-				$this->notifyFragmentDirty('main');
+				$this->notifyObjectDirty("type");
+				$this->notifyFragmentDirty("main");
 			}
 		}
 	}
-	public function getType($enforce = true)
+	public function setTypeRef($type, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($type instanceof \RepositoryObjectReference) {
+			$v->set($type->getRefId());
+		} else {
+			$v->set($type);
+		}
+		$this->setType($v, $notify);
+	}
+	public function getType($enforce = true, $unref = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
@@ -107,6 +121,11 @@ class FunctionArgumentType extends \RepositoryNodeObject
 		if ($enforce && $this->type === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null type.");
 		}
-		return $this->type;
+		if ($unref && $this->type instanceof \RepositoryObjectReference) {
+			$v = $this->type->get(!$enforce);
+		} else {
+			$v = $this->type;
+		}
+		return $v;
 	}
 }

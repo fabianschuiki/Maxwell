@@ -55,22 +55,42 @@ class FunctionArgumentTupleType extends \RepositoryNodeObject
 	
 	
 	/* ACCESSORS */
-	public function setArguments(\RepositoryObjectArray $arguments = null, $notify = true)
+	public function setArguments($arguments, $notify = true)
 	{
-		if ($this->arguments !== $arguments) {
+		if (!$arguments instanceof \RepositoryObjectArray && !$arguments instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs arguments to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->arguments, $arguments)) {
 			if (!$this->main_loaded) {
-				$this->loadFragment('main');
+				$this->loadFragment("main");
 			}
-			if ($this->arguments instanceof \RepositoryObjectParentInterface) $this->arguments->setParent(null);
+			if ($this->arguments instanceof \RepositoryObjectParentInterface) {
+				$this->arguments->setParent(null);
+			}
+			if ($arguments instanceof \RepositoryObjectParentInterface) {
+				$arguments->setParent($this, "arguments", "main");
+			}
 			$this->arguments = $arguments;
-			if ($arguments instanceof \RepositoryObjectParentInterface) $arguments->setParent($this, "arguments", "main");
 			if ($notify) {
-				$this->notifyObjectDirty('arguments');
-				$this->notifyFragmentDirty('main');
+				$this->notifyObjectDirty("arguments");
+				$this->notifyFragmentDirty("main");
 			}
 		}
 	}
-	public function getArguments($enforce = true)
+	public function setArgumentsRef($arguments, \Repository $repository, $notify = true)
+	{
+		if (!$arguments instanceof \RepositoryObjectArray && !$arguments instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs arguments to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($arguments instanceof \RepositoryObjectReference) {
+			$v->set($arguments->getRefId());
+		} else {
+			$v->set($arguments);
+		}
+		$this->setArguments($v, $notify);
+	}
+	public function getArguments($enforce = true, $unref = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
@@ -78,6 +98,11 @@ class FunctionArgumentTupleType extends \RepositoryNodeObject
 		if ($enforce && $this->arguments === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null arguments.");
 		}
-		return $this->arguments;
+		if ($unref && $this->arguments instanceof \RepositoryObjectReference) {
+			$v = $this->arguments->get(!$enforce);
+		} else {
+			$v = $this->arguments;
+		}
+		return $v;
 	}
 }

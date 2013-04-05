@@ -55,22 +55,42 @@ class TypeSet extends \RepositoryNodeObject
 	
 	
 	/* ACCESSORS */
-	public function setTypes(\RepositoryObjectArray $types = null, $notify = true)
+	public function setTypes($types, $notify = true)
 	{
-		if ($this->types !== $types) {
+		if (!$types instanceof \RepositoryObjectArray && !$types instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs types to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->types, $types)) {
 			if (!$this->main_loaded) {
-				$this->loadFragment('main');
+				$this->loadFragment("main");
 			}
-			if ($this->types instanceof \RepositoryObjectParentInterface) $this->types->setParent(null);
+			if ($this->types instanceof \RepositoryObjectParentInterface) {
+				$this->types->setParent(null);
+			}
+			if ($types instanceof \RepositoryObjectParentInterface) {
+				$types->setParent($this, "types", "main");
+			}
 			$this->types = $types;
-			if ($types instanceof \RepositoryObjectParentInterface) $types->setParent($this, "types", "main");
 			if ($notify) {
-				$this->notifyObjectDirty('types');
-				$this->notifyFragmentDirty('main');
+				$this->notifyObjectDirty("types");
+				$this->notifyFragmentDirty("main");
 			}
 		}
 	}
-	public function getTypes($enforce = true)
+	public function setTypesRef($types, \Repository $repository, $notify = true)
+	{
+		if (!$types instanceof \RepositoryObjectArray && !$types instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs types to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($types instanceof \RepositoryObjectReference) {
+			$v->set($types->getRefId());
+		} else {
+			$v->set($types);
+		}
+		$this->setTypes($v, $notify);
+	}
+	public function getTypes($enforce = true, $unref = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
@@ -78,6 +98,11 @@ class TypeSet extends \RepositoryNodeObject
 		if ($enforce && $this->types === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null types.");
 		}
-		return $this->types;
+		if ($unref && $this->types instanceof \RepositoryObjectReference) {
+			$v = $this->types->get(!$enforce);
+		} else {
+			$v = $this->types;
+		}
+		return $v;
 	}
 }

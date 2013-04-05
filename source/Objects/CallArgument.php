@@ -59,20 +59,34 @@ class CallArgument extends \RepositoryNodeObject
 	/* ACCESSORS */
 	public function setExpr($expr, $notify = true)
 	{
-		if ($this->expr !== $expr) {
+		if ($this->hasPropertyChanged($this->expr, $expr)) {
 			if (!$this->call_loaded) {
-				$this->loadFragment('call');
+				$this->loadFragment("call");
 			}
-			if ($this->expr instanceof \RepositoryObjectParentInterface) $this->expr->setParent(null);
+			if ($this->expr instanceof \RepositoryObjectParentInterface) {
+				$this->expr->setParent(null);
+			}
+			if ($expr instanceof \RepositoryObjectParentInterface) {
+				$expr->setParent($this, "expr", "call");
+			}
 			$this->expr = $expr;
-			if ($expr instanceof \RepositoryObjectParentInterface) $expr->setParent($this, "expr", "call");
 			if ($notify) {
-				$this->notifyObjectDirty('expr');
-				$this->notifyFragmentDirty('call');
+				$this->notifyObjectDirty("expr");
+				$this->notifyFragmentDirty("call");
 			}
 		}
 	}
-	public function getExpr($enforce = true)
+	public function setExprRef($expr, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($expr instanceof \RepositoryObjectReference) {
+			$v->set($expr->getRefId());
+		} else {
+			$v->set($expr);
+		}
+		$this->setExpr($v, $notify);
+	}
+	public function getExpr($enforce = true, $unref = true)
 	{
 		if (!$this->call_loaded) {
 			$this->loadFragment('call');
@@ -80,7 +94,12 @@ class CallArgument extends \RepositoryNodeObject
 		if ($enforce && $this->expr === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null expr.");
 		}
-		return $this->expr;
+		if ($unref && $this->expr instanceof \RepositoryObjectReference) {
+			$v = $this->expr->get(!$enforce);
+		} else {
+			$v = $this->expr;
+		}
+		return $v;
 	}
 	
 	public function setName($name, $notify = true)
@@ -90,12 +109,12 @@ class CallArgument extends \RepositoryNodeObject
 		}
 		if ($this->name !== $name) {
 			if (!$this->call_loaded) {
-				$this->loadFragment('call');
+				$this->loadFragment("call");
 			}
 			$this->name = $name;
 			if ($notify) {
-				$this->notifyObjectDirty('name');
-				$this->notifyFragmentDirty('call');
+				$this->notifyObjectDirty("name");
+				$this->notifyFragmentDirty("call");
 			}
 		}
 	}

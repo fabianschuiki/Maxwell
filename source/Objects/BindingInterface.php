@@ -5,6 +5,7 @@ namespace Objects;
 
 interface BindingInterface
 {
-	public function setBindingTarget(\RepositoryObjectReference $bindingTarget = null, $notify = true);
-	public function getBindingTarget($enforce = true);
+	public function setBindingTarget($bindingTarget, $notify = true);
+	public function setBindingTargetRef($bindingTarget, \Repository $repository, $notify = true);
+	public function getBindingTarget($enforce = true, $unref = true);
 }

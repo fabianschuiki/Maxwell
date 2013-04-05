@@ -55,22 +55,42 @@ class FunctionBody extends \RepositoryNodeObject
 	
 	
 	/* ACCESSORS */
-	public function setStmts(\RepositoryObjectArray $stmts = null, $notify = true)
+	public function setStmts($stmts, $notify = true)
 	{
-		if ($this->stmts !== $stmts) {
+		if (!$stmts instanceof \RepositoryObjectArray && !$stmts instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs stmts to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->stmts, $stmts)) {
 			if (!$this->tree_loaded) {
-				$this->loadFragment('tree');
+				$this->loadFragment("tree");
 			}
-			if ($this->stmts instanceof \RepositoryObjectParentInterface) $this->stmts->setParent(null);
+			if ($this->stmts instanceof \RepositoryObjectParentInterface) {
+				$this->stmts->setParent(null);
+			}
+			if ($stmts instanceof \RepositoryObjectParentInterface) {
+				$stmts->setParent($this, "stmts", "tree");
+			}
 			$this->stmts = $stmts;
-			if ($stmts instanceof \RepositoryObjectParentInterface) $stmts->setParent($this, "stmts", "tree");
 			if ($notify) {
-				$this->notifyObjectDirty('stmts');
-				$this->notifyFragmentDirty('tree');
+				$this->notifyObjectDirty("stmts");
+				$this->notifyFragmentDirty("tree");
 			}
 		}
 	}
-	public function getStmts($enforce = true)
+	public function setStmtsRef($stmts, \Repository $repository, $notify = true)
+	{
+		if (!$stmts instanceof \RepositoryObjectArray && !$stmts instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs stmts to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($stmts instanceof \RepositoryObjectReference) {
+			$v->set($stmts->getRefId());
+		} else {
+			$v->set($stmts);
+		}
+		$this->setStmts($v, $notify);
+	}
+	public function getStmts($enforce = true, $unref = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
@@ -78,6 +98,11 @@ class FunctionBody extends \RepositoryNodeObject
 		if ($enforce && $this->stmts === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null stmts.");
 		}
-		return $this->stmts;
+		if ($unref && $this->stmts instanceof \RepositoryObjectReference) {
+			$v = $this->stmts->get(!$enforce);
+		} else {
+			$v = $this->stmts;
+		}
+		return $v;
 	}
 }

@@ -5,7 +5,7 @@ use DriverStage;
 
 class SelectCallCandidateStage extends DriverStage
 {
-	static public $verbosity = 99;
+	static public $verbosity = 1;
 
 	protected function process(\RepositoryObject $object)
 	{
@@ -26,12 +26,10 @@ class SelectCallCandidateStage extends DriverStage
 		} else if (count($candidates) > 1) {
 			throw new \RuntimeException("Call {$object->getId()} is ambiguous.");
 		} else {
-			$r = new \RepositoryObjectReference($this->repository);
-			$r->set(array_pop($candidates));
-			$object->setSelectedCallCandidate($r);
+			$object->setSelectedCallCandidateRef(array_pop($candidates), $this->repository);
 		}
 
 		// Show the output of the stage.
-		$this->println(1, "Selected call candidate ".\Type::describe($object->getSelectedCallCandidate()->get()->getFunc()->get()->getActualType()), $object->getId());
+		$this->println(1, "Selected call candidate ".\Type::describe($object->getSelectedCallCandidate()->getFunc()->getActualType()), $object->getId());
 	}
 }

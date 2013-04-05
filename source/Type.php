@@ -13,12 +13,12 @@ class Type
 	{
 		// Concrete types are shown either with their referenced definition's name if the reference has been resolved or the type is builtin, or the referenced definition ID.
 		if ($object instanceof ConcreteType) {
-			$ref = $object->getDefinition();
-			$def = $ref->get(!preg_match('/^0\./', $ref->getId())); // causes references to builtin types to be resolved
+			$ref = $object->getDefinition(true, false);
+			$def = $ref->get(!preg_match('/^0\./', $ref->getRefId())); // causes references to builtin types to be resolved
 			if ($def !== null) {
 				return $def->getName();
 			} else {
-				return "@".$ref->getId();
+				return "@".$ref->getRefId();
 			}
 		}
 		if ($object instanceof \Objects\FunctionArgumentType) {
@@ -161,7 +161,7 @@ class Type
 	static public function equal($a,$b)
 	{
 		if ($a instanceof ConcreteType and $b instanceof ConcreteType) {
-			return $a->getDefinition()->getId() === $b->getDefinition()->getId();
+			return $a->getDefinition(true, false)->getRefId() === $b->getDefinition(true, false)->getRefId();
 		}
 		return false;
 	}

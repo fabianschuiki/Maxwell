@@ -8,12 +8,15 @@ interface CallInterface
 	public function setCallName($callName, $notify = true);
 	public function getCallName($enforce = true);
 	
-	public function setCallArguments(CallArgumentTuple $callArguments = null, $notify = true);
-	public function getCallArguments($enforce = true);
+	public function setCallArguments($callArguments, $notify = true);
+	public function setCallArgumentsRef($callArguments, \Repository $repository, $notify = true);
+	public function getCallArguments($enforce = true, $unref = true);
 	
-	public function setCallCandidates(\RepositoryObjectArray $callCandidates = null, $notify = true);
-	public function getCallCandidates($enforce = true);
+	public function setCallCandidates($callCandidates, $notify = true);
+	public function setCallCandidatesRef($callCandidates, \Repository $repository, $notify = true);
+	public function getCallCandidates($enforce = true, $unref = true);
 	
-	public function setSelectedCallCandidate(\RepositoryObjectReference $selectedCallCandidate = null, $notify = true);
-	public function getSelectedCallCandidate($enforce = true);
+	public function setSelectedCallCandidate($selectedCallCandidate, $notify = true);
+	public function setSelectedCallCandidateRef($selectedCallCandidate, \Repository $repository, $notify = true);
+	public function getSelectedCallCandidate($enforce = true, $unref = true);
 }

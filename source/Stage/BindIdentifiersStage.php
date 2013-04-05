@@ -5,7 +5,7 @@ use DriverStage;
 
 class BindIdentifiersStage extends DriverStage
 {
-	static public $verbosity = 20;
+	static public $verbosity = 1;
 
 	protected function process(\RepositoryObject $object)
 	{
@@ -20,7 +20,7 @@ class BindIdentifiersStage extends DriverStage
 			$ref = new \RepositoryObjectReference($this->repository);
 
 			// Traverse the graph looking for any object with this name.
-			$current = $object->getGraphPrev()->get();
+			$current = $object->getGraphPrev();
 			$target = null;
 			$name = $object->getName();
 			while ($current)
@@ -41,7 +41,7 @@ class BindIdentifiersStage extends DriverStage
 					}
 				}
 
-				$current = $current->getGraphPrev()->get();
+				$current = $current->getGraphPrev();
 			}
 
 			// Find an external entity.

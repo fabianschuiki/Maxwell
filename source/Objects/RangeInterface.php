@@ -5,9 +5,11 @@ namespace Objects;
 
 interface RangeInterface
 {
-	public function setRange(\Source\Range $range = null, $notify = true);
-	public function getRange($enforce = true);
+	public function setRange($range, $notify = true);
+	public function setRangeRef($range, \Repository $repository, $notify = true);
+	public function getRange($enforce = true, $unref = true);
 	
-	public function setHumanRange(\Source\Range $humanRange = null, $notify = true);
-	public function getHumanRange($enforce = true);
+	public function setHumanRange($humanRange, $notify = true);
+	public function setHumanRangeRef($humanRange, \Repository $repository, $notify = true);
+	public function getHumanRange($enforce = true, $unref = true);
 }

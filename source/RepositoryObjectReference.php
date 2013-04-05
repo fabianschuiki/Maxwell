@@ -64,7 +64,7 @@ class RepositoryObjectReference implements RepositoryObjectParentInterface
 		return $this->obj;
 	}
 
-	public function getId()
+	public function getRefId()
 	{
 		return $this->id;
 	}

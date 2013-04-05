@@ -5,6 +5,7 @@ namespace Objects;
 
 interface GraphInterface
 {
-	public function setGraphPrev(\RepositoryObjectReference $graphPrev = null, $notify = true);
-	public function getGraphPrev($enforce = true);
+	public function setGraphPrev($graphPrev, $notify = true);
+	public function setGraphPrevRef($graphPrev, \Repository $repository, $notify = true);
+	public function getGraphPrev($enforce = true, $unref = true);
 }

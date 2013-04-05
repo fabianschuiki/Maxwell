@@ -55,22 +55,42 @@ class ConcreteType extends \RepositoryNodeObject
 	
 	
 	/* ACCESSORS */
-	public function setDefinition(\RepositoryObjectReference $definition = null, $notify = true)
+	public function setDefinition($definition, $notify = true)
 	{
-		if ($this->definition !== $definition) {
+		if (!$definition instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs definition to be an instance of \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->definition, $definition)) {
 			if (!$this->main_loaded) {
-				$this->loadFragment('main');
+				$this->loadFragment("main");
 			}
-			if ($this->definition instanceof \RepositoryObjectParentInterface) $this->definition->setParent(null);
+			if ($this->definition instanceof \RepositoryObjectParentInterface) {
+				$this->definition->setParent(null);
+			}
+			if ($definition instanceof \RepositoryObjectParentInterface) {
+				$definition->setParent($this, "definition", "main");
+			}
 			$this->definition = $definition;
-			if ($definition instanceof \RepositoryObjectParentInterface) $definition->setParent($this, "definition", "main");
 			if ($notify) {
-				$this->notifyObjectDirty('definition');
-				$this->notifyFragmentDirty('main');
+				$this->notifyObjectDirty("definition");
+				$this->notifyFragmentDirty("main");
 			}
 		}
 	}
-	public function getDefinition($enforce = true)
+	public function setDefinitionRef($definition, \Repository $repository, $notify = true)
+	{
+		if (!$definition instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs definition to be an instance of \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($definition instanceof \RepositoryObjectReference) {
+			$v->set($definition->getRefId());
+		} else {
+			$v->set($definition);
+		}
+		$this->setDefinition($v, $notify);
+	}
+	public function getDefinition($enforce = true, $unref = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
@@ -78,6 +98,11 @@ class ConcreteType extends \RepositoryNodeObject
 		if ($enforce && $this->definition === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null definition.");
 		}
-		return $this->definition;
+		if ($unref && $this->definition instanceof \RepositoryObjectReference) {
+			$v = $this->definition->get(!$enforce);
+		} else {
+			$v = $this->definition;
+		}
+		return $v;
 	}
 }

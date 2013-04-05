@@ -79,7 +79,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 				array("name" => "callName", "type" => "string"), 
 				array("name" => "callArguments", "type" => "CallArgumentTuple"), 
 				array("name" => "callCandidates", "type" => "\RepositoryObjectArray"), 
-				array("name" => "selectedCallCandidate", "type" => "\RepositoryObjectReference"));
+				array("name" => "selectedCallCandidate", "type" => "CallCandidate"));
 			case "type": return array(
 				array("name" => "possibleType", "type" => ""), 
 				array("name" => "requiredType", "type" => ""), 
@@ -95,22 +95,42 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 	
 	
 	/* ACCESSORS */
-	public function setLhs(Expr $lhs = null, $notify = true)
+	public function setLhs($lhs, $notify = true)
 	{
-		if ($this->lhs !== $lhs) {
+		if (!$lhs instanceof Expr && !$lhs instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs lhs to be an instance of Expr or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->lhs, $lhs)) {
 			if (!$this->tree_loaded) {
-				$this->loadFragment('tree');
+				$this->loadFragment("tree");
 			}
-			if ($this->lhs instanceof \RepositoryObjectParentInterface) $this->lhs->setParent(null);
+			if ($this->lhs instanceof \RepositoryObjectParentInterface) {
+				$this->lhs->setParent(null);
+			}
+			if ($lhs instanceof \RepositoryObjectParentInterface) {
+				$lhs->setParent($this, "lhs", "tree");
+			}
 			$this->lhs = $lhs;
-			if ($lhs instanceof \RepositoryObjectParentInterface) $lhs->setParent($this, "lhs", "tree");
 			if ($notify) {
-				$this->notifyObjectDirty('lhs');
-				$this->notifyFragmentDirty('tree');
+				$this->notifyObjectDirty("lhs");
+				$this->notifyFragmentDirty("tree");
 			}
 		}
 	}
-	public function getLhs($enforce = true)
+	public function setLhsRef($lhs, \Repository $repository, $notify = true)
+	{
+		if (!$lhs instanceof Expr && !$lhs instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs lhs to be an instance of Expr or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($lhs instanceof \RepositoryObjectReference) {
+			$v->set($lhs->getRefId());
+		} else {
+			$v->set($lhs);
+		}
+		$this->setLhs($v, $notify);
+	}
+	public function getLhs($enforce = true, $unref = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
@@ -118,25 +138,50 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		if ($enforce && $this->lhs === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null lhs.");
 		}
-		return $this->lhs;
+		if ($unref && $this->lhs instanceof \RepositoryObjectReference) {
+			$v = $this->lhs->get(!$enforce);
+		} else {
+			$v = $this->lhs;
+		}
+		return $v;
 	}
 	
-	public function setRhs(Expr $rhs = null, $notify = true)
+	public function setRhs($rhs, $notify = true)
 	{
-		if ($this->rhs !== $rhs) {
+		if (!$rhs instanceof Expr && !$rhs instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs rhs to be an instance of Expr or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->rhs, $rhs)) {
 			if (!$this->tree_loaded) {
-				$this->loadFragment('tree');
+				$this->loadFragment("tree");
 			}
-			if ($this->rhs instanceof \RepositoryObjectParentInterface) $this->rhs->setParent(null);
+			if ($this->rhs instanceof \RepositoryObjectParentInterface) {
+				$this->rhs->setParent(null);
+			}
+			if ($rhs instanceof \RepositoryObjectParentInterface) {
+				$rhs->setParent($this, "rhs", "tree");
+			}
 			$this->rhs = $rhs;
-			if ($rhs instanceof \RepositoryObjectParentInterface) $rhs->setParent($this, "rhs", "tree");
 			if ($notify) {
-				$this->notifyObjectDirty('rhs');
-				$this->notifyFragmentDirty('tree');
+				$this->notifyObjectDirty("rhs");
+				$this->notifyFragmentDirty("tree");
 			}
 		}
 	}
-	public function getRhs($enforce = true)
+	public function setRhsRef($rhs, \Repository $repository, $notify = true)
+	{
+		if (!$rhs instanceof Expr && !$rhs instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs rhs to be an instance of Expr or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($rhs instanceof \RepositoryObjectReference) {
+			$v->set($rhs->getRefId());
+		} else {
+			$v->set($rhs);
+		}
+		$this->setRhs($v, $notify);
+	}
+	public function getRhs($enforce = true, $unref = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
@@ -144,7 +189,12 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		if ($enforce && $this->rhs === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null rhs.");
 		}
-		return $this->rhs;
+		if ($unref && $this->rhs instanceof \RepositoryObjectReference) {
+			$v = $this->rhs->get(!$enforce);
+		} else {
+			$v = $this->rhs;
+		}
+		return $v;
 	}
 	
 	public function setOperator($operator, $notify = true)
@@ -154,12 +204,12 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		}
 		if ($this->operator !== $operator) {
 			if (!$this->main_loaded) {
-				$this->loadFragment('main');
+				$this->loadFragment("main");
 			}
 			$this->operator = $operator;
 			if ($notify) {
-				$this->notifyObjectDirty('operator');
-				$this->notifyFragmentDirty('main');
+				$this->notifyObjectDirty("operator");
+				$this->notifyFragmentDirty("main");
 			}
 		}
 	}
@@ -174,22 +224,42 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		return $this->operator;
 	}
 	
-	public function setGraphPrev(\RepositoryObjectReference $graphPrev = null, $notify = true)
+	public function setGraphPrev($graphPrev, $notify = true)
 	{
-		if ($this->graphPrev !== $graphPrev) {
+		if (!$graphPrev instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->graphPrev, $graphPrev)) {
 			if (!$this->graph_loaded) {
-				$this->loadFragment('graph');
+				$this->loadFragment("graph");
 			}
-			if ($this->graphPrev instanceof \RepositoryObjectParentInterface) $this->graphPrev->setParent(null);
+			if ($this->graphPrev instanceof \RepositoryObjectParentInterface) {
+				$this->graphPrev->setParent(null);
+			}
+			if ($graphPrev instanceof \RepositoryObjectParentInterface) {
+				$graphPrev->setParent($this, "graphPrev", "graph");
+			}
 			$this->graphPrev = $graphPrev;
-			if ($graphPrev instanceof \RepositoryObjectParentInterface) $graphPrev->setParent($this, "graphPrev", "graph");
 			if ($notify) {
-				$this->notifyObjectDirty('graphPrev');
-				$this->notifyFragmentDirty('graph');
+				$this->notifyObjectDirty("graphPrev");
+				$this->notifyFragmentDirty("graph");
 			}
 		}
 	}
-	public function getGraphPrev($enforce = true)
+	public function setGraphPrevRef($graphPrev, \Repository $repository, $notify = true)
+	{
+		if (!$graphPrev instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($graphPrev instanceof \RepositoryObjectReference) {
+			$v->set($graphPrev->getRefId());
+		} else {
+			$v->set($graphPrev);
+		}
+		$this->setGraphPrev($v, $notify);
+	}
+	public function getGraphPrev($enforce = true, $unref = true)
 	{
 		if (!$this->graph_loaded) {
 			$this->loadFragment('graph');
@@ -197,7 +267,12 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		if ($enforce && $this->graphPrev === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null graphPrev.");
 		}
-		return $this->graphPrev;
+		if ($unref && $this->graphPrev instanceof \RepositoryObjectReference) {
+			$v = $this->graphPrev->get(!$enforce);
+		} else {
+			$v = $this->graphPrev;
+		}
+		return $v;
 	}
 	
 	public function setCallName($callName, $notify = true)
@@ -207,12 +282,12 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		}
 		if ($this->callName !== $callName) {
 			if (!$this->call_loaded) {
-				$this->loadFragment('call');
+				$this->loadFragment("call");
 			}
 			$this->callName = $callName;
 			if ($notify) {
-				$this->notifyObjectDirty('callName');
-				$this->notifyFragmentDirty('call');
+				$this->notifyObjectDirty("callName");
+				$this->notifyFragmentDirty("call");
 			}
 		}
 	}
@@ -227,22 +302,42 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		return $this->callName;
 	}
 	
-	public function setCallArguments(CallArgumentTuple $callArguments = null, $notify = true)
+	public function setCallArguments($callArguments, $notify = true)
 	{
-		if ($this->callArguments !== $callArguments) {
+		if (!$callArguments instanceof CallArgumentTuple && !$callArguments instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs callArguments to be an instance of CallArgumentTuple or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->callArguments, $callArguments)) {
 			if (!$this->call_loaded) {
-				$this->loadFragment('call');
+				$this->loadFragment("call");
 			}
-			if ($this->callArguments instanceof \RepositoryObjectParentInterface) $this->callArguments->setParent(null);
+			if ($this->callArguments instanceof \RepositoryObjectParentInterface) {
+				$this->callArguments->setParent(null);
+			}
+			if ($callArguments instanceof \RepositoryObjectParentInterface) {
+				$callArguments->setParent($this, "callArguments", "call");
+			}
 			$this->callArguments = $callArguments;
-			if ($callArguments instanceof \RepositoryObjectParentInterface) $callArguments->setParent($this, "callArguments", "call");
 			if ($notify) {
-				$this->notifyObjectDirty('callArguments');
-				$this->notifyFragmentDirty('call');
+				$this->notifyObjectDirty("callArguments");
+				$this->notifyFragmentDirty("call");
 			}
 		}
 	}
-	public function getCallArguments($enforce = true)
+	public function setCallArgumentsRef($callArguments, \Repository $repository, $notify = true)
+	{
+		if (!$callArguments instanceof CallArgumentTuple && !$callArguments instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs callArguments to be an instance of CallArgumentTuple or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($callArguments instanceof \RepositoryObjectReference) {
+			$v->set($callArguments->getRefId());
+		} else {
+			$v->set($callArguments);
+		}
+		$this->setCallArguments($v, $notify);
+	}
+	public function getCallArguments($enforce = true, $unref = true)
 	{
 		if (!$this->call_loaded) {
 			$this->loadFragment('call');
@@ -250,25 +345,50 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		if ($enforce && $this->callArguments === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null callArguments.");
 		}
-		return $this->callArguments;
+		if ($unref && $this->callArguments instanceof \RepositoryObjectReference) {
+			$v = $this->callArguments->get(!$enforce);
+		} else {
+			$v = $this->callArguments;
+		}
+		return $v;
 	}
 	
-	public function setCallCandidates(\RepositoryObjectArray $callCandidates = null, $notify = true)
+	public function setCallCandidates($callCandidates, $notify = true)
 	{
-		if ($this->callCandidates !== $callCandidates) {
+		if (!$callCandidates instanceof \RepositoryObjectArray && !$callCandidates instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs callCandidates to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->callCandidates, $callCandidates)) {
 			if (!$this->call_loaded) {
-				$this->loadFragment('call');
+				$this->loadFragment("call");
 			}
-			if ($this->callCandidates instanceof \RepositoryObjectParentInterface) $this->callCandidates->setParent(null);
+			if ($this->callCandidates instanceof \RepositoryObjectParentInterface) {
+				$this->callCandidates->setParent(null);
+			}
+			if ($callCandidates instanceof \RepositoryObjectParentInterface) {
+				$callCandidates->setParent($this, "callCandidates", "call");
+			}
 			$this->callCandidates = $callCandidates;
-			if ($callCandidates instanceof \RepositoryObjectParentInterface) $callCandidates->setParent($this, "callCandidates", "call");
 			if ($notify) {
-				$this->notifyObjectDirty('callCandidates');
-				$this->notifyFragmentDirty('call');
+				$this->notifyObjectDirty("callCandidates");
+				$this->notifyFragmentDirty("call");
 			}
 		}
 	}
-	public function getCallCandidates($enforce = true)
+	public function setCallCandidatesRef($callCandidates, \Repository $repository, $notify = true)
+	{
+		if (!$callCandidates instanceof \RepositoryObjectArray && !$callCandidates instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs callCandidates to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($callCandidates instanceof \RepositoryObjectReference) {
+			$v->set($callCandidates->getRefId());
+		} else {
+			$v->set($callCandidates);
+		}
+		$this->setCallCandidates($v, $notify);
+	}
+	public function getCallCandidates($enforce = true, $unref = true)
 	{
 		if (!$this->call_loaded) {
 			$this->loadFragment('call');
@@ -276,25 +396,50 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		if ($enforce && $this->callCandidates === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null callCandidates.");
 		}
-		return $this->callCandidates;
+		if ($unref && $this->callCandidates instanceof \RepositoryObjectReference) {
+			$v = $this->callCandidates->get(!$enforce);
+		} else {
+			$v = $this->callCandidates;
+		}
+		return $v;
 	}
 	
-	public function setSelectedCallCandidate(\RepositoryObjectReference $selectedCallCandidate = null, $notify = true)
+	public function setSelectedCallCandidate($selectedCallCandidate, $notify = true)
 	{
-		if ($this->selectedCallCandidate !== $selectedCallCandidate) {
+		if (!$selectedCallCandidate instanceof CallCandidate && !$selectedCallCandidate instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs selectedCallCandidate to be an instance of CallCandidate or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->selectedCallCandidate, $selectedCallCandidate)) {
 			if (!$this->call_loaded) {
-				$this->loadFragment('call');
+				$this->loadFragment("call");
 			}
-			if ($this->selectedCallCandidate instanceof \RepositoryObjectParentInterface) $this->selectedCallCandidate->setParent(null);
+			if ($this->selectedCallCandidate instanceof \RepositoryObjectParentInterface) {
+				$this->selectedCallCandidate->setParent(null);
+			}
+			if ($selectedCallCandidate instanceof \RepositoryObjectParentInterface) {
+				$selectedCallCandidate->setParent($this, "selectedCallCandidate", "call");
+			}
 			$this->selectedCallCandidate = $selectedCallCandidate;
-			if ($selectedCallCandidate instanceof \RepositoryObjectParentInterface) $selectedCallCandidate->setParent($this, "selectedCallCandidate", "call");
 			if ($notify) {
-				$this->notifyObjectDirty('selectedCallCandidate');
-				$this->notifyFragmentDirty('call');
+				$this->notifyObjectDirty("selectedCallCandidate");
+				$this->notifyFragmentDirty("call");
 			}
 		}
 	}
-	public function getSelectedCallCandidate($enforce = true)
+	public function setSelectedCallCandidateRef($selectedCallCandidate, \Repository $repository, $notify = true)
+	{
+		if (!$selectedCallCandidate instanceof CallCandidate && !$selectedCallCandidate instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs selectedCallCandidate to be an instance of CallCandidate or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($selectedCallCandidate instanceof \RepositoryObjectReference) {
+			$v->set($selectedCallCandidate->getRefId());
+		} else {
+			$v->set($selectedCallCandidate);
+		}
+		$this->setSelectedCallCandidate($v, $notify);
+	}
+	public function getSelectedCallCandidate($enforce = true, $unref = true)
 	{
 		if (!$this->call_loaded) {
 			$this->loadFragment('call');
@@ -302,25 +447,44 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		if ($enforce && $this->selectedCallCandidate === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null selectedCallCandidate.");
 		}
-		return $this->selectedCallCandidate;
+		if ($unref && $this->selectedCallCandidate instanceof \RepositoryObjectReference) {
+			$v = $this->selectedCallCandidate->get(!$enforce);
+		} else {
+			$v = $this->selectedCallCandidate;
+		}
+		return $v;
 	}
 	
 	public function setPossibleType($possibleType, $notify = true)
 	{
-		if ($this->possibleType !== $possibleType) {
+		if ($this->hasPropertyChanged($this->possibleType, $possibleType)) {
 			if (!$this->type_loaded) {
-				$this->loadFragment('type');
+				$this->loadFragment("type");
 			}
-			if ($this->possibleType instanceof \RepositoryObjectParentInterface) $this->possibleType->setParent(null);
+			if ($this->possibleType instanceof \RepositoryObjectParentInterface) {
+				$this->possibleType->setParent(null);
+			}
+			if ($possibleType instanceof \RepositoryObjectParentInterface) {
+				$possibleType->setParent($this, "possibleType", "type");
+			}
 			$this->possibleType = $possibleType;
-			if ($possibleType instanceof \RepositoryObjectParentInterface) $possibleType->setParent($this, "possibleType", "type");
 			if ($notify) {
-				$this->notifyObjectDirty('possibleType');
-				$this->notifyFragmentDirty('type');
+				$this->notifyObjectDirty("possibleType");
+				$this->notifyFragmentDirty("type");
 			}
 		}
 	}
-	public function getPossibleType($enforce = true)
+	public function setPossibleTypeRef($possibleType, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($possibleType instanceof \RepositoryObjectReference) {
+			$v->set($possibleType->getRefId());
+		} else {
+			$v->set($possibleType);
+		}
+		$this->setPossibleType($v, $notify);
+	}
+	public function getPossibleType($enforce = true, $unref = true)
 	{
 		if (!$this->type_loaded) {
 			$this->loadFragment('type');
@@ -328,25 +492,44 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		if ($enforce && $this->possibleType === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null possibleType.");
 		}
-		return $this->possibleType;
+		if ($unref && $this->possibleType instanceof \RepositoryObjectReference) {
+			$v = $this->possibleType->get(!$enforce);
+		} else {
+			$v = $this->possibleType;
+		}
+		return $v;
 	}
 	
 	public function setRequiredType($requiredType, $notify = true)
 	{
-		if ($this->requiredType !== $requiredType) {
+		if ($this->hasPropertyChanged($this->requiredType, $requiredType)) {
 			if (!$this->type_loaded) {
-				$this->loadFragment('type');
+				$this->loadFragment("type");
 			}
-			if ($this->requiredType instanceof \RepositoryObjectParentInterface) $this->requiredType->setParent(null);
+			if ($this->requiredType instanceof \RepositoryObjectParentInterface) {
+				$this->requiredType->setParent(null);
+			}
+			if ($requiredType instanceof \RepositoryObjectParentInterface) {
+				$requiredType->setParent($this, "requiredType", "type");
+			}
 			$this->requiredType = $requiredType;
-			if ($requiredType instanceof \RepositoryObjectParentInterface) $requiredType->setParent($this, "requiredType", "type");
 			if ($notify) {
-				$this->notifyObjectDirty('requiredType');
-				$this->notifyFragmentDirty('type');
+				$this->notifyObjectDirty("requiredType");
+				$this->notifyFragmentDirty("type");
 			}
 		}
 	}
-	public function getRequiredType($enforce = true)
+	public function setRequiredTypeRef($requiredType, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($requiredType instanceof \RepositoryObjectReference) {
+			$v->set($requiredType->getRefId());
+		} else {
+			$v->set($requiredType);
+		}
+		$this->setRequiredType($v, $notify);
+	}
+	public function getRequiredType($enforce = true, $unref = true)
 	{
 		if (!$this->type_loaded) {
 			$this->loadFragment('type');
@@ -354,25 +537,44 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		if ($enforce && $this->requiredType === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null requiredType.");
 		}
-		return $this->requiredType;
+		if ($unref && $this->requiredType instanceof \RepositoryObjectReference) {
+			$v = $this->requiredType->get(!$enforce);
+		} else {
+			$v = $this->requiredType;
+		}
+		return $v;
 	}
 	
 	public function setActualType($actualType, $notify = true)
 	{
-		if ($this->actualType !== $actualType) {
+		if ($this->hasPropertyChanged($this->actualType, $actualType)) {
 			if (!$this->type_loaded) {
-				$this->loadFragment('type');
+				$this->loadFragment("type");
 			}
-			if ($this->actualType instanceof \RepositoryObjectParentInterface) $this->actualType->setParent(null);
+			if ($this->actualType instanceof \RepositoryObjectParentInterface) {
+				$this->actualType->setParent(null);
+			}
+			if ($actualType instanceof \RepositoryObjectParentInterface) {
+				$actualType->setParent($this, "actualType", "type");
+			}
 			$this->actualType = $actualType;
-			if ($actualType instanceof \RepositoryObjectParentInterface) $actualType->setParent($this, "actualType", "type");
 			if ($notify) {
-				$this->notifyObjectDirty('actualType');
-				$this->notifyFragmentDirty('type');
+				$this->notifyObjectDirty("actualType");
+				$this->notifyFragmentDirty("type");
 			}
 		}
 	}
-	public function getActualType($enforce = true)
+	public function setActualTypeRef($actualType, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($actualType instanceof \RepositoryObjectReference) {
+			$v->set($actualType->getRefId());
+		} else {
+			$v->set($actualType);
+		}
+		$this->setActualType($v, $notify);
+	}
+	public function getActualType($enforce = true, $unref = true)
 	{
 		if (!$this->type_loaded) {
 			$this->loadFragment('type');
@@ -380,6 +582,11 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		if ($enforce && $this->actualType === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null actualType.");
 		}
-		return $this->actualType;
+		if ($unref && $this->actualType instanceof \RepositoryObjectReference) {
+			$v = $this->actualType->get(!$enforce);
+		} else {
+			$v = $this->actualType;
+		}
+		return $v;
 	}
 }

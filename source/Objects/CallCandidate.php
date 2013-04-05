@@ -57,22 +57,42 @@ class CallCandidate extends \RepositoryNodeObject
 	
 	
 	/* ACCESSORS */
-	public function setFunc(\RepositoryObjectReference $func = null, $notify = true)
+	public function setFunc($func, $notify = true)
 	{
-		if ($this->func !== $func) {
+		if (!$func instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs func to be an instance of \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->func, $func)) {
 			if (!$this->call_loaded) {
-				$this->loadFragment('call');
+				$this->loadFragment("call");
 			}
-			if ($this->func instanceof \RepositoryObjectParentInterface) $this->func->setParent(null);
+			if ($this->func instanceof \RepositoryObjectParentInterface) {
+				$this->func->setParent(null);
+			}
+			if ($func instanceof \RepositoryObjectParentInterface) {
+				$func->setParent($this, "func", "call");
+			}
 			$this->func = $func;
-			if ($func instanceof \RepositoryObjectParentInterface) $func->setParent($this, "func", "call");
 			if ($notify) {
-				$this->notifyObjectDirty('func');
-				$this->notifyFragmentDirty('call');
+				$this->notifyObjectDirty("func");
+				$this->notifyFragmentDirty("call");
 			}
 		}
 	}
-	public function getFunc($enforce = true)
+	public function setFuncRef($func, \Repository $repository, $notify = true)
+	{
+		if (!$func instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs func to be an instance of \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($func instanceof \RepositoryObjectReference) {
+			$v->set($func->getRefId());
+		} else {
+			$v->set($func);
+		}
+		$this->setFunc($v, $notify);
+	}
+	public function getFunc($enforce = true, $unref = true)
 	{
 		if (!$this->call_loaded) {
 			$this->loadFragment('call');
@@ -80,7 +100,12 @@ class CallCandidate extends \RepositoryNodeObject
 		if ($enforce && $this->func === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null func.");
 		}
-		return $this->func;
+		if ($unref && $this->func instanceof \RepositoryObjectReference) {
+			$v = $this->func->get(!$enforce);
+		} else {
+			$v = $this->func;
+		}
+		return $v;
 	}
 	
 	public function setFeasible($feasible, $notify = true)
@@ -90,12 +115,12 @@ class CallCandidate extends \RepositoryNodeObject
 		}
 		if ($this->feasible !== $feasible) {
 			if (!$this->call_loaded) {
-				$this->loadFragment('call');
+				$this->loadFragment("call");
 			}
 			$this->feasible = $feasible;
 			if ($notify) {
-				$this->notifyObjectDirty('feasible');
-				$this->notifyFragmentDirty('call');
+				$this->notifyObjectDirty("feasible");
+				$this->notifyFragmentDirty("call");
 			}
 		}
 	}

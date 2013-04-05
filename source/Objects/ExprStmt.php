@@ -62,22 +62,42 @@ class ExprStmt extends \RepositoryNodeObject implements GraphInterface
 	
 	
 	/* ACCESSORS */
-	public function setExpr(Expr $expr = null, $notify = true)
+	public function setExpr($expr, $notify = true)
 	{
-		if ($this->expr !== $expr) {
+		if (!$expr instanceof Expr && !$expr instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs expr to be an instance of Expr or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->expr, $expr)) {
 			if (!$this->tree_loaded) {
-				$this->loadFragment('tree');
+				$this->loadFragment("tree");
 			}
-			if ($this->expr instanceof \RepositoryObjectParentInterface) $this->expr->setParent(null);
+			if ($this->expr instanceof \RepositoryObjectParentInterface) {
+				$this->expr->setParent(null);
+			}
+			if ($expr instanceof \RepositoryObjectParentInterface) {
+				$expr->setParent($this, "expr", "tree");
+			}
 			$this->expr = $expr;
-			if ($expr instanceof \RepositoryObjectParentInterface) $expr->setParent($this, "expr", "tree");
 			if ($notify) {
-				$this->notifyObjectDirty('expr');
-				$this->notifyFragmentDirty('tree');
+				$this->notifyObjectDirty("expr");
+				$this->notifyFragmentDirty("tree");
 			}
 		}
 	}
-	public function getExpr($enforce = true)
+	public function setExprRef($expr, \Repository $repository, $notify = true)
+	{
+		if (!$expr instanceof Expr && !$expr instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs expr to be an instance of Expr or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($expr instanceof \RepositoryObjectReference) {
+			$v->set($expr->getRefId());
+		} else {
+			$v->set($expr);
+		}
+		$this->setExpr($v, $notify);
+	}
+	public function getExpr($enforce = true, $unref = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
@@ -85,25 +105,50 @@ class ExprStmt extends \RepositoryNodeObject implements GraphInterface
 		if ($enforce && $this->expr === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null expr.");
 		}
-		return $this->expr;
+		if ($unref && $this->expr instanceof \RepositoryObjectReference) {
+			$v = $this->expr->get(!$enforce);
+		} else {
+			$v = $this->expr;
+		}
+		return $v;
 	}
 	
-	public function setGraphPrev(\RepositoryObjectReference $graphPrev = null, $notify = true)
+	public function setGraphPrev($graphPrev, $notify = true)
 	{
-		if ($this->graphPrev !== $graphPrev) {
+		if (!$graphPrev instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->graphPrev, $graphPrev)) {
 			if (!$this->graph_loaded) {
-				$this->loadFragment('graph');
+				$this->loadFragment("graph");
 			}
-			if ($this->graphPrev instanceof \RepositoryObjectParentInterface) $this->graphPrev->setParent(null);
+			if ($this->graphPrev instanceof \RepositoryObjectParentInterface) {
+				$this->graphPrev->setParent(null);
+			}
+			if ($graphPrev instanceof \RepositoryObjectParentInterface) {
+				$graphPrev->setParent($this, "graphPrev", "graph");
+			}
 			$this->graphPrev = $graphPrev;
-			if ($graphPrev instanceof \RepositoryObjectParentInterface) $graphPrev->setParent($this, "graphPrev", "graph");
 			if ($notify) {
-				$this->notifyObjectDirty('graphPrev');
-				$this->notifyFragmentDirty('graph');
+				$this->notifyObjectDirty("graphPrev");
+				$this->notifyFragmentDirty("graph");
 			}
 		}
 	}
-	public function getGraphPrev($enforce = true)
+	public function setGraphPrevRef($graphPrev, \Repository $repository, $notify = true)
+	{
+		if (!$graphPrev instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($graphPrev instanceof \RepositoryObjectReference) {
+			$v->set($graphPrev->getRefId());
+		} else {
+			$v->set($graphPrev);
+		}
+		$this->setGraphPrev($v, $notify);
+	}
+	public function getGraphPrev($enforce = true, $unref = true)
 	{
 		if (!$this->graph_loaded) {
 			$this->loadFragment('graph');
@@ -111,6 +156,11 @@ class ExprStmt extends \RepositoryNodeObject implements GraphInterface
 		if ($enforce && $this->graphPrev === null) {
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null graphPrev.");
 		}
-		return $this->graphPrev;
+		if ($unref && $this->graphPrev instanceof \RepositoryObjectReference) {
+			$v = $this->graphPrev->get(!$enforce);
+		} else {
+			$v = $this->graphPrev;
+		}
+		return $v;
 	}
 }

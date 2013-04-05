@@ -29,10 +29,8 @@ class EvaluateTypeExpressionsStage extends DriverStage
 	protected function processExpr(\RepositoryObject $object)
 	{
 		if ($object instanceof \Objects\IdentifierExpr) {
-			$ref = new \RepositoryObjectReference($this->repository);
-			$ref->set($object->getBindingTarget()->get());
 			$def = new \Objects\ConcreteType;
-			$def->setDefinition($ref);
+			$def->setDefinitionRef($object->getBindingTarget(true, false), $this->repository);
 			return $def;
 		}
 		throw new \InvalidArgumentException("Unable to evaluate {$object->getId()} (".get_class($object).") in type expression.");

@@ -70,7 +70,7 @@ abstract class DriverStage
 		if (!$object instanceof RepositoryObject) {
 			throw new InvalidArgumentException("Dependency object must be a RepositoryObject.");
 		}
-		$id = (is_object($object) ? $object->getId() : $object);
+		$id = (is_object($object) ? ($object instanceof \RepositoryObjectReference ? $object->getRefId() : $object->getId()) : $object);
 		if (preg_match('/<parentless>/', $id)) {
 			throw new InvalidArgumentException("Dependency object $id is invalid as it is not part of the root object.");
 		}

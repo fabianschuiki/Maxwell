@@ -37,7 +37,7 @@ class RepositoryObjectSerializer
 			foreach ($properties as $property) {
 				$name = $property["name"];
 				$getter = "get".ucwords($name);
-				$value = $object->$getter(false);
+				$value = $object->$getter(false, false);
 				if ($value !== null) {
 					$a = $this->serializeValue($value, $fragment, $targetFragment);
 					if ($a !== null && !((is_array($a) || is_object($a)) && count($a) == 0))
@@ -53,7 +53,7 @@ class RepositoryObjectSerializer
 			foreach ($properties as $property) {
 				$name = $property["name"];
 				$getter = "get".ucwords($name);
-				$value = $object->$getter(false);
+				$value = $object->$getter(false, false);
 				if ($value !== null) {
 					if ($value instanceof RepositoryObjectArray || $value instanceof RepositoryObjectReference) {
 						$a = $this->serializeValue($value, $fragment, $targetFragment);
@@ -116,12 +116,12 @@ class RepositoryObjectSerializer
 
 		// References.
 		if ($value instanceof RepositoryObjectReference) {
-			$id = $value->getId();
+			$id = $value->getRefId();
 			return "@ref ".($id !== null ? $id : "<null>");
 		}
 
 		// Complain about the input value now since we're unable to process it.
-		throw new \InvalidArgumentException("Unable to serialize value ".get_class($value).".");
+		throw new \InvalidArgumentException("Unable to serialize value ".get_class($value).".".($value instanceof IdedObject ? " Object ID is {$value->getId()}" : ""));
 	}
 
 	/**

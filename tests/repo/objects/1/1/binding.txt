@@ -31,7 +31,7 @@ Array
                                 (
                                     [expr] => Array
                                         (
-                                            [bindingTarget] => @ref 0.2
+                                            [bindingTarget] => @ref 0.3
                                         )
 
                                 )

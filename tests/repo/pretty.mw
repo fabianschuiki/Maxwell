@@ -1,4 +1,4 @@
-func double (int x) -> (int y)
+func double (int x) -> (real y)
 {
-    y = x * 2.9;
+    y = x * 2;
 }

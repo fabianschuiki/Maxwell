@@ -1,1 +1,1 @@
-{"name":"double","inputs":{"arguments":[{"name":"x","typeExpr":{"expr":{"name":"int"}}}]},"outputs":{"arguments":[{"name":"y","typeExpr":{"expr":{"name":"int"}}}]},"body":{"stmts":[{"expr":{"lhs":{"name":"y"},"rhs":{"operator":"*","lhs":{"name":"x"},"rhs":{"value":"2.9"}}}}]}}
+{"name":"double","inputs":{"arguments":[{"name":"x","typeExpr":{"expr":{"name":"int"}}}]},"outputs":{"arguments":[{"name":"y","typeExpr":{"expr":{"name":"real"}}}]},"body":{"stmts":[{"expr":{"lhs":{"name":"y"},"rhs":{"operator":"*","lhs":{"name":"x"},"rhs":{"value":"2"}}}}]}}

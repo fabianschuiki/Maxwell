@@ -32,7 +32,7 @@ Array
                                     [name] => y
                                     [type] => Array
                                         (
-                                            [definition] => @ref 0.2
+                                            [definition] => @ref 0.3
                                             [class] => ConcreteType
                                         )
 
@@ -84,7 +84,7 @@ Array
                                     [name] => y
                                     [type] => Array
                                         (
-                                            [definition] => @ref 0.2
+                                            [definition] => @ref 0.3
                                             [class] => ConcreteType
                                         )
 
@@ -227,7 +227,7 @@ Array
                                     [name] => y
                                     [type] => Array
                                         (
-                                            [definition] => @ref 0.2
+                                            [definition] => @ref 0.3
                                             [class] => ConcreteType
                                         )
 
@@ -253,7 +253,7 @@ Array
                                     [name] => y
                                     [type] => Array
                                         (
-                                            [definition] => @ref 0.2
+                                            [definition] => @ref 0.3
                                             [class] => ConcreteType
                                         )
 
@@ -274,7 +274,7 @@ Array
                                     [name] => y
                                     [type] => Array
                                         (
-                                            [definition] => @ref 0.2
+                                            [definition] => @ref 0.3
                                             [class] => ConcreteType
                                         )
 
@@ -291,7 +291,7 @@ Array
                                     [name] => y
                                     [type] => Array
                                         (
-                                            [definition] => @ref 0.2
+                                            [definition] => @ref 0.3
                                             [class] => ConcreteType
                                         )
 
@@ -302,7 +302,7 @@ Array
                                 (
                                     [evaluatedType] => Array
                                         (
-                                            [definition] => @ref 0.2
+                                            [definition] => @ref 0.3
                                             [class] => ConcreteType
                                         )
 
@@ -343,7 +343,7 @@ Array
                                 (
                                     [possibleType] => Array
                                         (
-                                            [definition] => @ref 0.2
+                                            [definition] => @ref 0.3
                                             [class] => ConcreteType
                                         )
 
@@ -354,7 +354,7 @@ Array
 
                                     [actualType] => Array
                                         (
-                                            [definition] => @ref 0.2
+                                            [definition] => @ref 0.3
                                             [class] => ConcreteType
                                         )
 
@@ -362,7 +362,7 @@ Array
                                         (
                                             [possibleType] => Array
                                                 (
-                                                    [definition] => @ref 0.2
+                                                    [definition] => @ref 0.3
                                                     [class] => ConcreteType
                                                 )
 
@@ -373,7 +373,7 @@ Array
 
                                             [actualType] => Array
                                                 (
-                                                    [definition] => @ref 0.2
+                                                    [definition] => @ref 0.3
                                                     [class] => ConcreteType
                                                 )
 
@@ -404,13 +404,13 @@ Array
 
                                             [requiredType] => Array
                                                 (
-                                                    [definition] => @ref 0.2
+                                                    [definition] => @ref 0.3
                                                     [class] => ConcreteType
                                                 )
 
                                             [actualType] => Array
                                                 (
-                                                    [definition] => @ref 0.2
+                                                    [definition] => @ref 0.3
                                                     [class] => ConcreteType
                                                 )
 
@@ -455,7 +455,7 @@ Array
                                                 (
                                                     [possibleType] => Array
                                                         (
-                                                            [definition] => @ref 0.3
+                                                            [definition] => @ref 0.2
                                                             [class] => ConcreteType
                                                         )
 
@@ -482,7 +482,7 @@ Array
 
                                                     [actualType] => Array
                                                         (
-                                                            [definition] => @ref 0.3
+                                                            [definition] => @ref 0.2
                                                             [class] => ConcreteType
                                                         )
 

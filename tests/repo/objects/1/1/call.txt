@@ -83,11 +83,8 @@ Array
                                                                             [requiredType] => @ref 0.6.actualType.inputs.arguments.1.type
                                                                             [actualType] => Array
                                                                                 (
-                                                                                    [from] => @ref 1.1.body.stmts.0.expr.rhs.rhs.possibleType
-                                                                                    [to] => @ref 0.6.actualType.inputs.arguments.1.type
-                                                                                    [cost] => 1
-                                                                                    [func] => @ref 0.5
-                                                                                    [class] => CastType
+                                                                                    [definition] => @ref 0.2
+                                                                                    [class] => ConcreteType
                                                                                 )
 
                                                                             [class] => CallCandidateArgument
@@ -96,14 +93,17 @@ Array
                                                                 )
 
                                                             [func] => @ref 0.6
-                                                            [feasible] => 
-                                                            [cost] => 1
+                                                            [feasible] => 1
+                                                            [cost] => 0.1
                                                             [possibleType] => @ref 0.6.actualType.outputs.arguments.0.type
                                                             [requiredType] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
                                                             [actualType] => Array
                                                                 (
-                                                                    [definition] => @ref 0.2
-                                                                    [class] => ConcreteType
+                                                                    [from] => @ref 0.6.actualType.outputs.arguments.0.type
+                                                                    [to] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
+                                                                    [cost] => 1
+                                                                    [func] => @ref 0.4
+                                                                    [class] => CastType
                                                                 )
 
                                                             [class] => CallCandidate
@@ -134,8 +134,11 @@ Array
                                                                             [requiredType] => @ref 0.7.actualType.inputs.arguments.1.type
                                                                             [actualType] => Array
                                                                                 (
-                                                                                    [definition] => @ref 0.3
-                                                                                    [class] => ConcreteType
+                                                                                    [from] => @ref 1.1.body.stmts.0.expr.rhs.rhs.possibleType
+                                                                                    [to] => @ref 0.7.actualType.inputs.arguments.1.type
+                                                                                    [cost] => 1
+                                                                                    [func] => @ref 0.4
+                                                                                    [class] => CastType
                                                                                 )
 
                                                                             [class] => CallCandidateArgument
@@ -144,17 +147,14 @@ Array
                                                                 )
 
                                                             [func] => @ref 0.7
-                                                            [feasible] => 1
-                                                            [cost] => 0.1
+                                                            [feasible] => 
+                                                            [cost] => 1
                                                             [possibleType] => @ref 0.7.actualType.outputs.arguments.0.type
                                                             [requiredType] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
                                                             [actualType] => Array
                                                                 (
-                                                                    [from] => @ref 0.7.actualType.outputs.arguments.0.type
-                                                                    [to] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
-                                                                    [cost] => 1
-                                                                    [func] => @ref 0.5
-                                                                    [class] => CastType
+                                                                    [definition] => @ref 0.3
+                                                                    [class] => ConcreteType
                                                                 )
 
                                                             [class] => CallCandidate
@@ -188,11 +188,8 @@ Array
                                                                             [requiredType] => @ref 0.8.actualType.inputs.arguments.1.type
                                                                             [actualType] => Array
                                                                                 (
-                                                                                    [from] => @ref 1.1.body.stmts.0.expr.rhs.rhs.possibleType
-                                                                                    [to] => @ref 0.8.actualType.inputs.arguments.1.type
-                                                                                    [cost] => 1
-                                                                                    [func] => @ref 0.5
-                                                                                    [class] => CastType
+                                                                                    [definition] => @ref 0.2
+                                                                                    [class] => ConcreteType
                                                                                 )
 
                                                                             [class] => CallCandidateArgument
@@ -202,16 +199,13 @@ Array
 
                                                             [func] => @ref 0.8
                                                             [feasible] => 
-                                                            [cost] => 2.1
+                                                            [cost] => 1
                                                             [possibleType] => @ref 0.8.actualType.outputs.arguments.0.type
                                                             [requiredType] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
                                                             [actualType] => Array
                                                                 (
-                                                                    [from] => @ref 0.8.actualType.outputs.arguments.0.type
-                                                                    [to] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
-                                                                    [cost] => 1
-                                                                    [func] => @ref 0.5
-                                                                    [class] => CastType
+                                                                    [definition] => @ref 0.3
+                                                                    [class] => ConcreteType
                                                                 )
 
                                                             [class] => CallCandidate
@@ -245,8 +239,11 @@ Array
                                                                             [requiredType] => @ref 0.9.actualType.inputs.arguments.1.type
                                                                             [actualType] => Array
                                                                                 (
-                                                                                    [definition] => @ref 0.3
-                                                                                    [class] => ConcreteType
+                                                                                    [from] => @ref 1.1.body.stmts.0.expr.rhs.rhs.possibleType
+                                                                                    [to] => @ref 0.9.actualType.inputs.arguments.1.type
+                                                                                    [cost] => 1
+                                                                                    [func] => @ref 0.4
+                                                                                    [class] => CastType
                                                                                 )
 
                                                                             [class] => CallCandidateArgument
@@ -256,16 +253,13 @@ Array
 
                                                             [func] => @ref 0.9
                                                             [feasible] => 
-                                                            [cost] => 1.1
+                                                            [cost] => 2
                                                             [possibleType] => @ref 0.9.actualType.outputs.arguments.0.type
                                                             [requiredType] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
                                                             [actualType] => Array
                                                                 (
-                                                                    [from] => @ref 0.9.actualType.outputs.arguments.0.type
-                                                                    [to] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
-                                                                    [cost] => 1
-                                                                    [func] => @ref 0.5
-                                                                    [class] => CastType
+                                                                    [definition] => @ref 0.3
+                                                                    [class] => ConcreteType
                                                                 )
 
                                                             [class] => CallCandidate
@@ -273,7 +267,7 @@ Array
 
                                                 )
 
-                                            [selectedCallCandidate] => @ref 1.1.body.stmts.0.expr.rhs.callCandidates.1
+                                            [selectedCallCandidate] => @ref 1.1.body.stmts.0.expr.rhs.callCandidates.0
                                         )
 
                                 )

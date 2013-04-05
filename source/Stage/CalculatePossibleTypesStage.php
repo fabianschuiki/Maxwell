@@ -60,10 +60,11 @@ class CalculatePossibleTypesStage extends DriverStage
 			$outputTuples = array();
 			foreach ($object->getCallCandidates()->getChildren() as $candidate) {
 				$f = $candidate->getFunc();
-				$this->addDependency($f);
+				$this->addDependency($candidate);
 				$t = $f->getActualType(false);
 				if (!$t)
 					$t = $f->getPossibleType();
+				$this->addDependency($t);
 				$outputTuples[] = $t->getOutputs();
 			}
 			$t = \Type::unifyArgumentTuples($outputTuples);

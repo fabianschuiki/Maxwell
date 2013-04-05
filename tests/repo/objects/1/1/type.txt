@@ -455,7 +455,7 @@ Array
                                                 (
                                                     [possibleType] => Array
                                                         (
-                                                            [definition] => @ref 0.2
+                                                            [definition] => @ref 0.3
                                                             [class] => ConcreteType
                                                         )
 
@@ -482,7 +482,7 @@ Array
 
                                                     [actualType] => Array
                                                         (
-                                                            [definition] => @ref 0.2
+                                                            [definition] => @ref 0.3
                                                             [class] => ConcreteType
                                                         )
 

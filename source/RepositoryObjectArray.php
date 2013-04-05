@@ -65,4 +65,18 @@ class RepositoryObjectArray extends RepositoryNodeObject
 		$this->parent_key = $key;
 		$this->parent_fragment = $fragment;
 	}
+
+	public function describe($header = true)
+	{
+		$s  = ($header ? $this->getId()." " : "");
+		$s .= "[\n";
+		foreach ($this->getElements() as $index => $element) {
+			if ($element === null) continue;
+			$s .= "   [$index] ";
+			$s .= str_replace("\n", "\n   ", $element->describe(false));
+			$s .= "\n";
+		}
+		$s .= "]";
+		return $s;
+	}
 }

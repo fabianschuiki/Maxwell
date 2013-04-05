@@ -24,7 +24,7 @@ class Repository
 	protected $objects_modified = array();
 
 	// Logging facilities.
-	static public $verbosity = 3;
+	static public $verbosity = 1;
 	private function println($verbosity, $ln, $info = null)
 	{
 		if (static::$verbosity > $verbosity)
@@ -464,7 +464,7 @@ class Repository
 		}
 		if (!isset($this->dependencies[$objectId][$stage]) || !in_array($dependsOnId, $this->dependencies[$objectId][$stage])) {
 			$this->dependencies[$objectId][$stage][] = $dependsOnId;
-			$this->println(2, "Stage $stage depends on $dependsOnId", $objectId);
+			$this->println(3, "Stage $stage depends on $dependsOnId", $objectId);
 			if (!in_array($objectId, $this->dependencies_modified)) {
 				$this->dependencies_modified[] = $objectId;
 			}

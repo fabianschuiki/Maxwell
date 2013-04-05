@@ -76,4 +76,36 @@ abstract class RepositoryObject implements IdedObject
 			return !$a->isEqualTo($b);
 		return true;
 	}
+
+	/**
+	 * Describes the object in a human readable string form. Prints the tree of
+	 * objects attached to this.
+	 */
+	public function describe($header = true)
+	{
+		$s  = $this->getClass().($header ? " ".$this->getId()." " : " ");
+		$s .= "{\n";
+		foreach ($this->getFragmentNames() as $fragmentName) {
+			//$s .= "  ".strtoupper($fragmentName)."\n";
+			foreach ($this->getFragment($fragmentName) as $property) {
+				$getter = "get".ucfirst($property["name"]);
+				$v = $this->$getter(false, false);
+				if ($v === null) continue;
+				$s .= " - ".$property["name"].": ";
+				if ($v instanceof \RepositoryObjectReference) {
+					$id = $v->getRefId();
+					$s .= "@ref ".($id !== null ? $id : "<null>");
+				} else if ($v instanceof \RepositoryObject) {
+					$s .= str_replace("\n", "\n   ", $v->describe(false));
+				} else if (is_object($v)) {
+					$s .= get_class($v);
+				} else {
+					$s .= $v;
+				}
+				$s .= "\n";
+			}
+		}
+		$s .= "}";
+		return $s;
+	}
 }

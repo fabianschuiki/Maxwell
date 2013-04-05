@@ -8,7 +8,7 @@ use Objects\TypeSet;
 
 class CalculateActualTypesStage extends DriverStage
 {
-	static public $verbosity = 99;
+	static public $verbosity = 1;
 
 	protected function process(\RepositoryObject $object)
 	{
@@ -19,7 +19,7 @@ class CalculateActualTypesStage extends DriverStage
 		if ($object instanceof \Objects\TypeInterface) {
 			$possible = $object->getPossibleType();
 			$required = $object->getRequiredType();
-			$this->println(2, "intersecting ".\Type::describe($possible)." and ".\Type::describe($required), $object->getId());
+			$this->println(3, "Intersecting ".\Type::describe($possible)." and ".\Type::describe($required), $object->getId());
 
 			// Add the required dependency.
 			$this->addDependency($possible);
@@ -34,7 +34,11 @@ class CalculateActualTypesStage extends DriverStage
 
 			// Otherwise try to find a match.
 			else {
-				$object->setActualType(\Type::intersectSetOrConcreteType($possible, $required));
+				$m = \Type::intersectSetOrConcreteType($possible, $required);
+				$object->setActualType($m);
+				if ($m instanceof InvalidType) {
+					$this->println(2, "Try to find a cast from ".\Type::describe($possible)." to ".\Type::describe($required));
+				}
 			}
 
 			// Show the output of the stage.

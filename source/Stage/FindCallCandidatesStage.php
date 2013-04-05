@@ -17,8 +17,8 @@ class FindCallCandidatesStage extends DriverStage
 		if ($object instanceof \Objects\CallInterface)
 		{
 			// Do not perform any search if there are candidates around already.
-			if ($object->getCallCandidates(false))
-				return;
+			//if ($object->getCallCandidates(false))
+			//	return;
 
 			// Create the array that will hold the candidates.
 			$array = new \RepositoryObjectArray;
@@ -46,6 +46,9 @@ class FindCallCandidatesStage extends DriverStage
 			if (!count($object->getCallCandidates()->getElements())) {
 				$this->println(2, "Called function '$name' is not known", $object->getId());
 			}
+
+			// Dump the call to the console.
+			$this->println(3, $object->describe(), $object->getId());
 		}
 	}
 }

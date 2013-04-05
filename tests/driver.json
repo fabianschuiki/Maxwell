@@ -47,7 +47,7 @@
 						},
 					"rhs": {
 						"class": "ConstantExpr",
-						"value": "2"
+						"value": "2.9"
 						}
 					}
 				}

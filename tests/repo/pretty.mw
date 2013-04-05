@@ -1,4 +1,4 @@
 func double (int x) -> (int y)
 {
-    y = x * 2;
+    y = x * 2.9;
 }

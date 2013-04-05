@@ -1,0 +1,98 @@
+Array
+(
+    [graphPrev] => @ref <null>
+    [inputs] => Array
+        (
+            [graphPrev] => @ref 1.2
+            [arguments] => Array
+                (
+                    [0] => Array
+                        (
+                            [graphPrev] => @ref 1.2.inputs
+                            [typeExpr] => Array
+                                (
+                                    [graphPrev] => @ref 1.2.inputs.arguments.0
+                                    [expr] => Array
+                                        (
+                                            [graphPrev] => @ref 1.2.inputs.arguments.0.typeExpr
+                                        )
+
+                                )
+
+                        )
+
+                )
+
+        )
+
+    [outputs] => Array
+        (
+            [graphPrev] => @ref 1.2.inputs.arguments.0.typeExpr.expr
+            [arguments] => Array
+                (
+                    [0] => Array
+                        (
+                            [graphPrev] => @ref 1.2.outputs
+                            [typeExpr] => Array
+                                (
+                                    [graphPrev] => @ref 1.2.outputs.arguments.0
+                                    [expr] => Array
+                                        (
+                                            [graphPrev] => @ref 1.2.outputs.arguments.0.typeExpr
+                                        )
+
+                                )
+
+                        )
+
+                )
+
+        )
+
+    [body] => Array
+        (
+            [stmts] => Array
+                (
+                    [0] => Array
+                        (
+                            [graphPrev] => @ref 1.2.outputs.arguments.0.typeExpr.expr
+                            [expr] => Array
+                                (
+                                    [graphPrev] => @ref 1.2.body.stmts.0
+                                    [lhs] => Array
+                                        (
+                                            [graphPrev] => @ref 1.2.body.stmts.0.expr
+                                        )
+
+                                    [rhs] => Array
+                                        (
+                                            [graphPrev] => @ref 1.2.body.stmts.0.expr.lhs
+                                            [lhs] => Array
+                                                (
+                                                    [graphPrev] => @ref 1.2.body.stmts.0.expr.rhs
+                                                )
+
+                                            [rhs] => Array
+                                                (
+                                                    [arguments] => Array
+                                                        (
+                                                            [0] => Array
+                                                                (
+                                                                    [graphPrev] => @ref 1.2.body.stmts.0.expr.rhs.lhs
+                                                                )
+
+                                                        )
+
+                                                )
+
+                                        )
+
+                                )
+
+                        )
+
+                )
+
+        )
+
+)

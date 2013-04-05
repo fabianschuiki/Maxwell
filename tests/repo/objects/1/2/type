@@ -1,0 +1,1 @@
+{"inputs":{"arguments":[{"typeExpr":{"evaluatedType":{"definition":"@ref 0.2","class":"ConcreteType"}}}]},"outputs":{"arguments":[{"typeExpr":{"evaluatedType":{"definition":"@ref 0.2","class":"ConcreteType"}}}]},"body":{"stmts":[{"expr":{"rhs":{"rhs":{"arguments":[[]]}}}}]}}

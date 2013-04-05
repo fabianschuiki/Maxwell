@@ -82,7 +82,7 @@
 
 		"BinaryOperatorExpr": {
 			"extends": "Expr",
-			"tree": ["Expr lhs", "Expr rhs"],
+			"tree": ["lhs", "rhs"],
 			"main": ["string operator"],
 			"graph": ["@graph"],
 			"call": ["@call"],
@@ -97,8 +97,12 @@
 		"TypeExpr": {
 			"tree": ["Expr expr"],
 			"graph": ["@graph"],
-			"type": ["evaluatedType"]
-			},
+			"type": ["evaluatedType"]},
+
+		"CallExpr": {
+			"tree": ["array arguments"],
+			"main": ["string name"],
+			"call": ["@call"]},
 
 		"CallArgumentTuple": {
 			"call": ["array arguments"]},

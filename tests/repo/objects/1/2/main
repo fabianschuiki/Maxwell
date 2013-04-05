@@ -1,0 +1,1 @@
+{"name":"double_increment","inputs":{"arguments":[{"name":"x","typeExpr":{"expr":{"name":"int"}}}]},"outputs":{"arguments":[{"name":"y","typeExpr":{"expr":{"name":"int"}}}]},"body":{"stmts":[{"expr":{"lhs":{"name":"y"},"rhs":{"operator":"+","lhs":{"value":"1"},"rhs":{"name":"double","arguments":[{"name":"x"}]}}}}]}}

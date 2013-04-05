@@ -52,14 +52,22 @@ Array
                                 (
                                     [lhs] => Array
                                         (
-                                            [bindingTarget] => @ref 1.1.outputs.arguments.0
+                                            [bindingTarget] => @ref 1.2.outputs.arguments.0
                                         )
 
                                     [rhs] => Array
                                         (
-                                            [lhs] => Array
+                                            [rhs] => Array
                                                 (
-                                                    [bindingTarget] => @ref 1.1.inputs.arguments.0
+                                                    [arguments] => Array
+                                                        (
+                                                            [0] => Array
+                                                                (
+                                                                    [bindingTarget] => @ref 1.2.inputs.arguments.0
+                                                                )
+
+                                                        )
+
                                                 )
 
                                         )

@@ -69,8 +69,8 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 	{
 		switch ($name) {
 			case "tree": return array(
-				array("name" => "lhs", "type" => "Expr"), 
-				array("name" => "rhs", "type" => "Expr"));
+				array("name" => "lhs", "type" => ""), 
+				array("name" => "rhs", "type" => ""));
 			case "main": return array(
 				array("name" => "operator", "type" => "string"));
 			case "graph": return array(
@@ -97,9 +97,6 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 	/* ACCESSORS */
 	public function setLhs($lhs, $notify = true)
 	{
-		if (!$lhs instanceof Expr && !$lhs instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs lhs to be an instance of Expr or \RepositoryObjectReference');
-		}
 		if ($this->hasPropertyChanged($this->lhs, $lhs)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
@@ -119,9 +116,6 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 	}
 	public function setLhsRef($lhs, \Repository $repository, $notify = true)
 	{
-		if (!$lhs instanceof Expr && !$lhs instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs lhs to be an instance of Expr or \RepositoryObjectReference');
-		}
 		$v = new \RepositoryObjectReference($repository);
 		if ($lhs instanceof \RepositoryObjectReference) {
 			$v->set($lhs->getRefId());
@@ -148,9 +142,6 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 	
 	public function setRhs($rhs, $notify = true)
 	{
-		if (!$rhs instanceof Expr && !$rhs instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs rhs to be an instance of Expr or \RepositoryObjectReference');
-		}
 		if ($this->hasPropertyChanged($this->rhs, $rhs)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
@@ -170,9 +161,6 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 	}
 	public function setRhsRef($rhs, \Repository $repository, $notify = true)
 	{
-		if (!$rhs instanceof Expr && !$rhs instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs rhs to be an instance of Expr or \RepositoryObjectReference');
-		}
 		$v = new \RepositoryObjectReference($repository);
 		if ($rhs instanceof \RepositoryObjectReference) {
 			$v->set($rhs->getRefId());

@@ -4,5 +4,4 @@ Array
     [BindIdentifiersStage] => 1
     [ConfigureCallsStage] => 1
     [EvaluateTypeExpressionsStage] => 1
-    [FindCallCandidatesStage] => 1
 )

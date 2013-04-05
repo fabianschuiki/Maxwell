@@ -43,5 +43,24 @@ class ConfigureCallsStage extends DriverStage
 				$object->setCallArguments($args);
 			}
 		}
+
+		// Actual calls.
+		if ($object instanceof \Objects\CallExpr)
+		{
+			$object->setCallName($object->getName());
+
+			// Create the call arguments.
+			$a = new \RepositoryObjectArray;
+			foreach ($object->getArguments()->getElements() as $index => $argument) {
+				$arg = new \Objects\CallArgument;
+				$arg->setExprRef($argument, $this->repository);
+				$a->set($index, $arg);
+			}
+
+			// Create the call tuple.
+			$args = new \Objects\CallArgumentTuple;
+			$args->setArguments($a);
+			$object->setCallArguments($args);
+		}
 	}
 }

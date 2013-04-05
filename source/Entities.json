@@ -103,14 +103,16 @@
 		"CallArgumentTuple": {
 			"call": ["array arguments"]},
 		"CallArgument": {
-			"call": ["expr", "string name"],
-			"type": ["@type"]},
+			"call": ["expr", "string name"]},
 		"CallCandidate": {
 			"call": [
-				"ref func",
+				"\\AbstractFunction func",
 				"bool feasible",
-				"CallCandidateArgumentTuple inputs",
-				"CallCandidateArgumentTuple outputs"]},
+				"array arguments"
+			]},
+		"CallCandidateArgument": {
+			"call": ["CallArgument argument"],
+			"type": ["@type"]},
 
 		"ConcreteType": {
 			"main": ["ref definition"]},

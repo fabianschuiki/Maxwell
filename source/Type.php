@@ -47,6 +47,9 @@ class Type
 		if ($object instanceof \Objects\GenericType) {
 			return "*";
 		}
+		if ($object instanceof \Objects\CastType) {
+			return static::describe($object->getTo())."(".static::describe($object->getFrom()).",".$object->getCost().")";
+		}
 
 		// Seems like we're unable to handle the object.
 		throw new \InvalidArgumentException("Unable to describe object ".vartype($object)." as type.");

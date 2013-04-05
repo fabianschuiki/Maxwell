@@ -20,6 +20,7 @@ class CallCandidate extends \RepositoryNodeObject implements TypeInterface
 	public $call_loaded = true;
 	protected $func;
 	protected $feasible;
+	protected $cost;
 	
 	// type fragment
 	public $type_dirty  = false;
@@ -59,7 +60,8 @@ class CallCandidate extends \RepositoryNodeObject implements TypeInterface
 				array("name" => "arguments", "type" => "\RepositoryObjectArray"));
 			case "call": return array(
 				array("name" => "func", "type" => "\AbstractFunction"), 
-				array("name" => "feasible", "type" => "bool"));
+				array("name" => "feasible", "type" => "bool"), 
+				array("name" => "cost", "type" => "numeric"));
 			case "type": return array(
 				array("name" => "possibleType", "type" => ""), 
 				array("name" => "requiredType", "type" => ""), 
@@ -202,6 +204,33 @@ class CallCandidate extends \RepositoryNodeObject implements TypeInterface
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null feasible.");
 		}
 		return $this->feasible;
+	}
+	
+	public function setCost($cost, $notify = true)
+	{
+		if (!is_numeric($cost)) {
+			throw new \InvalidArgumentException("cost needs to be a number");
+		}
+		if ($this->cost !== $cost) {
+			if (!$this->call_loaded) {
+				$this->loadFragment("call");
+			}
+			$this->cost = $cost;
+			if ($notify) {
+				$this->notifyObjectDirty("cost");
+				$this->notifyFragmentDirty("call");
+			}
+		}
+	}
+	public function getCost($enforce = true)
+	{
+		if (!$this->call_loaded) {
+			$this->loadFragment('call');
+		}
+		if ($enforce && $this->cost === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null cost.");
+		}
+		return $this->cost;
 	}
 	
 	public function setPossibleType($possibleType, $notify = true)

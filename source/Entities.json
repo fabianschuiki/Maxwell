@@ -108,7 +108,8 @@
 			"tree": ["array arguments"],
 			"call": [
 				"\\AbstractFunction func",
-				"bool feasible"],
+				"bool feasible",
+				"numeric cost"],
 			"type": ["@type"]},
 		"CallCandidateArgument": {
 			"call": ["CallArgument argument"],
@@ -125,6 +126,13 @@
 		"TypeSet": {
 			"main": ["array types"]},
 		"GenericType": {},
-		"InvalidType": {}
+		"InvalidType": {},
+		"CastType": {
+			"main": [
+				"from",
+				"to",
+				"numeric cost",
+				"\\AbstractFunction func"
+			]}
 	}
 }

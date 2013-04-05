@@ -38,6 +38,9 @@ function processType($t)
 		$t);
 }
 
+// Types considered scalar.
+$scalarTypes = array("string", "bool", "numeric");
+
 // Create an interface file for each interface.
 $interface_defs = $defs->interfaces;
 foreach ($interface_defs as $name => $def)
@@ -62,7 +65,7 @@ foreach ($interface_defs as $name => $def)
 	foreach ($canonicalProperties as $property) {
 		$lcname = $property->name;
 		$ucname = ucfirst($lcname);
-		$scalarType = ($property->type == "string" || $property->type == "bool");
+		$scalarType = in_array($property->type, $scalarTypes);
 		$refable = !$scalarType;
 
 		// SETTER
@@ -166,7 +169,7 @@ foreach ($entity_defs as $name => $def)
 		foreach ($canonicalProperties as $property) {
 			$lcname = $property->name;
 			$ucname = ucfirst($lcname);
-			$scalarType = ($property->type == "string" || $property->type == "bool");
+			$scalarType = in_array($property->type, $scalarTypes);
 			$refable = !$scalarType;
 
 			// SETTER
@@ -183,6 +186,12 @@ foreach ($entity_defs as $name => $def)
 				$bfragment .=
 					"\tif (!is_bool(\$$lcname)) {\n".
 					"\t\tthrow new \\InvalidArgumentException(\"$lcname needs to be a boolean\");\n".
+					"\t}\n";
+			}
+			if ($property->type == "numeric") {
+				$bfragment .=
+					"\tif (!is_numeric(\$$lcname)) {\n".
+					"\t\tthrow new \\InvalidArgumentException(\"$lcname needs to be a number\");\n".
 					"\t}\n";
 			}
 			$types = array_filter(preg_split('/\s*\|\s*/', $property->type));

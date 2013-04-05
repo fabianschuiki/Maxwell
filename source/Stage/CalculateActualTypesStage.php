@@ -98,8 +98,19 @@ class CalculateActualTypesStage extends DriverStage
 			$ft = $f->getActualType(false);
 			if (!$ft)
 				$ft = $f->getPossibleType();
-			$this->println(2, "Using cast {$f->getId()} ".\Type::describe($ft), $object->getId());
-			$object->setActualTypeRef($ft->getOutputs()->getArguments()->get(0)->getType(), $this->repository);
+
+			// Actually create a cast type.
+			$ct = new \Objects\CastType;
+			$ct->setFromRef($from, $this->repository);
+			$ct->setToRef($to, $this->repository);
+			$ct->setCost(1); // needs to be variable in the future
+			$ct->setFuncRef($f, $this->repository);
+
+			// Log the cast use.
+			$this->println(2, "Using cast {$f->getId()} ".\Type::describe($ct), $object->getId());
+
+			/*$object->setActualTypeRef($ft->getOutputs()->getArguments()->get(0)->getType(), $this->repository);*/
+			$object->setActualType($ct);
 			return;
 		}
 

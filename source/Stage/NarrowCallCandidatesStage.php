@@ -14,6 +14,7 @@ class NarrowCallCandidatesStage extends DriverStage
 		}
 
 		if ($object instanceof \Objects\CallInterface) {
+			$lowestCost = null;
 			foreach ($object->getCallCandidates()->getElements() as $candidate) {
 				/*if ($candidate->getFeasible(false) === false)
 					continue;*/
@@ -21,6 +22,7 @@ class NarrowCallCandidatesStage extends DriverStage
 				$this->println(2, "Investigating candidate ".\Type::describe($candidateType), $object->getId());
 
 				// Check the call arguments.
+				$cost = 0;
 				$feasible = true;
 				foreach ($candidate->getArguments()->getElements() as $index => $argument) {
 					/*$candType = $candidateType->getInputs()->getArguments()->get($index)->getType();
@@ -32,6 +34,9 @@ class NarrowCallCandidatesStage extends DriverStage
 						break;
 					}*/
 					$at = $argument->getActualType();
+					if ($at instanceof \Objects\CastType) {
+						$cost += $at->getCost();
+					}
 					$this->println(3, "Argument {$argument->getId()} has actual type ".\Type::describe($at), $object->getId());
 					if ($at instanceof \Objects\InvalidType) {
 						$feasible = false;
@@ -49,6 +54,9 @@ class NarrowCallCandidatesStage extends DriverStage
 						$feasible = \Type::equal($callType, $candOutArg);
 					}*/
 					$at = $candidate->getActualType();
+					if ($at instanceof \Objects\CastType) {
+						$cost += $at->getCost()*0.1; // make sure return type mismatches are not treated as badly as input type mismatches.
+					}
 					$this->println(3, "Return type of {$candidate->getId()} has actual type ".\Type::describe($at), $object->getId());
 					if ($at instanceof \Objects\InvalidType) {
 						$feasible = false;
@@ -56,8 +64,22 @@ class NarrowCallCandidatesStage extends DriverStage
 				}
 
 				// Store the data.
-				$this->println(1, "Candidate ".\Type::describe($candidateType)." is ".($feasible ? "feasible" : "not feasible"), $object->getId());
+				$this->println(1, "Candidate ".\Type::describe($candidateType)." costs $cost", $object->getId());
 				$candidate->setFeasible($feasible);
+				$candidate->setCost($cost);
+
+				// Keep track of the lowest cost.
+				if ($lowestCost === null || $cost < $lowestCost) {
+					$lowestCost = $cost;
+				}
+			}
+
+			// Mark all candidates above the lowest cost as not feasible.
+			foreach ($object->getCallCandidates()->getElements() as $candidate) {
+				$cost = $candidate->getCost();
+				$f = $candidate->getFeasible() && $cost <= $lowestCost;
+				$candidate->setFeasible($f);
+				$this->println(1, "Candidate {$candidate->getId()} is ".($f ? "feasible" : "not feasible")." at cost $cost", $object->getId());
 			}
 		}
 	}

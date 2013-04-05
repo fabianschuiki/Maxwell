@@ -15,13 +15,13 @@ $bind = new Stage\EvaluateTypeExpressionsStage($repo);
 $bind->run("1.1");
 $bind = new Stage\FindCallCandidatesStage($repo);
 $bind->run("1.1");
-/*$bind = new Stage\CalculatePossibleTypesStage($repo);
+$bind = new Stage\CalculatePossibleTypesStage($repo);
 $bind->run("1.1");
 $bind = new Stage\CalculateRequiredTypesStage($repo);
 $bind->run("1.1");
 $bind = new Stage\CalculateActualTypesStage($repo);
 $bind->run("1.1");
-$bind = new Stage\NarrowCallCandidatesStage($repo);
+/*$bind = new Stage\NarrowCallCandidatesStage($repo);
 $bind->run("1.1");
 $bind = new Stage\SelectCallCandidateStage($repo);
 $bind->run("1.1");*/

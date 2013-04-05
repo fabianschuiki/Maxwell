@@ -67,9 +67,9 @@ abstract class RepositoryNodeObject extends RepositoryObject implements Reposito
 			throw new \RuntimeException("Unable to mark fragment $fragment dirty since the object does not have a parent.");
 		}
 		$frag = ($this->parent_fragment == "tree" ? $fragment : $this->parent_fragment);
-		if ($frag != $fragment) {
+		/*if ($frag != $fragment) {
 			$this->println("Fragment $fragment translated to parent's $frag");
-		}
+		}*/
 		$this->parent->notifyFragmentDirty($frag);
 	}
 

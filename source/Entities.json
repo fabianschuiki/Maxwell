@@ -105,11 +105,11 @@
 		"CallArgument": {
 			"call": ["expr", "string name"]},
 		"CallCandidate": {
+			"tree": ["array arguments"],
 			"call": [
 				"\\AbstractFunction func",
-				"bool feasible",
-				"array arguments"
-			]},
+				"bool feasible"],
+			"type": ["@type"]},
 		"CallCandidateArgument": {
 			"call": ["CallArgument argument"],
 			"type": ["@type"]},

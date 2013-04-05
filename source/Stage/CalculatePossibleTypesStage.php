@@ -5,7 +5,7 @@ use DriverStage;
 
 class CalculatePossibleTypesStage extends DriverStage
 {
-	static public $verbosity = 1;
+	static public $verbosity = 99;
 
 	protected function process(\RepositoryObject $object)
 	{
@@ -59,14 +59,33 @@ class CalculatePossibleTypesStage extends DriverStage
 		if ($object instanceof \Objects\CallInterface) {
 			$outputTuples = array();
 			foreach ($object->getCallCandidates()->getChildren() as $candidate) {
+				// Fetch the function type this candidate is pointing at.
 				$f = $candidate->getFunc();
 				$this->addDependency($candidate);
 				$t = $f->getActualType(false);
 				if (!$t)
 					$t = $f->getPossibleType();
+
+				// Calculate the possible types for each call candidate's arguments.
+				foreach ($candidate->getArguments()->getElements() as $index => $argument) {
+					$this->println(3, "Working on argument $index = {$argument->getId()}", $object->getId());
+					//$argument->setPossibleTypeRef($t->getInputs()->getArguments()->get($index)->getType(), $this->repository);
+					$argument->setPossibleTypeRef($object->getCallArguments()->getArguments()->get($index)->getExpr()->getPossibleType(), $this->repository);
+				}
+
+				// Calculate the possible return type of this candidate.
+				// DEBUG: Enforce single return value for now. This will change soon.
+				$candidate->setPossibleTypeRef($t->getOutputs()->getArguments()->get(0)->getType(), $this->repository);
+				$this->println(3, "Candidate {$f->getId()} possible type = ".\Type::describe($candidate->getPossibleType()), $object->getId());
+
+				// Old stuff...
 				$this->addDependency($t);
 				$outputTuples[] = $t->getOutputs();
 			}
+
+			// Dump the call to the console.
+			$this->println(3, $object->describe(), $object->getId());
+
 			$t = \Type::unifyArgumentTuples($outputTuples);
 			$this->println(2, "Unified outputs = ".\Type::describe($t), $object->getId());
 

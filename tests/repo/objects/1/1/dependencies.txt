@@ -11,14 +11,19 @@ Array
             [6] => 1.1.body.stmts.0.expr.rhs.callCandidates.0
             [7] => 1.1.body.stmts.0.expr.rhs.callCandidates.1
             [8] => 1.1.body.stmts.0.expr.rhs.callCandidates.2
-            [9] => 1.1.body.stmts.0.expr.lhs.possibleType
-            [10] => 1.1.inputs.possibleType
-            [11] => 1.1.outputs.possibleType
+            [9] => 1.1.body.stmts.0.expr.rhs.callCandidates.3
+            [10] => 1.1.body.stmts.0.expr.lhs.possibleType
+            [11] => 1.1.inputs.possibleType
+            [12] => 1.1.outputs.possibleType
         )
 
     [CalculateRequiredTypesStage] => Array
         (
             [0] => 1.1.body.stmts.0.expr.lhs.possibleType
+            [1] => 1.1.body.stmts.0.expr.rhs.callCandidates.0
+            [2] => 1.1.body.stmts.0.expr.rhs.callCandidates.1
+            [3] => 1.1.body.stmts.0.expr.rhs.callCandidates.2
+            [4] => 1.1.body.stmts.0.expr.rhs.callCandidates.3
         )
 
     [CalculateActualTypesStage] => Array
@@ -41,8 +46,8 @@ Array
             [15] => 1.1.body.stmts.0.expr.rhs.lhs.requiredType
             [16] => 1.1.body.stmts.0.expr.rhs.rhs.possibleType
             [17] => 1.1.body.stmts.0.expr.rhs.rhs.requiredType
-            [18] => 1.1.body.stmts.0.expr.rhs.possibleType
-            [19] => 1.1.body.stmts.0.expr.rhs.requiredType
+            [18] => 1.1.body.stmts.0.expr.rhs.requiredType
+            [19] => 1.1.body.stmts.0.expr.rhs.possibleType
             [20] => 1.1.body.stmts.0.expr.possibleType
             [21] => 1.1.body.stmts.0.expr.requiredType
             [22] => 1.1.possibleType

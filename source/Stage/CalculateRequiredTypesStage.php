@@ -5,7 +5,7 @@ use DriverStage;
 
 class CalculateRequiredTypesStage extends DriverStage
 {
-	static public $verbosity = 1;
+	static public $verbosity = 99;
 
 	protected function process(\RepositoryObject $object)
 	{
@@ -20,13 +20,29 @@ class CalculateRequiredTypesStage extends DriverStage
 		if ($object instanceof \Objects\CallInterface) {
 			$inputTuples = array();
 			foreach ($object->getCallCandidates()->getChildren() as $candidate) {
+				// Fetch the function type this candidate is pointing at.
 				$f = $candidate->getFunc();
-				$this->addDependency($f);
+				$this->addDependency($candidate);
 				$t = $f->getActualType(false);
 				if (!$t)
 					$t = $f->getPossibleType();
+
+				// Calculate the required types for each call candidate's arguments.
+				foreach ($candidate->getArguments()->getElements() as $index => $argument) {
+					$this->println(3, "Working on argument $index = {$argument->getId()}", $object->getId());
+					$argument->setRequiredTypeRef($t->getInputs()->getArguments()->get($index)->getType(), $this->repository);
+				}
+
+				// Calculate the required return type of this candidate.
+				$candidate->setRequiredTypeRef($object->getRequiredType(), $this->repository);
+
+				// Old stuff...
 				$inputTuples[] = $t->getInputs();
 			}
+
+			// Dump the call to the console.
+			$this->println(3, $object->describe(), $object->getId());
+
 			$t = \Type::unifyArgumentTuples($inputTuples);
 			$this->println(2, "Unified inputs = ".\Type::describe($t), $object->getId());
 

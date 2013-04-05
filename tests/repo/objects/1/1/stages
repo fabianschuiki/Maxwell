@@ -1,1 +1,1 @@
-{"BuildGraphStage":true,"BindIdentifiersStage":true,"ConfigureCallsStage":true,"EvaluateTypeExpressionsStage":true,"FindCallCandidatesStage":true}
+{"BuildGraphStage":true,"BindIdentifiersStage":true,"ConfigureCallsStage":true,"EvaluateTypeExpressionsStage":true,"FindCallCandidatesStage":true,"CalculateActualTypesStage":true,"CalculateRequiredTypesStage":true,"CalculatePossibleTypesStage":true}

@@ -3,19 +3,30 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class CallCandidate extends \RepositoryNodeObject
+class CallCandidate extends \RepositoryNodeObject implements TypeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
 	protected $parent_key = null;
 	protected $parent_fragment = null;
 	
+	// tree fragment
+	public $tree_dirty  = false;
+	public $tree_loaded = true;
+	protected $arguments;
+	
 	// call fragment
 	public $call_dirty  = false;
 	public $call_loaded = true;
 	protected $func;
 	protected $feasible;
-	protected $arguments;
+	
+	// type fragment
+	public $type_dirty  = false;
+	public $type_loaded = true;
+	protected $possibleType;
+	protected $requiredType;
+	protected $actualType;
 	
 	
 	/* GENERAL */
@@ -38,16 +49,21 @@ class CallCandidate extends \RepositoryNodeObject
 	
 	public function getFragmentNames()
 	{
-		return array("call");
+		return array("tree","call","type");
 	}
 	
 	public function getFragment($name)
 	{
 		switch ($name) {
+			case "tree": return array(
+				array("name" => "arguments", "type" => "\RepositoryObjectArray"));
 			case "call": return array(
 				array("name" => "func", "type" => "\AbstractFunction"), 
-				array("name" => "feasible", "type" => "bool"), 
-				array("name" => "arguments", "type" => "\RepositoryObjectArray"));
+				array("name" => "feasible", "type" => "bool"));
+			case "type": return array(
+				array("name" => "possibleType", "type" => ""), 
+				array("name" => "requiredType", "type" => ""), 
+				array("name" => "actualType", "type" => ""));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -59,6 +75,57 @@ class CallCandidate extends \RepositoryNodeObject
 	
 	
 	/* ACCESSORS */
+	public function setArguments($arguments, $notify = true)
+	{
+		if (!$arguments instanceof \RepositoryObjectArray && !$arguments instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs arguments to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
+		}
+		if ($this->hasPropertyChanged($this->arguments, $arguments)) {
+			if (!$this->tree_loaded) {
+				$this->loadFragment("tree");
+			}
+			if ($this->arguments instanceof \RepositoryObjectParentInterface) {
+				$this->arguments->setParent(null);
+			}
+			if ($arguments instanceof \RepositoryObjectParentInterface) {
+				$arguments->setParent($this, "arguments", "tree");
+			}
+			$this->arguments = $arguments;
+			if ($notify) {
+				$this->notifyObjectDirty("arguments");
+				$this->notifyFragmentDirty("tree");
+			}
+		}
+	}
+	public function setArgumentsRef($arguments, \Repository $repository, $notify = true)
+	{
+		if (!$arguments instanceof \RepositoryObjectArray && !$arguments instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs arguments to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($arguments instanceof \RepositoryObjectReference) {
+			$v->set($arguments->getRefId());
+		} else {
+			$v->set($arguments);
+		}
+		$this->setArguments($v, $notify);
+	}
+	public function getArguments($enforce = true, $unref = true)
+	{
+		if (!$this->tree_loaded) {
+			$this->loadFragment('tree');
+		}
+		if ($enforce && $this->arguments === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null arguments.");
+		}
+		if ($unref && $this->arguments instanceof \RepositoryObjectReference) {
+			$v = $this->arguments->get(!$enforce);
+		} else {
+			$v = $this->arguments;
+		}
+		return $v;
+	}
+	
 	public function setFunc($func, $notify = true)
 	{
 		if (!$func instanceof \AbstractFunction && !$func instanceof \RepositoryObjectReference) {
@@ -137,53 +204,137 @@ class CallCandidate extends \RepositoryNodeObject
 		return $this->feasible;
 	}
 	
-	public function setArguments($arguments, $notify = true)
+	public function setPossibleType($possibleType, $notify = true)
 	{
-		if (!$arguments instanceof \RepositoryObjectArray && !$arguments instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs arguments to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
-		}
-		if ($this->hasPropertyChanged($this->arguments, $arguments)) {
-			if (!$this->call_loaded) {
-				$this->loadFragment("call");
+		if ($this->hasPropertyChanged($this->possibleType, $possibleType)) {
+			if (!$this->type_loaded) {
+				$this->loadFragment("type");
 			}
-			if ($this->arguments instanceof \RepositoryObjectParentInterface) {
-				$this->arguments->setParent(null);
+			if ($this->possibleType instanceof \RepositoryObjectParentInterface) {
+				$this->possibleType->setParent(null);
 			}
-			if ($arguments instanceof \RepositoryObjectParentInterface) {
-				$arguments->setParent($this, "arguments", "call");
+			if ($possibleType instanceof \RepositoryObjectParentInterface) {
+				$possibleType->setParent($this, "possibleType", "type");
 			}
-			$this->arguments = $arguments;
+			$this->possibleType = $possibleType;
 			if ($notify) {
-				$this->notifyObjectDirty("arguments");
-				$this->notifyFragmentDirty("call");
+				$this->notifyObjectDirty("possibleType");
+				$this->notifyFragmentDirty("type");
 			}
 		}
 	}
-	public function setArgumentsRef($arguments, \Repository $repository, $notify = true)
+	public function setPossibleTypeRef($possibleType, \Repository $repository, $notify = true)
 	{
-		if (!$arguments instanceof \RepositoryObjectArray && !$arguments instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs arguments to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
-		}
 		$v = new \RepositoryObjectReference($repository);
-		if ($arguments instanceof \RepositoryObjectReference) {
-			$v->set($arguments->getRefId());
+		if ($possibleType instanceof \RepositoryObjectReference) {
+			$v->set($possibleType->getRefId());
 		} else {
-			$v->set($arguments);
+			$v->set($possibleType);
 		}
-		$this->setArguments($v, $notify);
+		$this->setPossibleType($v, $notify);
 	}
-	public function getArguments($enforce = true, $unref = true)
+	public function getPossibleType($enforce = true, $unref = true)
 	{
-		if (!$this->call_loaded) {
-			$this->loadFragment('call');
+		if (!$this->type_loaded) {
+			$this->loadFragment('type');
 		}
-		if ($enforce && $this->arguments === null) {
-			throw new \RuntimeException("Object {$this->getId()} expected to have non-null arguments.");
+		if ($enforce && $this->possibleType === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null possibleType.");
 		}
-		if ($unref && $this->arguments instanceof \RepositoryObjectReference) {
-			$v = $this->arguments->get(!$enforce);
+		if ($unref && $this->possibleType instanceof \RepositoryObjectReference) {
+			$v = $this->possibleType->get(!$enforce);
 		} else {
-			$v = $this->arguments;
+			$v = $this->possibleType;
+		}
+		return $v;
+	}
+	
+	public function setRequiredType($requiredType, $notify = true)
+	{
+		if ($this->hasPropertyChanged($this->requiredType, $requiredType)) {
+			if (!$this->type_loaded) {
+				$this->loadFragment("type");
+			}
+			if ($this->requiredType instanceof \RepositoryObjectParentInterface) {
+				$this->requiredType->setParent(null);
+			}
+			if ($requiredType instanceof \RepositoryObjectParentInterface) {
+				$requiredType->setParent($this, "requiredType", "type");
+			}
+			$this->requiredType = $requiredType;
+			if ($notify) {
+				$this->notifyObjectDirty("requiredType");
+				$this->notifyFragmentDirty("type");
+			}
+		}
+	}
+	public function setRequiredTypeRef($requiredType, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($requiredType instanceof \RepositoryObjectReference) {
+			$v->set($requiredType->getRefId());
+		} else {
+			$v->set($requiredType);
+		}
+		$this->setRequiredType($v, $notify);
+	}
+	public function getRequiredType($enforce = true, $unref = true)
+	{
+		if (!$this->type_loaded) {
+			$this->loadFragment('type');
+		}
+		if ($enforce && $this->requiredType === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null requiredType.");
+		}
+		if ($unref && $this->requiredType instanceof \RepositoryObjectReference) {
+			$v = $this->requiredType->get(!$enforce);
+		} else {
+			$v = $this->requiredType;
+		}
+		return $v;
+	}
+	
+	public function setActualType($actualType, $notify = true)
+	{
+		if ($this->hasPropertyChanged($this->actualType, $actualType)) {
+			if (!$this->type_loaded) {
+				$this->loadFragment("type");
+			}
+			if ($this->actualType instanceof \RepositoryObjectParentInterface) {
+				$this->actualType->setParent(null);
+			}
+			if ($actualType instanceof \RepositoryObjectParentInterface) {
+				$actualType->setParent($this, "actualType", "type");
+			}
+			$this->actualType = $actualType;
+			if ($notify) {
+				$this->notifyObjectDirty("actualType");
+				$this->notifyFragmentDirty("type");
+			}
+		}
+	}
+	public function setActualTypeRef($actualType, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($actualType instanceof \RepositoryObjectReference) {
+			$v->set($actualType->getRefId());
+		} else {
+			$v->set($actualType);
+		}
+		$this->setActualType($v, $notify);
+	}
+	public function getActualType($enforce = true, $unref = true)
+	{
+		if (!$this->type_loaded) {
+			$this->loadFragment('type');
+		}
+		if ($enforce && $this->actualType === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null actualType.");
+		}
+		if ($unref && $this->actualType instanceof \RepositoryObjectReference) {
+			$v = $this->actualType->get(!$enforce);
+		} else {
+			$v = $this->actualType;
 		}
 		return $v;
 	}

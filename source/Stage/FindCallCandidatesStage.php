@@ -65,7 +65,11 @@ class FindCallCandidatesStage extends DriverStage
 		$args = new \RepositoryObjectArray;
 		foreach ($object->getCallArguments()->getArguments()->getElements() as $index => $argument) {
 			$this->println(3, "Wrapping argument {$argument->getId()}", $object->getId());
+			$ca = new \Objects\CallCandidateArgument;
+			$ca->setArgumentRef($argument, $this->repository);
+			$args->add($ca);
 		}
+		$c->setArguments($args);
 
 		return $c;
 	}

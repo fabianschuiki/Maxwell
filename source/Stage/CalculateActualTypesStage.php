@@ -8,12 +8,16 @@ use Objects\TypeSet;
 
 class CalculateActualTypesStage extends DriverStage
 {
-	static public $verbosity = 1;
+	static public $verbosity = 99;
 
 	protected function process(\RepositoryObject $object)
 	{
 		foreach ($object->getChildren() as $child) {
 			$this->process($child);
+		}
+
+		if ($object instanceof \Objects\CallInterface) {
+			$this->process($object->getCallCandidates());
 		}
 
 		if ($object instanceof \Objects\TypeInterface) {

@@ -1,4 +1,25 @@
-func double (int x) -> (real y)
+// 1.1
+func double_increment (int x) -> (int y)
+{
+    y = 1 + double(x);
+    // type of expr = int
+    // type of expr.lhs = int
+    // + calls 0.10
+    // type of expr.rhs = int
+    // type of expr.rhs.lhs = int
+    // double calls 1.2
+    // type of expr.rhs.rhs = int
+    // type of expr.rhs.rhs.arguments.0 = int
+}
+
+// 1.2
+func double (int x) -> (int y)
 {
     y = x * 2;
+    // type of expr = int
+    // type of expr.lhs = int
+    // * calls 0.6
+    // type of expr.rhs = int
+    // type of expr.rhs.lhs = int
+    // type of expr.rhs.rhs = int
 }

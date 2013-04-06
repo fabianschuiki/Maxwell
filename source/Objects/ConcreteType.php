@@ -116,7 +116,7 @@ class ConcreteType extends \RepositoryNodeObject implements \EqualInterface
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null definition.");
 		}
 		if ($unref && $this->definition instanceof \RepositoryObjectReference) {
-			$v = $this->definition->get(!$enforce);
+			$v = $this->definition->get();
 		} else {
 			$v = $this->definition;
 		}

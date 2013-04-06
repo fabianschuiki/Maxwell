@@ -216,7 +216,7 @@ class IdentifierExpr extends Expr implements \EqualInterface, RangeInterface, Gr
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null range.");
 		}
 		if ($unref && $this->range instanceof \RepositoryObjectReference) {
-			$v = $this->range->get(!$enforce);
+			$v = $this->range->get();
 		} else {
 			$v = $this->range;
 		}
@@ -267,7 +267,7 @@ class IdentifierExpr extends Expr implements \EqualInterface, RangeInterface, Gr
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null humanRange.");
 		}
 		if ($unref && $this->humanRange instanceof \RepositoryObjectReference) {
-			$v = $this->humanRange->get(!$enforce);
+			$v = $this->humanRange->get();
 		} else {
 			$v = $this->humanRange;
 		}
@@ -345,7 +345,7 @@ class IdentifierExpr extends Expr implements \EqualInterface, RangeInterface, Gr
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null graphPrev.");
 		}
 		if ($unref && $this->graphPrev instanceof \RepositoryObjectReference) {
-			$v = $this->graphPrev->get(!$enforce);
+			$v = $this->graphPrev->get();
 		} else {
 			$v = $this->graphPrev;
 		}
@@ -396,7 +396,7 @@ class IdentifierExpr extends Expr implements \EqualInterface, RangeInterface, Gr
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null bindingTarget.");
 		}
 		if ($unref && $this->bindingTarget instanceof \RepositoryObjectReference) {
-			$v = $this->bindingTarget->get(!$enforce);
+			$v = $this->bindingTarget->get();
 		} else {
 			$v = $this->bindingTarget;
 		}
@@ -441,7 +441,7 @@ class IdentifierExpr extends Expr implements \EqualInterface, RangeInterface, Gr
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null possibleType.");
 		}
 		if ($unref && $this->possibleType instanceof \RepositoryObjectReference) {
-			$v = $this->possibleType->get(!$enforce);
+			$v = $this->possibleType->get();
 		} else {
 			$v = $this->possibleType;
 		}
@@ -486,7 +486,7 @@ class IdentifierExpr extends Expr implements \EqualInterface, RangeInterface, Gr
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null requiredType.");
 		}
 		if ($unref && $this->requiredType instanceof \RepositoryObjectReference) {
-			$v = $this->requiredType->get(!$enforce);
+			$v = $this->requiredType->get();
 		} else {
 			$v = $this->requiredType;
 		}
@@ -531,7 +531,7 @@ class IdentifierExpr extends Expr implements \EqualInterface, RangeInterface, Gr
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null actualType.");
 		}
 		if ($unref && $this->actualType instanceof \RepositoryObjectReference) {
-			$v = $this->actualType->get(!$enforce);
+			$v = $this->actualType->get();
 		} else {
 			$v = $this->actualType;
 		}

@@ -128,7 +128,7 @@ class CastType extends \RepositoryNodeObject implements \EqualInterface
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null from.");
 		}
 		if ($unref && $this->from instanceof \RepositoryObjectReference) {
-			$v = $this->from->get(!$enforce);
+			$v = $this->from->get();
 		} else {
 			$v = $this->from;
 		}
@@ -173,7 +173,7 @@ class CastType extends \RepositoryNodeObject implements \EqualInterface
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null to.");
 		}
 		if ($unref && $this->to instanceof \RepositoryObjectReference) {
-			$v = $this->to->get(!$enforce);
+			$v = $this->to->get();
 		} else {
 			$v = $this->to;
 		}
@@ -251,7 +251,7 @@ class CastType extends \RepositoryNodeObject implements \EqualInterface
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null func.");
 		}
 		if ($unref && $this->func instanceof \RepositoryObjectReference) {
-			$v = $this->func->get(!$enforce);
+			$v = $this->func->get();
 		} else {
 			$v = $this->func;
 		}

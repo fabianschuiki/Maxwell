@@ -116,7 +116,7 @@ class CallArgument extends \RepositoryNodeObject implements \EqualInterface
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null expr.");
 		}
 		if ($unref && $this->expr instanceof \RepositoryObjectReference) {
-			$v = $this->expr->get(!$enforce);
+			$v = $this->expr->get();
 		} else {
 			$v = $this->expr;
 		}

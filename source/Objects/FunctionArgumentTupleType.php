@@ -116,7 +116,7 @@ class FunctionArgumentTupleType extends \RepositoryNodeObject implements \EqualI
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null arguments.");
 		}
 		if ($unref && $this->arguments instanceof \RepositoryObjectReference) {
-			$v = $this->arguments->get(!$enforce);
+			$v = $this->arguments->get();
 		} else {
 			$v = $this->arguments;
 		}

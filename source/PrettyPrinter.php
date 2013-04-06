@@ -51,15 +51,17 @@ class PrettyPrinter
 		$funcName = "format".$object->getClass();
 		if (method_exists($this, $funcName)) {
 			if ($object instanceof \Objects\CallInterface && static::ctxget($context, "annotate/selected-call") === true) {
-				$c = $object->getSelectedCallCandidate(true);
+				$c = $object->getSelectedCallCandidate(false);
 				if ($c) {
 					$context["annotations"][] = "{$object->getCallName()} calls {$c->getFunc()->getId()}";
 				}
 			}
 			if ($object instanceof \Objects\TypeInterface) {
 				if (static::ctxget($context, "annotate/types") === true) {
-					$at = $object->getActualType();
-					$context["annotations"][] = "type of {$object->getId()} = ".\Type::describe($at);
+					$at = $object->getActualType(false);
+					if ($at) {
+						$context["annotations"][] = "type of {$object->getId()} = ".\Type::describe($at);
+					}
 				}
 			}
 			return $this->$funcName($object, $context);

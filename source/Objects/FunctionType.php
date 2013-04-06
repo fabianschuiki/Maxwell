@@ -122,7 +122,7 @@ class FunctionType extends \RepositoryNodeObject implements \EqualInterface
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null inputs.");
 		}
 		if ($unref && $this->inputs instanceof \RepositoryObjectReference) {
-			$v = $this->inputs->get(!$enforce);
+			$v = $this->inputs->get();
 		} else {
 			$v = $this->inputs;
 		}
@@ -173,7 +173,7 @@ class FunctionType extends \RepositoryNodeObject implements \EqualInterface
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null outputs.");
 		}
 		if ($unref && $this->outputs instanceof \RepositoryObjectReference) {
-			$v = $this->outputs->get(!$enforce);
+			$v = $this->outputs->get();
 		} else {
 			$v = $this->outputs;
 		}

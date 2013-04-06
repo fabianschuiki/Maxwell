@@ -143,7 +143,7 @@ class FunctionArgumentType extends \RepositoryNodeObject implements \EqualInterf
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null type.");
 		}
 		if ($unref && $this->type instanceof \RepositoryObjectReference) {
-			$v = $this->type->get(!$enforce);
+			$v = $this->type->get();
 		} else {
 			$v = $this->type;
 		}

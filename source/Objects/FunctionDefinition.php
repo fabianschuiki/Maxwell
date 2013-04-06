@@ -254,7 +254,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null inputs.");
 		}
 		if ($unref && $this->inputs instanceof \RepositoryObjectReference) {
-			$v = $this->inputs->get(!$enforce);
+			$v = $this->inputs->get();
 		} else {
 			$v = $this->inputs;
 		}
@@ -305,7 +305,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null outputs.");
 		}
 		if ($unref && $this->outputs instanceof \RepositoryObjectReference) {
-			$v = $this->outputs->get(!$enforce);
+			$v = $this->outputs->get();
 		} else {
 			$v = $this->outputs;
 		}
@@ -356,7 +356,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null body.");
 		}
 		if ($unref && $this->body instanceof \RepositoryObjectReference) {
-			$v = $this->body->get(!$enforce);
+			$v = $this->body->get();
 		} else {
 			$v = $this->body;
 		}
@@ -407,7 +407,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null range.");
 		}
 		if ($unref && $this->range instanceof \RepositoryObjectReference) {
-			$v = $this->range->get(!$enforce);
+			$v = $this->range->get();
 		} else {
 			$v = $this->range;
 		}
@@ -458,7 +458,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null humanRange.");
 		}
 		if ($unref && $this->humanRange instanceof \RepositoryObjectReference) {
-			$v = $this->humanRange->get(!$enforce);
+			$v = $this->humanRange->get();
 		} else {
 			$v = $this->humanRange;
 		}
@@ -536,7 +536,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null graphPrev.");
 		}
 		if ($unref && $this->graphPrev instanceof \RepositoryObjectReference) {
-			$v = $this->graphPrev->get(!$enforce);
+			$v = $this->graphPrev->get();
 		} else {
 			$v = $this->graphPrev;
 		}
@@ -581,7 +581,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null possibleType.");
 		}
 		if ($unref && $this->possibleType instanceof \RepositoryObjectReference) {
-			$v = $this->possibleType->get(!$enforce);
+			$v = $this->possibleType->get();
 		} else {
 			$v = $this->possibleType;
 		}
@@ -626,7 +626,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null requiredType.");
 		}
 		if ($unref && $this->requiredType instanceof \RepositoryObjectReference) {
-			$v = $this->requiredType->get(!$enforce);
+			$v = $this->requiredType->get();
 		} else {
 			$v = $this->requiredType;
 		}
@@ -671,7 +671,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null actualType.");
 		}
 		if ($unref && $this->actualType instanceof \RepositoryObjectReference) {
-			$v = $this->actualType->get(!$enforce);
+			$v = $this->actualType->get();
 		} else {
 			$v = $this->actualType;
 		}

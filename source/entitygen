@@ -280,7 +280,7 @@ foreach ($entity_defs as $name => $def)
 			if ($refable) {
 				$bfragment .=
 					"\tif (\$unref && \$this->$lcname instanceof \\RepositoryObjectReference) {\n".
-					"\t\t\$v = \$this->{$lcname}->get(!\$enforce);\n".
+					"\t\t\$v = \$this->{$lcname}->get();\n".
 					"\t} else {\n".
 					"\t\t\$v = \$this->{$lcname};\n".
 					"\t}\n".

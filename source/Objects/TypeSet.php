@@ -116,7 +116,7 @@ class TypeSet extends \RepositoryNodeObject implements \EqualInterface
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null types.");
 		}
 		if ($unref && $this->types instanceof \RepositoryObjectReference) {
-			$v = $this->types->get(!$enforce);
+			$v = $this->types->get();
 		} else {
 			$v = $this->types;
 		}

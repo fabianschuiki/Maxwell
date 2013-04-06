@@ -116,7 +116,7 @@ class CallArgumentTuple extends \RepositoryNodeObject implements \EqualInterface
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null arguments.");
 		}
 		if ($unref && $this->arguments instanceof \RepositoryObjectReference) {
-			$v = $this->arguments->get(!$enforce);
+			$v = $this->arguments->get();
 		} else {
 			$v = $this->arguments;
 		}

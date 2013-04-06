@@ -190,7 +190,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, \Equ
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null range.");
 		}
 		if ($unref && $this->range instanceof \RepositoryObjectReference) {
-			$v = $this->range->get(!$enforce);
+			$v = $this->range->get();
 		} else {
 			$v = $this->range;
 		}
@@ -241,7 +241,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, \Equ
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null humanRange.");
 		}
 		if ($unref && $this->humanRange instanceof \RepositoryObjectReference) {
-			$v = $this->humanRange->get(!$enforce);
+			$v = $this->humanRange->get();
 		} else {
 			$v = $this->humanRange;
 		}
@@ -319,7 +319,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, \Equ
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null typeExpr.");
 		}
 		if ($unref && $this->typeExpr instanceof \RepositoryObjectReference) {
-			$v = $this->typeExpr->get(!$enforce);
+			$v = $this->typeExpr->get();
 		} else {
 			$v = $this->typeExpr;
 		}
@@ -370,7 +370,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, \Equ
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null initialExpr.");
 		}
 		if ($unref && $this->initialExpr instanceof \RepositoryObjectReference) {
-			$v = $this->initialExpr->get(!$enforce);
+			$v = $this->initialExpr->get();
 		} else {
 			$v = $this->initialExpr;
 		}
@@ -415,7 +415,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, \Equ
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null possibleType.");
 		}
 		if ($unref && $this->possibleType instanceof \RepositoryObjectReference) {
-			$v = $this->possibleType->get(!$enforce);
+			$v = $this->possibleType->get();
 		} else {
 			$v = $this->possibleType;
 		}
@@ -460,7 +460,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, \Equ
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null requiredType.");
 		}
 		if ($unref && $this->requiredType instanceof \RepositoryObjectReference) {
-			$v = $this->requiredType->get(!$enforce);
+			$v = $this->requiredType->get();
 		} else {
 			$v = $this->requiredType;
 		}
@@ -505,7 +505,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, \Equ
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null actualType.");
 		}
 		if ($unref && $this->actualType instanceof \RepositoryObjectReference) {
-			$v = $this->actualType->get(!$enforce);
+			$v = $this->actualType->get();
 		} else {
 			$v = $this->actualType;
 		}

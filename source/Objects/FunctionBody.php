@@ -116,7 +116,7 @@ class FunctionBody extends \RepositoryNodeObject implements \EqualInterface
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null stmts.");
 		}
 		if ($unref && $this->stmts instanceof \RepositoryObjectReference) {
-			$v = $this->stmts->get(!$enforce);
+			$v = $this->stmts->get();
 		} else {
 			$v = $this->stmts;
 		}

@@ -194,7 +194,7 @@ class CallExpr extends \RepositoryNodeObject implements \EqualInterface, CallInt
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null arguments.");
 		}
 		if ($unref && $this->arguments instanceof \RepositoryObjectReference) {
-			$v = $this->arguments->get(!$enforce);
+			$v = $this->arguments->get();
 		} else {
 			$v = $this->arguments;
 		}
@@ -299,7 +299,7 @@ class CallExpr extends \RepositoryNodeObject implements \EqualInterface, CallInt
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null callArguments.");
 		}
 		if ($unref && $this->callArguments instanceof \RepositoryObjectReference) {
-			$v = $this->callArguments->get(!$enforce);
+			$v = $this->callArguments->get();
 		} else {
 			$v = $this->callArguments;
 		}
@@ -350,7 +350,7 @@ class CallExpr extends \RepositoryNodeObject implements \EqualInterface, CallInt
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null callCandidates.");
 		}
 		if ($unref && $this->callCandidates instanceof \RepositoryObjectReference) {
-			$v = $this->callCandidates->get(!$enforce);
+			$v = $this->callCandidates->get();
 		} else {
 			$v = $this->callCandidates;
 		}
@@ -401,7 +401,7 @@ class CallExpr extends \RepositoryNodeObject implements \EqualInterface, CallInt
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null selectedCallCandidate.");
 		}
 		if ($unref && $this->selectedCallCandidate instanceof \RepositoryObjectReference) {
-			$v = $this->selectedCallCandidate->get(!$enforce);
+			$v = $this->selectedCallCandidate->get();
 		} else {
 			$v = $this->selectedCallCandidate;
 		}
@@ -446,7 +446,7 @@ class CallExpr extends \RepositoryNodeObject implements \EqualInterface, CallInt
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null possibleType.");
 		}
 		if ($unref && $this->possibleType instanceof \RepositoryObjectReference) {
-			$v = $this->possibleType->get(!$enforce);
+			$v = $this->possibleType->get();
 		} else {
 			$v = $this->possibleType;
 		}
@@ -491,7 +491,7 @@ class CallExpr extends \RepositoryNodeObject implements \EqualInterface, CallInt
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null requiredType.");
 		}
 		if ($unref && $this->requiredType instanceof \RepositoryObjectReference) {
-			$v = $this->requiredType->get(!$enforce);
+			$v = $this->requiredType->get();
 		} else {
 			$v = $this->requiredType;
 		}
@@ -536,7 +536,7 @@ class CallExpr extends \RepositoryNodeObject implements \EqualInterface, CallInt
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null actualType.");
 		}
 		if ($unref && $this->actualType instanceof \RepositoryObjectReference) {
-			$v = $this->actualType->get(!$enforce);
+			$v = $this->actualType->get();
 		} else {
 			$v = $this->actualType;
 		}

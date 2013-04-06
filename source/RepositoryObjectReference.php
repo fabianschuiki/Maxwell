@@ -1,8 +1,10 @@
 <?php
 /* Copyright © 2013 Fabian Schuiki */
 
-class RepositoryObjectReference implements RepositoryObjectParentInterface
+class RepositoryObjectReference implements RepositoryObjectParentInterface, EqualInterface
 {
+	static public $verbosity = 0;
+
 	protected $repository;
 	protected $id = null;
 	protected $obj = null;
@@ -94,7 +96,11 @@ class RepositoryObjectReference implements RepositoryObjectParentInterface
 		}
 	}
 
-	static public $verbosity = 0;
+	public function isEqualTo($x)
+	{
+		return ($this->id == $x->id);
+	}
+
 	private function println($verbosity, $ln)
 	{
 		if (static::$verbosity > $verbosity)

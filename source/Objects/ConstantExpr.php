@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class ConstantExpr extends Expr implements GraphInterface, TypeInterface
+class ConstantExpr extends Expr implements \EqualInterface, GraphInterface, TypeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -71,6 +71,49 @@ class ConstantExpr extends Expr implements GraphInterface, TypeInterface
 		return "ConstantExpr";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of ConstantExpr as well.');
+		}
+		// main fragment
+		if (!$this->main_loaded) {
+			$this->loadFragment("main");
+		}
+		if ($this->value !== $x->value) {
+			$this->println(0, "Change detected in value");
+			return false;
+		}
+	
+		// graph fragment
+		if (!$this->graph_loaded) {
+			$this->loadFragment("graph");
+		}
+		if (!$this->areEqual($this->graphPrev, $x->graphPrev)) {
+			$this->println(0, "Change detected in graphPrev");
+			return false;
+		}
+	
+		// type fragment
+		if (!$this->type_loaded) {
+			$this->loadFragment("type");
+		}
+		if (!$this->areEqual($this->possibleType, $x->possibleType)) {
+			$this->println(0, "Change detected in possibleType");
+			return false;
+		}
+		if (!$this->areEqual($this->requiredType, $x->requiredType)) {
+			$this->println(0, "Change detected in requiredType");
+			return false;
+		}
+		if (!$this->areEqual($this->actualType, $x->actualType)) {
+			$this->println(0, "Change detected in actualType");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setValue($value, $notify = true)
@@ -105,7 +148,7 @@ class ConstantExpr extends Expr implements GraphInterface, TypeInterface
 		if (!$graphPrev instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->graphPrev, $graphPrev)) {
+		if (!$this->areEqual($this->graphPrev, $graphPrev)) {
 			if (!$this->graph_loaded) {
 				$this->loadFragment("graph");
 			}
@@ -153,7 +196,7 @@ class ConstantExpr extends Expr implements GraphInterface, TypeInterface
 	
 	public function setPossibleType($possibleType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->possibleType, $possibleType)) {
+		if (!$this->areEqual($this->possibleType, $possibleType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -198,7 +241,7 @@ class ConstantExpr extends Expr implements GraphInterface, TypeInterface
 	
 	public function setRequiredType($requiredType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->requiredType, $requiredType)) {
+		if (!$this->areEqual($this->requiredType, $requiredType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -243,7 +286,7 @@ class ConstantExpr extends Expr implements GraphInterface, TypeInterface
 	
 	public function setActualType($actualType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->actualType, $actualType)) {
+		if (!$this->areEqual($this->actualType, $actualType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}

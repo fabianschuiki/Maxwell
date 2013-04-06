@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class GenericType extends \RepositoryNodeObject
+class GenericType extends \RepositoryNodeObject implements \EqualInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -44,6 +44,14 @@ class GenericType extends \RepositoryNodeObject
 	public function getClass()
 	{
 		return "GenericType";
+	}
+	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of GenericType as well.');
+		}
+		return true;
 	}
 	
 	

@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFunctionArgumentTuple, GraphInterface, TypeInterface
+class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFunctionArgumentTuple, \EqualInterface, GraphInterface, TypeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -71,6 +71,49 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFu
 		return "FunctionArgumentTuple";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of FunctionArgumentTuple as well.');
+		}
+		// tree fragment
+		if (!$this->tree_loaded) {
+			$this->loadFragment("tree");
+		}
+		if (!$this->areEqual($this->arguments, $x->arguments)) {
+			$this->println(0, "Change detected in arguments");
+			return false;
+		}
+	
+		// graph fragment
+		if (!$this->graph_loaded) {
+			$this->loadFragment("graph");
+		}
+		if (!$this->areEqual($this->graphPrev, $x->graphPrev)) {
+			$this->println(0, "Change detected in graphPrev");
+			return false;
+		}
+	
+		// type fragment
+		if (!$this->type_loaded) {
+			$this->loadFragment("type");
+		}
+		if (!$this->areEqual($this->possibleType, $x->possibleType)) {
+			$this->println(0, "Change detected in possibleType");
+			return false;
+		}
+		if (!$this->areEqual($this->requiredType, $x->requiredType)) {
+			$this->println(0, "Change detected in requiredType");
+			return false;
+		}
+		if (!$this->areEqual($this->actualType, $x->actualType)) {
+			$this->println(0, "Change detected in actualType");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setArguments($arguments, $notify = true)
@@ -78,7 +121,7 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFu
 		if (!$arguments instanceof \RepositoryObjectArray && !$arguments instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs arguments to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->arguments, $arguments)) {
+		if (!$this->areEqual($this->arguments, $arguments)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
 			}
@@ -129,7 +172,7 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFu
 		if (!$graphPrev instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->graphPrev, $graphPrev)) {
+		if (!$this->areEqual($this->graphPrev, $graphPrev)) {
 			if (!$this->graph_loaded) {
 				$this->loadFragment("graph");
 			}
@@ -177,7 +220,7 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFu
 	
 	public function setPossibleType($possibleType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->possibleType, $possibleType)) {
+		if (!$this->areEqual($this->possibleType, $possibleType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -222,7 +265,7 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFu
 	
 	public function setRequiredType($requiredType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->requiredType, $requiredType)) {
+		if (!$this->areEqual($this->requiredType, $requiredType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -267,7 +310,7 @@ class FunctionArgumentTuple extends \RepositoryNodeObject implements \AbstractFu
 	
 	public function setActualType($actualType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->actualType, $actualType)) {
+		if (!$this->areEqual($this->actualType, $actualType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}

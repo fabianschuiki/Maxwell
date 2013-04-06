@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class FunctionArgumentTupleType extends \RepositoryNodeObject
+class FunctionArgumentTupleType extends \RepositoryNodeObject implements \EqualInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -53,6 +53,23 @@ class FunctionArgumentTupleType extends \RepositoryNodeObject
 		return "FunctionArgumentTupleType";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of FunctionArgumentTupleType as well.');
+		}
+		// main fragment
+		if (!$this->main_loaded) {
+			$this->loadFragment("main");
+		}
+		if (!$this->areEqual($this->arguments, $x->arguments)) {
+			$this->println(0, "Change detected in arguments");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setArguments($arguments, $notify = true)
@@ -60,7 +77,7 @@ class FunctionArgumentTupleType extends \RepositoryNodeObject
 		if (!$arguments instanceof \RepositoryObjectArray && !$arguments instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs arguments to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->arguments, $arguments)) {
+		if (!$this->areEqual($this->arguments, $arguments)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}

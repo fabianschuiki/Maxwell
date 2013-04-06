@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, RangeInterface, TypeInterface, ExprCodeInterface
+class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, \EqualInterface, RangeInterface, TypeInterface, ExprCodeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -81,6 +81,69 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 		return "VariableDefinitionExpr";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of VariableDefinitionExpr as well.');
+		}
+		// main fragment
+		if (!$this->main_loaded) {
+			$this->loadFragment("main");
+		}
+		if (!$this->areEqual($this->range, $x->range)) {
+			$this->println(0, "Change detected in range");
+			return false;
+		}
+		if (!$this->areEqual($this->humanRange, $x->humanRange)) {
+			$this->println(0, "Change detected in humanRange");
+			return false;
+		}
+		if ($this->name !== $x->name) {
+			$this->println(0, "Change detected in name");
+			return false;
+		}
+		if (!$this->areEqual($this->typeExpr, $x->typeExpr)) {
+			$this->println(0, "Change detected in typeExpr");
+			return false;
+		}
+		if (!$this->areEqual($this->initialExpr, $x->initialExpr)) {
+			$this->println(0, "Change detected in initialExpr");
+			return false;
+		}
+	
+		// type fragment
+		if (!$this->type_loaded) {
+			$this->loadFragment("type");
+		}
+		if (!$this->areEqual($this->possibleType, $x->possibleType)) {
+			$this->println(0, "Change detected in possibleType");
+			return false;
+		}
+		if (!$this->areEqual($this->requiredType, $x->requiredType)) {
+			$this->println(0, "Change detected in requiredType");
+			return false;
+		}
+		if (!$this->areEqual($this->actualType, $x->actualType)) {
+			$this->println(0, "Change detected in actualType");
+			return false;
+		}
+	
+		// code fragment
+		if (!$this->code_loaded) {
+			$this->loadFragment("code");
+		}
+		if ($this->exprCode !== $x->exprCode) {
+			$this->println(0, "Change detected in exprCode");
+			return false;
+		}
+		if ($this->stmtsCode !== $x->stmtsCode) {
+			$this->println(0, "Change detected in stmtsCode");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setRange($range, $notify = true)
@@ -88,7 +151,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 		if (!$range instanceof \Source\Range && !$range instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs range to be an instance of \Source\Range or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->range, $range)) {
+		if (!$this->areEqual($this->range, $range)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}
@@ -139,7 +202,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 		if (!$humanRange instanceof \Source\Range && !$humanRange instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs humanRange to be an instance of \Source\Range or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->humanRange, $humanRange)) {
+		if (!$this->areEqual($this->humanRange, $humanRange)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}
@@ -217,7 +280,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 		if (!$typeExpr instanceof TypeExpr && !$typeExpr instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs typeExpr to be an instance of TypeExpr or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->typeExpr, $typeExpr)) {
+		if (!$this->areEqual($this->typeExpr, $typeExpr)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}
@@ -268,7 +331,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 		if (!$initialExpr instanceof Expr && !$initialExpr instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs initialExpr to be an instance of Expr or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->initialExpr, $initialExpr)) {
+		if (!$this->areEqual($this->initialExpr, $initialExpr)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}
@@ -316,7 +379,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 	
 	public function setPossibleType($possibleType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->possibleType, $possibleType)) {
+		if (!$this->areEqual($this->possibleType, $possibleType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -361,7 +424,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 	
 	public function setRequiredType($requiredType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->requiredType, $requiredType)) {
+		if (!$this->areEqual($this->requiredType, $requiredType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -406,7 +469,7 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, Rang
 	
 	public function setActualType($actualType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->actualType, $actualType)) {
+		if (!$this->areEqual($this->actualType, $actualType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}

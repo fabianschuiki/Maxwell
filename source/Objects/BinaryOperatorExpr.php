@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, TypeInterface
+class BinaryOperatorExpr extends Expr implements \EqualInterface, GraphInterface, CallInterface, TypeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -93,11 +93,88 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		return "BinaryOperatorExpr";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of BinaryOperatorExpr as well.');
+		}
+		// tree fragment
+		if (!$this->tree_loaded) {
+			$this->loadFragment("tree");
+		}
+		if (!$this->areEqual($this->lhs, $x->lhs)) {
+			$this->println(0, "Change detected in lhs");
+			return false;
+		}
+		if (!$this->areEqual($this->rhs, $x->rhs)) {
+			$this->println(0, "Change detected in rhs");
+			return false;
+		}
+	
+		// main fragment
+		if (!$this->main_loaded) {
+			$this->loadFragment("main");
+		}
+		if ($this->operator !== $x->operator) {
+			$this->println(0, "Change detected in operator");
+			return false;
+		}
+	
+		// graph fragment
+		if (!$this->graph_loaded) {
+			$this->loadFragment("graph");
+		}
+		if (!$this->areEqual($this->graphPrev, $x->graphPrev)) {
+			$this->println(0, "Change detected in graphPrev");
+			return false;
+		}
+	
+		// call fragment
+		if (!$this->call_loaded) {
+			$this->loadFragment("call");
+		}
+		if ($this->callName !== $x->callName) {
+			$this->println(0, "Change detected in callName");
+			return false;
+		}
+		if (!$this->areEqual($this->callArguments, $x->callArguments)) {
+			$this->println(0, "Change detected in callArguments");
+			return false;
+		}
+		if (!$this->areEqual($this->callCandidates, $x->callCandidates)) {
+			$this->println(0, "Change detected in callCandidates");
+			return false;
+		}
+		if (!$this->areEqual($this->selectedCallCandidate, $x->selectedCallCandidate)) {
+			$this->println(0, "Change detected in selectedCallCandidate");
+			return false;
+		}
+	
+		// type fragment
+		if (!$this->type_loaded) {
+			$this->loadFragment("type");
+		}
+		if (!$this->areEqual($this->possibleType, $x->possibleType)) {
+			$this->println(0, "Change detected in possibleType");
+			return false;
+		}
+		if (!$this->areEqual($this->requiredType, $x->requiredType)) {
+			$this->println(0, "Change detected in requiredType");
+			return false;
+		}
+		if (!$this->areEqual($this->actualType, $x->actualType)) {
+			$this->println(0, "Change detected in actualType");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setLhs($lhs, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->lhs, $lhs)) {
+		if (!$this->areEqual($this->lhs, $lhs)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
 			}
@@ -142,7 +219,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 	
 	public function setRhs($rhs, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->rhs, $rhs)) {
+		if (!$this->areEqual($this->rhs, $rhs)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
 			}
@@ -217,7 +294,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		if (!$graphPrev instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->graphPrev, $graphPrev)) {
+		if (!$this->areEqual($this->graphPrev, $graphPrev)) {
 			if (!$this->graph_loaded) {
 				$this->loadFragment("graph");
 			}
@@ -295,7 +372,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		if (!$callArguments instanceof CallArgumentTuple && !$callArguments instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs callArguments to be an instance of CallArgumentTuple or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->callArguments, $callArguments)) {
+		if (!$this->areEqual($this->callArguments, $callArguments)) {
 			if (!$this->call_loaded) {
 				$this->loadFragment("call");
 			}
@@ -346,7 +423,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		if (!$callCandidates instanceof \RepositoryObjectArray && !$callCandidates instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs callCandidates to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->callCandidates, $callCandidates)) {
+		if (!$this->areEqual($this->callCandidates, $callCandidates)) {
 			if (!$this->call_loaded) {
 				$this->loadFragment("call");
 			}
@@ -397,7 +474,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 		if (!$selectedCallCandidate instanceof CallCandidate && !$selectedCallCandidate instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs selectedCallCandidate to be an instance of CallCandidate or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->selectedCallCandidate, $selectedCallCandidate)) {
+		if (!$this->areEqual($this->selectedCallCandidate, $selectedCallCandidate)) {
 			if (!$this->call_loaded) {
 				$this->loadFragment("call");
 			}
@@ -445,7 +522,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 	
 	public function setPossibleType($possibleType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->possibleType, $possibleType)) {
+		if (!$this->areEqual($this->possibleType, $possibleType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -490,7 +567,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 	
 	public function setRequiredType($requiredType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->requiredType, $requiredType)) {
+		if (!$this->areEqual($this->requiredType, $requiredType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -535,7 +612,7 @@ class BinaryOperatorExpr extends Expr implements GraphInterface, CallInterface, 
 	
 	public function setActualType($actualType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->actualType, $actualType)) {
+		if (!$this->areEqual($this->actualType, $actualType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}

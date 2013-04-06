@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class FunctionArgumentType extends \RepositoryNodeObject
+class FunctionArgumentType extends \RepositoryNodeObject implements \EqualInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -55,6 +55,27 @@ class FunctionArgumentType extends \RepositoryNodeObject
 		return "FunctionArgumentType";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of FunctionArgumentType as well.');
+		}
+		// main fragment
+		if (!$this->main_loaded) {
+			$this->loadFragment("main");
+		}
+		if ($this->name !== $x->name) {
+			$this->println(0, "Change detected in name");
+			return false;
+		}
+		if (!$this->areEqual($this->type, $x->type)) {
+			$this->println(0, "Change detected in type");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setName($name, $notify = true)
@@ -86,7 +107,7 @@ class FunctionArgumentType extends \RepositoryNodeObject
 	
 	public function setType($type, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->type, $type)) {
+		if (!$this->areEqual($this->type, $type)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}

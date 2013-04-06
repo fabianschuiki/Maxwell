@@ -1,7 +1,7 @@
 <?php
 /* Copyright © 2013 Fabian Schuiki. */
 
-class RepositoryObjectArray extends RepositoryNodeObject
+class RepositoryObjectArray extends RepositoryNodeObject implements EqualInterface
 {
 	protected $elements = array();
 
@@ -78,5 +78,18 @@ class RepositoryObjectArray extends RepositoryNodeObject
 		}
 		$s .= "]";
 		return $s;
+	}
+
+	public function isEqualTo($x)
+	{
+		if (count($this->elements) != count($x->elements))
+			return false;
+		foreach ($this->elements as $index => $element) {
+			if (!isset($x->elements[$index]))
+				return false;
+			if (!$this->areEqual($element, $x->elements[$index]))
+				return false;
+		}
+		return true;
 	}
 }

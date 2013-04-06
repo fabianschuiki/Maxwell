@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class ConcreteType extends \RepositoryNodeObject
+class ConcreteType extends \RepositoryNodeObject implements \EqualInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -53,6 +53,23 @@ class ConcreteType extends \RepositoryNodeObject
 		return "ConcreteType";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of ConcreteType as well.');
+		}
+		// main fragment
+		if (!$this->main_loaded) {
+			$this->loadFragment("main");
+		}
+		if (!$this->areEqual($this->definition, $x->definition)) {
+			$this->println(0, "Change detected in definition");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setDefinition($definition, $notify = true)
@@ -60,7 +77,7 @@ class ConcreteType extends \RepositoryNodeObject
 		if (!$definition instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs definition to be an instance of \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->definition, $definition)) {
+		if (!$this->areEqual($this->definition, $definition)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}

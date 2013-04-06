@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class FunctionArgument extends \RepositoryNodeObject implements \AbstractFunctionArgument, GraphInterface, TypeInterface
+class FunctionArgument extends \RepositoryNodeObject implements \AbstractFunctionArgument, \EqualInterface, GraphInterface, TypeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -78,6 +78,58 @@ class FunctionArgument extends \RepositoryNodeObject implements \AbstractFunctio
 		return "FunctionArgument";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of FunctionArgument as well.');
+		}
+		// tree fragment
+		if (!$this->tree_loaded) {
+			$this->loadFragment("tree");
+		}
+		if (!$this->areEqual($this->typeExpr, $x->typeExpr)) {
+			$this->println(0, "Change detected in typeExpr");
+			return false;
+		}
+	
+		// main fragment
+		if (!$this->main_loaded) {
+			$this->loadFragment("main");
+		}
+		if ($this->name !== $x->name) {
+			$this->println(0, "Change detected in name");
+			return false;
+		}
+	
+		// graph fragment
+		if (!$this->graph_loaded) {
+			$this->loadFragment("graph");
+		}
+		if (!$this->areEqual($this->graphPrev, $x->graphPrev)) {
+			$this->println(0, "Change detected in graphPrev");
+			return false;
+		}
+	
+		// type fragment
+		if (!$this->type_loaded) {
+			$this->loadFragment("type");
+		}
+		if (!$this->areEqual($this->possibleType, $x->possibleType)) {
+			$this->println(0, "Change detected in possibleType");
+			return false;
+		}
+		if (!$this->areEqual($this->requiredType, $x->requiredType)) {
+			$this->println(0, "Change detected in requiredType");
+			return false;
+		}
+		if (!$this->areEqual($this->actualType, $x->actualType)) {
+			$this->println(0, "Change detected in actualType");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setTypeExpr($typeExpr, $notify = true)
@@ -85,7 +137,7 @@ class FunctionArgument extends \RepositoryNodeObject implements \AbstractFunctio
 		if (!$typeExpr instanceof TypeExpr && !$typeExpr instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs typeExpr to be an instance of TypeExpr or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->typeExpr, $typeExpr)) {
+		if (!$this->areEqual($this->typeExpr, $typeExpr)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
 			}
@@ -163,7 +215,7 @@ class FunctionArgument extends \RepositoryNodeObject implements \AbstractFunctio
 		if (!$graphPrev instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->graphPrev, $graphPrev)) {
+		if (!$this->areEqual($this->graphPrev, $graphPrev)) {
 			if (!$this->graph_loaded) {
 				$this->loadFragment("graph");
 			}
@@ -211,7 +263,7 @@ class FunctionArgument extends \RepositoryNodeObject implements \AbstractFunctio
 	
 	public function setPossibleType($possibleType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->possibleType, $possibleType)) {
+		if (!$this->areEqual($this->possibleType, $possibleType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -256,7 +308,7 @@ class FunctionArgument extends \RepositoryNodeObject implements \AbstractFunctio
 	
 	public function setRequiredType($requiredType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->requiredType, $requiredType)) {
+		if (!$this->areEqual($this->requiredType, $requiredType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -301,7 +353,7 @@ class FunctionArgument extends \RepositoryNodeObject implements \AbstractFunctio
 	
 	public function setActualType($actualType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->actualType, $actualType)) {
+		if (!$this->areEqual($this->actualType, $actualType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}

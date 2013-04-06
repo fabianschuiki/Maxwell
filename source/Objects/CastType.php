@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class CastType extends \RepositoryNodeObject
+class CastType extends \RepositoryNodeObject implements \EqualInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -59,11 +59,40 @@ class CastType extends \RepositoryNodeObject
 		return "CastType";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of CastType as well.');
+		}
+		// main fragment
+		if (!$this->main_loaded) {
+			$this->loadFragment("main");
+		}
+		if (!$this->areEqual($this->from, $x->from)) {
+			$this->println(0, "Change detected in from");
+			return false;
+		}
+		if (!$this->areEqual($this->to, $x->to)) {
+			$this->println(0, "Change detected in to");
+			return false;
+		}
+		if ($this->cost !== $x->cost) {
+			$this->println(0, "Change detected in cost");
+			return false;
+		}
+		if (!$this->areEqual($this->func, $x->func)) {
+			$this->println(0, "Change detected in func");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setFrom($from, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->from, $from)) {
+		if (!$this->areEqual($this->from, $from)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}
@@ -108,7 +137,7 @@ class CastType extends \RepositoryNodeObject
 	
 	public function setTo($to, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->to, $to)) {
+		if (!$this->areEqual($this->to, $to)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}
@@ -183,7 +212,7 @@ class CastType extends \RepositoryNodeObject
 		if (!$func instanceof \AbstractFunction && !$func instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs func to be an instance of \AbstractFunction or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->func, $func)) {
+		if (!$this->areEqual($this->func, $func)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}

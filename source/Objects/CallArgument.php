@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class CallArgument extends \RepositoryNodeObject
+class CallArgument extends \RepositoryNodeObject implements \EqualInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -55,11 +55,32 @@ class CallArgument extends \RepositoryNodeObject
 		return "CallArgument";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of CallArgument as well.');
+		}
+		// call fragment
+		if (!$this->call_loaded) {
+			$this->loadFragment("call");
+		}
+		if (!$this->areEqual($this->expr, $x->expr)) {
+			$this->println(0, "Change detected in expr");
+			return false;
+		}
+		if ($this->name !== $x->name) {
+			$this->println(0, "Change detected in name");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setExpr($expr, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->expr, $expr)) {
+		if (!$this->areEqual($this->expr, $expr)) {
 			if (!$this->call_loaded) {
 				$this->loadFragment("call");
 			}

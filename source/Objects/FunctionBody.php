@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class FunctionBody extends \RepositoryNodeObject
+class FunctionBody extends \RepositoryNodeObject implements \EqualInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -53,6 +53,23 @@ class FunctionBody extends \RepositoryNodeObject
 		return "FunctionBody";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of FunctionBody as well.');
+		}
+		// tree fragment
+		if (!$this->tree_loaded) {
+			$this->loadFragment("tree");
+		}
+		if (!$this->areEqual($this->stmts, $x->stmts)) {
+			$this->println(0, "Change detected in stmts");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setStmts($stmts, $notify = true)
@@ -60,7 +77,7 @@ class FunctionBody extends \RepositoryNodeObject
 		if (!$stmts instanceof \RepositoryObjectArray && !$stmts instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs stmts to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->stmts, $stmts)) {
+		if (!$this->areEqual($this->stmts, $stmts)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
 			}

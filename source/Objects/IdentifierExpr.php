@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, BindingInterface, TypeInterface, ExprCodeInterface
+class IdentifierExpr extends Expr implements \EqualInterface, RangeInterface, GraphInterface, BindingInterface, TypeInterface, ExprCodeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -93,6 +93,83 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 		return "IdentifierExpr";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of IdentifierExpr as well.');
+		}
+		// main fragment
+		if (!$this->main_loaded) {
+			$this->loadFragment("main");
+		}
+		if (!$this->areEqual($this->range, $x->range)) {
+			$this->println(0, "Change detected in range");
+			return false;
+		}
+		if (!$this->areEqual($this->humanRange, $x->humanRange)) {
+			$this->println(0, "Change detected in humanRange");
+			return false;
+		}
+		if ($this->name !== $x->name) {
+			$this->println(0, "Change detected in name");
+			return false;
+		}
+	
+		// graph fragment
+		if (!$this->graph_loaded) {
+			$this->loadFragment("graph");
+		}
+		if (!$this->areEqual($this->graphPrev, $x->graphPrev)) {
+			$this->println(0, "Change detected in graphPrev");
+			return false;
+		}
+	
+		// binding fragment
+		if (!$this->binding_loaded) {
+			$this->loadFragment("binding");
+		}
+		if (!$this->areEqual($this->bindingTarget, $x->bindingTarget)) {
+			$this->println(0, "Change detected in bindingTarget");
+			return false;
+		}
+	
+		// type fragment
+		if (!$this->type_loaded) {
+			$this->loadFragment("type");
+		}
+		if (!$this->areEqual($this->possibleType, $x->possibleType)) {
+			$this->println(0, "Change detected in possibleType");
+			return false;
+		}
+		if (!$this->areEqual($this->requiredType, $x->requiredType)) {
+			$this->println(0, "Change detected in requiredType");
+			return false;
+		}
+		if (!$this->areEqual($this->actualType, $x->actualType)) {
+			$this->println(0, "Change detected in actualType");
+			return false;
+		}
+		if ($this->someText !== $x->someText) {
+			$this->println(0, "Change detected in someText");
+			return false;
+		}
+	
+		// code fragment
+		if (!$this->code_loaded) {
+			$this->loadFragment("code");
+		}
+		if ($this->exprCode !== $x->exprCode) {
+			$this->println(0, "Change detected in exprCode");
+			return false;
+		}
+		if ($this->stmtsCode !== $x->stmtsCode) {
+			$this->println(0, "Change detected in stmtsCode");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setRange($range, $notify = true)
@@ -100,7 +177,7 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 		if (!$range instanceof \Source\Range && !$range instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs range to be an instance of \Source\Range or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->range, $range)) {
+		if (!$this->areEqual($this->range, $range)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}
@@ -151,7 +228,7 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 		if (!$humanRange instanceof \Source\Range && !$humanRange instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs humanRange to be an instance of \Source\Range or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->humanRange, $humanRange)) {
+		if (!$this->areEqual($this->humanRange, $humanRange)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}
@@ -229,7 +306,7 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 		if (!$graphPrev instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->graphPrev, $graphPrev)) {
+		if (!$this->areEqual($this->graphPrev, $graphPrev)) {
 			if (!$this->graph_loaded) {
 				$this->loadFragment("graph");
 			}
@@ -280,7 +357,7 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 		if (!$bindingTarget instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs bindingTarget to be an instance of \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->bindingTarget, $bindingTarget)) {
+		if (!$this->areEqual($this->bindingTarget, $bindingTarget)) {
 			if (!$this->binding_loaded) {
 				$this->loadFragment("binding");
 			}
@@ -328,7 +405,7 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 	
 	public function setPossibleType($possibleType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->possibleType, $possibleType)) {
+		if (!$this->areEqual($this->possibleType, $possibleType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -373,7 +450,7 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 	
 	public function setRequiredType($requiredType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->requiredType, $requiredType)) {
+		if (!$this->areEqual($this->requiredType, $requiredType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -418,7 +495,7 @@ class IdentifierExpr extends Expr implements RangeInterface, GraphInterface, Bin
 	
 	public function setActualType($actualType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->actualType, $actualType)) {
+		if (!$this->areEqual($this->actualType, $actualType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}

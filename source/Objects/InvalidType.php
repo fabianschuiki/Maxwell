@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class InvalidType extends \RepositoryNodeObject
+class InvalidType extends \RepositoryNodeObject implements \EqualInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -44,6 +44,14 @@ class InvalidType extends \RepositoryNodeObject
 	public function getClass()
 	{
 		return "InvalidType";
+	}
+	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of InvalidType as well.');
+		}
+		return true;
 	}
 	
 	

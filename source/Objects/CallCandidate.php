@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class CallCandidate extends \RepositoryNodeObject implements TypeInterface
+class CallCandidate extends \RepositoryNodeObject implements \EqualInterface, TypeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -75,6 +75,57 @@ class CallCandidate extends \RepositoryNodeObject implements TypeInterface
 		return "CallCandidate";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of CallCandidate as well.');
+		}
+		// tree fragment
+		if (!$this->tree_loaded) {
+			$this->loadFragment("tree");
+		}
+		if (!$this->areEqual($this->arguments, $x->arguments)) {
+			$this->println(0, "Change detected in arguments");
+			return false;
+		}
+	
+		// call fragment
+		if (!$this->call_loaded) {
+			$this->loadFragment("call");
+		}
+		if (!$this->areEqual($this->func, $x->func)) {
+			$this->println(0, "Change detected in func");
+			return false;
+		}
+		if ($this->feasible !== $x->feasible) {
+			$this->println(0, "Change detected in feasible");
+			return false;
+		}
+		if ($this->cost !== $x->cost) {
+			$this->println(0, "Change detected in cost");
+			return false;
+		}
+	
+		// type fragment
+		if (!$this->type_loaded) {
+			$this->loadFragment("type");
+		}
+		if (!$this->areEqual($this->possibleType, $x->possibleType)) {
+			$this->println(0, "Change detected in possibleType");
+			return false;
+		}
+		if (!$this->areEqual($this->requiredType, $x->requiredType)) {
+			$this->println(0, "Change detected in requiredType");
+			return false;
+		}
+		if (!$this->areEqual($this->actualType, $x->actualType)) {
+			$this->println(0, "Change detected in actualType");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setArguments($arguments, $notify = true)
@@ -82,7 +133,7 @@ class CallCandidate extends \RepositoryNodeObject implements TypeInterface
 		if (!$arguments instanceof \RepositoryObjectArray && !$arguments instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs arguments to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->arguments, $arguments)) {
+		if (!$this->areEqual($this->arguments, $arguments)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
 			}
@@ -133,7 +184,7 @@ class CallCandidate extends \RepositoryNodeObject implements TypeInterface
 		if (!$func instanceof \AbstractFunction && !$func instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs func to be an instance of \AbstractFunction or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->func, $func)) {
+		if (!$this->areEqual($this->func, $func)) {
 			if (!$this->call_loaded) {
 				$this->loadFragment("call");
 			}
@@ -235,7 +286,7 @@ class CallCandidate extends \RepositoryNodeObject implements TypeInterface
 	
 	public function setPossibleType($possibleType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->possibleType, $possibleType)) {
+		if (!$this->areEqual($this->possibleType, $possibleType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -280,7 +331,7 @@ class CallCandidate extends \RepositoryNodeObject implements TypeInterface
 	
 	public function setRequiredType($requiredType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->requiredType, $requiredType)) {
+		if (!$this->areEqual($this->requiredType, $requiredType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -325,7 +376,7 @@ class CallCandidate extends \RepositoryNodeObject implements TypeInterface
 	
 	public function setActualType($actualType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->actualType, $actualType)) {
+		if (!$this->areEqual($this->actualType, $actualType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}

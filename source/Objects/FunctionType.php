@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class FunctionType extends \RepositoryNodeObject
+class FunctionType extends \RepositoryNodeObject implements \EqualInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -55,6 +55,27 @@ class FunctionType extends \RepositoryNodeObject
 		return "FunctionType";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of FunctionType as well.');
+		}
+		// main fragment
+		if (!$this->main_loaded) {
+			$this->loadFragment("main");
+		}
+		if (!$this->areEqual($this->inputs, $x->inputs)) {
+			$this->println(0, "Change detected in inputs");
+			return false;
+		}
+		if (!$this->areEqual($this->outputs, $x->outputs)) {
+			$this->println(0, "Change detected in outputs");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setInputs($inputs, $notify = true)
@@ -62,7 +83,7 @@ class FunctionType extends \RepositoryNodeObject
 		if (!$inputs instanceof FunctionArgumentTupleType && !$inputs instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs inputs to be an instance of FunctionArgumentTupleType or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->inputs, $inputs)) {
+		if (!$this->areEqual($this->inputs, $inputs)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}
@@ -113,7 +134,7 @@ class FunctionType extends \RepositoryNodeObject
 		if (!$outputs instanceof FunctionArgumentTupleType && !$outputs instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs outputs to be an instance of FunctionArgumentTupleType or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->outputs, $outputs)) {
+		if (!$this->areEqual($this->outputs, $outputs)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}

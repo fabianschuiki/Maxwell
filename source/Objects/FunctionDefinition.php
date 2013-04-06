@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunction, RangeInterface, GraphInterface, TypeInterface, RootCodeInterface
+class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunction, \EqualInterface, RangeInterface, GraphInterface, TypeInterface, RootCodeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -109,6 +109,105 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		return "FunctionDefinition";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of FunctionDefinition as well.');
+		}
+		// tree fragment
+		if (!$this->tree_loaded) {
+			$this->loadFragment("tree");
+		}
+		if (!$this->areEqual($this->inputs, $x->inputs)) {
+			$this->println(0, "Change detected in inputs");
+			return false;
+		}
+		if (!$this->areEqual($this->outputs, $x->outputs)) {
+			$this->println(0, "Change detected in outputs");
+			return false;
+		}
+		if (!$this->areEqual($this->body, $x->body)) {
+			$this->println(0, "Change detected in body");
+			return false;
+		}
+	
+		// main fragment
+		if (!$this->main_loaded) {
+			$this->loadFragment("main");
+		}
+		if (!$this->areEqual($this->range, $x->range)) {
+			$this->println(0, "Change detected in range");
+			return false;
+		}
+		if (!$this->areEqual($this->humanRange, $x->humanRange)) {
+			$this->println(0, "Change detected in humanRange");
+			return false;
+		}
+		if ($this->name !== $x->name) {
+			$this->println(0, "Change detected in name");
+			return false;
+		}
+	
+		// graph fragment
+		if (!$this->graph_loaded) {
+			$this->loadFragment("graph");
+		}
+		if (!$this->areEqual($this->graphPrev, $x->graphPrev)) {
+			$this->println(0, "Change detected in graphPrev");
+			return false;
+		}
+	
+		// type fragment
+		if (!$this->type_loaded) {
+			$this->loadFragment("type");
+		}
+		if (!$this->areEqual($this->possibleType, $x->possibleType)) {
+			$this->println(0, "Change detected in possibleType");
+			return false;
+		}
+		if (!$this->areEqual($this->requiredType, $x->requiredType)) {
+			$this->println(0, "Change detected in requiredType");
+			return false;
+		}
+		if (!$this->areEqual($this->actualType, $x->actualType)) {
+			$this->println(0, "Change detected in actualType");
+			return false;
+		}
+	
+		// code fragment
+		if (!$this->code_loaded) {
+			$this->loadFragment("code");
+		}
+		if ($this->indepDeclCode !== $x->indepDeclCode) {
+			$this->println(0, "Change detected in indepDeclCode");
+			return false;
+		}
+		if ($this->depDeclCode !== $x->depDeclCode) {
+			$this->println(0, "Change detected in depDeclCode");
+			return false;
+		}
+		if ($this->indepDefCode !== $x->indepDefCode) {
+			$this->println(0, "Change detected in indepDefCode");
+			return false;
+		}
+		if ($this->depDefCode !== $x->depDefCode) {
+			$this->println(0, "Change detected in depDefCode");
+			return false;
+		}
+	
+		// binding fragment
+		if (!$this->binding_loaded) {
+			$this->loadFragment("binding");
+		}
+	
+		// call fragment
+		if (!$this->call_loaded) {
+			$this->loadFragment("call");
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setInputs($inputs, $notify = true)
@@ -116,7 +215,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		if (!$inputs instanceof FunctionArgumentTuple && !$inputs instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs inputs to be an instance of FunctionArgumentTuple or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->inputs, $inputs)) {
+		if (!$this->areEqual($this->inputs, $inputs)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
 			}
@@ -167,7 +266,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		if (!$outputs instanceof FunctionArgumentTuple && !$outputs instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs outputs to be an instance of FunctionArgumentTuple or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->outputs, $outputs)) {
+		if (!$this->areEqual($this->outputs, $outputs)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
 			}
@@ -218,7 +317,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		if (!$body instanceof FunctionBody && !$body instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs body to be an instance of FunctionBody or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->body, $body)) {
+		if (!$this->areEqual($this->body, $body)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
 			}
@@ -269,7 +368,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		if (!$range instanceof \Source\Range && !$range instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs range to be an instance of \Source\Range or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->range, $range)) {
+		if (!$this->areEqual($this->range, $range)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}
@@ -320,7 +419,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		if (!$humanRange instanceof \Source\Range && !$humanRange instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs humanRange to be an instance of \Source\Range or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->humanRange, $humanRange)) {
+		if (!$this->areEqual($this->humanRange, $humanRange)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}
@@ -398,7 +497,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		if (!$graphPrev instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->graphPrev, $graphPrev)) {
+		if (!$this->areEqual($this->graphPrev, $graphPrev)) {
 			if (!$this->graph_loaded) {
 				$this->loadFragment("graph");
 			}
@@ -446,7 +545,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 	
 	public function setPossibleType($possibleType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->possibleType, $possibleType)) {
+		if (!$this->areEqual($this->possibleType, $possibleType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -491,7 +590,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 	
 	public function setRequiredType($requiredType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->requiredType, $requiredType)) {
+		if (!$this->areEqual($this->requiredType, $requiredType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -536,7 +635,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 	
 	public function setActualType($actualType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->actualType, $actualType)) {
+		if (!$this->areEqual($this->actualType, $actualType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -572,7 +671,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null actualType.");
 		}
 		if ($unref && $this->actualType instanceof \RepositoryObjectReference) {
-			$v = $this->actualType->get();
+			$v = $this->actualType->get(!$enforce);
 		} else {
 			$v = $this->actualType;
 		}

@@ -28,9 +28,11 @@ abstract class RepositoryObject implements IdedObject
 	 * Writes the given line to the console, prepending it with some metadata
 	 * about the object.
 	 */
-	protected function println($ln)
+	static public $verbosity = 1;
+	protected function println($verbosity, $ln)
 	{
-		Log::println($ln, $this->getClass(), $this->getId());
+		if (static::$verbosity > $verbosity)
+			Log::println($ln, $this->getClass(), $this->getId());
 	}
 
 	public function __construct($loaded = true)
@@ -64,17 +66,23 @@ abstract class RepositoryObject implements IdedObject
 		return $this->$getter($enforce);
 	}
 
-	public function hasPropertyChanged($a,$b)
+	/**
+	 * Compares $a and $b and decides whether the property b (i.e. new) has
+	 * changed with regards to a (i.e. old). Checks the trivial cases of
+	 * identical objects first and if they fail moves to the more sophisticated
+	 * isEqualTo() function.
+	 */
+	public function areEqual($a,$b)
 	{
 		if ($a === $b)
-			return false;
+			return true;
 		if ($a === null || $b === null)
-			return true;
+			return false;
 		if (get_class($a) !== get_class($b))
-			return true;
+			return false;
 		if ($a instanceof EqualInterface)
-			return !$a->isEqualTo($b);
-		return true;
+			return $a->isEqualTo($b);
+		return false;
 	}
 
 	/**

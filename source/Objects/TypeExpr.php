@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class TypeExpr extends \RepositoryNodeObject implements GraphInterface
+class TypeExpr extends \RepositoryNodeObject implements \EqualInterface, GraphInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -67,6 +67,41 @@ class TypeExpr extends \RepositoryNodeObject implements GraphInterface
 		return "TypeExpr";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of TypeExpr as well.');
+		}
+		// tree fragment
+		if (!$this->tree_loaded) {
+			$this->loadFragment("tree");
+		}
+		if (!$this->areEqual($this->expr, $x->expr)) {
+			$this->println(0, "Change detected in expr");
+			return false;
+		}
+	
+		// graph fragment
+		if (!$this->graph_loaded) {
+			$this->loadFragment("graph");
+		}
+		if (!$this->areEqual($this->graphPrev, $x->graphPrev)) {
+			$this->println(0, "Change detected in graphPrev");
+			return false;
+		}
+	
+		// type fragment
+		if (!$this->type_loaded) {
+			$this->loadFragment("type");
+		}
+		if (!$this->areEqual($this->evaluatedType, $x->evaluatedType)) {
+			$this->println(0, "Change detected in evaluatedType");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setExpr($expr, $notify = true)
@@ -74,7 +109,7 @@ class TypeExpr extends \RepositoryNodeObject implements GraphInterface
 		if (!$expr instanceof Expr && !$expr instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs expr to be an instance of Expr or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->expr, $expr)) {
+		if (!$this->areEqual($this->expr, $expr)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
 			}
@@ -125,7 +160,7 @@ class TypeExpr extends \RepositoryNodeObject implements GraphInterface
 		if (!$graphPrev instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->graphPrev, $graphPrev)) {
+		if (!$this->areEqual($this->graphPrev, $graphPrev)) {
 			if (!$this->graph_loaded) {
 				$this->loadFragment("graph");
 			}
@@ -173,7 +208,7 @@ class TypeExpr extends \RepositoryNodeObject implements GraphInterface
 	
 	public function setEvaluatedType($evaluatedType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->evaluatedType, $evaluatedType)) {
+		if (!$this->areEqual($this->evaluatedType, $evaluatedType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}

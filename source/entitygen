@@ -103,6 +103,7 @@ foreach ($entity_defs as $name => $def)
 		$interfaces = $implements;
 	else
 		$interfaces = array($implements);
+	$interfaces[] = "\\EqualInterface";
 	$superclass = (isset($def->root) && $def->root === true ? "\\RepositoryRootObject" : "\\RepositoryNodeObject");
 	if (isset($def->extends))
 		$superclass = $def->extends;
@@ -216,7 +217,7 @@ foreach ($entity_defs as $name => $def)
 			if ($scalarType) {
 				$changeCheck = "\$this->$lcname !== \$$lcname";
 			} else {
-				$changeCheck = "\$this->hasPropertyChanged(\$this->$lcname, \$$lcname)";
+				$changeCheck = "!\$this->areEqual(\$this->$lcname, \$$lcname)";
 			}
 			$bfragment .=
 				"\tif ($changeCheck) {\n".
@@ -328,6 +329,33 @@ foreach ($entity_defs as $name => $def)
 	$gf .= "\n\t}\n\tthrow new \\RuntimeException(\"Fragment \$name does not exist.\");\n}";
 	$general[] = $gf;
 	$general[] = "public function getClass()\n{\n\treturn \"$name\";\n}";
+	$eq  = "public function isEqualTo(\$x)\n{\n".
+		"\tif (!\$x instanceof self) {\n".
+		"\t\tthrow new \\InvalidArgumentException('x needs to be an instance of $name as well.');\n".
+		"\t}\n";
+	foreach ($propertiesByFragment as $fragment => $properties) {
+		$eq .= "\t// $fragment fragment\n".
+			"\tif (!\$this->{$fragment}_loaded) {\n".
+			"\t\t\$this->loadFragment(\"$fragment\");\n".
+			"\t}\n";
+		foreach ($properties as $property) {
+			$n = $property->name;
+			$scalarType = in_array($property->type, $scalarTypes);
+			if ($scalarType) {
+				$equalityCheck = "\$this->$n !== \$x->$n";
+			} else {
+				$equalityCheck = "!\$this->areEqual(\$this->$n, \$x->$n)";
+			}
+			$eq .= "\tif ($equalityCheck) {\n".
+				"\t\t\$this->println(0, \"Change detected in $n\");\n".
+				"\t\treturn false;\n".
+				"\t}\n";
+		}
+		$eq .= "\n";
+	}
+	$eq .= "\treturn true;\n";
+	$eq .= "}";
+	$general[] = $eq;
 
 	// Assemble the class body.
 	$body  = "/* PROPERTIES */\n".implode("\n\n", $afragments)."\n\n\n";

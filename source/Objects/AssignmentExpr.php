@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class AssignmentExpr extends Expr implements GraphInterface, TypeInterface
+class AssignmentExpr extends Expr implements \EqualInterface, GraphInterface, TypeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -73,6 +73,53 @@ class AssignmentExpr extends Expr implements GraphInterface, TypeInterface
 		return "AssignmentExpr";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of AssignmentExpr as well.');
+		}
+		// tree fragment
+		if (!$this->tree_loaded) {
+			$this->loadFragment("tree");
+		}
+		if (!$this->areEqual($this->lhs, $x->lhs)) {
+			$this->println(0, "Change detected in lhs");
+			return false;
+		}
+		if (!$this->areEqual($this->rhs, $x->rhs)) {
+			$this->println(0, "Change detected in rhs");
+			return false;
+		}
+	
+		// graph fragment
+		if (!$this->graph_loaded) {
+			$this->loadFragment("graph");
+		}
+		if (!$this->areEqual($this->graphPrev, $x->graphPrev)) {
+			$this->println(0, "Change detected in graphPrev");
+			return false;
+		}
+	
+		// type fragment
+		if (!$this->type_loaded) {
+			$this->loadFragment("type");
+		}
+		if (!$this->areEqual($this->possibleType, $x->possibleType)) {
+			$this->println(0, "Change detected in possibleType");
+			return false;
+		}
+		if (!$this->areEqual($this->requiredType, $x->requiredType)) {
+			$this->println(0, "Change detected in requiredType");
+			return false;
+		}
+		if (!$this->areEqual($this->actualType, $x->actualType)) {
+			$this->println(0, "Change detected in actualType");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setLhs($lhs, $notify = true)
@@ -80,7 +127,7 @@ class AssignmentExpr extends Expr implements GraphInterface, TypeInterface
 		if (!$lhs instanceof Expr && !$lhs instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs lhs to be an instance of Expr or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->lhs, $lhs)) {
+		if (!$this->areEqual($this->lhs, $lhs)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
 			}
@@ -131,7 +178,7 @@ class AssignmentExpr extends Expr implements GraphInterface, TypeInterface
 		if (!$rhs instanceof Expr && !$rhs instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs rhs to be an instance of Expr or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->rhs, $rhs)) {
+		if (!$this->areEqual($this->rhs, $rhs)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
 			}
@@ -182,7 +229,7 @@ class AssignmentExpr extends Expr implements GraphInterface, TypeInterface
 		if (!$graphPrev instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->graphPrev, $graphPrev)) {
+		if (!$this->areEqual($this->graphPrev, $graphPrev)) {
 			if (!$this->graph_loaded) {
 				$this->loadFragment("graph");
 			}
@@ -230,7 +277,7 @@ class AssignmentExpr extends Expr implements GraphInterface, TypeInterface
 	
 	public function setPossibleType($possibleType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->possibleType, $possibleType)) {
+		if (!$this->areEqual($this->possibleType, $possibleType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -275,7 +322,7 @@ class AssignmentExpr extends Expr implements GraphInterface, TypeInterface
 	
 	public function setRequiredType($requiredType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->requiredType, $requiredType)) {
+		if (!$this->areEqual($this->requiredType, $requiredType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -320,7 +367,7 @@ class AssignmentExpr extends Expr implements GraphInterface, TypeInterface
 	
 	public function setActualType($actualType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->actualType, $actualType)) {
+		if (!$this->areEqual($this->actualType, $actualType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}

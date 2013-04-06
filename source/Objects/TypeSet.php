@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class TypeSet extends \RepositoryNodeObject
+class TypeSet extends \RepositoryNodeObject implements \EqualInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -53,6 +53,23 @@ class TypeSet extends \RepositoryNodeObject
 		return "TypeSet";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of TypeSet as well.');
+		}
+		// main fragment
+		if (!$this->main_loaded) {
+			$this->loadFragment("main");
+		}
+		if (!$this->areEqual($this->types, $x->types)) {
+			$this->println(0, "Change detected in types");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setTypes($types, $notify = true)
@@ -60,7 +77,7 @@ class TypeSet extends \RepositoryNodeObject
 		if (!$types instanceof \RepositoryObjectArray && !$types instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs types to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->types, $types)) {
+		if (!$this->areEqual($this->types, $types)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}

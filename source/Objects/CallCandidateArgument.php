@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class CallCandidateArgument extends \RepositoryNodeObject implements TypeInterface
+class CallCandidateArgument extends \RepositoryNodeObject implements \EqualInterface, TypeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -64,6 +64,40 @@ class CallCandidateArgument extends \RepositoryNodeObject implements TypeInterfa
 		return "CallCandidateArgument";
 	}
 	
+	public function isEqualTo($x)
+	{
+		if (!$x instanceof self) {
+			throw new \InvalidArgumentException('x needs to be an instance of CallCandidateArgument as well.');
+		}
+		// call fragment
+		if (!$this->call_loaded) {
+			$this->loadFragment("call");
+		}
+		if (!$this->areEqual($this->argument, $x->argument)) {
+			$this->println(0, "Change detected in argument");
+			return false;
+		}
+	
+		// type fragment
+		if (!$this->type_loaded) {
+			$this->loadFragment("type");
+		}
+		if (!$this->areEqual($this->possibleType, $x->possibleType)) {
+			$this->println(0, "Change detected in possibleType");
+			return false;
+		}
+		if (!$this->areEqual($this->requiredType, $x->requiredType)) {
+			$this->println(0, "Change detected in requiredType");
+			return false;
+		}
+		if (!$this->areEqual($this->actualType, $x->actualType)) {
+			$this->println(0, "Change detected in actualType");
+			return false;
+		}
+	
+		return true;
+	}
+	
 	
 	/* ACCESSORS */
 	public function setArgument($argument, $notify = true)
@@ -71,7 +105,7 @@ class CallCandidateArgument extends \RepositoryNodeObject implements TypeInterfa
 		if (!$argument instanceof CallArgument && !$argument instanceof \RepositoryObjectReference) {
 			throw new \InvalidArgumentException('Object '.$this->getId().' needs argument to be an instance of CallArgument or \RepositoryObjectReference');
 		}
-		if ($this->hasPropertyChanged($this->argument, $argument)) {
+		if (!$this->areEqual($this->argument, $argument)) {
 			if (!$this->call_loaded) {
 				$this->loadFragment("call");
 			}
@@ -119,7 +153,7 @@ class CallCandidateArgument extends \RepositoryNodeObject implements TypeInterfa
 	
 	public function setPossibleType($possibleType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->possibleType, $possibleType)) {
+		if (!$this->areEqual($this->possibleType, $possibleType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -164,7 +198,7 @@ class CallCandidateArgument extends \RepositoryNodeObject implements TypeInterfa
 	
 	public function setRequiredType($requiredType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->requiredType, $requiredType)) {
+		if (!$this->areEqual($this->requiredType, $requiredType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}
@@ -209,7 +243,7 @@ class CallCandidateArgument extends \RepositoryNodeObject implements TypeInterfa
 	
 	public function setActualType($actualType, $notify = true)
 	{
-		if ($this->hasPropertyChanged($this->actualType, $actualType)) {
+		if (!$this->areEqual($this->actualType, $actualType)) {
 			if (!$this->type_loaded) {
 				$this->loadFragment("type");
 			}

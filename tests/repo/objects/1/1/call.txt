@@ -93,6 +93,8 @@ Array
                                                                 )
 
                                                             [func] => @ref 0.10
+                                                            [feasible] => 1
+                                                            [cost] => 0
                                                             [possibleType] => @ref 0.10.actualType.outputs.arguments.0.type
                                                             [requiredType] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
                                                             [actualType] => Array
@@ -142,6 +144,8 @@ Array
                                                                 )
 
                                                             [func] => @ref 0.11
+                                                            [feasible] => 
+                                                            [cost] => 1.1
                                                             [possibleType] => @ref 0.11.actualType.outputs.arguments.0.type
                                                             [requiredType] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
                                                             [actualType] => Array
@@ -194,6 +198,8 @@ Array
                                                                 )
 
                                                             [func] => @ref 0.12
+                                                            [feasible] => 
+                                                            [cost] => 1.1
                                                             [possibleType] => @ref 0.12.actualType.outputs.arguments.0.type
                                                             [requiredType] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
                                                             [actualType] => Array
@@ -249,6 +255,8 @@ Array
                                                                 )
 
                                                             [func] => @ref 0.13
+                                                            [feasible] => 
+                                                            [cost] => 2.1
                                                             [possibleType] => @ref 0.13.actualType.outputs.arguments.0.type
                                                             [requiredType] => @ref 1.1.body.stmts.0.expr.rhs.requiredType
                                                             [actualType] => Array
@@ -265,6 +273,7 @@ Array
 
                                                 )
 
+                                            [selectedCallCandidate] => @ref 1.1.body.stmts.0.expr.rhs.callCandidates.0
                                             [rhs] => Array
                                                 (
                                                     [callName] => double
@@ -306,6 +315,8 @@ Array
                                                                         )
 
                                                                     [func] => @ref 1.2
+                                                                    [feasible] => 1
+                                                                    [cost] => 0
                                                                     [possibleType] => @ref 1.2.outputs.arguments.0.typeExpr.evaluatedType
                                                                     [requiredType] => @ref 1.1.body.stmts.0.expr.rhs.rhs.requiredType
                                                                     [actualType] => Array
@@ -319,6 +330,7 @@ Array
 
                                                         )
 
+                                                    [selectedCallCandidate] => @ref 1.1.body.stmts.0.expr.rhs.rhs.callCandidates.0
                                                     [arguments] => Array
                                                         (
                                                             [0] => Array

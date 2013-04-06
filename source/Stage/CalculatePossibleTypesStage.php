@@ -5,11 +5,13 @@ use DriverStage;
 
 class CalculatePossibleTypesStage extends DriverStage
 {
-	static public $verbosity = 99;
+	static public $verbosity = 1;
 
 	protected function process(\RepositoryObject $object)
 	{
-		$object->setRequiredType(new \Objects\GenericType);
+		if (!$object->getRequiredType(false)) {
+			$object->setRequiredType(new \Objects\GenericType);
+		}
 		$this->processChildren($object);
 	}
 
@@ -24,58 +26,65 @@ class CalculatePossibleTypesStage extends DriverStage
 			return;
 
 		// Functions, Function Arguments and Function Argument Tuples
-		if ($object instanceof \AbstractFunctionArgument) {
+		if ($object instanceof \AbstractFunctionArgument && !$object->getPossibleType(false, false)) {
 			$t = $object->getTypeExpr()->getEvaluatedType();
-			$this->addDependency($t);
+			$this->addDependency($object, "typeExpr.evaluatedType");
 			$a = new \Objects\FunctionArgumentType;
 			$a->setName($object->getName());
-			$a->setType(clone $t);
+			$a->setTypeRef($t, $this->repository);
 			$object->setPossibleType($a);
 		}
 		if ($object instanceof \AbstractFunctionArgumentTuple) {
 			$a = new \RepositoryObjectArray($this->repository);
 			foreach ($object->getArguments()->getElements() as $argument) {
-				$t = $argument->getPossibleType();
-				$this->addDependency($t);
+				$t = $argument->getActualType();
 				$a->add(clone $t);
+				$this->addDependency($argument, "actualType");
+				$this->addDependency($t);
 			}
 			$t = new \Objects\FunctionArgumentTupleType;
 			$t->setArguments($a);
 			$object->setPossibleType($t);
 		}
 		if ($object instanceof \AbstractFunction) {
-			$ti = $object->getInputs()->getPossibleType();
-			$to = $object->getOutputs()->getPossibleType();
-			$this->addDependency($ti);
-			$this->addDependency($to);
+			$ti = $object->getInputs()->getActualType();
+			$to = $object->getOutputs()->getActualType();
 			$f = new \Objects\FunctionType;
 			$f->setInputs(clone $ti);
 			$f->setOutputs(clone $to);
 			$object->setPossibleType($f);
+			$this->addDependency($object, "inputs.actualType");
+			$this->addDependency($object, "outputs.actualType");
+			$this->addDependency($ti);
+			$this->addDependency($to);
 		}
 
 		// For objects that contain a call, iterate through all call candidates
 		// and find the union set of the return types.
 		if ($object instanceof \Objects\CallInterface) {
 			$outputTuples = array();
-			foreach ($object->getCallCandidates()->getChildren() as $candidate) {
-				// Fetch the function type this candidate is pointing at.
-				$f = $candidate->getFunc();
-				$this->addDependency($f->getId().".possibleType");
-				$this->addDependency($f->getId().".actualType");
-				$t = $f->getActualType(false);
-				if (!$t)
-					$t = $f->getPossibleType(false);
-				if (!$t) {
-					$this->println(3, "Skipping candidate {$f->getId()} due to unfinished possible type analysis", $object->getId());
-					continue;
-				}
-
+			foreach ($object->getCallCandidates()->getChildren() as $candidate)
+			{
 				// Calculate the possible types for each call candidate's arguments.
 				foreach ($candidate->getArguments()->getElements() as $index => $argument) {
 					$this->println(3, "Working on argument $index = {$argument->getId()}", $object->getId());
 					//$argument->setPossibleTypeRef($t->getInputs()->getArguments()->get($index)->getType(), $this->repository);
 					$argument->setPossibleTypeRef($object->getCallArguments()->getArguments()->get($index)->getExpr()->getPossibleType(), $this->repository);
+				}
+
+				// Fetch the function type this candidate is pointing at.
+				$f = $candidate->getFunc();
+				$this->addDependency($f, "actualType");
+				$t = $f->getActualType(false);
+				if (!$t) {
+					$tr = $f->getActualType(false, false);
+					if ($tr) {
+						$this->println(3, "Reference is {$tr->getRefId()}", $object->getId());
+						$this->println(3, "Which resolves to {$tr->get()->getId()}", $object->getId());
+					}
+					$this->println(3, "Skipping candidate {$f->getId()} due to unfinished possible type analysis", $object->getId());
+					$candidate->setPossibleType(new \Objects\InvalidType);
+					continue;
 				}
 
 				// Calculate the possible return type of this candidate.
@@ -84,7 +93,6 @@ class CalculatePossibleTypesStage extends DriverStage
 				$this->println(3, "Candidate {$f->getId()} possible type = ".\Type::describe($candidate->getPossibleType()), $object->getId());
 
 				// Old stuff...
-				$this->addDependency($t);
 				$outputTuples[] = $t->getOutputs();
 			}
 
@@ -119,17 +127,19 @@ class CalculatePossibleTypesStage extends DriverStage
 		if ($object instanceof \Objects\IdentifierExpr) {
 			$target = $object->getBindingTarget();
 			if ($target instanceof \AbstractFunctionArgument) {
-				$t = $target->getPossibleType()->getType();
-				$this->addDependency($t);
-				$object->setPossibleType(clone $t);
+				$t = $target->getActualType()->getType();
+				$object->setPossibleTypeRef($t, $this->repository);
+				$this->addDependency($target, "actualType.type");
+				//$this->addDependency($t);
 			} else {
 				$object->setPossibleType(new \Objects\InvalidType);
 			}
 		}
 		if ($object instanceof \Objects\AssignmentExpr) {
-			$t = $object->getLhs()->getPossibleType();
-			$this->addDependency($t);
-			$object->setPossibleType(clone $t);
+			$t = $object->getLhs()->getActualType();
+			$object->setPossibleTypeRef($t, $this->repository);
+			$this->addDependency($object, "lhs.actualType");
+			//$this->addDependency($t);
 		}
 		if ($object instanceof \Objects\ConstantExpr) {
 			$name = null;
@@ -144,6 +154,13 @@ class CalculatePossibleTypesStage extends DriverStage
 			$ct = new \Objects\ConcreteType;
 			$ct->setDefinition($t);
 			$object->setPossibleType($ct);
+		}
+
+		// If the actual type has not yet been calculated, it simply equals the
+		// possible type for now.
+		if ($object->getActualType(false, false) === null) {
+			$this->println(2, "Assigning actualType = @ref possibleType", $object->getId());
+			$object->setActualTypeRef($object->getPossibleType(), $this->repository);
 		}
 
 		// Show the output of the stage.

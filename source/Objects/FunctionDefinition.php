@@ -572,7 +572,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 			throw new \RuntimeException("Object {$this->getId()} expected to have non-null actualType.");
 		}
 		if ($unref && $this->actualType instanceof \RepositoryObjectReference) {
-			$v = $this->actualType->get(!$enforce);
+			$v = $this->actualType->get();
 		} else {
 			$v = $this->actualType;
 		}

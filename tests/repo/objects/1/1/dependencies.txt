@@ -1,23 +1,8 @@
 Array
 (
-    [CalculatePossibleTypesStage] => Array
-        (
-            [0] => 1.1.inputs.arguments.0.typeExpr.evaluatedType
-            [1] => 1.1.inputs.arguments.0.possibleType
-            [2] => 1.1.outputs.arguments.0.typeExpr.evaluatedType
-            [3] => 1.1.outputs.arguments.0.possibleType
-            [4] => 1.1.outputs.arguments.0.possibleType.type
-            [5] => 1.1.inputs.arguments.0.possibleType.type
-            [6] => 1.2.possibleType
-            [7] => 1.2.actualType
-            [8] => 1.1.body.stmts.0.expr.lhs.possibleType
-            [9] => 1.1.inputs.possibleType
-            [10] => 1.1.outputs.possibleType
-        )
-
     [CalculateRequiredTypesStage] => Array
         (
-            [0] => 1.1.body.stmts.0.expr.lhs.possibleType
+            [0] => 1.1.outputs.arguments.0.typeExpr.evaluatedType
             [1] => 1.1.body.stmts.0.expr.rhs.callCandidates.0
             [2] => 1.1.body.stmts.0.expr.rhs.callCandidates.1
             [3] => 1.1.body.stmts.0.expr.rhs.callCandidates.2
@@ -39,22 +24,34 @@ Array
             [9] => 1.1.outputs.arguments.0.requiredType
             [10] => 1.1.outputs.possibleType
             [11] => 1.1.outputs.requiredType
-            [12] => 1.1.body.stmts.0.expr.lhs.possibleType
+            [12] => 1.1.outputs.arguments.0.typeExpr.evaluatedType
             [13] => 1.1.body.stmts.0.expr.lhs.requiredType
             [14] => 1.1.body.stmts.0.expr.rhs.lhs.possibleType
             [15] => 1.1.body.stmts.0.expr.rhs.lhs.requiredType
-            [16] => 1.1.body.stmts.0.expr.rhs.rhs.arguments.0.possibleType
+            [16] => 1.1.inputs.arguments.0.typeExpr.evaluatedType
             [17] => 1.1.body.stmts.0.expr.rhs.rhs.arguments.0.requiredType
-            [18] => 1.2.actualType.inputs.arguments.0.type
-            [19] => 1.2.actualType.outputs.arguments.0.type
+            [18] => 1.2.inputs.arguments.0.typeExpr.evaluatedType
+            [19] => 1.2.outputs.arguments.0.typeExpr.evaluatedType
             [20] => 1.1.body.stmts.0.expr.rhs.rhs.requiredType
             [21] => 1.1.body.stmts.0.expr.rhs.rhs.possibleType
             [22] => 1.1.body.stmts.0.expr.rhs.requiredType
             [23] => 1.1.body.stmts.0.expr.rhs.possibleType
-            [24] => 1.1.body.stmts.0.expr.possibleType
+            [24] => 1.1.body.stmts.0.expr.lhs.actualType
             [25] => 1.1.body.stmts.0.expr.requiredType
             [26] => 1.1.possibleType
             [27] => 1.1.requiredType
+        )
+
+    [CalculatePossibleTypesStage] => Array
+        (
+            [0] => 1.1.inputs.arguments.0.actualType
+            [1] => 1.1.outputs.arguments.0.actualType
+            [2] => 1.1.outputs.arguments.0.actualType.type
+            [3] => 1.1.inputs.arguments.0.actualType.type
+            [4] => 1.2.actualType
+            [5] => 1.1.body.stmts.0.expr.lhs.actualType
+            [6] => 1.1.inputs.actualType
+            [7] => 1.1.outputs.actualType
         )
 
 )

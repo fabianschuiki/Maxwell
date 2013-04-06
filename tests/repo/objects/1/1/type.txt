@@ -9,12 +9,7 @@ Array
                             [0] => Array
                                 (
                                     [name] => x
-                                    [type] => Array
-                                        (
-                                            [definition] => @ref 0.2
-                                            [class] => ConcreteType
-                                        )
-
+                                    [type] => @ref 1.1.inputs.arguments.0.typeExpr.evaluatedType
                                     [class] => FunctionArgumentType
                                 )
 
@@ -30,12 +25,7 @@ Array
                             [0] => Array
                                 (
                                     [name] => y
-                                    [type] => Array
-                                        (
-                                            [definition] => @ref 0.2
-                                            [class] => ConcreteType
-                                        )
-
+                                    [type] => @ref 1.1.outputs.arguments.0.typeExpr.evaluatedType
                                     [class] => FunctionArgumentType
                                 )
 
@@ -61,12 +51,7 @@ Array
                             [0] => Array
                                 (
                                     [name] => x
-                                    [type] => Array
-                                        (
-                                            [definition] => @ref 0.2
-                                            [class] => ConcreteType
-                                        )
-
+                                    [type] => @ref 1.1.inputs.arguments.0.typeExpr.evaluatedType
                                     [class] => FunctionArgumentType
                                 )
 
@@ -82,12 +67,7 @@ Array
                             [0] => Array
                                 (
                                     [name] => y
-                                    [type] => Array
-                                        (
-                                            [definition] => @ref 0.2
-                                            [class] => ConcreteType
-                                        )
-
+                                    [type] => @ref 1.1.outputs.arguments.0.typeExpr.evaluatedType
                                     [class] => FunctionArgumentType
                                 )
 
@@ -108,12 +88,7 @@ Array
                             [0] => Array
                                 (
                                     [name] => x
-                                    [type] => Array
-                                        (
-                                            [definition] => @ref 0.2
-                                            [class] => ConcreteType
-                                        )
-
+                                    [type] => @ref 1.1.inputs.arguments.0.typeExpr.evaluatedType
                                     [class] => FunctionArgumentType
                                 )
 
@@ -134,12 +109,7 @@ Array
                             [0] => Array
                                 (
                                     [name] => x
-                                    [type] => Array
-                                        (
-                                            [definition] => @ref 0.2
-                                            [class] => ConcreteType
-                                        )
-
+                                    [type] => @ref 1.1.inputs.arguments.0.typeExpr.evaluatedType
                                     [class] => FunctionArgumentType
                                 )
 
@@ -155,12 +125,7 @@ Array
                             [possibleType] => Array
                                 (
                                     [name] => x
-                                    [type] => Array
-                                        (
-                                            [definition] => @ref 0.2
-                                            [class] => ConcreteType
-                                        )
-
+                                    [type] => @ref 1.1.inputs.arguments.0.typeExpr.evaluatedType
                                     [class] => FunctionArgumentType
                                 )
 
@@ -172,12 +137,7 @@ Array
                             [actualType] => Array
                                 (
                                     [name] => x
-                                    [type] => Array
-                                        (
-                                            [definition] => @ref 0.2
-                                            [class] => ConcreteType
-                                        )
-
+                                    [type] => @ref 1.1.inputs.arguments.0.typeExpr.evaluatedType
                                     [class] => FunctionArgumentType
                                 )
 
@@ -225,12 +185,7 @@ Array
                             [0] => Array
                                 (
                                     [name] => y
-                                    [type] => Array
-                                        (
-                                            [definition] => @ref 0.2
-                                            [class] => ConcreteType
-                                        )
-
+                                    [type] => @ref 1.1.outputs.arguments.0.typeExpr.evaluatedType
                                     [class] => FunctionArgumentType
                                 )
 
@@ -251,12 +206,7 @@ Array
                             [0] => Array
                                 (
                                     [name] => y
-                                    [type] => Array
-                                        (
-                                            [definition] => @ref 0.2
-                                            [class] => ConcreteType
-                                        )
-
+                                    [type] => @ref 1.1.outputs.arguments.0.typeExpr.evaluatedType
                                     [class] => FunctionArgumentType
                                 )
 
@@ -272,12 +222,7 @@ Array
                             [possibleType] => Array
                                 (
                                     [name] => y
-                                    [type] => Array
-                                        (
-                                            [definition] => @ref 0.2
-                                            [class] => ConcreteType
-                                        )
-
+                                    [type] => @ref 1.1.outputs.arguments.0.typeExpr.evaluatedType
                                     [class] => FunctionArgumentType
                                 )
 
@@ -289,12 +234,7 @@ Array
                             [actualType] => Array
                                 (
                                     [name] => y
-                                    [type] => Array
-                                        (
-                                            [definition] => @ref 0.2
-                                            [class] => ConcreteType
-                                        )
-
+                                    [type] => @ref 1.1.outputs.arguments.0.typeExpr.evaluatedType
                                     [class] => FunctionArgumentType
                                 )
 
@@ -341,12 +281,7 @@ Array
                         (
                             [expr] => Array
                                 (
-                                    [possibleType] => Array
-                                        (
-                                            [definition] => @ref 0.2
-                                            [class] => ConcreteType
-                                        )
-
+                                    [possibleType] => @ref 1.1.body.stmts.0.expr.lhs.actualType
                                     [requiredType] => Array
                                         (
                                             [class] => GenericType
@@ -360,12 +295,7 @@ Array
 
                                     [lhs] => Array
                                         (
-                                            [possibleType] => Array
-                                                (
-                                                    [definition] => @ref 0.2
-                                                    [class] => ConcreteType
-                                                )
-
+                                            [possibleType] => @ref 1.1.outputs.arguments.0.typeExpr.evaluatedType
                                             [requiredType] => Array
                                                 (
                                                     [class] => GenericType
@@ -490,12 +420,7 @@ Array
                                                         (
                                                             [0] => Array
                                                                 (
-                                                                    [possibleType] => Array
-                                                                        (
-                                                                            [definition] => @ref 0.2
-                                                                            [class] => ConcreteType
-                                                                        )
-
+                                                                    [possibleType] => @ref 1.1.inputs.arguments.0.typeExpr.evaluatedType
                                                                     [requiredType] => Array
                                                                         (
                                                                             [definition] => @ref 0.2

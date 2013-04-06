@@ -24,7 +24,7 @@ class Repository
 	protected $objects_modified = array();
 
 	// Logging facilities.
-	static public $verbosity = 1;
+	static public $verbosity = 3;
 	private function println($verbosity, $ln, $info = null)
 	{
 		if (static::$verbosity > $verbosity)
@@ -534,6 +534,8 @@ class Repository
 				throw new \RuntimeException("Unable to parse dependencies in file $path. JSON error ".json_last_error().".");
 			}
 			$this->dependencies[$objectId] = $deps;
+		} else {
+			$this->dependencies[$objectId] = array();
 		}
 	}
 
@@ -544,6 +546,13 @@ class Repository
 	public function notifyObjectDirty($objectId, $path)
 	{
 		$this->println(3, "Modified $path", $objectId);
+
+		$bt = debug_backtrace();
+		foreach ($bt as $bte) {
+			if ($bte["function"] == "loadObjectFragment") {
+				throw new \RuntimeException("notifyObjectDirty($objectId, $path) should not be called from loadObjectFragment().");
+			}
+		}
 
 		// Make sure stuff is around.
 		if (!isset($this->dependencies["1.1"])) {
@@ -559,7 +568,7 @@ class Repository
 		foreach ($this->dependencies as $oid => $deps) {
 			foreach ($deps as $stage => $ids) {
 				if (in_array($objectId.".".$path, $ids)) {
-					$this->println(2, "- Invalidates $oid stage $stage", $objectId);
+					$this->println(2, "Invalidated $oid stage $stage due to change in $path", $objectId);
 					$this->setObjectStageState($oid, $stage, false);
 				}
 			}

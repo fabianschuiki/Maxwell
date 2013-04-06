@@ -62,7 +62,7 @@ abstract class DriverStage
 	 * object to the given dependency object. Whenever the given $object
 	 * changes the stage needs to be re-run.
 	 */
-	protected function addDependency($object)
+	protected function addDependency($object, $suffix = null)
 	{
 		if ($object instanceof Builtin\BuiltinObject) {
 			return;
@@ -78,7 +78,7 @@ abstract class DriverStage
 			return;
 		}
 
-		$canonical = array($id);
+		$canonical = array($suffix ? $id.".".$suffix : $id);
 		foreach ($canonical as $id) {
 			$this->repository->addStageDependency(
 				$this->getName(),

@@ -304,7 +304,7 @@ foreach ($entity_defs as $name => $def)
 	$general[] = "public function setParent(\\IdedObject \$parent = null, \$key = null, \$fragment = null)\n".
 		"{\n".
 		"\tif (\$this->parent !== null && \$parent !== null) {\n".
-		"\t\tthrow new \\RuntimeException(\"Setting parent to {\$parent->getId()} when object already has parent {\$this->parent->getId()}.\");\n".
+		"\t\tthrow new \\RuntimeException(\"Setting parent to {\$parent->getId()} when object already has parent {\$this->parent->getId()} (\".get_class(\$this->parent).\").\");\n".
 		"\t}\n".
 		"\t\$this->parent = \$parent;\n".
 		"\t\$this->parent_key = \$key;\n".

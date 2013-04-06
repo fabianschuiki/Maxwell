@@ -8,7 +8,7 @@ use Objects\TypeSet;
 
 class CalculateActualTypesStage extends DriverStage
 {
-	static public $verbosity = 99;
+	static public $verbosity = 0;
 
 	protected function process(\RepositoryObject $object)
 	{

@@ -5,7 +5,7 @@ use DriverStage;
 
 class CalculatePossibleTypesStage extends DriverStage
 {
-	static public $verbosity = 99;
+	static public $verbosity = 0;
 
 	protected function process(\RepositoryObject $object)
 	{
@@ -99,7 +99,7 @@ class CalculatePossibleTypesStage extends DriverStage
 				$outputSet->setTypes($outputTypes);
 				$outputSet = \Type::simplifySet($outputSet);
 				$this->println(2, "Union candidate output types = ".\Type::describe($outputSet), $object->getId());
-				$object->setPossibleType($outputSet);
+				$object->setPossibleType(clone $outputSet);
 			} else {
 				$object->setPossibleType(new \Objects\InvalidType);
 			}

@@ -55,7 +55,7 @@ class CalculateRequiredTypesStage extends DriverStage
 					$t = new \Objects\InvalidType;
 				}
 				$this->println(3, "Calculated type set for argument $index to be ".\Type::describe($t), $object->getId());
-				$argument->getExpr()->setRequiredType($t);
+				$argument->getExpr()->setRequiredType(clone $t);
 			}
 		}
 

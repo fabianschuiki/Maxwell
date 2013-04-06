@@ -32,7 +32,7 @@ class ConstantExpr extends Expr implements \EqualInterface, GraphInterface, Type
 	public function setParent(\IdedObject $parent = null, $key = null, $fragment = null)
 	{
 		if ($this->parent !== null && $parent !== null) {
-			throw new \RuntimeException("Setting parent to {$parent->getId()} when object already has parent {$this->parent->getId()}.");
+			throw new \RuntimeException("Setting parent to {$parent->getId()} when object already has parent {$this->parent->getId()} (".get_class($this->parent).").");
 		}
 		$this->parent = $parent;
 		$this->parent_key = $key;

@@ -7,7 +7,11 @@ $forceStages = array_slice($argv, 1);
 $repo = new Repository(__DIR__."/repo");
 
 // Objects to be processed.
-$objectIds = array(/*"1.1",*/ "1.2");
+$objectIds = array();
+foreach (scandir(__DIR__."/repo/objects/1") as $id) {
+	if (is_numeric($id))
+		$objectIds[] = "1.$id";
+}
 
 // Create a list of stages.
 $stages = array();

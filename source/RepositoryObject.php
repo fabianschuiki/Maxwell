@@ -28,7 +28,7 @@ abstract class RepositoryObject implements IdedObject
 	 * Writes the given line to the console, prepending it with some metadata
 	 * about the object.
 	 */
-	static public $verbosity = 1;
+	static public $verbosity = 0;
 	protected function println($verbosity, $ln)
 	{
 		if (static::$verbosity > $verbosity)

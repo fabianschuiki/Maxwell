@@ -5,7 +5,7 @@ use DriverStage;
 
 class CalculatePossibleTypesStage extends DriverStage
 {
-	static public $verbosity = 1;
+	static public $verbosity = 99;
 
 	protected function process(\RepositoryObject $object)
 	{
@@ -61,14 +61,13 @@ class CalculatePossibleTypesStage extends DriverStage
 
 		// For objects that contain a call, iterate through all call candidates
 		// and find the union set of the return types.
-		if ($object instanceof \Objects\CallInterface) {
-			$outputTuples = array();
+		if ($object instanceof \Objects\CallInterface)
+		{
+			$outputTypes = new \RepositoryObjectArray;
 			foreach ($object->getCallCandidates()->getChildren() as $candidate)
 			{
 				// Calculate the possible types for each call candidate's arguments.
 				foreach ($candidate->getArguments()->getElements() as $index => $argument) {
-					$this->println(3, "Working on argument $index = {$argument->getId()}", $object->getId());
-					//$argument->setPossibleTypeRef($t->getInputs()->getArguments()->get($index)->getType(), $this->repository);
 					$argument->setPossibleTypeRef($object->getCallArguments()->getArguments()->get($index)->getExpr()->getPossibleType(), $this->repository);
 				}
 
@@ -77,12 +76,7 @@ class CalculatePossibleTypesStage extends DriverStage
 				$this->addDependency($f, "actualType");
 				$t = $f->getActualType(false);
 				if (!$t) {
-					$tr = $f->getActualType(false, false);
-					if ($tr) {
-						$this->println(3, "Reference is {$tr->getRefId()}", $object->getId());
-						$this->println(3, "Which resolves to {$tr->get()->getId()}", $object->getId());
-					}
-					$this->println(3, "Skipping candidate {$f->getId()} due to unfinished possible type analysis", $object->getId());
+					$this->println(3, "Skipping candidate {$f->getId()} since actualType is null", $object->getId());
 					$candidate->setPossibleType(new \Objects\InvalidType);
 					continue;
 				}
@@ -92,35 +86,23 @@ class CalculatePossibleTypesStage extends DriverStage
 				$candidate->setPossibleTypeRef($t->getOutputs()->getArguments()->get(0)->getType(), $this->repository);
 				$this->println(3, "Candidate {$f->getId()} possible type = ".\Type::describe($candidate->getPossibleType()), $object->getId());
 
-				// Old stuff...
-				$outputTuples[] = $t->getOutputs();
+				// Keep the possible output type around.
+				$outputTypes->add(clone $candidate->getPossibleType());
 			}
 
 			// Dump the call to the console.
-			$this->println(3, $object->describe(), $object->getId());
+			//$this->println(3, $object->describe(), $object->getId());
 
-			$t = \Type::unifyArgumentTuples($outputTuples);
-			$this->println(2, "Unified outputs = ".\Type::describe($t), $object->getId());
-
-			// At the moment only single return values are supported, which is why we strip the output arguments.
-			if ($t->getTypes()->getCount()) {
-				foreach ($t->getTypes()->getElements() as $type) {
-					$argc = $type->getArguments()->getCount();
-					if ($argc > 1) {
-						throw new \RuntimeException("Only single or no return value is supported at the moment. Call {$object->getId()} has unified output type ".\Type::describe($t).".");
-					}
-					if ($argc == 1) {
-						$t = clone $type->getArguments()->get(0)->getType();
-					} else {
-						$t = null;
-					}
-					break;
-				}
+			// Assemble the outputs into a set.
+			if ($outputTypes->getCount() > 0) {
+				$outputSet = new \Objects\TypeSet;
+				$outputSet->setTypes($outputTypes);
+				$outputSet = \Type::simplifySet($outputSet);
+				$this->println(2, "Union candidate output types = ".\Type::describe($outputSet), $object->getId());
+				$object->setPossibleType($outputSet);
 			} else {
-				$t = new \Objects\InvalidType;
+				$object->setPossibleType(new \Objects\InvalidType);
 			}
-
-			$object->setPossibleType($t);
 		}
 
 		// General expressions.

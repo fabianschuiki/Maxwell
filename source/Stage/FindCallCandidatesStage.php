@@ -5,7 +5,7 @@ use DriverStage;
 
 class FindCallCandidatesStage extends DriverStage
 {
-	static public $verbosity = 99;
+	static public $verbosity = 1;
 
 	protected function process(\RepositoryObject $object)
 	{

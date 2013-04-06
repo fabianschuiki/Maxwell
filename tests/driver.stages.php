@@ -1,11 +1,13 @@
 <?php
 require_once __DIR__."/include.php";
 
+$forceStages = array_slice($argv, 1);
+
 // Create the repository.
 $repo = new Repository(__DIR__."/repo");
 
 // Objects to be processed.
-$objectIds = array("1.1", "1.2");
+$objectIds = array(/*"1.1",*/ "1.2");
 
 // Create a list of stages.
 $stages = array();
@@ -25,7 +27,7 @@ $next = null;
 $next_oid = null;
 foreach ($stages as $stage) {
 	foreach ($objectIds as $oid) {
-		if ($repo->getObjectStageState($oid, $stage->getName()) === false) {
+		if ($repo->getObjectStageState($oid, $stage->getName()) === false || in_array($oid.".".$stage->getName(), $forceStages)) {
 			$next = $stage;
 			$next_oid = $oid;
 			break;

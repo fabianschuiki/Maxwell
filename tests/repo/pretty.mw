@@ -1,13 +1,13 @@
 // 1.1
-func cast (weird x) -> (int y)
-{
-}
-
-// 1.2
 func debug (weird x) -> (int y)
 {
     y = x;
     // type of expr = int
     // type of expr.lhs = int
     // type of expr.rhs = int(weird,1)
+}
+
+// 1.2
+func cast (weird x) -> (int y)
+{
 }

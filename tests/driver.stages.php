@@ -46,7 +46,7 @@ if (!$next) {
 	echo "Nothing left to do!\n";
 	exit(0);
 }
-echo "Will execute stage {$stage->getName()} on $next_oid\n";
+echo "Will execute stage \033[32;1m{$stage->getName()}\033[0m on $next_oid\n";
 
 // Execute the stage.
 $next->run($next_oid);

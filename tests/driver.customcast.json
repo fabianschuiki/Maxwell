@@ -1,42 +1,5 @@
 [{
 	"class": "FunctionDefinition",
-	"name": "cast",
-	"inputs": {
-		"class": "FunctionArgumentTuple",
-		"arguments": [{
-			"class": "FunctionArgument",
-			"name": "x",
-			"typeExpr": {
-				"class": "TypeExpr",
-				"expr": {
-					"class": "IdentifierExpr",
-					"name": "weird"
-					}
-				}
-			}]
-		},
-	"outputs": {
-		"class": "FunctionArgumentTuple",
-		"arguments": [{
-			"class": "FunctionArgument",
-			"name": "y",
-			"typeExpr": {
-				"class": "TypeExpr",
-				"expr": {
-					"class": "IdentifierExpr",
-					"name": "int"
-					}
-				}
-			}]
-		},
-	"body": {
-		"class": "FunctionBody",
-		"stmts": []
-		}
-},
-
-{
-	"class": "FunctionDefinition",
 	"name": "debug",
 	"inputs": {
 		"class": "FunctionArgumentTuple",
@@ -80,5 +43,42 @@
 					"name": "x"}
 				}
 			}]
+		}
+},
+
+{
+	"class": "FunctionDefinition",
+	"name": "cast",
+	"inputs": {
+		"class": "FunctionArgumentTuple",
+		"arguments": [{
+			"class": "FunctionArgument",
+			"name": "x",
+			"typeExpr": {
+				"class": "TypeExpr",
+				"expr": {
+					"class": "IdentifierExpr",
+					"name": "weird"
+					}
+				}
+			}]
+		},
+	"outputs": {
+		"class": "FunctionArgumentTuple",
+		"arguments": [{
+			"class": "FunctionArgument",
+			"name": "y",
+			"typeExpr": {
+				"class": "TypeExpr",
+				"expr": {
+					"class": "IdentifierExpr",
+					"name": "int"
+					}
+				}
+			}]
+		},
+	"body": {
+		"class": "FunctionBody",
+		"stmts": []
 		}
 }]

@@ -42,30 +42,4 @@ Array
 
         )
 
-    [body] => Array
-        (
-            [stmts] => Array
-                (
-                    [0] => Array
-                        (
-                            [expr] => Array
-                                (
-                                    [lhs] => Array
-                                        (
-                                            [bindingTarget] => @ref 1.2.outputs.arguments.0
-                                        )
-
-                                    [rhs] => Array
-                                        (
-                                            [bindingTarget] => @ref 1.2.inputs.arguments.0
-                                        )
-
-                                )
-
-                        )
-
-                )
-
-        )
-
 )

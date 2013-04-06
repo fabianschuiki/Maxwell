@@ -49,32 +49,4 @@ Array
 
         )
 
-    [body] => Array
-        (
-            [stmts] => Array
-                (
-                    [0] => Array
-                        (
-                            [graphPrev] => @ref 1.2.outputs.arguments.0.typeExpr.expr
-                            [expr] => Array
-                                (
-                                    [graphPrev] => @ref 1.2.body.stmts.0
-                                    [lhs] => Array
-                                        (
-                                            [graphPrev] => @ref 1.2.body.stmts.0.expr
-                                        )
-
-                                    [rhs] => Array
-                                        (
-                                            [graphPrev] => @ref 1.2.body.stmts.0.expr.lhs
-                                        )
-
-                                )
-
-                        )
-
-                )
-
-        )
-
 )

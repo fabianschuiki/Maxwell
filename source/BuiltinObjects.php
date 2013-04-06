@@ -17,6 +17,8 @@ class BuiltinObjects
 		// Root type for all types.
 		$type = new Builtin\NumericBuiltinType($repo, $this->makeId(), "_type");
 		$this->add($type);
+		$type_weird = new Builtin\NumericBuiltinType($repo, $this->makeId(), "weird");
+		$this->add($type_weird);
 
 		// int and real
 		$type_int = new Builtin\NumericBuiltinType($repo, $this->makeId(), "int", $type);

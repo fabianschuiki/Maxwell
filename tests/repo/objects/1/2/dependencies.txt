@@ -17,6 +17,11 @@ Array
             [12] => 1.2.outputs.possibleType
         )
 
+    [CalculateRequiredTypesStage] => Array
+        (
+            [0] => 1.2.outputs.arguments.0.typeExpr.evaluatedType
+        )
+
     [CalculateActualTypesStage] => Array
         (
             [0] => 1.2.inputs.arguments.0.typeExpr.expr.possibleType
@@ -34,19 +39,10 @@ Array
             [12] => 1.2.outputs.arguments.0.typeExpr.evaluatedType
             [13] => 1.2.body.stmts.0.expr.lhs.requiredType
             [14] => 1.2.inputs.arguments.0.typeExpr.evaluatedType
-            [15] => 1.2.body.stmts.0.expr.rhs.lhs.requiredType
-            [16] => 1.2.body.stmts.0.expr.rhs.rhs.possibleType
-            [17] => 1.2.body.stmts.0.expr.rhs.rhs.requiredType
-            [18] => 1.2.body.stmts.0.expr.rhs.requiredType
-            [19] => 1.2.body.stmts.0.expr.rhs.possibleType
-            [20] => 1.2.body.stmts.0.expr.requiredType
-            [21] => 1.2.possibleType
-            [22] => 1.2.requiredType
-        )
-
-    [CalculateRequiredTypesStage] => Array
-        (
-            [0] => 1.2.outputs.arguments.0.typeExpr.evaluatedType
+            [15] => 1.2.body.stmts.0.expr.rhs.requiredType
+            [16] => 1.2.body.stmts.0.expr.requiredType
+            [17] => 1.2.possibleType
+            [18] => 1.2.requiredType
         )
 
 )

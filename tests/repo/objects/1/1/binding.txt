@@ -31,45 +31,7 @@ Array
                                 (
                                     [expr] => Array
                                         (
-                                            [bindingTarget] => @ref 0.2
-                                        )
-
-                                )
-
-                        )
-
-                )
-
-        )
-
-    [body] => Array
-        (
-            [stmts] => Array
-                (
-                    [0] => Array
-                        (
-                            [expr] => Array
-                                (
-                                    [lhs] => Array
-                                        (
-                                            [bindingTarget] => @ref 1.1.outputs.arguments.0
-                                        )
-
-                                    [rhs] => Array
-                                        (
-                                            [rhs] => Array
-                                                (
-                                                    [arguments] => Array
-                                                        (
-                                                            [0] => Array
-                                                                (
-                                                                    [bindingTarget] => @ref 1.1.inputs.arguments.0
-                                                                )
-
-                                                        )
-
-                                                )
-
+                                            [bindingTarget] => @ref 0.3
                                         )
 
                                 )

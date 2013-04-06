@@ -31,7 +31,7 @@ Array
                                 (
                                     [expr] => Array
                                         (
-                                            [bindingTarget] => @ref 0.2
+                                            [bindingTarget] => @ref 0.3
                                         )
 
                                 )
@@ -57,11 +57,7 @@ Array
 
                                     [rhs] => Array
                                         (
-                                            [lhs] => Array
-                                                (
-                                                    [bindingTarget] => @ref 1.2.inputs.arguments.0
-                                                )
-
+                                            [bindingTarget] => @ref 1.2.inputs.arguments.0
                                         )
 
                                 )

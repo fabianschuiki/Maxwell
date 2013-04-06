@@ -15,8 +15,11 @@ $ctx["annotate"]["types"] = true;
 // Generate and store the output.
 $path = __DIR__."/repo/pretty.mw";
 $output = "";
-foreach (array("1.1", "1.2") as $id) {
-	$output .= "// $id\n";
-	$output .= $printer->formatRootObject($id, $ctx)."\n\n";
+foreach (scandir(__DIR__."/repo/objects/1") as $id) {
+	if (is_numeric($id)) {
+		$rid = "1.$id";
+		$output .= "// $rid\n";
+		$output .= $printer->formatRootObject($rid, $ctx)."\n\n";
+	}
 }
 file_put_contents($path, trim($output));

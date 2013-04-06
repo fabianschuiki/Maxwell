@@ -67,16 +67,6 @@ Array
                                     [rhs] => Array
                                         (
                                             [graphPrev] => @ref 1.2.body.stmts.0.expr.lhs
-                                            [lhs] => Array
-                                                (
-                                                    [graphPrev] => @ref 1.2.body.stmts.0.expr.rhs
-                                                )
-
-                                            [rhs] => Array
-                                                (
-                                                    [graphPrev] => @ref 1.2.body.stmts.0.expr.rhs.lhs
-                                                )
-
                                         )
 
                                 )

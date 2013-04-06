@@ -13,6 +13,8 @@ foreach (scandir(__DIR__."/repo/objects/1") as $id) {
 		$objectIds[] = "1.$id";
 }
 
+Stage\CalculateActualTypesStage::$verbosity = 99;
+
 // Create a list of stages.
 $stages = array();
 $stages[] = new Stage\BuildGraphStage($repo);

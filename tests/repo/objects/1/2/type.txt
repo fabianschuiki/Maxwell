@@ -160,7 +160,7 @@ Array
                                 (
                                     [evaluatedType] => Array
                                         (
-                                            [definition] => @ref 0.2
+                                            [definition] => @ref 0.3
                                             [class] => ConcreteType
                                         )
 
@@ -215,106 +215,20 @@ Array
 
                                     [rhs] => Array
                                         (
-                                            [possibleType] => Array
-                                                (
-                                                    [types] => Array
-                                                        (
-                                                            [0] => Array
-                                                                (
-                                                                    [definition] => @ref 0.2
-                                                                    [class] => ConcreteType
-                                                                )
-
-                                                            [1] => Array
-                                                                (
-                                                                    [definition] => @ref 0.3
-                                                                    [class] => ConcreteType
-                                                                )
-
-                                                        )
-
-                                                    [class] => TypeSet
-                                                )
-
+                                            [possibleType] => @ref 1.2.inputs.arguments.0.typeExpr.evaluatedType
                                             [requiredType] => Array
                                                 (
-                                                    [definition] => @ref 0.2
+                                                    [definition] => @ref 0.3
                                                     [class] => ConcreteType
                                                 )
 
                                             [actualType] => Array
                                                 (
-                                                    [definition] => @ref 0.2
-                                                    [class] => ConcreteType
-                                                )
-
-                                            [lhs] => Array
-                                                (
-                                                    [possibleType] => @ref 1.2.inputs.arguments.0.typeExpr.evaluatedType
-                                                    [requiredType] => Array
-                                                        (
-                                                            [types] => Array
-                                                                (
-                                                                    [0] => Array
-                                                                        (
-                                                                            [definition] => @ref 0.2
-                                                                            [class] => ConcreteType
-                                                                        )
-
-                                                                    [1] => Array
-                                                                        (
-                                                                            [definition] => @ref 0.3
-                                                                            [class] => ConcreteType
-                                                                        )
-
-                                                                )
-
-                                                            [class] => TypeSet
-                                                        )
-
-                                                    [actualType] => Array
-                                                        (
-                                                            [definition] => @ref 0.2
-                                                            [class] => ConcreteType
-                                                        )
-
-                                                )
-
-                                            [rhs] => Array
-                                                (
-                                                    [possibleType] => Array
-                                                        (
-                                                            [definition] => @ref 0.2
-                                                            [class] => ConcreteType
-                                                        )
-
-                                                    [requiredType] => Array
-                                                        (
-                                                            [types] => Array
-                                                                (
-                                                                    [0] => Array
-                                                                        (
-                                                                            [definition] => @ref 0.2
-                                                                            [class] => ConcreteType
-                                                                        )
-
-                                                                    [1] => Array
-                                                                        (
-                                                                            [definition] => @ref 0.3
-                                                                            [class] => ConcreteType
-                                                                        )
-
-                                                                )
-
-                                                            [class] => TypeSet
-                                                        )
-
-                                                    [actualType] => Array
-                                                        (
-                                                            [definition] => @ref 0.2
-                                                            [class] => ConcreteType
-                                                        )
-
+                                                    [from] => @ref 1.2.inputs.arguments.0.typeExpr.evaluatedType
+                                                    [to] => @ref 1.2.body.stmts.0.expr.rhs.requiredType
+                                                    [cost] => 1
+                                                    [func] => @ref 1.1
+                                                    [class] => CastType
                                                 )
 
                                         )

@@ -61,6 +61,11 @@ Array
                     [class] => FunctionArgumentTupleType
                 )
 
+            [requiredType] => Array
+                (
+                    [class] => GenericType
+                )
+
             [actualType] => @ref 1.2.inputs.possibleType
             [arguments] => Array
                 (
@@ -71,6 +76,11 @@ Array
                                     [name] => x
                                     [type] => @ref 1.2.inputs.arguments.0.typeExpr.evaluatedType
                                     [class] => FunctionArgumentType
+                                )
+
+                            [requiredType] => Array
+                                (
+                                    [class] => GenericType
                                 )
 
                             [actualType] => @ref 1.2.inputs.arguments.0.possibleType
@@ -87,6 +97,11 @@ Array
                                             [possibleType] => Array
                                                 (
                                                     [class] => InvalidType
+                                                )
+
+                                            [requiredType] => Array
+                                                (
+                                                    [class] => GenericType
                                                 )
 
                                             [actualType] => @ref 1.2.inputs.arguments.0.typeExpr.expr.possibleType
@@ -118,6 +133,11 @@ Array
                     [class] => FunctionArgumentTupleType
                 )
 
+            [requiredType] => Array
+                (
+                    [class] => GenericType
+                )
+
             [actualType] => @ref 1.2.outputs.possibleType
             [arguments] => Array
                 (
@@ -128,6 +148,11 @@ Array
                                     [name] => y
                                     [type] => @ref 1.2.outputs.arguments.0.typeExpr.evaluatedType
                                     [class] => FunctionArgumentType
+                                )
+
+                            [requiredType] => Array
+                                (
+                                    [class] => GenericType
                                 )
 
                             [actualType] => @ref 1.2.outputs.arguments.0.possibleType
@@ -144,6 +169,11 @@ Array
                                             [possibleType] => Array
                                                 (
                                                     [class] => InvalidType
+                                                )
+
+                                            [requiredType] => Array
+                                                (
+                                                    [class] => GenericType
                                                 )
 
                                             [actualType] => @ref 1.2.outputs.arguments.0.typeExpr.expr.possibleType
@@ -166,10 +196,20 @@ Array
                             [expr] => Array
                                 (
                                     [possibleType] => @ref 1.2.outputs.arguments.0.typeExpr.evaluatedType
+                                    [requiredType] => Array
+                                        (
+                                            [class] => GenericType
+                                        )
+
                                     [actualType] => @ref 1.2.outputs.arguments.0.typeExpr.evaluatedType
                                     [lhs] => Array
                                         (
                                             [possibleType] => @ref 1.2.outputs.arguments.0.typeExpr.evaluatedType
+                                            [requiredType] => Array
+                                                (
+                                                    [class] => GenericType
+                                                )
+
                                             [actualType] => @ref 1.2.outputs.arguments.0.typeExpr.evaluatedType
                                         )
 
@@ -196,11 +236,48 @@ Array
                                                     [class] => TypeSet
                                                 )
 
-                                            [actualType] => @ref 1.2.body.stmts.0.expr.rhs.possibleType
+                                            [requiredType] => Array
+                                                (
+                                                    [definition] => @ref 0.2
+                                                    [class] => ConcreteType
+                                                )
+
+                                            [actualType] => Array
+                                                (
+                                                    [definition] => @ref 0.2
+                                                    [class] => ConcreteType
+                                                )
+
                                             [lhs] => Array
                                                 (
                                                     [possibleType] => @ref 1.2.inputs.arguments.0.typeExpr.evaluatedType
-                                                    [actualType] => @ref 1.2.inputs.arguments.0.typeExpr.evaluatedType
+                                                    [requiredType] => Array
+                                                        (
+                                                            [types] => Array
+                                                                (
+                                                                    [0] => Array
+                                                                        (
+                                                                            [definition] => @ref 0.2
+                                                                            [class] => ConcreteType
+                                                                        )
+
+                                                                    [1] => Array
+                                                                        (
+                                                                            [definition] => @ref 0.3
+                                                                            [class] => ConcreteType
+                                                                        )
+
+                                                                )
+
+                                                            [class] => TypeSet
+                                                        )
+
+                                                    [actualType] => Array
+                                                        (
+                                                            [definition] => @ref 0.2
+                                                            [class] => ConcreteType
+                                                        )
+
                                                 )
 
                                             [rhs] => Array
@@ -211,7 +288,33 @@ Array
                                                             [class] => ConcreteType
                                                         )
 
-                                                    [actualType] => @ref 1.2.body.stmts.0.expr.rhs.rhs.possibleType
+                                                    [requiredType] => Array
+                                                        (
+                                                            [types] => Array
+                                                                (
+                                                                    [0] => Array
+                                                                        (
+                                                                            [definition] => @ref 0.2
+                                                                            [class] => ConcreteType
+                                                                        )
+
+                                                                    [1] => Array
+                                                                        (
+                                                                            [definition] => @ref 0.3
+                                                                            [class] => ConcreteType
+                                                                        )
+
+                                                                )
+
+                                                            [class] => TypeSet
+                                                        )
+
+                                                    [actualType] => Array
+                                                        (
+                                                            [definition] => @ref 0.2
+                                                            [class] => ConcreteType
+                                                        )
+
                                                 )
 
                                         )

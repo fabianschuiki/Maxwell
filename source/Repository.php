@@ -24,7 +24,7 @@ class Repository
 	protected $objects_modified = array();
 
 	// Logging facilities.
-	static public $verbosity = 3;
+	static public $verbosity = 2;
 	private function println($verbosity, $ln, $info = null)
 	{
 		if (static::$verbosity > $verbosity)

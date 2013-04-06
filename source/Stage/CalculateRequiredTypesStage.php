@@ -5,7 +5,7 @@ use DriverStage;
 
 class CalculateRequiredTypesStage extends DriverStage
 {
-	static public $verbosity = 99;
+	static public $verbosity = 0;
 
 	protected function process(\RepositoryObject $object)
 	{
@@ -19,50 +19,43 @@ class CalculateRequiredTypesStage extends DriverStage
 		// For objects that contain a call, the procedure is similar to the one performed in the CalculatePossibleTypesStage. The input argument tuples are unified and then assigned as a requirement to each call argument individually.
 		if ($object instanceof \Objects\CallInterface) {
 			$inputTuples = array();
-			foreach ($object->getCallCandidates()->getChildren() as $candidate) {
+			$inputTypes = array();
+			foreach ($object->getCallCandidates()->getChildren() as $candidate)
+			{
 				// Fetch the function type this candidate is pointing at.
 				$f = $candidate->getFunc();
-				$this->addDependency($candidate);
-				$t = $f->getActualType(false);
-				if (!$t)
-					$t = $f->getPossibleType();
+				$this->addDependency($f, "actualType");
+				$t = $f->getActualType();
 
 				// Calculate the required types for each call candidate's arguments.
 				foreach ($candidate->getArguments()->getElements() as $index => $argument) {
-					$this->println(3, "Working on argument $index = {$argument->getId()}", $object->getId());
-					$argument->setRequiredTypeRef($t->getInputs()->getArguments()->get($index)->getType(), $this->repository);
+					$rt = $t->getInputs()->getArguments()->get($index)->getType();
+					$argument->setRequiredTypeRef($rt, $this->repository);
+					$inputTypes[$index][] = $rt;
 				}
 
 				// Calculate the required return type of this candidate.
 				$candidate->setRequiredTypeRef($object->getRequiredType(), $this->repository);
-
-				// Old stuff...
-				$inputTuples[] = $t->getInputs();
 			}
 
 			// Dump the call to the console.
-			$this->println(3, $object->describe(), $object->getId());
+			//$this->println(3, $object->describe(), $object->getId());
 
-			$t = \Type::unifyArgumentTuples($inputTuples);
-			$this->println(2, "Unified inputs = ".\Type::describe($t), $object->getId());
-
-			// Assign each call argument the respective set of types that are possible.
+			// For each call argument come up with a set of required types.
 			foreach ($object->getCallArguments()->getArguments()->getElements() as $index => $argument) {
-				$a = new \RepositoryObjectArray;
-				foreach ($t->getTypes()->getElements() as $tuple) {
-					$ta = $tuple->getArguments()->get($index, false);
-					if ($ta !== null) {
-						$a->add(clone $ta->getType());
+				if (isset($inputTypes[$index])) {
+					$a = new \RepositoryObjectArray;
+					foreach ($inputTypes[$index] as $type) {
+						$a->add(clone $type);
 					}
-				}
-				if ($a->getCount() > 0) {
 					$s = new \Objects\TypeSet;
 					$s->setTypes($a);
-					$s = \Type::simplifySet($s);
-					$argument->getExpr()->setRequiredType(clone $s);
+					$t = \Type::simplifySet($s);
 				} else {
-					$argument->getExpr()->setRequiredType(new \Objects\InvalidType);
+					$t = new \Objects\InvalidType;
 				}
+				$this->println(3, "Calculated type set for argument $index to be ".\Type::describe($t), $object->getId());
+				$argument->getExpr()->setRequiredType($t);
 			}
 		}
 

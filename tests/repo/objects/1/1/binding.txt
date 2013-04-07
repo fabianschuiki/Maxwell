@@ -10,7 +10,20 @@ Array
                                 (
                                     [expr] => Array
                                         (
-                                            [bindingTarget] => @ref 0.4
+                                            [typeExprs] => Array
+                                                (
+                                                    [0] => Array
+                                                        (
+                                                            [bindingTarget] => @ref 0.3
+                                                        )
+
+                                                    [1] => Array
+                                                        (
+                                                            [bindingTarget] => @ref 0.4
+                                                        )
+
+                                                )
+
                                         )
 
                                 )
@@ -60,6 +73,24 @@ Array
                         )
 
                     [1] => Array
+                        (
+                            [target] => Array
+                                (
+                                    [bindingTarget] => @ref 1.1.body.stmts.0.expr
+                                )
+
+                            [assumption] => Array
+                                (
+                                    [expr] => Array
+                                        (
+                                            [bindingTarget] => @ref 0.3
+                                        )
+
+                                )
+
+                        )
+
+                    [2] => Array
                         (
                             [expr] => Array
                                 (

@@ -24,7 +24,8 @@
 			"string callName",
 			"CallArgumentTuple callArguments",
 			"array callCandidates",
-			"CallCandidate selectedCallCandidate"]
+			"CallCandidate selectedCallCandidate"],
+		"assumer": ["array assumptions"]
 	},
 
 	"entities": {
@@ -53,7 +54,7 @@
 			"graph": ["@graph"],
 			"type": ["@type"],
 			"code": ["@root_code"],
-			"binding":[], "call":[]},
+			"binding":[], "call":[], "assumer":[]},
 
 		"FunctionArgumentTuple": {
 			"implements": ["\\AbstractFunctionArgumentTuple"],
@@ -106,7 +107,22 @@
 			"tree": ["array arguments"],
 			"main": ["string name"],
 			"call": ["@call"],
-			"type": ["@type"]},
+			"type": ["@type"],
+			"graph": ["@graph"]},
+
+		"UnionTypeExpr": {
+			"extends": "Expr",
+			"tree": ["array typeExprs"],
+			"graph": ["@graph"]},
+
+		"AssumeStmt": {
+			"tree": ["target", "assumption"],
+			"graph": ["@graph"],
+			"assumer": ["@assumer"]},
+
+		"Assumption": {
+			"assumer": ["target", "assumption"]
+			},
 
 		"CallArgumentTuple": {
 			"call": ["array arguments"]},
@@ -141,6 +157,8 @@
 				"to",
 				"numeric cost",
 				"\\AbstractFunction func"
-			]}
+			]},
+		"UnionType": {
+			"main": ["array types"]}
 	}
 }

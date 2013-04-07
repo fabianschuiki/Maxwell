@@ -116,5 +116,8 @@ class CalculateActualTypesStage extends DriverStage
 
 		// In case we've found nothing, simply return the invalid type.
 		$object->setActualType(new InvalidType);
+
+		// Throw an exception. Maybe this prevents the programmer from doing bad things?
+		throw new \RuntimeException("No cast found from ".\Type::describe($from)." to ".\Type::describe($to).".");
 	}
 }

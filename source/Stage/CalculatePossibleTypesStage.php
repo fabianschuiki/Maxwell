@@ -108,12 +108,39 @@ class CalculatePossibleTypesStage extends DriverStage
 		// General expressions.
 		if ($object instanceof \Objects\IdentifierExpr) {
 			$target = $object->getBindingTarget();
+
+			// Look for assumptions in the graph that point at this object.
+			$assumedType = null;
+			$current = $object;
+			while ($current) {
+				if ($current instanceof \Objects\AssumerInterface) {
+					$asm = $current->getAssumptions(false);
+					if ($asm) {
+						foreach ($asm->getElements() as $assumption) {
+							if ($assumption->getTarget()->getBindingTarget() == $target) {
+								$this->println(2, "Considering {$assumption->getId()}", $object->getId());
+								$assumedType = $assumption->getAssumption()->getEvaluatedType();
+								$this->addDependency($assumption, "assumption.evaluatedType");
+							}
+						}
+					}
+				}
+				$current = $current->getGraphPrev();
+			}
+
+			$t = null;
 			if ($target instanceof \AbstractFunctionArgument) {
 				$t = $target->getActualType()->getType();
-				$object->setPossibleTypeRef($t, $this->repository);
-				$this->addDependency($target, "actualType.type");
 			} else if ($target instanceof \Objects\VariableDefinitionExpr) {
 				$t = $target->getActualType();
+			}
+
+			if ($t) {
+				if ($assumedType) {
+					// check $assumedType->isSubtypeOf($t)
+					$this->println(3, "Assuming type to be ".\Type::describe($assumedType)." instead of ".\Type::describe($t), $object->getId());
+					$t = $assumedType;
+				}
 				$object->setPossibleTypeRef($t, $this->repository);
 				$this->addDependency($target, "actualType.type");
 			} else {

@@ -83,7 +83,16 @@ class PrettyPrinter
 		}
 
 		foreach ($object->getBody()->getStmts()->getElements() as $stmt) {
+			unset($context["annotations"]);
 			$stmts[] = $this->formatObject($stmt, $context);
+			$ans = static::ctxget($context, "annotations");
+			unset($context["annotations"]);
+			if ($ans) {
+				foreach ($ans as $an) {
+					$anmod = str_replace($object->getId().".", "", $an);
+					$stmts[] = "// ".str_replace("\n", "\n// ", $anmod);
+				}
+			}
 		}
 
 		$s = "func {$object->getName()}";
@@ -102,16 +111,16 @@ class PrettyPrinter
 
 	public function formatExprStmt($object, &$context)
 	{
-		unset($context["annotations"]);
+		//unset($context["annotations"]);
 		$s = $this->formatObject($object->getExpr(), $context).";";
-		$ans = static::ctxget($context, "annotations");
+		/*$ans = static::ctxget($context, "annotations");
 		unset($context["annotations"]);
 		if ($ans) {
 			foreach ($ans as $an) {
 				$anmod = str_replace($object->getId().".", "", $an);
 				$s .= "\n// ".str_replace("\n", "\n// ", $anmod);
 			}
-		}
+		}*/
 		return $s;
 	}
 
@@ -177,5 +186,24 @@ class PrettyPrinter
 			$s .= " = ".$this->formatObject($i, $context);
 		}
 		return $s;
+	}
+
+	public function formatUnionTypeExpr($object, &$context)
+	{
+		$a = array();
+		foreach ($object->getTypeExprs()->getElements() as $te) {
+			$a[] = $this->formatObject($te, $context);
+		}
+		return implode("|", $a);
+	}
+
+	public function formatAssumeStmt($object, &$context)
+	{
+		return "assume ".$this->formatObject($object->getTarget(), $context)." = ".$this->formatObject($object->getAssumption(), $context).";";
+	}
+
+	public function formatAssumption($object, &$context)
+	{
+		return $this->formatObject($object->getTarget(), $context)." = ".$this->formatObject($object->getAssumption(), $context);
 	}
 }

@@ -15,6 +15,20 @@ Array
                                     [expr] => Array
                                         (
                                             [graphPrev] => @ref 1.1.inputs.arguments.0.typeExpr
+                                            [typeExprs] => Array
+                                                (
+                                                    [0] => Array
+                                                        (
+                                                            [graphPrev] => @ref 1.1.inputs.arguments.0.typeExpr.expr
+                                                        )
+
+                                                    [1] => Array
+                                                        (
+                                                            [graphPrev] => @ref 1.1.inputs.arguments.0.typeExpr.expr.typeExprs.0
+                                                        )
+
+                                                )
+
                                         )
 
                                 )
@@ -27,7 +41,7 @@ Array
 
     [outputs] => Array
         (
-            [graphPrev] => @ref 1.1.inputs.arguments.0.typeExpr.expr
+            [graphPrev] => @ref 1.1.inputs.arguments.0.typeExpr.expr.typeExprs.1
             [arguments] => Array
                 (
                     [0] => Array
@@ -71,17 +85,37 @@ Array
                     [1] => Array
                         (
                             [graphPrev] => @ref 1.1.body.stmts.0.expr.initialExpr
-                            [expr] => Array
+                            [target] => Array
                                 (
                                     [graphPrev] => @ref 1.1.body.stmts.1
+                                )
+
+                            [assumption] => Array
+                                (
+                                    [graphPrev] => @ref 1.1.body.stmts.1.target
+                                    [expr] => Array
+                                        (
+                                            [graphPrev] => @ref 1.1.body.stmts.1.assumption
+                                        )
+
+                                )
+
+                        )
+
+                    [2] => Array
+                        (
+                            [graphPrev] => @ref 1.1.body.stmts.1.assumption.expr
+                            [expr] => Array
+                                (
+                                    [graphPrev] => @ref 1.1.body.stmts.2
                                     [lhs] => Array
                                         (
-                                            [graphPrev] => @ref 1.1.body.stmts.1.expr
+                                            [graphPrev] => @ref 1.1.body.stmts.2.expr
                                         )
 
                                     [rhs] => Array
                                         (
-                                            [graphPrev] => @ref 1.1.body.stmts.1.expr.lhs
+                                            [graphPrev] => @ref 1.1.body.stmts.2.expr.lhs
                                         )
 
                                 )

@@ -88,23 +88,61 @@ Array
                                 (
                                     [evaluatedType] => Array
                                         (
-                                            [definition] => @ref 0.4
-                                            [class] => ConcreteType
+                                            [types] => Array
+                                                (
+                                                    [0] => Array
+                                                        (
+                                                            [definition] => @ref 0.3
+                                                            [class] => ConcreteType
+                                                        )
+
+                                                    [1] => Array
+                                                        (
+                                                            [definition] => @ref 0.4
+                                                            [class] => ConcreteType
+                                                        )
+
+                                                )
+
+                                            [class] => UnionType
                                         )
 
                                     [expr] => Array
                                         (
-                                            [possibleType] => Array
+                                            [typeExprs] => Array
                                                 (
-                                                    [class] => InvalidType
+                                                    [0] => Array
+                                                        (
+                                                            [possibleType] => Array
+                                                                (
+                                                                    [class] => InvalidType
+                                                                )
+
+                                                            [requiredType] => Array
+                                                                (
+                                                                    [class] => GenericType
+                                                                )
+
+                                                            [actualType] => @ref 1.1.inputs.arguments.0.typeExpr.expr.typeExprs.0.possibleType
+                                                        )
+
+                                                    [1] => Array
+                                                        (
+                                                            [possibleType] => Array
+                                                                (
+                                                                    [class] => InvalidType
+                                                                )
+
+                                                            [requiredType] => Array
+                                                                (
+                                                                    [class] => GenericType
+                                                                )
+
+                                                            [actualType] => @ref 1.1.inputs.arguments.0.typeExpr.expr.typeExprs.1.possibleType
+                                                        )
+
                                                 )
 
-                                            [requiredType] => Array
-                                                (
-                                                    [class] => GenericType
-                                                )
-
-                                            [actualType] => @ref 1.1.inputs.arguments.0.typeExpr.expr.possibleType
                                         )
 
                                 )
@@ -219,6 +257,46 @@ Array
 
                     [1] => Array
                         (
+                            [target] => Array
+                                (
+                                    [possibleType] => @ref 1.1.body.stmts.1.assumption.evaluatedType
+                                    [requiredType] => Array
+                                        (
+                                            [class] => GenericType
+                                        )
+
+                                    [actualType] => @ref 1.1.body.stmts.1.assumption.evaluatedType
+                                )
+
+                            [assumption] => Array
+                                (
+                                    [evaluatedType] => Array
+                                        (
+                                            [definition] => @ref 0.3
+                                            [class] => ConcreteType
+                                        )
+
+                                    [expr] => Array
+                                        (
+                                            [possibleType] => Array
+                                                (
+                                                    [class] => InvalidType
+                                                )
+
+                                            [requiredType] => Array
+                                                (
+                                                    [class] => GenericType
+                                                )
+
+                                            [actualType] => @ref 1.1.body.stmts.1.assumption.expr.possibleType
+                                        )
+
+                                )
+
+                        )
+
+                    [2] => Array
+                        (
                             [expr] => Array
                                 (
                                     [possibleType] => @ref 1.1.outputs.arguments.0.typeExpr.evaluatedType
@@ -241,7 +319,7 @@ Array
 
                                     [rhs] => Array
                                         (
-                                            [possibleType] => @ref 1.1.inputs.arguments.0.typeExpr.evaluatedType
+                                            [possibleType] => @ref 1.1.body.stmts.1.assumption.evaluatedType
                                             [requiredType] => Array
                                                 (
                                                     [definition] => @ref 0.3
@@ -250,11 +328,8 @@ Array
 
                                             [actualType] => Array
                                                 (
-                                                    [from] => @ref 1.1.inputs.arguments.0.typeExpr.evaluatedType
-                                                    [to] => @ref 1.1.body.stmts.1.expr.rhs.requiredType
-                                                    [cost] => 1
-                                                    [func] => @ref 0.6
-                                                    [class] => CastType
+                                                    [definition] => @ref 0.3
+                                                    [class] => ConcreteType
                                                 )
 
                                         )

@@ -52,6 +52,10 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 	public $call_dirty  = false;
 	public $call_loaded = true;
 	
+	// assumer fragment
+	public $assumer_dirty  = false;
+	public $assumer_loaded = true;
+	
 	
 	/* GENERAL */
 	public function setParent(\IdedObject $parent = null, $key = null, $fragment = null)
@@ -73,7 +77,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 	
 	public function getFragmentNames()
 	{
-		return array("tree","main","graph","type","code","binding","call");
+		return array("tree","main","graph","type","code","binding","call","assumer");
 	}
 	
 	public function getFragment($name)
@@ -100,6 +104,7 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 				array("name" => "depDefCode", "type" => "string"));
 			case "binding": return array();
 			case "call": return array();
+			case "assumer": return array();
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -203,6 +208,11 @@ class FunctionDefinition extends \RepositoryRootObject implements \AbstractFunct
 		// call fragment
 		if (!$this->call_loaded) {
 			$this->loadFragment("call");
+		}
+	
+		// assumer fragment
+		if (!$this->assumer_loaded) {
+			$this->loadFragment("assumer");
 		}
 	
 		return true;

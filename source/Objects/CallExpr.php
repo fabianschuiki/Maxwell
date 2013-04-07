@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class CallExpr extends \RepositoryNodeObject implements \EqualInterface, CallInterface, TypeInterface
+class CallExpr extends \RepositoryNodeObject implements \EqualInterface, CallInterface, TypeInterface, GraphInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -35,6 +35,11 @@ class CallExpr extends \RepositoryNodeObject implements \EqualInterface, CallInt
 	protected $requiredType;
 	protected $actualType;
 	
+	// graph fragment
+	public $graph_dirty  = false;
+	public $graph_loaded = true;
+	protected $graphPrev;
+	
 	
 	/* GENERAL */
 	public function setParent(\IdedObject $parent = null, $key = null, $fragment = null)
@@ -56,7 +61,7 @@ class CallExpr extends \RepositoryNodeObject implements \EqualInterface, CallInt
 	
 	public function getFragmentNames()
 	{
-		return array("tree","main","call","type");
+		return array("tree","main","call","type","graph");
 	}
 	
 	public function getFragment($name)
@@ -75,6 +80,8 @@ class CallExpr extends \RepositoryNodeObject implements \EqualInterface, CallInt
 				array("name" => "possibleType", "type" => ""), 
 				array("name" => "requiredType", "type" => ""), 
 				array("name" => "actualType", "type" => ""));
+			case "graph": return array(
+				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -142,6 +149,15 @@ class CallExpr extends \RepositoryNodeObject implements \EqualInterface, CallInt
 		}
 		if (!$this->areEqual($this->actualType, $x->actualType)) {
 			$this->println(0, "Change detected in actualType");
+			return false;
+		}
+	
+		// graph fragment
+		if (!$this->graph_loaded) {
+			$this->loadFragment("graph");
+		}
+		if (!$this->areEqual($this->graphPrev, $x->graphPrev)) {
+			$this->println(0, "Change detected in graphPrev");
 			return false;
 		}
 	
@@ -539,6 +555,57 @@ class CallExpr extends \RepositoryNodeObject implements \EqualInterface, CallInt
 			$v = $this->actualType->get();
 		} else {
 			$v = $this->actualType;
+		}
+		return $v;
+	}
+	
+	public function setGraphPrev($graphPrev, $notify = true)
+	{
+		if (!$graphPrev instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
+		}
+		if (!$this->areEqual($this->graphPrev, $graphPrev)) {
+			if (!$this->graph_loaded) {
+				$this->loadFragment("graph");
+			}
+			if ($this->graphPrev instanceof \RepositoryObjectParentInterface) {
+				$this->graphPrev->setParent(null);
+			}
+			if ($graphPrev instanceof \RepositoryObjectParentInterface) {
+				$graphPrev->setParent($this, "graphPrev", "graph");
+			}
+			$this->graphPrev = $graphPrev;
+			if ($notify) {
+				$this->notifyObjectDirty("graphPrev");
+				$this->notifyFragmentDirty("graph");
+			}
+		}
+	}
+	public function setGraphPrevRef($graphPrev, \Repository $repository, $notify = true)
+	{
+		if (!$graphPrev instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($graphPrev instanceof \RepositoryObjectReference) {
+			$v->set($graphPrev->getRefId());
+		} else {
+			$v->set($graphPrev);
+		}
+		$this->setGraphPrev($v, $notify);
+	}
+	public function getGraphPrev($enforce = true, $unref = true)
+	{
+		if (!$this->graph_loaded) {
+			$this->loadFragment('graph');
+		}
+		if ($enforce && $this->graphPrev === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null graphPrev.");
+		}
+		if ($unref && $this->graphPrev instanceof \RepositoryObjectReference) {
+			$v = $this->graphPrev->get();
+		} else {
+			$v = $this->graphPrev;
 		}
 		return $v;
 	}

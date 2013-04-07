@@ -33,7 +33,7 @@
 		},
 
  		{
- 			"match": "\\b(func|type|value|object|var|typevar|byte|int|float|bool|String|Exception)\\b",
+ 			"match": "\\b(func|type|value|object|var|typevar|byte|int|float|real|bool|String|Exception)\\b",
  			"name": "storage.type.maxwell"
  		},
  		{

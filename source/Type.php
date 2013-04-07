@@ -50,6 +50,17 @@ class Type
 		if ($object instanceof \Objects\CastType) {
 			return static::describe($object->getTo())."(".static::describe($object->getFrom()).",".$object->getCost().")";
 		}
+		if ($object instanceof \Objects\UnionType) {
+			$a = array();
+			foreach ($object->getTypes()->getElements() as $t) {
+				$d = static::describe($t);
+				if ($t instanceof \Objects\UnionType) {
+					$d = "($d)";
+				}
+				$a[] = $d;
+			}
+			return implode("|", $a);
+		}
 
 		// Seems like we're unable to handle the object.
 		throw new \InvalidArgumentException("Unable to describe object ".vartype($object)." as type.");
@@ -190,7 +201,8 @@ class Type
 			$x = $b;
 			$y = $a;
 		} else {
-			throw new \InvalidArgumentException("At least one of the types needs to be a set if they are neither both sets nor both concrete types.");
+			//throw new \InvalidArgumentException("At least one of the types needs to be a set if they are neither both sets nor both concrete types.");
+			return new InvalidType;
 		}
 		foreach ($x->getTypes()->getElements() as $t) {
 			if (\Type::equal($t, $y))

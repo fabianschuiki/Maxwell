@@ -1,0 +1,1 @@
+{"inputs":{"arguments":[{"typeExpr":{"expr":{"typeExprs":[[],[]]}}}]},"outputs":{"arguments":[[]]},"body":{"stmts":[[],{"assumptions":[{"target":"@ref 1.1.body.stmts.1.target","assumption":"@ref 1.1.body.stmts.1.assumption","class":"Assumption"}]},[]]}}

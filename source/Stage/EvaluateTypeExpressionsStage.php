@@ -14,11 +14,11 @@ class EvaluateTypeExpressionsStage extends DriverStage
 		}
 		if ($object instanceof \Objects\TypeExpr)
 		{
-			if (!$object->getEvaluatedType(false)) {
+			//if (!$object->getEvaluatedType(false)) {
 				$result = $this->processExpr($object->getExpr());
 				$object->setEvaluatedType($result);
 				$this->println(1, "evaluated to ".get_class($result), $object->getId());
-			}
+			//}
 		}
 	}
 
@@ -32,6 +32,16 @@ class EvaluateTypeExpressionsStage extends DriverStage
 			$def = new \Objects\ConcreteType;
 			$def->setDefinitionRef($object->getBindingTarget(true, false), $this->repository);
 			return $def;
+		}
+		if ($object instanceof \Objects\UnionTypeExpr) {
+			$a = new \RepositoryObjectArray;
+			foreach ($object->getTypeExprs()->getElements() as $te) {
+				$tet = $this->processExpr($te);
+				$a->add($tet);
+			}
+			$t = new \Objects\UnionType;
+			$t->setTypes($a);
+			return $t;
 		}
 		throw new \InvalidArgumentException("Unable to evaluate {$object->getId()} (".get_class($object).") in type expression.");
 	}

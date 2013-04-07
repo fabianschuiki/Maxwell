@@ -36,11 +36,7 @@
 			"expr": {
 				"class": "VariableDefinitionExpr",
 				"name": "z",
-				"typeExpr": {
-					"class": "TypeExpr",
-					"expr": {
-						"class": "IdentifierExpr",
-						"name": "int"}},
+				"typeExpr": { "class": "NullObject" },
 				"initialExpr": {
 					"class": "IdentifierExpr",
 					"name": "x"}

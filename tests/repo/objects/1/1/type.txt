@@ -195,51 +195,22 @@ Array
                         (
                             [expr] => Array
                                 (
-                                    [possibleType] => @ref 1.1.body.stmts.0.expr.typeExpr.evaluatedType
+                                    [possibleType] => @ref 1.1.inputs.arguments.0.typeExpr.evaluatedType
                                     [requiredType] => Array
                                         (
                                             [class] => GenericType
                                         )
 
-                                    [actualType] => @ref 1.1.body.stmts.0.expr.typeExpr.evaluatedType
-                                    [typeExpr] => Array
-                                        (
-                                            [evaluatedType] => Array
-                                                (
-                                                    [definition] => @ref 0.3
-                                                    [class] => ConcreteType
-                                                )
-
-                                            [expr] => Array
-                                                (
-                                                    [possibleType] => Array
-                                                        (
-                                                            [class] => InvalidType
-                                                        )
-
-                                                    [requiredType] => Array
-                                                        (
-                                                            [class] => GenericType
-                                                        )
-
-                                                    [actualType] => @ref 1.1.body.stmts.0.expr.typeExpr.expr.possibleType
-                                                )
-
-                                        )
-
+                                    [actualType] => @ref 1.1.inputs.arguments.0.typeExpr.evaluatedType
                                     [initialExpr] => Array
                                         (
                                             [possibleType] => @ref 1.1.inputs.arguments.0.typeExpr.evaluatedType
-                                            [requiredType] => @ref 1.1.body.stmts.0.expr.typeExpr.evaluatedType
-                                            [actualType] => Array
+                                            [requiredType] => Array
                                                 (
-                                                    [from] => @ref 1.1.inputs.arguments.0.typeExpr.evaluatedType
-                                                    [to] => @ref 1.1.body.stmts.0.expr.typeExpr.evaluatedType
-                                                    [cost] => 1
-                                                    [func] => @ref 0.6
-                                                    [class] => CastType
+                                                    [class] => GenericType
                                                 )
 
+                                            [actualType] => @ref 1.1.inputs.arguments.0.typeExpr.evaluatedType
                                         )
 
                                 )
@@ -270,7 +241,7 @@ Array
 
                                     [rhs] => Array
                                         (
-                                            [possibleType] => @ref 1.1.body.stmts.0.expr.typeExpr.evaluatedType
+                                            [possibleType] => @ref 1.1.inputs.arguments.0.typeExpr.evaluatedType
                                             [requiredType] => Array
                                                 (
                                                     [definition] => @ref 0.3
@@ -279,8 +250,11 @@ Array
 
                                             [actualType] => Array
                                                 (
-                                                    [definition] => @ref 0.3
-                                                    [class] => ConcreteType
+                                                    [from] => @ref 1.1.inputs.arguments.0.typeExpr.evaluatedType
+                                                    [to] => @ref 1.1.body.stmts.1.expr.rhs.requiredType
+                                                    [cost] => 1
+                                                    [func] => @ref 0.6
+                                                    [class] => CastType
                                                 )
 
                                         )

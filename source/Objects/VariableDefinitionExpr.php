@@ -69,8 +69,8 @@ class VariableDefinitionExpr extends Expr implements \EqualInterface, RangeInter
 	{
 		switch ($name) {
 			case "tree": return array(
-				array("name" => "typeExpr", "type" => "TypeExpr"), 
-				array("name" => "initialExpr", "type" => "Expr"));
+				array("name" => "typeExpr", "type" => ""), 
+				array("name" => "initialExpr", "type" => ""));
 			case "main": return array(
 				array("name" => "range", "type" => "\Source\Range"), 
 				array("name" => "humanRange", "type" => "\Source\Range"), 
@@ -174,9 +174,6 @@ class VariableDefinitionExpr extends Expr implements \EqualInterface, RangeInter
 	/* ACCESSORS */
 	public function setTypeExpr($typeExpr, $notify = true)
 	{
-		if (!$typeExpr instanceof TypeExpr && !$typeExpr instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs typeExpr to be an instance of TypeExpr or \RepositoryObjectReference');
-		}
 		if (!$this->areEqual($this->typeExpr, $typeExpr)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
@@ -196,9 +193,6 @@ class VariableDefinitionExpr extends Expr implements \EqualInterface, RangeInter
 	}
 	public function setTypeExprRef($typeExpr, \Repository $repository, $notify = true)
 	{
-		if (!$typeExpr instanceof TypeExpr && !$typeExpr instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs typeExpr to be an instance of TypeExpr or \RepositoryObjectReference');
-		}
 		$v = new \RepositoryObjectReference($repository);
 		if ($typeExpr instanceof \RepositoryObjectReference) {
 			$v->set($typeExpr->getRefId());
@@ -225,9 +219,6 @@ class VariableDefinitionExpr extends Expr implements \EqualInterface, RangeInter
 	
 	public function setInitialExpr($initialExpr, $notify = true)
 	{
-		if (!$initialExpr instanceof Expr && !$initialExpr instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs initialExpr to be an instance of Expr or \RepositoryObjectReference');
-		}
 		if (!$this->areEqual($this->initialExpr, $initialExpr)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
@@ -247,9 +238,6 @@ class VariableDefinitionExpr extends Expr implements \EqualInterface, RangeInter
 	}
 	public function setInitialExprRef($initialExpr, \Repository $repository, $notify = true)
 	{
-		if (!$initialExpr instanceof Expr && !$initialExpr instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs initialExpr to be an instance of Expr or \RepositoryObjectReference');
-		}
 		$v = new \RepositoryObjectReference($repository);
 		if ($initialExpr instanceof \RepositoryObjectReference) {
 			$v->set($initialExpr->getRefId());

@@ -50,15 +50,6 @@ Array
                         (
                             [expr] => Array
                                 (
-                                    [typeExpr] => Array
-                                        (
-                                            [expr] => Array
-                                                (
-                                                    [bindingTarget] => @ref 0.3
-                                                )
-
-                                        )
-
                                     [initialExpr] => Array
                                         (
                                             [bindingTarget] => @ref 1.1.inputs.arguments.0

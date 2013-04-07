@@ -28,6 +28,7 @@
 	},
 
 	"entities": {
+		"NullObject": {},
 		"IdentifierExpr": {
 			"extends": "Expr",
 			"main": ["@range", "string name"],
@@ -38,7 +39,7 @@
 
 		"VariableDefinitionExpr": {
 			"extends": "Expr",
-			"tree": ["TypeExpr typeExpr", "Expr initialExpr"],
+			"tree": ["typeExpr", "initialExpr"],
 			"main": ["@range", "string name"],
 			"graph": ["@graph"],
 			"type": ["@type"],

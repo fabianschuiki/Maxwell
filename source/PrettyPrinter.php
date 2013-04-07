@@ -169,11 +169,11 @@ class PrettyPrinter
 	{
 		$s = "var ".$object->getName();
 		$t = $object->getTypeExpr();
-		if (!$t instanceof \Objects\EmptyExpr) {
+		if (!$t instanceof \Objects\NullObject) {
 			$s .= " ".$this->formatObject($t, $context);
 		}
 		$i = $object->getInitialExpr();
-		if (!$i instanceof \Objects\EmptyExpr) {
+		if (!$i instanceof \Objects\NullObject) {
 			$s .= " = ".$this->formatObject($i, $context);
 		}
 		return $s;

@@ -19,10 +19,15 @@ class CalculateRequiredTypesStage extends DriverStage
 		// Variables require the initial expression to match the variable type.
 		if ($object instanceof \Objects\VariableDefinitionExpr) {
 			$ie = $object->getInitialExpr();
-			if (!$ie instanceof \Objects\EmptyExpr) {
-				$t = $object->getTypeExpr()->getEvaluatedType();
-				$ie->setRequiredTypeRef($t, $this->repository);
-				$this->addDependency($object, "typeExpr.evaluatedType");
+			$te = $object->getTypeExpr();
+			if (!$ie instanceof \Objects\NullObject) {
+				if (!$te instanceof \Objects\NullObject) {
+					$t = $te->getEvaluatedType();
+					$ie->setRequiredTypeRef($t, $this->repository);
+					$this->addDependency($object, "typeExpr.evaluatedType");
+				} else {
+					$ie->setRequiredType(new \Objects\GenericType);
+				}
 			}
 		}
 

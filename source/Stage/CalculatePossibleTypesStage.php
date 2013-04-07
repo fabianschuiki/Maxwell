@@ -141,9 +141,23 @@ class CalculatePossibleTypesStage extends DriverStage
 			$object->setPossibleType($ct);
 		}
 		if ($object instanceof \Objects\VariableDefinitionExpr) {
-			$t = $object->getTypeExpr()->getEvaluatedType();
-			$object->setPossibleTypeRef($t, $this->repository);
-			$this->addDependency($object, "typeExpr.evaluatedType");
+			$te = $object->getTypeExpr();
+			$t = null;
+			if (!$te instanceof \Objects\NullObject) {
+				$t = $te->getEvaluatedType();
+				$this->addDependency($object, "typeExpr.evaluatedType");
+			} else {
+				$ti = $object->getInitialExpr();
+				if (!$ti instanceof \Objects\NullObject) {
+					$t = $ti->getActualType();
+					$this->addDependency($object, "initialExpr.actualType");
+				}
+			}
+			if ($t) {
+				$object->setPossibleTypeRef($t, $this->repository);
+			} else {
+				$object->setPossibleType(new \Objects\InvalidType);
+			}
 		}
 
 		// If the actual type has not yet been calculated, it simply equals the

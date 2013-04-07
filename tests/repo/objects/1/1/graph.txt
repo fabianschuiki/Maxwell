@@ -59,19 +59,9 @@ Array
                             [expr] => Array
                                 (
                                     [graphPrev] => @ref 1.1.body.stmts.0
-                                    [typeExpr] => Array
-                                        (
-                                            [graphPrev] => @ref 1.1.body.stmts.0.expr
-                                            [expr] => Array
-                                                (
-                                                    [graphPrev] => @ref 1.1.body.stmts.0.expr.typeExpr
-                                                )
-
-                                        )
-
                                     [initialExpr] => Array
                                         (
-                                            [graphPrev] => @ref 1.1.body.stmts.0.expr.typeExpr.expr
+                                            [graphPrev] => @ref 1.1.body.stmts.0.expr
                                         )
 
                                 )

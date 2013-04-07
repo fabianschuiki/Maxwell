@@ -16,6 +16,16 @@ class CalculateRequiredTypesStage extends DriverStage
 			$object->getRhs()->setRequiredType(clone $t);
 		}
 
+		// Variables require the initial expression to match the variable type.
+		if ($object instanceof \Objects\VariableDefinitionExpr) {
+			$ie = $object->getInitialExpr();
+			if (!$ie instanceof \Objects\EmptyExpr) {
+				$t = $object->getTypeExpr()->getEvaluatedType();
+				$ie->setRequiredTypeRef($t, $this->repository);
+				$this->addDependency($object, "typeExpr.evaluatedType");
+			}
+		}
+
 		// For objects that contain a call, the procedure is similar to the one performed in the CalculatePossibleTypesStage. The input argument tuples are unified and then assigned as a requirement to each call argument individually.
 		if ($object instanceof \Objects\CallInterface) {
 			$inputTuples = array();

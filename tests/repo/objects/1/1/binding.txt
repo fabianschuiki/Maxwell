@@ -10,7 +10,7 @@ Array
                                 (
                                     [expr] => Array
                                         (
-                                            [bindingTarget] => @ref 0.2
+                                            [bindingTarget] => @ref 0.4
                                         )
 
                                 )
@@ -50,6 +50,28 @@ Array
                         (
                             [expr] => Array
                                 (
+                                    [typeExpr] => Array
+                                        (
+                                            [expr] => Array
+                                                (
+                                                    [bindingTarget] => @ref 0.3
+                                                )
+
+                                        )
+
+                                    [initialExpr] => Array
+                                        (
+                                            [bindingTarget] => @ref 1.1.inputs.arguments.0
+                                        )
+
+                                )
+
+                        )
+
+                    [1] => Array
+                        (
+                            [expr] => Array
+                                (
                                     [lhs] => Array
                                         (
                                             [bindingTarget] => @ref 1.1.outputs.arguments.0
@@ -57,7 +79,7 @@ Array
 
                                     [rhs] => Array
                                         (
-                                            [bindingTarget] => @ref 1.1.inputs.arguments.0
+                                            [bindingTarget] => @ref 1.1.body.stmts.0.expr
                                         )
 
                                 )

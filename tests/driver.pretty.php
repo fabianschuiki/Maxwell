@@ -11,6 +11,7 @@ $printer = new PrettyPrinter($repo);
 $ctx = array();
 $ctx["annotate"]["selected-call"] = true;
 $ctx["annotate"]["types"] = true;
+$ctx["annotate"]["bindings"] = true;
 
 // Generate and store the output.
 $path = __DIR__."/repo/pretty.mw";

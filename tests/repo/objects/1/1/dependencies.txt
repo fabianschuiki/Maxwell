@@ -2,15 +2,15 @@ Array
 (
     [CalculatePossibleTypesStage] => Array
         (
-            [0] => 1.1.inputs.arguments.0.typeExpr.evaluatedType
-            [1] => 1.1.inputs.arguments.0.actualType
-            [2] => 1.1.inputs.arguments.0.possibleType
-            [3] => 1.1.outputs.arguments.0.typeExpr.evaluatedType
-            [4] => 1.1.outputs.arguments.0.actualType
-            [5] => 1.1.outputs.arguments.0.possibleType
+            [0] => 1.1.inputs.arguments.0.actualType
+            [1] => 1.1.inputs.arguments.0.possibleType
+            [2] => 1.1.outputs.arguments.0.actualType
+            [3] => 1.1.outputs.arguments.0.possibleType
+            [4] => 1.1.inputs.arguments.0.actualType.type
+            [5] => 1.1.body.stmts.0.expr.typeExpr.evaluatedType
             [6] => 1.1.outputs.arguments.0.actualType.type
-            [7] => 1.1.inputs.arguments.0.actualType.type
-            [8] => 1.1.body.stmts.0.expr.lhs.actualType
+            [7] => 1.1.body.stmts.0.expr.actualType.type
+            [8] => 1.1.body.stmts.1.expr.lhs.actualType
             [9] => 1.1.inputs.actualType
             [10] => 1.1.outputs.actualType
             [11] => 1.1.inputs.possibleType
@@ -19,7 +19,8 @@ Array
 
     [CalculateRequiredTypesStage] => Array
         (
-            [0] => 1.1.outputs.arguments.0.typeExpr.evaluatedType
+            [0] => 1.1.body.stmts.0.expr.typeExpr.evaluatedType
+            [1] => 1.1.outputs.arguments.0.typeExpr.evaluatedType
         )
 
     [CalculateActualTypesStage] => Array
@@ -36,13 +37,17 @@ Array
             [9] => 1.1.outputs.arguments.0.requiredType
             [10] => 1.1.outputs.possibleType
             [11] => 1.1.outputs.requiredType
-            [12] => 1.1.outputs.arguments.0.typeExpr.evaluatedType
-            [13] => 1.1.body.stmts.0.expr.lhs.requiredType
+            [12] => 1.1.body.stmts.0.expr.typeExpr.expr.possibleType
+            [13] => 1.1.body.stmts.0.expr.typeExpr.expr.requiredType
             [14] => 1.1.inputs.arguments.0.typeExpr.evaluatedType
-            [15] => 1.1.body.stmts.0.expr.rhs.requiredType
+            [15] => 1.1.body.stmts.0.expr.typeExpr.evaluatedType
             [16] => 1.1.body.stmts.0.expr.requiredType
-            [17] => 1.1.possibleType
-            [18] => 1.1.requiredType
+            [17] => 1.1.outputs.arguments.0.typeExpr.evaluatedType
+            [18] => 1.1.body.stmts.1.expr.lhs.requiredType
+            [19] => 1.1.body.stmts.1.expr.rhs.requiredType
+            [20] => 1.1.body.stmts.1.expr.requiredType
+            [21] => 1.1.possibleType
+            [22] => 1.1.requiredType
         )
 
 )

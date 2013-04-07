@@ -1,13 +1,16 @@
 // 1.1
-func debug (weird x) -> (int y)
+func debug (real x) -> (int y)
 {
-    y = x;
+    var z int = x;
+    // type of expr = int
+    // type of expr.typeExpr.expr = <invalid>
+    // int -> 0.3
+    // type of expr.initialExpr = int(real,1)
+    // x -> 1.1.inputs.arguments.0
+    y = z;
     // type of expr = int
     // type of expr.lhs = int
-    // type of expr.rhs = int(weird,1)
-}
-
-// 1.2
-func cast (weird x) -> (int y)
-{
+    // y -> 1.1.outputs.arguments.0
+    // type of expr.rhs = int
+    // z -> 1.1.body.stmts.0.expr
 }

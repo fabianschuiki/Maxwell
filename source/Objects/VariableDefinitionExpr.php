@@ -3,12 +3,18 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, \EqualInterface, RangeInterface, TypeInterface, ExprCodeInterface
+class VariableDefinitionExpr extends Expr implements \EqualInterface, RangeInterface, GraphInterface, TypeInterface, ExprCodeInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
 	protected $parent_key = null;
 	protected $parent_fragment = null;
+	
+	// tree fragment
+	public $tree_dirty  = false;
+	public $tree_loaded = true;
+	protected $typeExpr;
+	protected $initialExpr;
 	
 	// main fragment
 	public $main_dirty  = false;
@@ -16,8 +22,11 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, \Equ
 	protected $range;
 	protected $humanRange;
 	protected $name;
-	protected $typeExpr;
-	protected $initialExpr;
+	
+	// graph fragment
+	public $graph_dirty  = false;
+	public $graph_loaded = true;
+	protected $graphPrev;
 	
 	// type fragment
 	public $type_dirty  = false;
@@ -53,18 +62,21 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, \Equ
 	
 	public function getFragmentNames()
 	{
-		return array("main","type","code");
+		return array("tree","main","graph","type","code");
 	}
 	
 	public function getFragment($name)
 	{
 		switch ($name) {
+			case "tree": return array(
+				array("name" => "typeExpr", "type" => "TypeExpr"), 
+				array("name" => "initialExpr", "type" => "Expr"));
 			case "main": return array(
 				array("name" => "range", "type" => "\Source\Range"), 
 				array("name" => "humanRange", "type" => "\Source\Range"), 
-				array("name" => "name", "type" => "string"), 
-				array("name" => "typeExpr", "type" => "TypeExpr"), 
-				array("name" => "initialExpr", "type" => "Expr"));
+				array("name" => "name", "type" => "string"));
+			case "graph": return array(
+				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
 			case "type": return array(
 				array("name" => "possibleType", "type" => ""), 
 				array("name" => "requiredType", "type" => ""), 
@@ -86,6 +98,19 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, \Equ
 		if (!$x instanceof self) {
 			throw new \InvalidArgumentException('x needs to be an instance of VariableDefinitionExpr as well.');
 		}
+		// tree fragment
+		if (!$this->tree_loaded) {
+			$this->loadFragment("tree");
+		}
+		if (!$this->areEqual($this->typeExpr, $x->typeExpr)) {
+			$this->println(0, "Change detected in typeExpr");
+			return false;
+		}
+		if (!$this->areEqual($this->initialExpr, $x->initialExpr)) {
+			$this->println(0, "Change detected in initialExpr");
+			return false;
+		}
+	
 		// main fragment
 		if (!$this->main_loaded) {
 			$this->loadFragment("main");
@@ -102,12 +127,13 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, \Equ
 			$this->println(0, "Change detected in name");
 			return false;
 		}
-		if (!$this->areEqual($this->typeExpr, $x->typeExpr)) {
-			$this->println(0, "Change detected in typeExpr");
-			return false;
+	
+		// graph fragment
+		if (!$this->graph_loaded) {
+			$this->loadFragment("graph");
 		}
-		if (!$this->areEqual($this->initialExpr, $x->initialExpr)) {
-			$this->println(0, "Change detected in initialExpr");
+		if (!$this->areEqual($this->graphPrev, $x->graphPrev)) {
+			$this->println(0, "Change detected in graphPrev");
 			return false;
 		}
 	
@@ -146,6 +172,108 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, \Equ
 	
 	
 	/* ACCESSORS */
+	public function setTypeExpr($typeExpr, $notify = true)
+	{
+		if (!$typeExpr instanceof TypeExpr && !$typeExpr instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs typeExpr to be an instance of TypeExpr or \RepositoryObjectReference');
+		}
+		if (!$this->areEqual($this->typeExpr, $typeExpr)) {
+			if (!$this->tree_loaded) {
+				$this->loadFragment("tree");
+			}
+			if ($this->typeExpr instanceof \RepositoryObjectParentInterface) {
+				$this->typeExpr->setParent(null);
+			}
+			if ($typeExpr instanceof \RepositoryObjectParentInterface) {
+				$typeExpr->setParent($this, "typeExpr", "tree");
+			}
+			$this->typeExpr = $typeExpr;
+			if ($notify) {
+				$this->notifyObjectDirty("typeExpr");
+				$this->notifyFragmentDirty("tree");
+			}
+		}
+	}
+	public function setTypeExprRef($typeExpr, \Repository $repository, $notify = true)
+	{
+		if (!$typeExpr instanceof TypeExpr && !$typeExpr instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs typeExpr to be an instance of TypeExpr or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($typeExpr instanceof \RepositoryObjectReference) {
+			$v->set($typeExpr->getRefId());
+		} else {
+			$v->set($typeExpr);
+		}
+		$this->setTypeExpr($v, $notify);
+	}
+	public function getTypeExpr($enforce = true, $unref = true)
+	{
+		if (!$this->tree_loaded) {
+			$this->loadFragment('tree');
+		}
+		if ($enforce && $this->typeExpr === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null typeExpr.");
+		}
+		if ($unref && $this->typeExpr instanceof \RepositoryObjectReference) {
+			$v = $this->typeExpr->get();
+		} else {
+			$v = $this->typeExpr;
+		}
+		return $v;
+	}
+	
+	public function setInitialExpr($initialExpr, $notify = true)
+	{
+		if (!$initialExpr instanceof Expr && !$initialExpr instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs initialExpr to be an instance of Expr or \RepositoryObjectReference');
+		}
+		if (!$this->areEqual($this->initialExpr, $initialExpr)) {
+			if (!$this->tree_loaded) {
+				$this->loadFragment("tree");
+			}
+			if ($this->initialExpr instanceof \RepositoryObjectParentInterface) {
+				$this->initialExpr->setParent(null);
+			}
+			if ($initialExpr instanceof \RepositoryObjectParentInterface) {
+				$initialExpr->setParent($this, "initialExpr", "tree");
+			}
+			$this->initialExpr = $initialExpr;
+			if ($notify) {
+				$this->notifyObjectDirty("initialExpr");
+				$this->notifyFragmentDirty("tree");
+			}
+		}
+	}
+	public function setInitialExprRef($initialExpr, \Repository $repository, $notify = true)
+	{
+		if (!$initialExpr instanceof Expr && !$initialExpr instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs initialExpr to be an instance of Expr or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($initialExpr instanceof \RepositoryObjectReference) {
+			$v->set($initialExpr->getRefId());
+		} else {
+			$v->set($initialExpr);
+		}
+		$this->setInitialExpr($v, $notify);
+	}
+	public function getInitialExpr($enforce = true, $unref = true)
+	{
+		if (!$this->tree_loaded) {
+			$this->loadFragment('tree');
+		}
+		if ($enforce && $this->initialExpr === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null initialExpr.");
+		}
+		if ($unref && $this->initialExpr instanceof \RepositoryObjectReference) {
+			$v = $this->initialExpr->get();
+		} else {
+			$v = $this->initialExpr;
+		}
+		return $v;
+	}
+	
 	public function setRange($range, $notify = true)
 	{
 		if (!$range instanceof \Source\Range && !$range instanceof \RepositoryObjectReference) {
@@ -275,104 +403,53 @@ class VariableDefinitionExpr extends \RepositoryNodeObject implements Expr, \Equ
 		return $this->name;
 	}
 	
-	public function setTypeExpr($typeExpr, $notify = true)
+	public function setGraphPrev($graphPrev, $notify = true)
 	{
-		if (!$typeExpr instanceof TypeExpr && !$typeExpr instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs typeExpr to be an instance of TypeExpr or \RepositoryObjectReference');
+		if (!$graphPrev instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
 		}
-		if (!$this->areEqual($this->typeExpr, $typeExpr)) {
-			if (!$this->main_loaded) {
-				$this->loadFragment("main");
+		if (!$this->areEqual($this->graphPrev, $graphPrev)) {
+			if (!$this->graph_loaded) {
+				$this->loadFragment("graph");
 			}
-			if ($this->typeExpr instanceof \RepositoryObjectParentInterface) {
-				$this->typeExpr->setParent(null);
+			if ($this->graphPrev instanceof \RepositoryObjectParentInterface) {
+				$this->graphPrev->setParent(null);
 			}
-			if ($typeExpr instanceof \RepositoryObjectParentInterface) {
-				$typeExpr->setParent($this, "typeExpr", "main");
+			if ($graphPrev instanceof \RepositoryObjectParentInterface) {
+				$graphPrev->setParent($this, "graphPrev", "graph");
 			}
-			$this->typeExpr = $typeExpr;
+			$this->graphPrev = $graphPrev;
 			if ($notify) {
-				$this->notifyObjectDirty("typeExpr");
-				$this->notifyFragmentDirty("main");
+				$this->notifyObjectDirty("graphPrev");
+				$this->notifyFragmentDirty("graph");
 			}
 		}
 	}
-	public function setTypeExprRef($typeExpr, \Repository $repository, $notify = true)
+	public function setGraphPrevRef($graphPrev, \Repository $repository, $notify = true)
 	{
-		if (!$typeExpr instanceof TypeExpr && !$typeExpr instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs typeExpr to be an instance of TypeExpr or \RepositoryObjectReference');
+		if (!$graphPrev instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs graphPrev to be an instance of \RepositoryObjectReference');
 		}
 		$v = new \RepositoryObjectReference($repository);
-		if ($typeExpr instanceof \RepositoryObjectReference) {
-			$v->set($typeExpr->getRefId());
+		if ($graphPrev instanceof \RepositoryObjectReference) {
+			$v->set($graphPrev->getRefId());
 		} else {
-			$v->set($typeExpr);
+			$v->set($graphPrev);
 		}
-		$this->setTypeExpr($v, $notify);
+		$this->setGraphPrev($v, $notify);
 	}
-	public function getTypeExpr($enforce = true, $unref = true)
+	public function getGraphPrev($enforce = true, $unref = true)
 	{
-		if (!$this->main_loaded) {
-			$this->loadFragment('main');
+		if (!$this->graph_loaded) {
+			$this->loadFragment('graph');
 		}
-		if ($enforce && $this->typeExpr === null) {
-			throw new \RuntimeException("Object {$this->getId()} expected to have non-null typeExpr.");
+		if ($enforce && $this->graphPrev === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null graphPrev.");
 		}
-		if ($unref && $this->typeExpr instanceof \RepositoryObjectReference) {
-			$v = $this->typeExpr->get();
+		if ($unref && $this->graphPrev instanceof \RepositoryObjectReference) {
+			$v = $this->graphPrev->get();
 		} else {
-			$v = $this->typeExpr;
-		}
-		return $v;
-	}
-	
-	public function setInitialExpr($initialExpr, $notify = true)
-	{
-		if (!$initialExpr instanceof Expr && !$initialExpr instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs initialExpr to be an instance of Expr or \RepositoryObjectReference');
-		}
-		if (!$this->areEqual($this->initialExpr, $initialExpr)) {
-			if (!$this->main_loaded) {
-				$this->loadFragment("main");
-			}
-			if ($this->initialExpr instanceof \RepositoryObjectParentInterface) {
-				$this->initialExpr->setParent(null);
-			}
-			if ($initialExpr instanceof \RepositoryObjectParentInterface) {
-				$initialExpr->setParent($this, "initialExpr", "main");
-			}
-			$this->initialExpr = $initialExpr;
-			if ($notify) {
-				$this->notifyObjectDirty("initialExpr");
-				$this->notifyFragmentDirty("main");
-			}
-		}
-	}
-	public function setInitialExprRef($initialExpr, \Repository $repository, $notify = true)
-	{
-		if (!$initialExpr instanceof Expr && !$initialExpr instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs initialExpr to be an instance of Expr or \RepositoryObjectReference');
-		}
-		$v = new \RepositoryObjectReference($repository);
-		if ($initialExpr instanceof \RepositoryObjectReference) {
-			$v->set($initialExpr->getRefId());
-		} else {
-			$v->set($initialExpr);
-		}
-		$this->setInitialExpr($v, $notify);
-	}
-	public function getInitialExpr($enforce = true, $unref = true)
-	{
-		if (!$this->main_loaded) {
-			$this->loadFragment('main');
-		}
-		if ($enforce && $this->initialExpr === null) {
-			throw new \RuntimeException("Object {$this->getId()} expected to have non-null initialExpr.");
-		}
-		if ($unref && $this->initialExpr instanceof \RepositoryObjectReference) {
-			$v = $this->initialExpr->get();
-		} else {
-			$v = $this->initialExpr;
+			$v = $this->graphPrev;
 		}
 		return $v;
 	}

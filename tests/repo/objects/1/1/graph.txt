@@ -59,14 +59,39 @@ Array
                             [expr] => Array
                                 (
                                     [graphPrev] => @ref 1.1.body.stmts.0
-                                    [lhs] => Array
+                                    [typeExpr] => Array
                                         (
                                             [graphPrev] => @ref 1.1.body.stmts.0.expr
+                                            [expr] => Array
+                                                (
+                                                    [graphPrev] => @ref 1.1.body.stmts.0.expr.typeExpr
+                                                )
+
+                                        )
+
+                                    [initialExpr] => Array
+                                        (
+                                            [graphPrev] => @ref 1.1.body.stmts.0.expr.typeExpr.expr
+                                        )
+
+                                )
+
+                        )
+
+                    [1] => Array
+                        (
+                            [graphPrev] => @ref 1.1.body.stmts.0.expr.initialExpr
+                            [expr] => Array
+                                (
+                                    [graphPrev] => @ref 1.1.body.stmts.1
+                                    [lhs] => Array
+                                        (
+                                            [graphPrev] => @ref 1.1.body.stmts.1.expr
                                         )
 
                                     [rhs] => Array
                                         (
-                                            [graphPrev] => @ref 1.1.body.stmts.0.expr.lhs
+                                            [graphPrev] => @ref 1.1.body.stmts.1.expr.lhs
                                         )
 
                                 )

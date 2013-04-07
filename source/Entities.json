@@ -37,8 +37,10 @@
 			"code": ["@expr_code"]},
 
 		"VariableDefinitionExpr": {
-			"implements": "Expr",
-			"main": ["@range", "string name", "TypeExpr typeExpr", "Expr initialExpr"],
+			"extends": "Expr",
+			"tree": ["TypeExpr typeExpr", "Expr initialExpr"],
+			"main": ["@range", "string name"],
+			"graph": ["@graph"],
 			"type": ["@type"],
 			"code": ["@expr_code"]},
 

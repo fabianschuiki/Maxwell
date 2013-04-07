@@ -137,6 +137,12 @@ class PrettyPrinter
 
 	public function formatIdentifierExpr($object, &$context)
 	{
+		if (static::ctxget($context, "annotate/bindings") === true) {
+			$t = $object->getBindingTarget(false);
+			if ($t) {
+				$context["annotations"][] = $object->getName()." -> ".$t->getId();
+			}
+		}
 		return $object->getName();
 	}
 
@@ -157,5 +163,19 @@ class PrettyPrinter
 			$args[] = $this->formatObject($arg, $context);
 		}
 		return $object->getName()."(".implode(", ", $args).")";
+	}
+
+	public function formatVariableDefinitionExpr($object, &$context)
+	{
+		$s = "var ".$object->getName();
+		$t = $object->getTypeExpr();
+		if (!$t instanceof \Objects\EmptyExpr) {
+			$s .= " ".$this->formatObject($t, $context);
+		}
+		$i = $object->getInitialExpr();
+		if (!$i instanceof \Objects\EmptyExpr) {
+			$s .= " = ".$this->formatObject($i, $context);
+		}
+		return $s;
 	}
 }

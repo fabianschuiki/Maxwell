@@ -23,6 +23,7 @@ class BindIdentifiersStage extends DriverStage
 			$current = $object->getGraphPrev();
 			$target = null;
 			$name = $object->getName();
+			$consulted = array();
 			while ($current)
 			{
 				// Bind to function arguments.
@@ -34,13 +35,14 @@ class BindIdentifiersStage extends DriverStage
 				}
 
 				// Bind to variable definitions.
-				if ($current instanceof \Objects\VariableExpr) {
+				if ($current instanceof \Objects\VariableDefinitionExpr) {
 					if ($current->getName() == $name) {
 						$target = $current->getId();
 						break;
 					}
 				}
 
+				$consulted[] = $current->getId();
 				$current = $current->getGraphPrev();
 			}
 
@@ -57,13 +59,14 @@ class BindIdentifiersStage extends DriverStage
 			// Check whether we've found something.
 			if (!$target) {
 				$this->println(1, "No object named '$name' found", $object->getId());
+				throw new \RuntimeException("No object named '$name' found for identifier {$object->getId()}. Consulted: ".print_r($consulted, true));
 			} else {
 				$this->println(1, "Binding to $target", $object->getId());
 			}
 
 			// Store the binding.
 			$ref->set($target);
-			$object->setBindingTarget($target !== null ? $ref : null);
+			$object->setBindingTarget($ref);
 		}
 	}
 }

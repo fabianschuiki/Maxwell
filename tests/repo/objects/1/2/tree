@@ -1,1 +1,0 @@
-{"inputs":{"class":"FunctionArgumentTuple","arguments":[{"class":"FunctionArgument","typeExpr":{"class":"TypeExpr","expr":{"class":"IdentifierExpr"}}}]},"outputs":{"class":"FunctionArgumentTuple","arguments":[{"class":"FunctionArgument","typeExpr":{"class":"TypeExpr","expr":{"class":"IdentifierExpr"}}}]},"body":{"class":"FunctionBody","stmts":[]}}

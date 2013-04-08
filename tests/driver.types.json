@@ -1,22 +1,17 @@
 [{
 	"class": "TypeDefinition",
 	"name": "Foo",
-	"typeExprs": [
+	"types": [
 		{
-			"class": "ObjectTypeExpr",
-			"stmts": [
+			"class": "StructureType",
+			"fields": [
 				{
-					"class": "MemberStmt",
+					"class": "StructureField",
 					"name": "x",
-					"typeExpr": {
-						"class": "TypeExpr",
-						"expr": {
-							"class": "IdentifierExpr",
-							"name": "real",
-						}
-					}
+					"type": { "class": "NamedType", "name": "real" }
 				}
-			]
+			],
+			"inherits": []
 		}
 	]
 },
@@ -24,24 +19,20 @@
 {
 	"class": "TypeDefinition",
 	"name": "Bar",
-	"typeExprs": [
+	"types": [
 		{
-			"class": "ObjectTypeExpr",
-			"stmts": [
+			"class": "StructureType",
+			"fields": [
 				{
-					"class": "InheritStmt",
-					"name": "Foo"
-				},
-				{
-					"class": "MemberStmt",
+					"class": "StructureField",
 					"name": "k",
-					"typeExpr": {
-						"class": "TypeExpr",
-						"expr": {
-							"class": "IdentifierExpr",
-							"name": "int"
-						}
-					}
+					"type": { "class": "NamedType", "name": "int" }
+				}
+			],
+			"inherits": [
+				{
+					"class": "StructureInheritance",
+					"type": { "class": "NamedType", "name": "Foo" }
 				}
 			]
 		}
@@ -51,73 +42,27 @@
 {
 	"class": "FunctionDefinition",
 	"name": "debug",
-	"inputs": {
-		"class": "FunctionArgumentTuple",
-		"arguments": [{
-			"class": "FunctionArgument",
-			"name": "x",
-			"typeExpr": {
-				"class": "TypeExpr",
-				"expr": {
-					"class": "UnionTypeExpr",
-					"typeExprs": [
-						{
-							"class": "IdentifierExpr",
-							"name": "int"
-						}, {
-							"class": "IdentifierExpr",
-							"name": "real"
-						}
-					]}
-				}
-			}]
-		},
-	"outputs": {
-		"class": "FunctionArgumentTuple",
-		"arguments": [{
-			"class": "FunctionArgument",
-			"name": "y",
-			"typeExpr": {
-				"class": "TypeExpr",
-				"expr": {
-					"class": "IdentifierExpr",
-					"name": "int"
-					}
-				}
-			}]
-		},
+	"inputs": { "class": "FunctionArgumentTuple", "arguments": [] },
+	"outputs": { "class": "FunctionArgumentTuple", "arguments": [] },
 	"body": {
 		"class": "FunctionBody",
-		"stmts": [{
-			"class": "ExprStmt",
-			"expr": {
-				"class": "VariableDefinitionExpr",
-				"name": "z",
-				"typeExpr": { "class": "NullObject" },
-				"initialExpr": {
-					"class": "IdentifierExpr",
-					"name": "x"}
-				}
-		}, {
-			"class": "AssumeStmt",
-			"target": {
-				"class": "IdentifierExpr",
-				"name": "z"},
-			"assumption": {
-				"class": "TypeExpr",
+		"stmts": [
+			{
+				"class": "ExprStmt",
 				"expr": {
-					"class": "IdentifierExpr",
-					"name": "int"}}
-		}, {
-			"class": "ExprStmt",
-			"expr": {
-				"class": "AssignmentExpr",
-				"lhs": {
-					"class": "IdentifierExpr",
-					"name": "y"},
-				"rhs": {
-					"class": "IdentifierExpr",
-					"name": "z"}
-				}}]
-		}
+					"class": "VariableDefinitionExpr",
+					"name": "f",
+					"type": { "class": "NamedType", "name": "Foo" }
+				}
+			},
+			{
+				"class": "ExprStmt",
+				"expr": {
+					"class": "VariableDefinitionExpr",
+					"name": "b",
+					"type": { "class": "NamedType", "name": "Bar" }
+				}
+			}
+		]
+	}
 }]

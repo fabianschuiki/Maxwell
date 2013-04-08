@@ -1,0 +1,1 @@
+{"name":"Bar","types":[{"fields":[{"name":"k","type":{"name":"int"}}],"inherits":[{"type":{"name":"Foo"}}]}]}

@@ -62,7 +62,7 @@ func empty (Array.SingleLinkedList a) -> (bool e)
 	e = (a.first == nil);
 }
 
-func add (Array.SingleLinkedList a, v)
+func add (Array.SingleLinkedList with {T = v.type} a, v)
 {
 	var e = new Array.SingleLinkedList.Element;
 	e.value = v; // this ties v's type to e.value's type which is tied to e.T

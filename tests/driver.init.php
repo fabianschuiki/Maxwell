@@ -33,6 +33,9 @@ function separate($input, &$tree, &$main)
 
 // Parse the JSON file and split the "class" tags from the rest.
 $input = json_decode(file_get_contents($path));
+if ($input === null) {
+	throw new InvalidArgumentException("JSON file at path $path is invalid. JSON error ".json_last_error().".");
+}
 if (!is_array($input)) {
 	$input = array($input);
 }

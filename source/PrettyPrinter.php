@@ -206,4 +206,34 @@ class PrettyPrinter
 	{
 		return $this->formatObject($object->getTarget(), $context)." = ".$this->formatObject($object->getAssumption(), $context);
 	}
+
+	public function formatTypeDefinition($object, &$context)
+	{
+		$a = array();
+		foreach ($object->getTypes()->getElements() as $t) {
+			$a[] = $this->formatObject($t, $context);
+		}
+		return "type {$object->getName()} ".implode(", ", $a);
+	}
+
+	public function formatStructureType($object, &$context)
+	{
+		$body = "";
+		foreach ($object->getInherits()->getElements() as $e) {
+			$body .= "\ninherit {$e->getType()->getName()}";
+			if ($n = $e->getName(false)) {
+				$body .= " $n";
+			}
+			$body .= ";";
+		}
+		foreach ($object->getFields()->getElements() as $f) {
+			$body .= "\n".$f->getName()." ".$this->formatObject($f->getType(), $context).";";
+		}
+		return "struct {".static::indent($body)."\n}";
+	}
+
+	public function formatNamedType($object, &$context)
+	{
+		return $object->getName();
+	}
 }

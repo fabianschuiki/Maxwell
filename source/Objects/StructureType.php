@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class TypeDefinition extends \RepositoryRootObject implements \EqualInterface, RangeInterface, GraphInterface
+class StructureType extends \RepositoryNodeObject implements \EqualInterface, RangeInterface, GraphInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -13,14 +13,14 @@ class TypeDefinition extends \RepositoryRootObject implements \EqualInterface, R
 	// tree fragment
 	public $tree_dirty  = false;
 	public $tree_loaded = true;
-	protected $types;
+	protected $fields;
+	protected $inherits;
 	
 	// main fragment
 	public $main_dirty  = false;
 	public $main_loaded = true;
 	protected $range;
 	protected $humanRange;
-	protected $name;
 	
 	// graph fragment
 	public $graph_dirty  = false;
@@ -55,11 +55,11 @@ class TypeDefinition extends \RepositoryRootObject implements \EqualInterface, R
 	{
 		switch ($name) {
 			case "tree": return array(
-				array("name" => "types", "type" => "\RepositoryObjectArray"));
+				array("name" => "fields", "type" => "\RepositoryObjectArray"), 
+				array("name" => "inherits", "type" => "\RepositoryObjectArray"));
 			case "main": return array(
 				array("name" => "range", "type" => "\Source\Range"), 
-				array("name" => "humanRange", "type" => "\Source\Range"), 
-				array("name" => "name", "type" => "string"));
+				array("name" => "humanRange", "type" => "\Source\Range"));
 			case "graph": return array(
 				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
 		}
@@ -68,20 +68,24 @@ class TypeDefinition extends \RepositoryRootObject implements \EqualInterface, R
 	
 	public function getClass()
 	{
-		return "TypeDefinition";
+		return "StructureType";
 	}
 	
 	public function isEqualTo($x)
 	{
 		if (!$x instanceof self) {
-			throw new \InvalidArgumentException('x needs to be an instance of TypeDefinition as well.');
+			throw new \InvalidArgumentException('x needs to be an instance of StructureType as well.');
 		}
 		// tree fragment
 		if (!$this->tree_loaded) {
 			$this->loadFragment("tree");
 		}
-		if (!$this->areEqual($this->types, $x->types)) {
-			$this->println(0, "Change detected in types");
+		if (!$this->areEqual($this->fields, $x->fields)) {
+			$this->println(0, "Change detected in fields");
+			return false;
+		}
+		if (!$this->areEqual($this->inherits, $x->inherits)) {
+			$this->println(0, "Change detected in inherits");
 			return false;
 		}
 	
@@ -95,10 +99,6 @@ class TypeDefinition extends \RepositoryRootObject implements \EqualInterface, R
 		}
 		if (!$this->areEqual($this->humanRange, $x->humanRange)) {
 			$this->println(0, "Change detected in humanRange");
-			return false;
-		}
-		if ($this->name !== $x->name) {
-			$this->println(0, "Change detected in name");
 			return false;
 		}
 	
@@ -116,53 +116,104 @@ class TypeDefinition extends \RepositoryRootObject implements \EqualInterface, R
 	
 	
 	/* ACCESSORS */
-	public function setTypes($types, $notify = true)
+	public function setFields($fields, $notify = true)
 	{
-		if (!$types instanceof \RepositoryObjectArray && !$types instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs types to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
+		if (!$fields instanceof \RepositoryObjectArray && !$fields instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs fields to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
 		}
-		if (!$this->areEqual($this->types, $types)) {
+		if (!$this->areEqual($this->fields, $fields)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
 			}
-			if ($this->types instanceof \RepositoryObjectParentInterface) {
-				$this->types->setParent(null);
+			if ($this->fields instanceof \RepositoryObjectParentInterface) {
+				$this->fields->setParent(null);
 			}
-			if ($types instanceof \RepositoryObjectParentInterface) {
-				$types->setParent($this, "types", "tree");
+			if ($fields instanceof \RepositoryObjectParentInterface) {
+				$fields->setParent($this, "fields", "tree");
 			}
-			$this->types = $types;
+			$this->fields = $fields;
 			if ($notify) {
-				$this->notifyObjectDirty("types");
+				$this->notifyObjectDirty("fields");
 				$this->notifyFragmentDirty("tree");
 			}
 		}
 	}
-	public function setTypesRef($types, \Repository $repository, $notify = true)
+	public function setFieldsRef($fields, \Repository $repository, $notify = true)
 	{
-		if (!$types instanceof \RepositoryObjectArray && !$types instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs types to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
+		if (!$fields instanceof \RepositoryObjectArray && !$fields instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs fields to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
 		}
 		$v = new \RepositoryObjectReference($repository);
-		if ($types instanceof \RepositoryObjectReference) {
-			$v->set($types->getRefId());
+		if ($fields instanceof \RepositoryObjectReference) {
+			$v->set($fields->getRefId());
 		} else {
-			$v->set($types);
+			$v->set($fields);
 		}
-		$this->setTypes($v, $notify);
+		$this->setFields($v, $notify);
 	}
-	public function getTypes($enforce = true, $unref = true)
+	public function getFields($enforce = true, $unref = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
 		}
-		if ($enforce && $this->types === null) {
-			throw new \RuntimeException("Object {$this->getId()} expected to have non-null types.");
+		if ($enforce && $this->fields === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null fields.");
 		}
-		if ($unref && $this->types instanceof \RepositoryObjectReference) {
-			$v = $this->types->get();
+		if ($unref && $this->fields instanceof \RepositoryObjectReference) {
+			$v = $this->fields->get();
 		} else {
-			$v = $this->types;
+			$v = $this->fields;
+		}
+		return $v;
+	}
+	
+	public function setInherits($inherits, $notify = true)
+	{
+		if (!$inherits instanceof \RepositoryObjectArray && !$inherits instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs inherits to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
+		}
+		if (!$this->areEqual($this->inherits, $inherits)) {
+			if (!$this->tree_loaded) {
+				$this->loadFragment("tree");
+			}
+			if ($this->inherits instanceof \RepositoryObjectParentInterface) {
+				$this->inherits->setParent(null);
+			}
+			if ($inherits instanceof \RepositoryObjectParentInterface) {
+				$inherits->setParent($this, "inherits", "tree");
+			}
+			$this->inherits = $inherits;
+			if ($notify) {
+				$this->notifyObjectDirty("inherits");
+				$this->notifyFragmentDirty("tree");
+			}
+		}
+	}
+	public function setInheritsRef($inherits, \Repository $repository, $notify = true)
+	{
+		if (!$inherits instanceof \RepositoryObjectArray && !$inherits instanceof \RepositoryObjectReference) {
+			throw new \InvalidArgumentException('Object '.$this->getId().' needs inherits to be an instance of \RepositoryObjectArray or \RepositoryObjectReference');
+		}
+		$v = new \RepositoryObjectReference($repository);
+		if ($inherits instanceof \RepositoryObjectReference) {
+			$v->set($inherits->getRefId());
+		} else {
+			$v->set($inherits);
+		}
+		$this->setInherits($v, $notify);
+	}
+	public function getInherits($enforce = true, $unref = true)
+	{
+		if (!$this->tree_loaded) {
+			$this->loadFragment('tree');
+		}
+		if ($enforce && $this->inherits === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null inherits.");
+		}
+		if ($unref && $this->inherits instanceof \RepositoryObjectReference) {
+			$v = $this->inherits->get();
+		} else {
+			$v = $this->inherits;
 		}
 		return $v;
 	}
@@ -267,33 +318,6 @@ class TypeDefinition extends \RepositoryRootObject implements \EqualInterface, R
 			$v = $this->humanRange;
 		}
 		return $v;
-	}
-	
-	public function setName($name, $notify = true)
-	{
-		if (!is_string($name)) {
-			throw new \InvalidArgumentException("name needs to be a string");
-		}
-		if ($this->name !== $name) {
-			if (!$this->main_loaded) {
-				$this->loadFragment("main");
-			}
-			$this->name = $name;
-			if ($notify) {
-				$this->notifyObjectDirty("name");
-				$this->notifyFragmentDirty("main");
-			}
-		}
-	}
-	public function getName($enforce = true)
-	{
-		if (!$this->main_loaded) {
-			$this->loadFragment('main');
-		}
-		if ($enforce && $this->name === null) {
-			throw new \RuntimeException("Object {$this->getId()} expected to have non-null name.");
-		}
-		return $this->name;
 	}
 	
 	public function setGraphPrev($graphPrev, $notify = true)

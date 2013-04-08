@@ -74,8 +74,22 @@
 		},
 
 		"TypeDefinition": {
-			"tree": ["array typeExprs"],
+			"root": true,
+			"tree": ["array types"],
 			"main": ["@range", "string name"],
+			"graph": ["@graph"]},
+
+		"StructureType": {
+			"tree": ["array fields", "array inherits"],
+			"main": ["@range"],
+			"graph": ["@graph"]},
+		"StructureField": {
+			"tree": ["type"],
+			"main": ["string name"],
+			"graph": ["@graph"]},
+		"StructureInheritance": {
+			"tree": ["NamedType type"],
+			"main": ["string name"],
 			"graph": ["@graph"]},
 
 		"ExprStmt": {
@@ -146,6 +160,8 @@
 
 		"ConcreteType": {
 			"main": ["ref definition"]},
+		"NamedType": {
+			"main": ["string name", "ref definition"]},
 		"FunctionType": {
 			"main": ["FunctionArgumentTupleType inputs", "FunctionArgumentTupleType outputs"]},
 		"FunctionArgumentTupleType": {

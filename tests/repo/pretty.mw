@@ -1,19 +1,15 @@
 // 1.1
-func debug (int|real x) -> (int y)
+type Foo struct {    
+    x real;
+}
+
+// 1.2
+type Bar struct {    
+    inherit Foo;
+    k int;
+}
+
+// 1.3
+func debug
 {
-    var z = x;
-    // type of body.stmts.0.expr = int|real
-    // type of body.stmts.0.expr.initialExpr = int|real
-    // x -> inputs.arguments.0
-    assume z = int;
-    // type of body.stmts.1.target = int
-    // z -> body.stmts.0.expr
-    // type of body.stmts.1.assumption.expr = <invalid>
-    // int -> 0.3
-    y = z;
-    // type of body.stmts.2.expr = int
-    /// type of body.stmts.2.expr.lhs = int
-    // y -> outputs.arguments.0
-    // type of body.stmts.2.expr.rhs = int
-    // z -> body.stmts.0.expr
 }

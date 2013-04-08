@@ -73,6 +73,11 @@
 			"tree": ["array stmts"]
 		},
 
+		"TypeDefinition": {
+			"tree": ["array typeExprs"],
+			"main": ["@range", "string name"],
+			"graph": ["@graph"]},
+
 		"ExprStmt": {
 			"tree": ["Expr expr"],
 			"graph": ["@graph"]

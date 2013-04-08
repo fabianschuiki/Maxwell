@@ -88,10 +88,12 @@
 			<string>storage.modifier.restriction.maxwell</string>
 		</dict>
 		<dict>
-			<key>match</key>
-			<string>\b(typevar|byte|int|float|real|bool|String|Exception|natural|any|Array|Map|Set|Type|Func|Channel|Int|Real|Boolean|Natural)\b</string>
-			<key>name</key>
-			<string>storage.type.maxwell</string>
+			<key>include</key>
+			<string>#builtin-types</string>
+		</dict>
+		<dict>
+			<key>include</key>
+			<string>#builtin-constants</string>
 		</dict>
 		<dict>
 			<key>match</key>
@@ -104,40 +106,6 @@
 			<string>\b(this)\b</string>
 			<key>name</key>
 			<string>variable.language.maxwell</string>
-		</dict>
-		<dict>
-			<key>match</key>
-			<string>\b(nil|true|false)\b</string>
-			<key>name</key>
-			<string>constant.language.maxwell</string>
-		</dict>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.whitespace.function-call.leading.maxwell</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>support.function.any-method.maxwell</string>
-				</dict>
-				<key>3</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.parameters.maxwell</string>
-				</dict>
-			</dict>
-			<key>match</key>
-			<string>(?x) (?: (?= \s )  (?:(?&lt;=else|new|return) | (?&lt;!\w)) (\s+))?
-			(\b
-				(?!(while|for|do|if|else|switch|catch|enumerate|return|r?iterate)\s*\()(?:(?!NS)[A-Za-z_][A-Za-z0-9_]*+\b | :: )++                  # actual name
-			)
-			 \s*(\()</string>
-			<key>name</key>
-			<string>meta.function-call.maxwell</string>
 		</dict>
 		<dict>
 			<key>begin</key>
@@ -166,24 +134,24 @@
 	</array>
 	<key>repository</key>
 	<dict>
+		<key>builtin-constants</key>
+		<dict>
+			<key>match</key>
+			<string>\b(nil|true|false)\b</string>
+			<key>name</key>
+			<string>constant.language.maxwell</string>
+		</dict>
+		<key>builtin-types</key>
+		<dict>
+			<key>match</key>
+			<string>\b(typevar|byte|int|float|real|bool|String|Exception|natural|any|Array|Map|Set|Type|Func|Channel|Int|Real|Boolean|Natural)\b</string>
+			<key>name</key>
+			<string>storage.type.builtin.maxwell</string>
+		</dict>
 		<key>comments</key>
 		<dict>
 			<key>patterns</key>
 			<array>
-				<dict>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>meta.toc-list.banner.block.maxwell</string>
-						</dict>
-					</dict>
-					<key>match</key>
-					<string>^/\* =(\s*.*?)\s*= \*/$\n?</string>
-					<key>name</key>
-					<string>comment.block.maxwell</string>
-				</dict>
 				<dict>
 					<key>begin</key>
 					<string>/\*</string>
@@ -201,12 +169,6 @@
 					<string>comment.block.maxwell</string>
 				</dict>
 				<dict>
-					<key>match</key>
-					<string>\*/.*\n</string>
-					<key>name</key>
-					<string>invalid.illegal.stray-comment-end.maxwell</string>
-				</dict>
-				<dict>
 					<key>begin</key>
 					<string>//</string>
 					<key>beginCaptures</key>
@@ -221,6 +183,79 @@
 					<string>$\n?</string>
 					<key>name</key>
 					<string>comment.line.double-slash.maxwell</string>
+				</dict>
+			</array>
+		</dict>
+		<key>exprs</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>storage.type.variable.maxwell</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>entity.other.attribute-name.variable.maxwell</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>\b(var)\s+([^\s]+)</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>support.function.any-method.maxwell</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>\b([^\s\.]+)\s*\(</string>
+					<key>name</key>
+					<string>meta.function-call.maxwell</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>support.function.member.maxwell</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>\.([^@][^\s]*?)\b</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>constant.language.struct-field.maxwell</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>(@[^\s]+?)\b</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#keywords</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#builtin-types</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#builtin-constants</string>
 				</dict>
 			</array>
 		</dict>
@@ -303,6 +338,44 @@
 				</dict>
 			</array>
 		</dict>
+		<key>function-body</key>
+		<dict>
+			<key>begin</key>
+			<string>(\{)</string>
+			<key>end</key>
+			<string>(\})</string>
+			<key>name</key>
+			<string>meta.function.body</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>#function-body-innards</string>
+				</dict>
+			</array>
+		</dict>
+		<key>function-body-innards</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>#comments</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#variable-definition</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#exprs</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#type-exprs</string>
+				</dict>
+			</array>
+		</dict>
 		<key>function-super</key>
 		<dict>
 			<key>begin</key>
@@ -316,6 +389,34 @@
 				<dict>
 					<key>include</key>
 					<string>#function</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#function-body</string>
+				</dict>
+			</array>
+		</dict>
+		<key>keywords</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>match</key>
+					<string>\b(if|while|for|return|else|assume|require|constrain)\b</string>
+					<key>name</key>
+					<string>keyword.control.directive.maxwell</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\b(var|func|type)\b</string>
+					<key>name</key>
+					<string>storage.type.maxwell</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\b(native|range)\b</string>
+					<key>name</key>
+					<string>storage.modifier.maxwell</string>
 				</dict>
 			</array>
 		</dict>
@@ -354,6 +455,28 @@
 					<string>(?&lt;=\})</string>
 					<key>name</key>
 					<string>meta.type.struct.maxwell</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#builtin-types</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#builtin-constants</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#keywords</string>
+				</dict>
+			</array>
+		</dict>
+		<key>type-exprs-with-identifier</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>#type-exprs</string>
 				</dict>
 				<dict>
 					<key>captures</key>

@@ -12,7 +12,7 @@ func debug (int|real x) -> (int y)
     // int -> 0.3
     y = z;
     // type of body.stmts.2.expr = int
-    // type of body.stmts.2.expr.lhs = int
+    /// type of body.stmts.2.expr.lhs = int
     // y -> outputs.arguments.0
     // type of body.stmts.2.expr.rhs = int
     // z -> body.stmts.0.expr

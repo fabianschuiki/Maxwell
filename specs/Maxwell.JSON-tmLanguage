@@ -35,10 +35,8 @@
 			"name": "storage.modifier.restriction.maxwell"
 		},
 
- 		{
- 			"match": "\\b(typevar|byte|int|float|real|bool|String|Exception|natural|any|Array|Map|Set|Type|Func|Channel|Int|Real|Boolean|Natural)\\b",
- 			"name": "storage.type.maxwell"
- 		},
+ 		{ "include": "#builtin-types" },
+	 	{ "include": "#builtin-constants" },
  		{
  			"match": "\\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\\.?[0-9]*)|(\\.[0-9]+))((e|E)(\\+|-)?[0-9]+)?)\\b",
  			"name": "constant.numeric.maxwell"
@@ -46,25 +44,6 @@
         {
             "match": "\\b(this)\\b", 
             "name": "variable.language.maxwell"
-        }, 
-        {
-            "match": "\\b(nil|true|false)\\b", 
-            "name": "constant.language.maxwell"
-        },
-        {
-            "captures": {
-                "1": {
-                    "name": "punctuation.whitespace.function-call.leading.maxwell"
-                }, 
-                "2": {
-                    "name": "support.function.any-method.maxwell"
-                }, 
-                "3": {
-                    "name": "punctuation.definition.parameters.maxwell"
-                }
-            }, 
-            "match": "(?x) (?: (?= \\s )  (?:(?<=else|new|return) | (?<!\\w)) (\\s+))?\n\t\t\t(\\b\n\t\t\t\t(?!(while|for|do|if|else|switch|catch|enumerate|return|r?iterate)\\s*\\()(?:(?!NS)[A-Za-z_][A-Za-z0-9_]*+\\b | :: )++                  # actual name\n\t\t\t)\n\t\t\t \\s*(\\()", 
-            "name": "meta.function-call.maxwell"
         },
 
  		{
@@ -106,7 +85,8 @@
  			"end": "(?<=\\})",
  			"name": "meta.function-with-body.maxwell",
  			"patterns": [
- 				{"include":"#function"}
+ 				{"include":"#function"},
+ 				{"include":"#function-body"}
  				]
  			},
  		"function-arguments": {
@@ -118,60 +98,114 @@
  				},
  			"patterns": [{"include":"#type-exprs"}]
  			},
- 		"type-exprs": {
- 			"patterns": [{
- 				"begin": "\\b(interface)\\s*(?=\\{)",
- 				"end": "(?<=\\})",
- 				"name": "meta.type.interface.maxwell",
- 				"beginCaptures": {"1":{"name":"storage.modifier.subset.interface.maxwell"}}
- 				},{
- 				"begin": "\\b(object|value)\\s*(?=\\{)",
- 				"end": "(?<=\\})",
- 				"name": "meta.type.struct.maxwell",
- 				"beginCaptures": {"1":{"name":"storage.modifier.subset.struct.maxwell"}}
- 				},{
+ 		"function-body": {
+ 			"begin": "(\\{)",
+ 			"end": "(\\})",
+ 			"name": "meta.function.body",
+ 			"patterns": [{"include":"#function-body-innards"}]
+ 			},
+ 		"type-exprs-with-identifier": {
+ 			"patterns": [
+ 				{ "include": "#type-exprs" }, {
  				"match": "\\b([^\\s]+)",
  				"name": "meta.type.identifier.maxwell",
  				"captures": {"0":{"name":"storage.type.maxwell"}}
  				}]
  			},
+ 		"type-exprs": {
+ 			"patterns": [{
+	 				"begin": "\\b(interface)\\s*(?=\\{)",
+	 				"end": "(?<=\\})",
+	 				"name": "meta.type.interface.maxwell",
+	 				"beginCaptures": {"1":{"name":"storage.modifier.subset.interface.maxwell"}}
+ 				},{
+	 				"begin": "\\b(object|value)\\s*(?=\\{)",
+	 				"end": "(?<=\\})",
+	 				"name": "meta.type.struct.maxwell",
+	 				"beginCaptures": {"1":{"name":"storage.modifier.subset.struct.maxwell"}}
+ 				},
+ 				{ "include": "#builtin-types" },
+	 			{ "include": "#builtin-constants" },
+ 				{ "include": "#keywords" }
+ 			]
+ 		},
+ 		"function-body-innards": {
+ 			"patterns": [
+ 				{ "include": "#comments" },
+ 				{ "include": "#variable-definition" },
+ 				{ "include": "#exprs" },
+ 				{ "include": "#type-exprs" }
+ 			]},
+
+ 		"exprs": {
+ 			"patterns": [{
+		 			"match": "\\b(var)\\s+([^\\s]+)",
+		 			"captures": {
+		 				"1": { "name": "storage.type.variable.maxwell" },
+		 				"2": { "name": "entity.other.attribute-name.variable.maxwell" }
+		 			}
+	 			},{
+	 				"name": "meta.function-call.maxwell",
+		 			"match": "\\b([^\\s\\.]+)\\s*\\(",
+		 			"captures": {
+		 			    "1": { "name": "support.function.any-method.maxwell" }
+	 				}
+	 			},{
+		 			"match": "\\.([^@][^\\s]*?)\\b",
+		 			"captures": {
+		 			    "1": { "name": "support.function.member.maxwell" }
+	 				}
+	 			},{
+		 			"match": "(@[^\\s]+?)\\b",
+		 			"captures": {
+		 			    "1": { "name": "constant.language.struct-field.maxwell" }
+	 				}
+	 			},
+	 			{ "include": "#keywords" },
+	 			{ "include": "#builtin-types" },
+	 			{ "include": "#builtin-constants" }
+ 			]
+ 		},
+ 		"keywords": {
+ 			"patterns": [{
+	 				"name": "keyword.control.directive.maxwell",
+		 			"match": "\\b(if|while|for|return|else|assume|require|constrain)\\b"
+	 			},{
+		 			"name": "storage.type.maxwell",
+		 			"match": "\\b(var|func|type)\\b"
+	 			},{
+	 				"name": "storage.modifier.maxwell",
+	 				"match": "\\b(native|range)\\b"
+	 			}]
+ 			},
+ 		"builtin-types": {
+ 			"match": "\\b(typevar|byte|int|float|real|bool|String|Exception|natural|any|Array|Map|Set|Type|Func|Channel|Int|Real|Boolean|Natural)\\b",
+ 			"name": "storage.type.builtin.maxwell"
+ 		},
+ 		"builtin-constants": {
+            "match": "\\b(nil|true|false)\\b", 
+            "name": "constant.language.maxwell"
+        },
 
 		"comments": {
-			"patterns": [
-				{
-					"captures": {
-						"1": {
-							"name": "meta.toc-list.banner.block.maxwell"
-						}
-					}, 
-					"match": "^/\\* =(\\s*.*?)\\s*= \\*/$\\n?", 
-					"name": "comment.block.maxwell"
+			"patterns": [{
+				"begin": "/\\*", 
+				"captures": {
+					"0": {
+						"name": "punctuation.definition.comment.maxwell"
+					}
 				}, 
-				{
-					"begin": "/\\*", 
-					"captures": {
-						"0": {
-							"name": "punctuation.definition.comment.maxwell"
-						}
-					}, 
-					"end": "\\*/", 
-					"name": "comment.block.maxwell"
+				"end": "\\*/", 
+				"name": "comment.block.maxwell"
+			},{	"begin": "//", 
+				"beginCaptures": {
+					"0": {
+						"name": "punctuation.definition.comment.maxwell"
+					}
 				}, 
-				{
-					"match": "\\*/.*\\n", 
-					"name": "invalid.illegal.stray-comment-end.maxwell"
-				}, 
-				{
-					"begin": "//", 
-					"beginCaptures": {
-						"0": {
-							"name": "punctuation.definition.comment.maxwell"
-						}
-					}, 
-					"end": "$\\n?", 
-					"name": "comment.line.double-slash.maxwell"
-				}
-			]
+				"end": "$\\n?", 
+				"name": "comment.line.double-slash.maxwell"
+			}]
 		}
 	},
 

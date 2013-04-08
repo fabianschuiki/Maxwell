@@ -15,6 +15,10 @@
 			<string>#comments</string>
 		</dict>
 		<dict>
+			<key>include</key>
+			<string>#function-super</string>
+		</dict>
+		<dict>
 			<key>match</key>
 			<string>\b(if|else|otherwise|for|incase|throw|new|package|external|import|return|inherits|where)\b</string>
 			<key>name</key>
@@ -26,7 +30,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>storage.type.maxwell</string>
+					<string>storage.type.function.maxwell</string>
 				</dict>
 				<key>2</key>
 				<dict>
@@ -43,20 +47,49 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>storage.type.maxwell</string>
+					<string>storage.type.type.maxwell</string>
 				</dict>
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>entity.name.class</string>
+					<string>entity.name.type</string>
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>\b(object|value)\s+([^\s]+)\b</string>
+			<string>\b(type)\s+([^\s]+)\b</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>storage.type.variable.maxwell</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.variable</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>\b(var)\s+([^\s]+)\b</string>
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>\b(func|type|value|object|var|typevar|byte|int|float|real|bool|String|Exception)\b</string>
+			<string>\b(object|value)\b</string>
+			<key>name</key>
+			<string>storage.modifier.struct.maxwell</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>\b(native|interface|range)\b</string>
+			<key>name</key>
+			<string>storage.modifier.restriction.maxwell</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>\b(typevar|byte|int|float|real|bool|String|Exception|natural|any|Array|Map|Set|Type|Func|Channel|Int|Real|Boolean|Natural)\b</string>
 			<key>name</key>
 			<string>storage.type.maxwell</string>
 		</dict>
@@ -188,6 +221,153 @@
 					<string>$\n?</string>
 					<key>name</key>
 					<string>comment.line.double-slash.maxwell</string>
+				</dict>
+			</array>
+		</dict>
+		<key>function</key>
+		<dict>
+			<key>begin</key>
+			<string>\b(func)\s+([^\s]+)</string>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>storage.type.function.maxwell</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.function.maxwell</string>
+				</dict>
+			</dict>
+			<key>end</key>
+			<string>(?=\{)|;</string>
+			<key>name</key>
+			<string>meta.function.maxwell</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>begin</key>
+					<string>\s*(-&gt;)\s*(?=\()</string>
+					<key>end</key>
+					<string>(?&lt;=\))</string>
+					<key>name</key>
+					<string>meta.function.outputs.maxwell</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>#function-arguments</string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
+					<key>begin</key>
+					<string>(?=\()</string>
+					<key>end</key>
+					<string>(?&lt;=\))</string>
+					<key>name</key>
+					<string>meta.function.inputs.maxwell</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>#function-arguments</string>
+						</dict>
+					</array>
+				</dict>
+			</array>
+		</dict>
+		<key>function-arguments</key>
+		<dict>
+			<key>begin</key>
+			<string>(\(|,)</string>
+			<key>end</key>
+			<string>([^\s]+)\s*(?=,|\))</string>
+			<key>endCaptures</key>
+			<dict>
+				<key>0</key>
+				<dict>
+					<key>name</key>
+					<string>variable.parameter.function.maxwell</string>
+				</dict>
+			</dict>
+			<key>name</key>
+			<string>meta.function.argument</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>#type-exprs</string>
+				</dict>
+			</array>
+		</dict>
+		<key>function-super</key>
+		<dict>
+			<key>begin</key>
+			<string>\b(?=func\s+)</string>
+			<key>end</key>
+			<string>(?&lt;=\})</string>
+			<key>name</key>
+			<string>meta.function-with-body.maxwell</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>#function</string>
+				</dict>
+			</array>
+		</dict>
+		<key>type-exprs</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>begin</key>
+					<string>\b(interface)\s*(?=\{)</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>storage.modifier.subset.interface.maxwell</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>(?&lt;=\})</string>
+					<key>name</key>
+					<string>meta.type.interface.maxwell</string>
+				</dict>
+				<dict>
+					<key>begin</key>
+					<string>\b(object|value)\s*(?=\{)</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>storage.modifier.subset.struct.maxwell</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>(?&lt;=\})</string>
+					<key>name</key>
+					<string>meta.type.struct.maxwell</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>0</key>
+						<dict>
+							<key>name</key>
+							<string>storage.type.maxwell</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>\b([^\s]+)</string>
+					<key>name</key>
+					<string>meta.type.identifier.maxwell</string>
 				</dict>
 			</array>
 		</dict>

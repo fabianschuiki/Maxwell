@@ -40,7 +40,7 @@ class RepositoryObjectSerializer
 				$value = $object->$getter(false, false);
 				if ($value !== null) {
 					$a = $this->serializeValue($value, $fragment, $targetFragment);
-					if ($a !== null && !((is_array($a) || is_object($a)) && count($a) == 0))
+					if ($a !== null && !(is_object($a) && count($a) == 0))
 					//if ($a)
 						$output[$name] = $a;
 				}
@@ -60,7 +60,7 @@ class RepositoryObjectSerializer
 					} else {
 						$a = $this->serialize($value, $fragment, $targetFragment);
 					}
-					if ($a !== null && !((is_array($a) || is_object($a)) && count($a) == 0))
+					if ($a !== null && !(is_object($a) && count($a) == 0))
 					//if ($a)
 						$output[$name] = $a;
 				}

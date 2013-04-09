@@ -3,7 +3,7 @@
  * Automatically generated entity. */
 namespace Objects;
 
-class FunctionArgumentType extends \RepositoryNodeObject implements \EqualInterface, GraphInterface
+class InheritanceMappedType extends \RepositoryNodeObject implements \EqualInterface, GraphInterface
 {
 	/* PROPERTIES */
 	protected $parent = null;
@@ -13,8 +13,9 @@ class FunctionArgumentType extends \RepositoryNodeObject implements \EqualInterf
 	// main fragment
 	public $main_dirty  = false;
 	public $main_loaded = true;
-	protected $name;
 	protected $type;
+	protected $struct;
+	protected $inheritance;
 	
 	// graph fragment
 	public $graph_dirty  = false;
@@ -49,8 +50,9 @@ class FunctionArgumentType extends \RepositoryNodeObject implements \EqualInterf
 	{
 		switch ($name) {
 			case "main": return array(
-				array("name" => "name", "type" => "string"), 
-				array("name" => "type", "type" => ""));
+				array("name" => "type", "type" => ""), 
+				array("name" => "struct", "type" => ""), 
+				array("name" => "inheritance", "type" => ""));
 			case "graph": return array(
 				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
 		}
@@ -59,24 +61,28 @@ class FunctionArgumentType extends \RepositoryNodeObject implements \EqualInterf
 	
 	public function getClass()
 	{
-		return "FunctionArgumentType";
+		return "InheritanceMappedType";
 	}
 	
 	public function isEqualTo($x)
 	{
 		if (!$x instanceof self) {
-			throw new \InvalidArgumentException('x needs to be an instance of FunctionArgumentType as well.');
+			throw new \InvalidArgumentException('x needs to be an instance of InheritanceMappedType as well.');
 		}
 		// main fragment
 		if (!$this->main_loaded) {
 			$this->loadFragment("main");
 		}
-		if ($this->name !== $x->name) {
-			$this->println(0, "Change detected in name");
-			return false;
-		}
 		if (!$this->areEqual($this->type, $x->type)) {
 			$this->println(0, "Change detected in type");
+			return false;
+		}
+		if (!$this->areEqual($this->struct, $x->struct)) {
+			$this->println(0, "Change detected in struct");
+			return false;
+		}
+		if (!$this->areEqual($this->inheritance, $x->inheritance)) {
+			$this->println(0, "Change detected in inheritance");
 			return false;
 		}
 	
@@ -94,33 +100,6 @@ class FunctionArgumentType extends \RepositoryNodeObject implements \EqualInterf
 	
 	
 	/* ACCESSORS */
-	public function setName($name, $notify = true)
-	{
-		if (!is_string($name)) {
-			throw new \InvalidArgumentException("name needs to be a string");
-		}
-		if ($this->name !== $name) {
-			if (!$this->main_loaded) {
-				$this->loadFragment("main");
-			}
-			$this->name = $name;
-			if ($notify) {
-				$this->notifyObjectDirty("name");
-				$this->notifyFragmentDirty("main");
-			}
-		}
-	}
-	public function getName($enforce = true)
-	{
-		if (!$this->main_loaded) {
-			$this->loadFragment('main');
-		}
-		if ($enforce && $this->name === null) {
-			throw new \RuntimeException("Object {$this->getId()} expected to have non-null name.");
-		}
-		return $this->name;
-	}
-	
 	public function setType($type, $notify = true)
 	{
 		if (!$this->areEqual($this->type, $type)) {
@@ -162,6 +141,96 @@ class FunctionArgumentType extends \RepositoryNodeObject implements \EqualInterf
 			$v = $this->type->get();
 		} else {
 			$v = $this->type;
+		}
+		return $v;
+	}
+	
+	public function setStruct($struct, $notify = true)
+	{
+		if (!$this->areEqual($this->struct, $struct)) {
+			if (!$this->main_loaded) {
+				$this->loadFragment("main");
+			}
+			if ($this->struct instanceof \RepositoryObjectParentInterface) {
+				$this->struct->setParent(null);
+			}
+			if ($struct instanceof \RepositoryObjectParentInterface) {
+				$struct->setParent($this, "struct", "main");
+			}
+			$this->struct = $struct;
+			if ($notify) {
+				$this->notifyObjectDirty("struct");
+				$this->notifyFragmentDirty("main");
+			}
+		}
+	}
+	public function setStructRef($struct, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($struct instanceof \RepositoryObjectReference) {
+			$v->set($struct->getRefId());
+		} else {
+			$v->set($struct);
+		}
+		$this->setStruct($v, $notify);
+	}
+	public function getStruct($enforce = true, $unref = true)
+	{
+		if (!$this->main_loaded) {
+			$this->loadFragment('main');
+		}
+		if ($enforce && $this->struct === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null struct.");
+		}
+		if ($unref && $this->struct instanceof \RepositoryObjectReference) {
+			$v = $this->struct->get();
+		} else {
+			$v = $this->struct;
+		}
+		return $v;
+	}
+	
+	public function setInheritance($inheritance, $notify = true)
+	{
+		if (!$this->areEqual($this->inheritance, $inheritance)) {
+			if (!$this->main_loaded) {
+				$this->loadFragment("main");
+			}
+			if ($this->inheritance instanceof \RepositoryObjectParentInterface) {
+				$this->inheritance->setParent(null);
+			}
+			if ($inheritance instanceof \RepositoryObjectParentInterface) {
+				$inheritance->setParent($this, "inheritance", "main");
+			}
+			$this->inheritance = $inheritance;
+			if ($notify) {
+				$this->notifyObjectDirty("inheritance");
+				$this->notifyFragmentDirty("main");
+			}
+		}
+	}
+	public function setInheritanceRef($inheritance, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($inheritance instanceof \RepositoryObjectReference) {
+			$v->set($inheritance->getRefId());
+		} else {
+			$v->set($inheritance);
+		}
+		$this->setInheritance($v, $notify);
+	}
+	public function getInheritance($enforce = true, $unref = true)
+	{
+		if (!$this->main_loaded) {
+			$this->loadFragment('main');
+		}
+		if ($enforce && $this->inheritance === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null inheritance.");
+		}
+		if ($unref && $this->inheritance instanceof \RepositoryObjectReference) {
+			$v = $this->inheritance->get();
+		} else {
+			$v = $this->inheritance;
 		}
 		return $v;
 	}

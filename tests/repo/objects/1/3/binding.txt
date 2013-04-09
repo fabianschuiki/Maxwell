@@ -1,0 +1,62 @@
+Array
+(
+    [inputs] => Array
+        (
+            [arguments] => Array
+                (
+                )
+
+        )
+
+    [outputs] => Array
+        (
+            [arguments] => Array
+                (
+                )
+
+        )
+
+    [body] => Array
+        (
+            [stmts] => Array
+                (
+                    [0] => Array
+                        (
+                            [expr] => Array
+                                (
+                                    [type] => Array
+                                        (
+                                            [definition] => @ref 1.2
+                                        )
+
+                                    [initialExpr] => Array
+                                        (
+                                        )
+
+                                )
+
+                        )
+
+                    [1] => Array
+                        (
+                            [expr] => Array
+                                (
+                                    [type] => Array
+                                        (
+                                            [definition] => @ref 1.1
+                                        )
+
+                                    [initialExpr] => Array
+                                        (
+                                            [bindingTarget] => @ref 1.3.body.stmts.0.expr
+                                        )
+
+                                )
+
+                        )
+
+                )
+
+        )
+
+)

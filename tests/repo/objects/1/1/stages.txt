@@ -1,0 +1,13 @@
+Array
+(
+    [BuildGraphStage] => 1
+    [BindIdentifiersStage] => 1
+    [BindNamedTypesStage] => 1
+    [ConfigureCallsStage] => 1
+    [ConfigureAssumptionStatementsStage] => 1
+    [EvaluateTypeExpressionsStage] => 1
+    [FindCallCandidatesStage] => 1
+    [CalculatePossibleTypesStage] => 1
+    [CalculateRequiredTypesStage] => 1
+    [CalculateActualTypesStage] => 1
+)

@@ -39,10 +39,17 @@ class CalculateActualTypesStage extends DriverStage
 			// Otherwise try to find a match.
 			else {
 				$m = \Type::intersectSetOrConcreteType($possible, $required);
-				if ($m instanceof InvalidType) {
-					$this->tryCast($object, $possible, $required);
-				} else {
+				$object->setActualType($m);
+
+				// Check whether a cast from a struct to its inherited struct is requested.
+				if ($object->getActualType() instanceof InvalidType && $possible instanceof \Objects\NamedType && $required instanceof \Objects\NamedType) {
+					$m = $this->tryInheritanceMapping($object, $possible, $required);
 					$object->setActualType($m);
+				}
+
+				// Otherwise simply try to go with a regular cast.
+				if ($object->getActualType() instanceof InvalidType) {
+					$this->tryCast($object, $possible, $required);
 				}
 			}
 
@@ -119,5 +126,64 @@ class CalculateActualTypesStage extends DriverStage
 
 		// Throw an exception. Maybe this prevents the programmer from doing bad things?
 		throw new \RuntimeException("No cast found from ".\Type::describe($from)." to ".\Type::describe($to).".");
+	}
+
+	private function tryInheritanceMapping(\RepositoryObject $object, $from, $to)
+	{
+		// Extract the two type definitions.
+		$defFrom = $from->getDefinition();
+		$defTo = $to->getDefinition();
+		$desc = "from {$defFrom->getID()} to {$defTo->getId()}";
+		$this->println(2, "Maybe performing inheritance translation $desc", $object->getId());
+
+		// For both look for a structure type.
+		$structFrom = null;
+		$structTo = null;
+		foreach ($defFrom->getTypes()->getElements() as $type) {
+			if ($type instanceof \Objects\StructureType) {
+				if ($structFrom !== null) {
+					throw new \RuntimeException("Type {$defFrom->getId()} has multiple structural type specifiers.");
+				}
+				$structFrom = $type;
+			}
+		}
+		foreach ($defTo->getTypes()->getElements() as $type) {
+			if ($type instanceof \Objects\StructureType) {
+				if ($structTo !== null) {
+					throw new \RuntimeException("Type {$defTo->getId()} has multiple structural type specifiers.");
+				}
+				$structTo = $type;
+			}
+		}
+
+		// If there are no structure type specifiers available an inheritance mapping is not possible.
+		if ($structFrom === null || $structTo === null) {
+			$this->println(2, "Inheritance mapping not possible $desc", $object->getId());
+			return new InvalidType;
+		}
+
+		// Find an inheritance in $to that matches $from.
+		foreach ($structFrom->getInherits()->getElements() as $i) {
+			$t = $i->getType();
+			if (!$t instanceof \Objects\NamedType) {
+				throw new \RuntimeException("Inherited type {$t->getId()} expected to be a named type, got ".\Type::describe($t)." instead.");
+			}
+			$def = $t->getDefinition();
+			$this->println(3, "Trying to map {$defTo->getId()} from {$def->getId()}", $object->getId());
+			if ($def->getId() == $defTo->getId()) {
+				/*$ref = new \RepositoryObjectReference($this->repository);
+				$ref->set($def);
+				$nt = new \Objects\NamedType;
+				$nt->setName($def->getName());
+				$nt->setDefinition($ref);
+				return $nt;*/
+				$imt = new \Objects\InheritanceMappedType;
+				$imt->setTypeRef($from, $this->repository);
+				$imt->setStructRef($structFrom, $this->repository);
+				$imt->setInheritanceRef($i, $this->repository);
+				return $imt;
+			}
+		}
+		return new InvalidType;
 	}
 }

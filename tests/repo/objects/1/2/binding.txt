@@ -1,0 +1,37 @@
+Array
+(
+    [types] => Array
+        (
+            [0] => Array
+                (
+                    [fields] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [type] => Array
+                                        (
+                                            [definition] => @ref 0.3
+                                        )
+
+                                )
+
+                        )
+
+                    [inherits] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [type] => Array
+                                        (
+                                            [definition] => @ref 1.1
+                                        )
+
+                                )
+
+                        )
+
+                )
+
+        )
+
+)

@@ -1,0 +1,33 @@
+Array
+(
+    [CalculatePossibleTypesStage] => Array
+        (
+            [0] => 1.3.body.stmts.0.expr.type
+            [1] => 1.3.body.stmts.0.expr.actualType.type
+            [2] => 1.3.body.stmts.1.expr.type
+            [3] => 1.3.inputs.actualType
+            [4] => 1.3.outputs.actualType
+            [5] => 1.3.inputs.possibleType
+            [6] => 1.3.outputs.possibleType
+        )
+
+    [CalculateRequiredTypesStage] => Array
+        (
+            [0] => 1.3.body.stmts.1.expr.type
+        )
+
+    [CalculateActualTypesStage] => Array
+        (
+            [0] => 1.3.inputs.possibleType
+            [1] => 1.3.inputs.requiredType
+            [2] => 1.3.outputs.possibleType
+            [3] => 1.3.outputs.requiredType
+            [4] => 1.3.body.stmts.0.expr.type
+            [5] => 1.3.body.stmts.0.expr.requiredType
+            [6] => 1.3.body.stmts.1.expr.type
+            [7] => 1.3.body.stmts.1.expr.requiredType
+            [8] => 1.3.possibleType
+            [9] => 1.3.requiredType
+        )
+
+)

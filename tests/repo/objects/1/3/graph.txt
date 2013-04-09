@@ -1,0 +1,69 @@
+Array
+(
+    [graphPrev] => @ref <null>
+    [inputs] => Array
+        (
+            [graphPrev] => @ref 1.3
+            [arguments] => Array
+                (
+                )
+
+        )
+
+    [outputs] => Array
+        (
+            [graphPrev] => @ref 1.3.inputs
+            [arguments] => Array
+                (
+                )
+
+        )
+
+    [body] => Array
+        (
+            [stmts] => Array
+                (
+                    [0] => Array
+                        (
+                            [graphPrev] => @ref 1.3.outputs
+                            [expr] => Array
+                                (
+                                    [graphPrev] => @ref 1.3.body.stmts.0
+                                    [type] => Array
+                                        (
+                                            [graphPrev] => @ref 1.3.body.stmts.0.expr
+                                        )
+
+                                    [initialExpr] => Array
+                                        (
+                                        )
+
+                                )
+
+                        )
+
+                    [1] => Array
+                        (
+                            [graphPrev] => @ref 1.3.body.stmts.0.expr.type
+                            [expr] => Array
+                                (
+                                    [graphPrev] => @ref 1.3.body.stmts.1
+                                    [type] => Array
+                                        (
+                                            [graphPrev] => @ref 1.3.body.stmts.1.expr
+                                        )
+
+                                    [initialExpr] => Array
+                                        (
+                                            [graphPrev] => @ref 1.3.body.stmts.1.expr.type
+                                        )
+
+                                )
+
+                        )
+
+                )
+
+        )
+
+)

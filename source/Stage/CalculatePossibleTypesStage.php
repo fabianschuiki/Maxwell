@@ -9,7 +9,7 @@ class CalculatePossibleTypesStage extends DriverStage
 
 	protected function process(\RepositoryObject $object)
 	{
-		if (!$object->getRequiredType(false)) {
+		if ($object instanceof \Objects\TypeInterface && !$object->getRequiredType(false)) {
 			$object->setRequiredType(new \Objects\GenericType);
 		}
 		$this->processChildren($object);
@@ -168,7 +168,7 @@ class CalculatePossibleTypesStage extends DriverStage
 			$object->setPossibleType($ct);
 		}
 		if ($object instanceof \Objects\VariableDefinitionExpr) {
-			$te = $object->getTypeExpr();
+			/*$te = $object->getTypeExpr();
 			$t = null;
 			if (!$te instanceof \Objects\NullObject) {
 				$t = $te->getEvaluatedType();
@@ -184,7 +184,9 @@ class CalculatePossibleTypesStage extends DriverStage
 				$object->setPossibleTypeRef($t, $this->repository);
 			} else {
 				$object->setPossibleType(new \Objects\InvalidType);
-			}
+			}*/
+			$this->addDependency($object, "type");
+			$object->setPossibleTypeRef($object->getType(), $this->repository);
 		}
 
 		// If the actual type has not yet been calculated, it simply equals the

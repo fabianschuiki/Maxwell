@@ -177,8 +177,8 @@ class PrettyPrinter
 	public function formatVariableDefinitionExpr($object, &$context)
 	{
 		$s = "var ".$object->getName();
-		$t = $object->getTypeExpr();
-		if (!$t instanceof \Objects\NullObject) {
+		$t = $object->getType();
+		if (!$t instanceof \Objects\GenericType) {
 			$s .= " ".$this->formatObject($t, $context);
 		}
 		$i = $object->getInitialExpr();

@@ -27,6 +27,14 @@ class TypeDefinition extends \RepositoryRootObject implements \EqualInterface, R
 	public $graph_loaded = true;
 	protected $graphPrev;
 	
+	// binding fragment
+	public $binding_dirty  = false;
+	public $binding_loaded = true;
+	
+	// type fragment
+	public $type_dirty  = false;
+	public $type_loaded = true;
+	
 	
 	/* GENERAL */
 	public function setParent(\IdedObject $parent = null, $key = null, $fragment = null)
@@ -48,7 +56,7 @@ class TypeDefinition extends \RepositoryRootObject implements \EqualInterface, R
 	
 	public function getFragmentNames()
 	{
-		return array("tree","main","graph");
+		return array("tree","main","graph","binding","type");
 	}
 	
 	public function getFragment($name)
@@ -62,6 +70,8 @@ class TypeDefinition extends \RepositoryRootObject implements \EqualInterface, R
 				array("name" => "name", "type" => "string"));
 			case "graph": return array(
 				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
+			case "binding": return array();
+			case "type": return array();
 		}
 		throw new \RuntimeException("Fragment $name does not exist.");
 	}
@@ -109,6 +119,16 @@ class TypeDefinition extends \RepositoryRootObject implements \EqualInterface, R
 		if (!$this->areEqual($this->graphPrev, $x->graphPrev)) {
 			$this->println(0, "Change detected in graphPrev");
 			return false;
+		}
+	
+		// binding fragment
+		if (!$this->binding_loaded) {
+			$this->loadFragment("binding");
+		}
+	
+		// type fragment
+		if (!$this->type_loaded) {
+			$this->loadFragment("type");
 		}
 	
 		return true;

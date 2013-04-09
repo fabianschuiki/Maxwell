@@ -20,6 +20,7 @@ Stage\CalculateActualTypesStage::$verbosity = 99;
 $stages = array();
 $stages[] = new Stage\BuildGraphStage($repo);
 $stages[] = new Stage\BindIdentifiersStage($repo);
+$stages[] = new Stage\BindNamedTypesStage($repo);
 $stages[] = new Stage\ConfigureCallsStage($repo);
 $stages[] = new Stage\ConfigureAssumptionStatementsStage($repo);
 $stages[] = new Stage\EvaluateTypeExpressionsStage($repo);

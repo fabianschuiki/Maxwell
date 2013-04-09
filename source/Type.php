@@ -61,6 +61,19 @@ class Type
 			}
 			return implode("|", $a);
 		}
+		if ($object instanceof \Objects\NamedType) {
+			$ref = $object->getDefinition(false, false);
+			if ($ref !== null) {
+				$def = $ref->get(!preg_match('/^0\./', $ref->getRefId())); // causes references to builtin types to be resolved
+				if ($def !== null) {
+					return $def->getName();
+				} else {
+					return "@".$ref->getRefId();
+				}
+			} else {
+				return $object->getName()."?";
+			}
+		}
 
 		// Seems like we're unable to handle the object.
 		throw new \InvalidArgumentException("Unable to describe object ".vartype($object)." as type.");

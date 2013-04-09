@@ -1,0 +1,31 @@
+Array
+(
+    [graphPrev] => @ref <null>
+    [types] => Array
+        (
+            [0] => Array
+                (
+                    [graphPrev] => @ref 1.1
+                    [fields] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [graphPrev] => @ref 1.1.types.0
+                                    [type] => Array
+                                        (
+                                            [graphPrev] => @ref 1.1.types.0.fields.0
+                                        )
+
+                                )
+
+                        )
+
+                    [inherits] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+)

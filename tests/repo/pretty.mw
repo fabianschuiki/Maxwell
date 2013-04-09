@@ -12,4 +12,8 @@ type Bar struct {
 // 1.3
 func debug
 {
+    var f Foo;
+    // type of body.stmts.0.expr = @1.1
+    var b Bar;
+    // type of body.stmts.1.expr = @1.2
 }

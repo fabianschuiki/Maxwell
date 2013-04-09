@@ -81,7 +81,7 @@ class Type
 			return "@";
 		}
 		if ($object instanceof \Objects\InterfaceMappedType) {
-			return static::describe($object->getType())."(#".$object->getInterface()->getId().")";
+			return static::describe($object->getTo())."(#".static::describe($object->getFrom()).")";
 		}
 
 		// Seems like we're unable to handle the object.

@@ -15,6 +15,6 @@ func debug
     // type of body.stmts.0.expr = int
     var y Foo = x;
     // type of body.stmts.1.expr = @1.1
-    // type of body.stmts.1.expr.initialExpr = int(#1.1.types.0)
+    // type of body.stmts.1.expr.initialExpr = @1.1(#int)
     // x -> body.stmts.0.expr
 }

@@ -270,7 +270,8 @@ class CalculateActualTypesStage extends DriverStage
 
 				// Create the proper type.
 				$imt = new \Objects\InterfaceMappedType;
-				$imt->setTypeRef($from, $this->repository);
+				$imt->setFromRef($from, $this->repository);
+				$imt->setToRef($to, $this->repository);
 				$imt->setInterfaceRef($toIntf, $this->repository);
 				return $imt;
 			}

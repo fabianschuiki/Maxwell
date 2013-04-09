@@ -13,7 +13,8 @@ class InterfaceMappedType extends \RepositoryNodeObject implements \EqualInterfa
 	// main fragment
 	public $main_dirty  = false;
 	public $main_loaded = true;
-	protected $type;
+	protected $from;
+	protected $to;
 	protected $interface;
 	
 	// graph fragment
@@ -49,7 +50,8 @@ class InterfaceMappedType extends \RepositoryNodeObject implements \EqualInterfa
 	{
 		switch ($name) {
 			case "main": return array(
-				array("name" => "type", "type" => ""), 
+				array("name" => "from", "type" => ""), 
+				array("name" => "to", "type" => ""), 
 				array("name" => "interface", "type" => ""));
 			case "graph": return array(
 				array("name" => "graphPrev", "type" => "\RepositoryObjectReference"));
@@ -71,8 +73,12 @@ class InterfaceMappedType extends \RepositoryNodeObject implements \EqualInterfa
 		if (!$this->main_loaded) {
 			$this->loadFragment("main");
 		}
-		if (!$this->areEqual($this->type, $x->type)) {
-			$this->println(0, "Change detected in type");
+		if (!$this->areEqual($this->from, $x->from)) {
+			$this->println(0, "Change detected in from");
+			return false;
+		}
+		if (!$this->areEqual($this->to, $x->to)) {
+			$this->println(0, "Change detected in to");
 			return false;
 		}
 		if (!$this->areEqual($this->interface, $x->interface)) {
@@ -94,47 +100,92 @@ class InterfaceMappedType extends \RepositoryNodeObject implements \EqualInterfa
 	
 	
 	/* ACCESSORS */
-	public function setType($type, $notify = true)
+	public function setFrom($from, $notify = true)
 	{
-		if (!$this->areEqual($this->type, $type)) {
+		if (!$this->areEqual($this->from, $from)) {
 			if (!$this->main_loaded) {
 				$this->loadFragment("main");
 			}
-			if ($this->type instanceof \RepositoryObjectParentInterface) {
-				$this->type->setParent(null);
+			if ($this->from instanceof \RepositoryObjectParentInterface) {
+				$this->from->setParent(null);
 			}
-			if ($type instanceof \RepositoryObjectParentInterface) {
-				$type->setParent($this, "type", "main");
+			if ($from instanceof \RepositoryObjectParentInterface) {
+				$from->setParent($this, "from", "main");
 			}
-			$this->type = $type;
+			$this->from = $from;
 			if ($notify) {
-				$this->notifyObjectDirty("type");
+				$this->notifyObjectDirty("from");
 				$this->notifyFragmentDirty("main");
 			}
 		}
 	}
-	public function setTypeRef($type, \Repository $repository, $notify = true)
+	public function setFromRef($from, \Repository $repository, $notify = true)
 	{
 		$v = new \RepositoryObjectReference($repository);
-		if ($type instanceof \RepositoryObjectReference) {
-			$v->set($type->getRefId());
+		if ($from instanceof \RepositoryObjectReference) {
+			$v->set($from->getRefId());
 		} else {
-			$v->set($type);
+			$v->set($from);
 		}
-		$this->setType($v, $notify);
+		$this->setFrom($v, $notify);
 	}
-	public function getType($enforce = true, $unref = true)
+	public function getFrom($enforce = true, $unref = true)
 	{
 		if (!$this->main_loaded) {
 			$this->loadFragment('main');
 		}
-		if ($enforce && $this->type === null) {
-			throw new \RuntimeException("Object {$this->getId()} expected to have non-null type.");
+		if ($enforce && $this->from === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null from.");
 		}
-		if ($unref && $this->type instanceof \RepositoryObjectReference) {
-			$v = $this->type->get();
+		if ($unref && $this->from instanceof \RepositoryObjectReference) {
+			$v = $this->from->get();
 		} else {
-			$v = $this->type;
+			$v = $this->from;
+		}
+		return $v;
+	}
+	
+	public function setTo($to, $notify = true)
+	{
+		if (!$this->areEqual($this->to, $to)) {
+			if (!$this->main_loaded) {
+				$this->loadFragment("main");
+			}
+			if ($this->to instanceof \RepositoryObjectParentInterface) {
+				$this->to->setParent(null);
+			}
+			if ($to instanceof \RepositoryObjectParentInterface) {
+				$to->setParent($this, "to", "main");
+			}
+			$this->to = $to;
+			if ($notify) {
+				$this->notifyObjectDirty("to");
+				$this->notifyFragmentDirty("main");
+			}
+		}
+	}
+	public function setToRef($to, \Repository $repository, $notify = true)
+	{
+		$v = new \RepositoryObjectReference($repository);
+		if ($to instanceof \RepositoryObjectReference) {
+			$v->set($to->getRefId());
+		} else {
+			$v->set($to);
+		}
+		$this->setTo($v, $notify);
+	}
+	public function getTo($enforce = true, $unref = true)
+	{
+		if (!$this->main_loaded) {
+			$this->loadFragment('main');
+		}
+		if ($enforce && $this->to === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null to.");
+		}
+		if ($unref && $this->to instanceof \RepositoryObjectReference) {
+			$v = $this->to->get();
+		} else {
+			$v = $this->to;
 		}
 		return $v;
 	}

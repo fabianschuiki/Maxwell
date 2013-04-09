@@ -189,6 +189,9 @@
 			"graph": ["@graph"]},
 		"UnionType": {
 			"main": ["array types"],
+			"graph": ["@graph"]},
+		"InheritanceMappedType": {
+			"main": ["type", "struct", "inheritance"],
 			"graph": ["@graph"]}
 	}
 }

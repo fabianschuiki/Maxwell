@@ -119,6 +119,16 @@ Array
 
                                     [initialExpr] => Array
                                         (
+                                            [possibleType] => @ref 1.3.body.stmts.0.expr.type
+                                            [requiredType] => @ref 1.3.body.stmts.1.expr.type
+                                            [actualType] => Array
+                                                (
+                                                    [type] => @ref 1.3.body.stmts.0.expr.type
+                                                    [struct] => @ref 1.2.types.0
+                                                    [inheritance] => @ref 1.2.types.0.inherits.0
+                                                    [class] => InheritanceMappedType
+                                                )
+
                                         )
 
                                 )

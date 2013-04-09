@@ -51,8 +51,8 @@
 				"class": "ExprStmt",
 				"expr": {
 					"class": "VariableDefinitionExpr",
-					"name": "f",
-					"type": { "class": "NamedType", "name": "Foo" },
+					"name": "b",
+					"type": { "class": "NamedType", "name": "Bar" },
 					"initialExpr": { "class": "NullObject" }
 				}
 			},
@@ -60,9 +60,12 @@
 				"class": "ExprStmt",
 				"expr": {
 					"class": "VariableDefinitionExpr",
-					"name": "b",
-					"type": { "class": "NamedType", "name": "Bar" },
-					"initialExpr": { "class": "NullObject" }
+					"name": "f",
+					"type": { "class": "NamedType", "name": "Foo" },
+					"initialExpr": {
+						"class": "IdentifierExpr",
+						"name": "b"
+					}
 				}
 			}
 		]

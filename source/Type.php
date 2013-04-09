@@ -74,6 +74,9 @@ class Type
 				return $object->getName()."?";
 			}
 		}
+		if ($object instanceof \Objects\InheritanceMappedType) {
+			return static::describe($object->getInheritance()->getType())."(>".static::describe($object->getType()).")";
+		}
 
 		// Seems like we're unable to handle the object.
 		throw new \InvalidArgumentException("Unable to describe object ".vartype($object)." as type.");

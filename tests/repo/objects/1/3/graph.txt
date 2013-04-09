@@ -55,6 +55,7 @@ Array
 
                                     [initialExpr] => Array
                                         (
+                                            [graphPrev] => @ref 1.3.body.stmts.1.expr.type
                                         )
 
                                 )

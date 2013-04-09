@@ -1,39 +1,38 @@
 Array
 (
     [graphPrev] => @ref <null>
-    [types] => Array
+    [inputs] => Array
         (
-            [0] => Array
+            [graphPrev] => @ref 1.2
+            [arguments] => Array
                 (
-                    [graphPrev] => @ref 1.2
-                    [fields] => Array
+                    [0] => Array
                         (
-                            [0] => Array
+                            [graphPrev] => @ref 1.2.inputs
+                            [type] => Array
                                 (
-                                    [graphPrev] => @ref 1.2.types.0
-                                    [type] => Array
-                                        (
-                                            [graphPrev] => @ref 1.2.types.0.fields.0
-                                        )
-
+                                    [graphPrev] => @ref 1.2.inputs.arguments.0
                                 )
 
                         )
 
-                    [inherits] => Array
-                        (
-                            [0] => Array
-                                (
-                                    [graphPrev] => @ref 1.2.types.0.fields.0.type
-                                    [type] => Array
-                                        (
-                                            [graphPrev] => @ref 1.2.types.0.inherits.0
-                                        )
+                )
 
-                                )
+        )
 
-                        )
+    [outputs] => Array
+        (
+            [graphPrev] => @ref 1.2.inputs.arguments.0.type
+            [arguments] => Array
+                (
+                )
 
+        )
+
+    [body] => Array
+        (
+            [stmts] => Array
+                (
                 )
 
         )

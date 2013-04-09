@@ -64,7 +64,7 @@
 
 		"FunctionArgument": {
 			"implements": ["\\AbstractFunctionArgument"],
-			"tree": ["TypeExpr typeExpr"],
+			"tree": ["type"],
 			"main": ["string name"],
 			"graph": ["@graph"],
 			"type": ["@type"]},
@@ -96,6 +96,10 @@
 		"InterfaceType": {
 			"tree": ["array funcs"],
 			"main": ["@range"],
+			"graph": ["@graph"]},
+		"InterfaceFunction": {
+			"tree": ["array inputs", "array outputs"],
+			"main": ["string name"],
 			"graph": ["@graph"]},
 
 		"ExprStmt": {
@@ -184,6 +188,7 @@
 			"graph": ["@graph"]},
 		"GenericType": {},
 		"InvalidType": {},
+		"InterfacePlaceholderType": {},
 		"CastType": {
 			"main": [
 				"from",
@@ -197,6 +202,9 @@
 			"graph": ["@graph"]},
 		"InheritanceMappedType": {
 			"main": ["type", "struct", "inheritance"],
+			"graph": ["@graph"]},
+		"InterfaceMappedType": {
+			"main": ["type", "interface"],
 			"graph": ["@graph"]}
 	}
 }

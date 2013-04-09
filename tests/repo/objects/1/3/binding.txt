@@ -26,7 +26,7 @@ Array
                                 (
                                     [type] => Array
                                         (
-                                            [definition] => @ref 1.2
+                                            [definition] => @ref 0.3
                                         )
 
                                     [initialExpr] => Array

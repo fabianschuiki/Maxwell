@@ -10,4 +10,6 @@ Array
     [CalculatePossibleTypesStage] => 1
     [CalculateRequiredTypesStage] => 1
     [CalculateActualTypesStage] => 1
+    [NarrowCallCandidatesStage] => 1
+    [SelectCallCandidateStage] => 1
 )

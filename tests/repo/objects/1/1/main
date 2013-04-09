@@ -1,1 +1,1 @@
-{"name":"Foo","types":[{"fields":[{"name":"x","type":{"name":"real"}}],"inherits":[]}]}
+{"name":"Foo","types":[{"funcs":[{"name":"say","inputs":[[]],"outputs":[]}]}]}

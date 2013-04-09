@@ -13,7 +13,7 @@ class FunctionArgument extends \RepositoryNodeObject implements \AbstractFunctio
 	// tree fragment
 	public $tree_dirty  = false;
 	public $tree_loaded = true;
-	protected $typeExpr;
+	protected $type;
 	
 	// main fragment
 	public $main_dirty  = false;
@@ -60,7 +60,7 @@ class FunctionArgument extends \RepositoryNodeObject implements \AbstractFunctio
 	{
 		switch ($name) {
 			case "tree": return array(
-				array("name" => "typeExpr", "type" => "TypeExpr"));
+				array("name" => "type", "type" => ""));
 			case "main": return array(
 				array("name" => "name", "type" => "string"));
 			case "graph": return array(
@@ -87,8 +87,8 @@ class FunctionArgument extends \RepositoryNodeObject implements \AbstractFunctio
 		if (!$this->tree_loaded) {
 			$this->loadFragment("tree");
 		}
-		if (!$this->areEqual($this->typeExpr, $x->typeExpr)) {
-			$this->println(0, "Change detected in typeExpr");
+		if (!$this->areEqual($this->type, $x->type)) {
+			$this->println(0, "Change detected in type");
 			return false;
 		}
 	
@@ -132,53 +132,47 @@ class FunctionArgument extends \RepositoryNodeObject implements \AbstractFunctio
 	
 	
 	/* ACCESSORS */
-	public function setTypeExpr($typeExpr, $notify = true)
+	public function setType($type, $notify = true)
 	{
-		if (!$typeExpr instanceof TypeExpr && !$typeExpr instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs typeExpr to be an instance of TypeExpr or \RepositoryObjectReference');
-		}
-		if (!$this->areEqual($this->typeExpr, $typeExpr)) {
+		if (!$this->areEqual($this->type, $type)) {
 			if (!$this->tree_loaded) {
 				$this->loadFragment("tree");
 			}
-			if ($this->typeExpr instanceof \RepositoryObjectParentInterface) {
-				$this->typeExpr->setParent(null);
+			if ($this->type instanceof \RepositoryObjectParentInterface) {
+				$this->type->setParent(null);
 			}
-			if ($typeExpr instanceof \RepositoryObjectParentInterface) {
-				$typeExpr->setParent($this, "typeExpr", "tree");
+			if ($type instanceof \RepositoryObjectParentInterface) {
+				$type->setParent($this, "type", "tree");
 			}
-			$this->typeExpr = $typeExpr;
+			$this->type = $type;
 			if ($notify) {
-				$this->notifyObjectDirty("typeExpr");
+				$this->notifyObjectDirty("type");
 				$this->notifyFragmentDirty("tree");
 			}
 		}
 	}
-	public function setTypeExprRef($typeExpr, \Repository $repository, $notify = true)
+	public function setTypeRef($type, \Repository $repository, $notify = true)
 	{
-		if (!$typeExpr instanceof TypeExpr && !$typeExpr instanceof \RepositoryObjectReference) {
-			throw new \InvalidArgumentException('Object '.$this->getId().' needs typeExpr to be an instance of TypeExpr or \RepositoryObjectReference');
-		}
 		$v = new \RepositoryObjectReference($repository);
-		if ($typeExpr instanceof \RepositoryObjectReference) {
-			$v->set($typeExpr->getRefId());
+		if ($type instanceof \RepositoryObjectReference) {
+			$v->set($type->getRefId());
 		} else {
-			$v->set($typeExpr);
+			$v->set($type);
 		}
-		$this->setTypeExpr($v, $notify);
+		$this->setType($v, $notify);
 	}
-	public function getTypeExpr($enforce = true, $unref = true)
+	public function getType($enforce = true, $unref = true)
 	{
 		if (!$this->tree_loaded) {
 			$this->loadFragment('tree');
 		}
-		if ($enforce && $this->typeExpr === null) {
-			throw new \RuntimeException("Object {$this->getId()} expected to have non-null typeExpr.");
+		if ($enforce && $this->type === null) {
+			throw new \RuntimeException("Object {$this->getId()} expected to have non-null type.");
 		}
-		if ($unref && $this->typeExpr instanceof \RepositoryObjectReference) {
-			$v = $this->typeExpr->get();
+		if ($unref && $this->type instanceof \RepositoryObjectReference) {
+			$v = $this->type->get();
 		} else {
-			$v = $this->typeExpr;
+			$v = $this->type;
 		}
 		return $v;
 	}

@@ -6,22 +6,25 @@ Array
             [0] => Array
                 (
                     [graphPrev] => @ref 1.1
-                    [fields] => Array
+                    [funcs] => Array
                         (
                             [0] => Array
                                 (
                                     [graphPrev] => @ref 1.1.types.0
-                                    [type] => Array
+                                    [inputs] => Array
                                         (
-                                            [graphPrev] => @ref 1.1.types.0.fields.0
+                                            [0] => Array
+                                                (
+                                                )
+
+                                        )
+
+                                    [outputs] => Array
+                                        (
                                         )
 
                                 )
 
-                        )
-
-                    [inherits] => Array
-                        (
                         )
 
                 )

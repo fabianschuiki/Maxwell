@@ -39,18 +39,26 @@ class CalculateActualTypesStage extends DriverStage
 			// Otherwise try to find a match.
 			else {
 				$m = \Type::intersectSetOrConcreteType($possible, $required);
-				$object->setActualType($m);
 
-				// Check whether a cast from a struct to its inherited struct is requested.
-				if ($object->getActualType() instanceof InvalidType && $possible instanceof \Objects\NamedType && $required instanceof \Objects\NamedType) {
-					$m = $this->tryInheritanceMapping($object, $possible, $required);
-					$object->setActualType($m);
+				// Check for special conversions for named types.
+				if ($possible instanceof \Objects\NamedType && $required instanceof \Objects\NamedType)
+				{
+					// Check whether a mapping from a struct to its inherited struct is requested.
+					if ($m instanceof InvalidType) {
+						$m = $this->tryInheritanceMapping($object, $possible, $required);
+					}
+					// Check whether an interface mapping is requested.
+					if ($m instanceof InvalidType) {
+						$m = $this->tryInterfaceMapping($object, $possible, $required);
+					}
 				}
 
 				// Otherwise simply try to go with a regular cast.
-				if ($object->getActualType() instanceof InvalidType) {
-					$this->tryCast($object, $possible, $required);
+				if ($m instanceof InvalidType) {
+					$m = $this->tryCast($object, $possible, $required);
 				}
+
+				$object->setActualType($m);
 			}
 
 			// Show the output of the stage.
@@ -130,9 +138,12 @@ class CalculateActualTypesStage extends DriverStage
 
 	private function tryInheritanceMapping(\RepositoryObject $object, $from, $to)
 	{
-		// Extract the two type definitions.
+		// Extract the two type definitions and make sure to only operate on proper type definitions.
 		$defFrom = $from->getDefinition();
 		$defTo = $to->getDefinition();
+		if (!$defFrom instanceof \Objects\TypeDefinition || !$defTo instanceof \Objects\TypeDefinition) {
+			return new InvalidType;
+		}
 		$desc = "from {$defFrom->getID()} to {$defTo->getId()}";
 		$this->println(2, "Maybe performing inheritance translation $desc", $object->getId());
 
@@ -184,6 +195,87 @@ class CalculateActualTypesStage extends DriverStage
 				return $imt;
 			}
 		}
+		return new InvalidType;
+	}
+
+	private function tryInterfaceMapping(\RepositoryObject $object, $from, $to)
+	{
+		// Extract the actual definitions.
+		$defFrom = $from->getDefinition();
+		$defTo = $to->getDefinition();
+
+		// Look for an interface specifier for the $to type.
+		$toIntf = null;
+		foreach ($defTo->getTypes()->getElements() as $t) {
+			if ($t instanceof \Objects\InterfaceType) {
+				if ($toIntf !== null) {
+					throw new \RuntimeException("Type {$defTo->getId()} has multiple interface type specifiers.");
+				}
+				$toIntf = $t;
+			}
+		}
+		if ($toIntf === null) {
+			return new InvalidType;
+		}
+
+		// Check whether the $from type satisifies the $toIntf interface.
+		$this->println(2, "Checking whether {$defFrom->getId()} satisfies interface {$toIntf->getId()}", $object->getId());
+		foreach ($toIntf->getFuncs()->getElements() as $func) {
+			$this->println(3, "- Does {$func->getId()} '{$func->getName()}' exist for @ = {$defFrom->getId()}?", $object->getId());
+
+			// TODO: The following code should move into its own stage which is executed near the BindIdentifiersStage.
+			$externals = $this->repository->getImportedNamesForObject($object->getId());
+			$funcIds = array();
+			foreach ($externals as $externalId => $externalName) {
+				if ($externalName == $func->getName()) {
+					$funcIds[] = $externalId;
+				}
+			}
+			$this->println(3, "- Potential candidates are ".implode(", ", $funcIds), $object->getId());
+
+			// Check each function candidate individually.
+			foreach ($funcIds as $funcId) {
+				$this->println(4, "- Checking candidate $funcId", $object->getId());
+				$f = $this->repository->getObject($funcId);
+				$argsi = $f->getActualType()->getInputs()->getArguments()->getElements();
+				$argso = $f->getActualType()->getOutputs()->getArguments()->getElements();
+				if (count($argsi) != $func->getInputs()->getCount() || count($argso) != $func->getOutputs()->getCount()) {
+					$this->println(5, "  - Input or output argument count not equal", $object->getId());
+					continue;
+				}
+				$match = true;
+				foreach ($func->getInputs()->getElements() as $index => $t) {
+					if ($t instanceof \Objects\InterfacePlaceholderType) {
+						$t = $from;
+					}
+					$this->println(5, "  - Testing whether candidate input $index is compatible with ".\Type::describe($t), $object->getId());
+					if ($t->getDefinition()->getId() != $argsi[$index]->getType()->getDefinition()->getId()) {
+						$match = false;
+						break;
+					}
+				}
+				if (!$match) continue;
+				foreach ($func->getOutputs()->getElements() as $index => $t) {
+					if ($t instanceof \Objects\InterfacePlaceholderType) {
+						$t = $from;
+					}
+					$this->println(5, "  - Testing whether candidate output $index is compatible with ".\Type::describe($t), $object->getId());
+					if ($t->getDefinition()->getId() != $argso[$index]->getType()->getDefinition()->getId()) {
+						$match = false;
+						break;
+					}
+				}
+				if (!$match) continue;
+				$this->println(5, "  - $funcId is a match!", $object->getId());
+
+				// Create the proper type.
+				$imt = new \Objects\InterfaceMappedType;
+				$imt->setTypeRef($from, $this->repository);
+				$imt->setInterfaceRef($toIntf, $this->repository);
+				return $imt;
+			}
+		}
+
 		return new InvalidType;
 	}
 }

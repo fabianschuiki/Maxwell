@@ -77,6 +77,12 @@ class Type
 		if ($object instanceof \Objects\InheritanceMappedType) {
 			return static::describe($object->getInheritance()->getType())."(>".static::describe($object->getType()).")";
 		}
+		if ($object instanceof \Objects\InterfacePlaceholderType) {
+			return "@";
+		}
+		if ($object instanceof \Objects\InterfaceMappedType) {
+			return static::describe($object->getType())."(#".$object->getInterface()->getId().")";
+		}
 
 		// Seems like we're unable to handle the object.
 		throw new \InvalidArgumentException("Unable to describe object ".vartype($object)." as type.");

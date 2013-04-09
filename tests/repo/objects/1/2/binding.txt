@@ -1,35 +1,34 @@
 Array
 (
-    [types] => Array
+    [inputs] => Array
         (
-            [0] => Array
+            [arguments] => Array
                 (
-                    [fields] => Array
+                    [0] => Array
                         (
-                            [0] => Array
+                            [type] => Array
                                 (
-                                    [type] => Array
-                                        (
-                                            [definition] => @ref 0.3
-                                        )
-
+                                    [definition] => @ref 0.3
                                 )
 
                         )
 
-                    [inherits] => Array
-                        (
-                            [0] => Array
-                                (
-                                    [type] => Array
-                                        (
-                                            [definition] => @ref 1.1
-                                        )
+                )
 
-                                )
+        )
 
-                        )
+    [outputs] => Array
+        (
+            [arguments] => Array
+                (
+                )
 
+        )
+
+    [body] => Array
+        (
+            [stmts] => Array
+                (
                 )
 
         )

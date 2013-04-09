@@ -1,1 +1,1 @@
-{"name":"Bar","types":[{"fields":[{"name":"k","type":{"name":"int"}}],"inherits":[{"type":{"name":"Foo"}}]}]}
+{"name":"say","inputs":{"arguments":[{"type":{"name":"int"},"name":"x"}]},"outputs":{"arguments":[]},"body":{"stmts":[]}}

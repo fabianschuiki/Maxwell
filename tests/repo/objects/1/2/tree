@@ -1,1 +1,1 @@
-{"types":[{"class":"StructureType","fields":[{"class":"StructureField","type":{"class":"NamedType"}}],"inherits":[{"class":"StructureInheritance","type":{"class":"NamedType"}}]}]}
+{"inputs":{"class":"FunctionArgumentTuple","arguments":[{"class":"FunctionArgument","type":{"class":"NamedType"}}]},"outputs":{"class":"FunctionArgumentTuple","arguments":[]},"body":{"class":"FunctionBody","stmts":[]}}

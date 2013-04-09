@@ -1,0 +1,121 @@
+Array
+(
+    [possibleType] => Array
+        (
+            [inputs] => Array
+                (
+                    [arguments] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [name] => x
+                                    [type] => @ref 1.2.inputs.arguments.0.type
+                                    [class] => FunctionArgumentType
+                                )
+
+                        )
+
+                    [class] => FunctionArgumentTupleType
+                )
+
+            [outputs] => Array
+                (
+                    [arguments] => Array
+                        (
+                        )
+
+                    [class] => FunctionArgumentTupleType
+                )
+
+            [class] => FunctionType
+        )
+
+    [requiredType] => Array
+        (
+            [class] => GenericType
+        )
+
+    [actualType] => @ref 1.2.possibleType
+    [inputs] => Array
+        (
+            [possibleType] => Array
+                (
+                    [arguments] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [name] => x
+                                    [type] => @ref 1.2.inputs.arguments.0.type
+                                    [class] => FunctionArgumentType
+                                )
+
+                        )
+
+                    [class] => FunctionArgumentTupleType
+                )
+
+            [requiredType] => Array
+                (
+                    [class] => GenericType
+                )
+
+            [actualType] => @ref 1.2.inputs.possibleType
+            [arguments] => Array
+                (
+                    [0] => Array
+                        (
+                            [possibleType] => Array
+                                (
+                                    [name] => x
+                                    [type] => @ref 1.2.inputs.arguments.0.type
+                                    [class] => FunctionArgumentType
+                                )
+
+                            [requiredType] => Array
+                                (
+                                    [class] => GenericType
+                                )
+
+                            [actualType] => @ref 1.2.inputs.arguments.0.possibleType
+                            [type] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+        )
+
+    [outputs] => Array
+        (
+            [possibleType] => Array
+                (
+                    [arguments] => Array
+                        (
+                        )
+
+                    [class] => FunctionArgumentTupleType
+                )
+
+            [requiredType] => Array
+                (
+                    [class] => GenericType
+                )
+
+            [actualType] => @ref 1.2.outputs.possibleType
+            [arguments] => Array
+                (
+                )
+
+        )
+
+    [body] => Array
+        (
+            [stmts] => Array
+                (
+                )
+
+        )
+
+)

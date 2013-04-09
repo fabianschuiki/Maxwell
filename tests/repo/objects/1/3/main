@@ -1,1 +1,1 @@
-{"name":"debug","inputs":{"arguments":[]},"outputs":{"arguments":[]},"body":{"stmts":[{"expr":{"name":"b","type":{"name":"Bar"}}},{"expr":{"name":"f","type":{"name":"Foo"},"initialExpr":{"name":"b"}}}]}}
+{"name":"debug","inputs":{"arguments":[]},"outputs":{"arguments":[]},"body":{"stmts":[{"expr":{"name":"x","type":{"name":"int"}}},{"expr":{"name":"y","type":{"name":"Foo"},"initialExpr":{"name":"x"}}}]}}

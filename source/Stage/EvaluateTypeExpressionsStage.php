@@ -14,6 +14,7 @@ class EvaluateTypeExpressionsStage extends DriverStage
 		}
 		if ($object instanceof \Objects\TypeExpr)
 		{
+			throw new \RuntimeException("TypeExpr found at {$object->getId()}. Type expressions are deprecated and should be replaced with proper types.");
 			//if (!$object->getEvaluatedType(false)) {
 				$result = $this->processExpr($object->getExpr());
 				$object->setEvaluatedType($result);

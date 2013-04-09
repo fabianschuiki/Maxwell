@@ -3,6 +3,6 @@
 
 interface AbstractFunctionArgument extends NamedObject, TypedObject
 {
-	public function getTypeExpr($enforce = true);
+	public function getType($enforce = true);
 	public function getName($enforce = true);
 }

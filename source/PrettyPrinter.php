@@ -106,7 +106,7 @@ class PrettyPrinter
 
 	public function formatFunctionArgument($object, &$context)
 	{
-		return $this->formatObject($object->getTypeExpr(), $context)." ".$object->getName();
+		return $this->formatObject($object->getType(), $context)." ".$object->getName();
 	}
 
 	public function formatExprStmt($object, &$context)
@@ -235,5 +235,30 @@ class PrettyPrinter
 	public function formatNamedType($object, &$context)
 	{
 		return $object->getName();
+	}
+
+	public function formatInterfacePlaceholderType($object, &$context)
+	{
+		return "@";
+	}
+
+	public function formatInterfaceType($object, &$context)
+	{
+		$body = "";
+		foreach ($object->getFuncs()->getElements() as $e) {
+			$body .= "\nfunc {$e->getName()}";
+			$inputs = array();
+			$outputs = array();
+			foreach ($e->getInputs()->getElements() as $t) {
+				$inputs[] = $this->formatObject($t, $context);
+			}
+			foreach ($e->getOutputs()->getElements() as $t) {
+				$outputs[] = $this->formatObject($t, $context);
+			}
+			if ($inputs) $body .= " (".implode(", ", $inputs).")";
+			if ($outputs) $body .= " -> (".implode(", ", $outputs).")";
+			$body .= ";";
+		}
+		return "interface {".static::indent($body)."\n}";
 	}
 }

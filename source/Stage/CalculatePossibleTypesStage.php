@@ -27,8 +27,8 @@ class CalculatePossibleTypesStage extends DriverStage
 
 		// Functions, Function Arguments and Function Argument Tuples
 		if ($object instanceof \AbstractFunctionArgument && !$object->getPossibleType(false, false)) {
-			$t = $object->getTypeExpr()->getEvaluatedType();
-			$this->addDependency($object, "typeExpr.evaluatedType");
+			$t = $object->getType();
+			$this->addDependency($object, "type");
 			$a = new \Objects\FunctionArgumentType;
 			$a->setName($object->getName());
 			$a->setTypeRef($t, $this->repository);

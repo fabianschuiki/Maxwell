@@ -92,6 +92,11 @@
 			"main": ["string name"],
 			"graph": ["@graph"]},
 
+		"InterfaceType": {
+			"tree": ["array funcs"],
+			"main": ["@range"],
+			"graph": ["@graph"]},
+
 		"ExprStmt": {
 			"tree": ["Expr expr"],
 			"graph": ["@graph"]

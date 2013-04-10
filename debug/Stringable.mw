@@ -1,9 +1,22 @@
-type Stringable interface {
-	func toString (@) -> (String s);
+type Foo interface {
+	func hello (@, any);
 }
 
-func writeToConsole (Stringable x)
+type Bar interface {
+	func hello (any, @);
+}
+
+type A object {};
+type B object {};
+
+func hello (A, int);
+func hello (int, B);
+func hello (A, B);
+
+// A is now considered Foo
+// B is now considered Bar
+
+func world (Foo f, Bar b)
 {
-	var s String = toString(x);
-	console.println(s);
+	hello(f,b);
 }

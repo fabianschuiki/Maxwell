@@ -1,0 +1,9 @@
+type Stringable interface {
+	func toString (@) -> (String s);
+}
+
+func writeToConsole (Stringable x)
+{
+	var s String = toString(x);
+	console.println(s);
+}

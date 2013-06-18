@@ -1,0 +1,19 @@
+group type {
+	any possibleType
+	any requiredType
+	any actualType
+}
+
+group binding {
+	any* bindingTarget
+}
+
+interface Named {
+	string name
+}
+
+object Identifier {
+	string name
+	@type
+	@binding
+}

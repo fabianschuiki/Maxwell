@@ -9,7 +9,7 @@ if (CMAKE_BUILD_TYPE MATCHES Debug)
 	add_definitions("-DBUILD_DEBUG")
 endif()
 
-find_package(Boost REQUIRED COMPONENTS thread system timer)
+find_package(Boost REQUIRED COMPONENTS)
 
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(source)

@@ -14,3 +14,4 @@ find_package(Boost REQUIRED COMPONENTS thread system timer)
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(source)
 
+add_subdirectory(source/driver)

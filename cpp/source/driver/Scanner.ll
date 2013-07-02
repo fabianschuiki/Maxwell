@@ -54,13 +54,32 @@ typedef example::Parser::token_type token_type;
 	yylloc->step();
 }
 
+ /* Keywords */
+"func"  return token::FUNC;
+
 [a-zA-Z_][a-zA-Z0-9_]*  storeToken; return token::IDENTIFIER;
 [0-9]+"."[0-9]*         storeToken; return token::REAL;
 [0-9]+                  storeToken; return token::INTEGER;
 
- /* Pass all other characters to Bison. */
+"("  return token::LPAREN;
+")"  return token::RPAREN;
+"{"  return token::LBRACE;
+"}"  return token::RBRACE;
+"["  return token::LBRACK;
+"]"  return token::RBRACK;
+
+"|"  return token::PIPE;
+
+"."  return token::DOT;
+","  return token::COMMA;
+":"  return token::COLON;
+";"  return token::SEMICOLON;
+
+"->" return token::RIGHTARROW;
+
+ /* All other characters are interpreted as a symbol. */
 . {
-	return static_cast<token_type>(*yytext);
+	yylval->symbol = yytext[0]; return token::SYMBOL;
 }
 
 

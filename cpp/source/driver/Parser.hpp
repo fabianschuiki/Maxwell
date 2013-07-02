@@ -48,14 +48,14 @@ namespace example
 }
 
 /* First part of user declarations.  */
-#line 3 "Parser.yy"
+#line 3 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
 
 #include <iostream>
 #include <string>
 
 
 /* Line 303 of lalr1.cc.  */
-#line 59 "Parser.hpp"
+#line 59 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.hpp"
 
 #include "location.hh"
 
@@ -106,13 +106,14 @@ namespace example
     /// Symbol semantic values.
 #ifndef YYSTYPE
     union semantic_type
-#line 35 "Parser.yy"
+#line 35 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
 {
     std::string *string;
     int token;
+    int symbol;
 }
 /* Line 303 of lalr1.cc.  */
-#line 116 "Parser.hpp"
+#line 117 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.hpp"
 	;
 #else
     typedef YYSTYPE semantic_type;
@@ -127,7 +128,21 @@ namespace example
      END = 0,
      IDENTIFIER = 258,
      REAL = 259,
-     INTEGER = 260
+     INTEGER = 260,
+     SYMBOL = 261,
+     FUNC = 262,
+     LPAREN = 263,
+     RPAREN = 264,
+     LBRACE = 265,
+     RBRACE = 266,
+     LBRACK = 267,
+     RBRACK = 268,
+     PIPE = 269,
+     DOT = 270,
+     COMMA = 271,
+     COLON = 272,
+     SEMICOLON = 273,
+     RIGHTARROW = 274
    };
 
     };
@@ -222,7 +237,7 @@ namespace example
     static const unsigned char yytable_[];
     static const signed char yytable_ninf_;
 
-    static const unsigned char yycheck_[];
+    static const signed char yycheck_[];
 
     /// For a state, its accessing symbol.
     static const unsigned char yystos_[];

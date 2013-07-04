@@ -9,9 +9,9 @@ if (CMAKE_BUILD_TYPE MATCHES Debug)
 	add_definitions("-DBUILD_DEBUG")
 endif()
 
-find_package(Boost REQUIRED COMPONENTS)
+find_package(Boost REQUIRED COMPONENTS filesystem system)
 
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(source)
 
-add_subdirectory(source/driver)
+add_subdirectory(source)

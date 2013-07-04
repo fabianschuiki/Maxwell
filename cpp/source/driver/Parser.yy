@@ -3,6 +3,7 @@
 %{
 #include <iostream>
 #include <string>
+#include <ast/ast.hpp>
 %}
 
 /* Require Bison 2.3 */
@@ -33,6 +34,7 @@
 /*** BEGIN GRAMMAR TOKENS ***/
 
 %union {
+    ast::Node *node;
     std::string *string;
     int token;
     int symbol;
@@ -62,9 +64,11 @@
 %left "+" "-"
 %left "*" "/"
 
-%destructor { delete $$; } IDENTIFIER REAL INTEGER
+%destructor { delete $$; } IDENTIFIER REAL INTEGER STRING_LITERAL
 
 %start root
+
+%type <node> func_decl
 
 /*** END GRAMMAR TOKENS ***/
 
@@ -79,6 +83,7 @@
 
 using std::cout;
 using std::endl;
+using namespace ast;
 %}
 
 
@@ -94,7 +99,7 @@ root_stmts : root_stmts root_stmt
 root_stmt : func_decl
           ;
 
-func_decl : FUNC IDENTIFIER body { cout << "stateless method " << *$2 << endl; }
+func_decl : FUNC IDENTIFIER body { $$ = new FunctionDefinition(*$2); }
           | FUNC IDENTIFIER func_arg_tuple body { cout << "method " << *$2 << endl; }
           | FUNC IDENTIFIER RIGHTARROW func_arg_tuple body { cout << "stateless function " << *$2 << endl; }
           | FUNC IDENTIFIER func_arg_tuple RIGHTARROW func_arg_tuple body { cout << "function " << *$2 << endl; }

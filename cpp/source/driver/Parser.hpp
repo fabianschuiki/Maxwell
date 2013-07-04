@@ -52,10 +52,11 @@ namespace example
 
 #include <iostream>
 #include <string>
+#include <ast/ast.hpp>
 
 
 /* Line 303 of lalr1.cc.  */
-#line 59 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.hpp"
+#line 60 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.hpp"
 
 #include "location.hh"
 
@@ -106,14 +107,15 @@ namespace example
     /// Symbol semantic values.
 #ifndef YYSTYPE
     union semantic_type
-#line 35 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 36 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
 {
+    ast::Node *node;
     std::string *string;
     int token;
     int symbol;
 }
 /* Line 303 of lalr1.cc.  */
-#line 117 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.hpp"
+#line 119 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.hpp"
 	;
 #else
     typedef YYSTYPE semantic_type;

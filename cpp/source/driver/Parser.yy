@@ -3,7 +3,13 @@
 %{
 #include <iostream>
 #include <string>
+#include <vector>
 #include <ast/ast.hpp>
+#include <boost/smart_ptr.hpp>
+
+using namespace ast;
+using boost::shared_ptr;
+typedef std::vector<shared_ptr<Node> > Nodes;
 %}
 
 /* Require Bison 2.3 */
@@ -34,11 +40,15 @@
 /*** BEGIN GRAMMAR TOKENS ***/
 
 %union {
-    ast::Node *node;
+    Node *node;
     std::string *string;
+    Nodes *nodes;
     int token;
     int symbol;
 }
+
+%type <node> func_decl func_arg func_arg_tuple
+%type <nodes> func_args
 
 %token <string> IDENTIFIER "identifier"
 %token <string> REAL "real number constant"
@@ -68,8 +78,6 @@
 
 %start root
 
-%type <node> func_decl
-
 /*** END GRAMMAR TOKENS ***/
 
 /* Add the glue code require to hook up the Bison parser to the Flex lexer class. */
@@ -83,7 +91,6 @@
 
 using std::cout;
 using std::endl;
-using namespace ast;
 %}
 
 
@@ -99,24 +106,65 @@ root_stmts : root_stmts root_stmt
 root_stmt : func_decl
           ;
 
-func_decl : FUNC IDENTIFIER body { $$ = new FunctionDefinition(*$2); }
-          | FUNC IDENTIFIER func_arg_tuple body { cout << "method " << *$2 << endl; }
-          | FUNC IDENTIFIER RIGHTARROW func_arg_tuple body { cout << "stateless function " << *$2 << endl; }
-          | FUNC IDENTIFIER func_arg_tuple RIGHTARROW func_arg_tuple body { cout << "function " << *$2 << endl; }
+func_decl : FUNC IDENTIFIER body {
+              FunctionDefinition* d = new FunctionDefinition;
+              d->setName(*$2); delete $2;
+              $$ = d;
+            }
+          | FUNC IDENTIFIER func_arg_tuple body {
+              FunctionDefinition *d = new FunctionDefinition;
+              d->setName(*$2); delete $2;
+              d->setIn(shared_ptr<Node>($3));
+              $$ = d;
+            }
+          | FUNC IDENTIFIER RIGHTARROW func_arg_tuple body {
+              FunctionDefinition *d = new FunctionDefinition;
+              d->setName(*$2); delete $2;
+              d->setOut(shared_ptr<Node>($4));
+              $$ = d;
+            }
+          | FUNC IDENTIFIER func_arg_tuple RIGHTARROW func_arg_tuple body {
+              FunctionDefinition *d = new FunctionDefinition;
+              d->setName(*$2); delete $2;
+              d->setIn(shared_ptr<Node>($3));
+              d->setOut(shared_ptr<Node>($5));
+              $$ = d;
+             }
           ;
 
-func_arg_tuple : LPAREN RPAREN
-               | func_arg
-               | LPAREN func_args RPAREN
-               ;
+func_arg_tuple  : LPAREN RPAREN { $$ = NULL; }
+                | func_arg {
+                    FuncArgTuple *t = new FuncArgTuple;
+                    Nodes args(1);
+                    args[0] = shared_ptr<Node>($1);
+                    t->setArgs(args);
+                    $$ = t;
+                  }
+                | LPAREN func_args RPAREN {
+                    FuncArgTuple *t = new FuncArgTuple;
+                    t->setArgs(*$2);
+                    $$ = t;
+                    delete $2;
+                  }
+                ;
 
-func_args : func_args COMMA func_arg
-          | func_arg
+func_args : func_arg {
+              $$ = new Nodes;
+              $$->push_back(shared_ptr<Node>($1));
+            }
+          | func_args COMMA func_arg {
+              $1->push_back(shared_ptr<Node>($3));
+            }
           ;
 
-func_arg : IDENTIFIER { cout << "typeless function argument " << *$1 << endl; }
-         | IDENTIFIER COLON type_expr { cout << "function argument " << *$1 << endl; }
-         ;
+func_arg  : IDENTIFIER {
+              FuncArg *a = new FuncArg;
+              a->setName(*$1);
+              $$ = a;
+              delete $1;
+            }
+          | IDENTIFIER COLON type_expr { cout << "function argument " << *$1 << endl; }
+          ;
 
 type_expr : union_type_expr
           ;

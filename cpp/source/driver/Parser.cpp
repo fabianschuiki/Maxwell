@@ -38,7 +38,7 @@
 #include "Parser.hpp"
 
 /* User implementation prologue.  */
-#line 76 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 84 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
 
 #include "Driver.hpp"
 #include "Scanner.hpp"
@@ -49,11 +49,10 @@
 
 using std::cout;
 using std::endl;
-using namespace ast;
 
 
 /* Line 317 of lalr1.cc.  */
-#line 57 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
+#line 56 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
 
 #ifndef YY_
 # if defined YYENABLE_NLS && YYENABLE_NLS
@@ -211,24 +210,24 @@ namespace example
     switch (yytype)
       {
         case 3: /* "\"identifier\"" */
-#line 67 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 77 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
 	{ delete (yyvaluep->string); };
-#line 217 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
+#line 216 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
 	break;
       case 4: /* "\"real number constant\"" */
-#line 67 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 77 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
 	{ delete (yyvaluep->string); };
-#line 222 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
+#line 221 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
 	break;
       case 5: /* "\"integer number constant\"" */
-#line 67 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 77 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
 	{ delete (yyvaluep->string); };
-#line 227 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
+#line 226 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
 	break;
       case 6: /* "\"string constant\"" */
-#line 67 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 77 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
 	{ delete (yyvaluep->string); };
-#line 232 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
+#line 231 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
 	break;
 
 	default:
@@ -304,13 +303,13 @@ namespace example
 
 
     /* User initialization code.  */
-    #line 22 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+    #line 28 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
 {
 	// initialize the location object
 	yylloc.begin.filename = yylloc.end.filename = &driver.streamname;
 }
   /* Line 555 of yacc.c.  */
-#line 314 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
+#line 313 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
     /* Initialize the stacks.  The initial state will be pushed in
        yynewstate, since the latter expects the semantical and the
        location values to have been already stored, initialize these
@@ -426,68 +425,134 @@ namespace example
     switch (yyn)
       {
 	  case 6:
-#line 102 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
-    { (yyval.node) = new FunctionDefinition(*(yysemantic_stack_[(3) - (2)].string)); ;}
+#line 109 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+    {
+              FunctionDefinition* d = new FunctionDefinition;
+              d->setName(*(yysemantic_stack_[(3) - (2)].string)); delete (yysemantic_stack_[(3) - (2)].string);
+              (yyval.node) = d;
+            ;}
     break;
 
   case 7:
-#line 103 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
-    { cout << "method " << *(yysemantic_stack_[(4) - (2)].string) << endl; ;}
+#line 114 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+    {
+              FunctionDefinition *d = new FunctionDefinition;
+              d->setName(*(yysemantic_stack_[(4) - (2)].string)); delete (yysemantic_stack_[(4) - (2)].string);
+              d->setIn(shared_ptr<Node>((yysemantic_stack_[(4) - (3)].node)));
+              (yyval.node) = d;
+            ;}
     break;
 
   case 8:
-#line 104 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
-    { cout << "stateless function " << *(yysemantic_stack_[(5) - (2)].string) << endl; ;}
+#line 120 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+    {
+              FunctionDefinition *d = new FunctionDefinition;
+              d->setName(*(yysemantic_stack_[(5) - (2)].string)); delete (yysemantic_stack_[(5) - (2)].string);
+              d->setOut(shared_ptr<Node>((yysemantic_stack_[(5) - (4)].node)));
+              (yyval.node) = d;
+            ;}
     break;
 
   case 9:
-#line 105 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
-    { cout << "function " << *(yysemantic_stack_[(6) - (2)].string) << endl; ;}
+#line 126 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+    {
+              FunctionDefinition *d = new FunctionDefinition;
+              d->setName(*(yysemantic_stack_[(6) - (2)].string)); delete (yysemantic_stack_[(6) - (2)].string);
+              d->setIn(shared_ptr<Node>((yysemantic_stack_[(6) - (3)].node)));
+              d->setOut(shared_ptr<Node>((yysemantic_stack_[(6) - (5)].node)));
+              (yyval.node) = d;
+             ;}
+    break;
+
+  case 10:
+#line 135 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+    { (yyval.node) = NULL; ;}
+    break;
+
+  case 11:
+#line 136 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+    {
+                    FuncArgTuple *t = new FuncArgTuple;
+                    Nodes args(1);
+                    args[0] = shared_ptr<Node>((yysemantic_stack_[(1) - (1)].node));
+                    t->setArgs(args);
+                    (yyval.node) = t;
+                  ;}
+    break;
+
+  case 12:
+#line 143 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+    {
+                    FuncArgTuple *t = new FuncArgTuple;
+                    t->setArgs(*(yysemantic_stack_[(3) - (2)].nodes));
+                    (yyval.node) = t;
+                    delete (yysemantic_stack_[(3) - (2)].nodes);
+                  ;}
+    break;
+
+  case 13:
+#line 151 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+    {
+              (yyval.nodes) = new Nodes;
+              (yyval.nodes)->push_back(shared_ptr<Node>((yysemantic_stack_[(1) - (1)].node)));
+            ;}
+    break;
+
+  case 14:
+#line 155 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+    {
+              (yysemantic_stack_[(3) - (1)].nodes)->push_back(shared_ptr<Node>((yysemantic_stack_[(3) - (3)].node)));
+            ;}
     break;
 
   case 15:
-#line 117 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
-    { cout << "typeless function argument " << *(yysemantic_stack_[(1) - (1)].string) << endl; ;}
+#line 160 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+    {
+              FuncArg *a = new FuncArg;
+              a->setName(*(yysemantic_stack_[(1) - (1)].string));
+              (yyval.node) = a;
+              delete (yysemantic_stack_[(1) - (1)].string);
+            ;}
     break;
 
   case 16:
-#line 118 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 166 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "function argument " << *(yysemantic_stack_[(3) - (1)].string) << endl; ;}
     break;
 
   case 18:
-#line 124 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 172 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "type " << *(yysemantic_stack_[(1) - (1)].string) << " found" << endl; ;}
     break;
 
   case 19:
-#line 125 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 173 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "type tuple" << endl; ;}
     break;
 
   case 20:
-#line 128 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 176 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "union type" << endl; ;}
     break;
 
   case 24:
-#line 136 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 184 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "type tuple argument" << endl; ;}
     break;
 
   case 25:
-#line 139 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 187 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "empty body" << endl; ;}
     break;
 
   case 26:
-#line 140 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 188 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "filled body" << endl; ;}
     break;
 
 
     /* Line 675 of lalr1.cc.  */
-#line 491 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
+#line 556 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
 	default: break;
       }
     YY_SYMBOL_PRINT ("-> $$ =", yyr1_[yyn], &yyval, &yyloc);
@@ -712,9 +777,9 @@ namespace example
   Parser::yydefact_[] =
   {
          0,     0,     0,     2,     4,     5,     0,     1,     3,    15,
-       0,     0,     0,     0,    11,     6,     0,    10,     0,    14,
+       0,     0,     0,     0,    11,     6,     0,    10,     0,    13,
       25,     0,     0,     0,     7,    18,     0,    16,    21,    17,
-      12,     0,    26,     8,     0,    24,     0,    23,     0,    13,
+      12,     0,    26,     8,     0,    24,     0,    23,     0,    14,
        9,    19,     0,    20,    22
   };
 
@@ -797,7 +862,7 @@ namespace example
   Parser::yyr2_[] =
   {
          0,     2,     1,     2,     1,     1,     3,     4,     5,     6,
-       2,     1,     3,     3,     1,     1,     3,     1,     1,     3,
+       2,     1,     3,     1,     3,     1,     3,     1,     1,     3,
        3,     1,     3,     1,     1,     2,     3
   };
 
@@ -830,7 +895,7 @@ namespace example
       29,    -1,     8,     3,    38,    -1,     8,     3,    30,    38,
       -1,     8,     3,    20,    30,    38,    -1,     8,     3,    30,
       20,    30,    38,    -1,     9,    10,    -1,    32,    -1,     9,
-      31,    10,    -1,    31,    17,    32,    -1,    32,    -1,     3,
+      31,    10,    -1,    32,    -1,    31,    17,    32,    -1,     3,
       -1,     3,    18,    33,    -1,    35,    -1,     3,    -1,     9,
       36,    10,    -1,    35,    15,    34,    -1,    34,    -1,    36,
       17,    37,    -1,    37,    -1,    33,    -1,    11,    12,    -1,
@@ -843,7 +908,7 @@ namespace example
   Parser::yyprhs_[] =
   {
          0,     0,     3,     5,     8,    10,    12,    16,    21,    27,
-      34,    37,    39,    43,    47,    49,    51,    55,    57,    59,
+      34,    37,    39,    43,    45,    49,    51,    55,    57,    59,
       63,    67,    69,    73,    75,    77,    80
   };
 
@@ -851,9 +916,9 @@ namespace example
   const unsigned char
   Parser::yyrline_[] =
   {
-         0,    92,    92,    95,    96,    99,   102,   103,   104,   105,
-     108,   109,   110,   113,   114,   117,   118,   121,   124,   125,
-     128,   129,   132,   133,   136,   139,   140
+         0,    99,    99,   102,   103,   106,   109,   114,   120,   126,
+     135,   136,   143,   151,   155,   160,   166,   169,   172,   173,
+     176,   177,   180,   181,   184,   187,   188
   };
 
   // Print the state stack on the debug stream.
@@ -942,7 +1007,7 @@ namespace example
 
 } // namespace example
 
-#line 144 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 192 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
  /*** Additional Code ***/
 
 void example::Parser::error(const Parser::location_type& l, const std::string& m)

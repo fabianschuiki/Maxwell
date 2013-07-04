@@ -52,11 +52,17 @@ namespace example
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include <ast/ast.hpp>
+#include <boost/smart_ptr.hpp>
+
+using namespace ast;
+using boost::shared_ptr;
+typedef std::vector<shared_ptr<Node> > Nodes;
 
 
 /* Line 303 of lalr1.cc.  */
-#line 60 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.hpp"
+#line 66 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.hpp"
 
 #include "location.hh"
 
@@ -107,15 +113,16 @@ namespace example
     /// Symbol semantic values.
 #ifndef YYSTYPE
     union semantic_type
-#line 36 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 42 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
 {
-    ast::Node *node;
+    Node *node;
     std::string *string;
+    Nodes *nodes;
     int token;
     int symbol;
 }
 /* Line 303 of lalr1.cc.  */
-#line 119 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.hpp"
+#line 126 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.hpp"
 	;
 #else
     typedef YYSTYPE semantic_type;

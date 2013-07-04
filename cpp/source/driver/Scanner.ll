@@ -34,32 +34,47 @@ typedef example::Parser::token_type token_type;
 #define YY_USER_ACTION yylloc->columns(yyleng);
 %}
 
+%x IN_COMMENT
 
 %% /*** Token Regular Expressions ***/
 
  /* Whenever yylex() is invoked, we step the location tracker forward. */
 %{
-	// reset location
-	yylloc->step();
+    // reset location
+    yylloc->step();
 %}
 
  /* Ignore whitespaces. */
 [ \t\r]+ {
-	yylloc->step();
+    yylloc->step();
 }
 
  /* Ignore newlines. */
-\n {
-	yylloc->lines(yyleng);
-	yylloc->step();
+<INITIAL,IN_COMMENT>\n {
+    yylloc->lines(yyleng);
+    yylloc->step();
 }
+
+ /* Eat comments. */
+"//"[^\n]*  ; /* we might want to keep track of the comments, for automated documentation */
+<INITIAL>{
+    "/*"      BEGIN(IN_COMMENT);
+}
+<IN_COMMENT>{
+    "*/"      BEGIN(INITIAL);
+    [^*\n]+   // eat comment in chunks
+    "*"       // eat the lone star
+}
+
+ /* Eat strings. */
+"\""(\\.|[^\\"\""])*"\""  storeToken; return token::STRING_LITERAL;
 
  /* Keywords */
 "func"  return token::FUNC;
 
-[a-zA-Z_][a-zA-Z0-9_]*  storeToken; return token::IDENTIFIER;
-[0-9]+"."[0-9]*         storeToken; return token::REAL;
-[0-9]+                  storeToken; return token::INTEGER;
+[a-zA-Z_][a-zA-Z0-9_]*    storeToken; return token::IDENTIFIER;
+[0-9]+"."[0-9]*           storeToken; return token::REAL;
+[0-9]+                    storeToken; return token::INTEGER;
 
 "("  return token::LPAREN;
 ")"  return token::RPAREN;
@@ -79,7 +94,7 @@ typedef example::Parser::token_type token_type;
 
  /* All other characters are interpreted as a symbol. */
 . {
-	yylval->symbol = yytext[0]; return token::SYMBOL;
+    yylval->symbol = yytext[0]; return token::SYMBOL;
 }
 
 
@@ -109,8 +124,8 @@ Scanner::~Scanner()
  */
 int ExampleFlexLexer::yylex()
 {
-	std::cerr << "in ExampleFlexLexer::yylex() !" << std::endl;
-	return 0;
+    std::cerr << "in ExampleFlexLexer::yylex() !" << std::endl;
+    return 0;
 }
 
 /**
@@ -122,5 +137,5 @@ int ExampleFlexLexer::yylex()
  */
 int ExampleFlexLexer::yywrap()
 {
-	return 1;
+    return 1;
 }

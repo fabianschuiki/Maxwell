@@ -397,8 +397,8 @@ typedef unsigned char YY_CHAR;
 	(yy_c_buf_p) = yy_cp;
 
 /* %% [4.0] data tables for the DFA and the user's section 1 definitions go here */
-#define YY_NUM_RULES 20
-#define YY_END_OF_BUFFER 21
+#define YY_NUM_RULES 26
+#define YY_END_OF_BUFFER 27
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -406,12 +406,13 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static yyconst flex_int16_t yy_accept[32] =
+static yyconst flex_int16_t yy_accept[46] =
     {   0,
-        0,    0,   21,   19,    1,    2,    7,    8,   15,   19,
-       14,    6,   16,   17,    4,   11,   12,    4,    9,   13,
-       10,    1,   18,    5,    6,    4,    4,    5,    4,    3,
-        0
+        0,    0,    0,    0,   27,   25,    1,    2,   25,   13,
+       14,   21,   25,   20,   25,   12,   22,   23,   10,   17,
+       18,   10,   15,   19,   16,    6,    7,    1,    0,    8,
+        0,   24,    4,    3,   11,   12,   10,   10,    6,    5,
+        3,   11,   10,    9,    0
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
@@ -419,17 +420,17 @@ static yyconst flex_int32_t yy_ec[256] =
         1,    1,    1,    1,    1,    1,    1,    1,    2,    3,
         1,    1,    2,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    2,    1,    1,    1,    1,    1,    1,    1,    4,
-        5,    1,    1,    6,    7,    8,    1,    9,    9,    9,
-        9,    9,    9,    9,    9,    9,    9,   10,   11,    1,
-        1,   12,    1,    1,   13,   13,   13,   13,   13,   13,
-       13,   13,   13,   13,   13,   13,   13,   13,   13,   13,
-       13,   13,   13,   13,   13,   13,   13,   13,   13,   13,
-       14,    1,   15,    1,   13,    1,   13,   13,   16,   13,
+        1,    2,    1,    4,    1,    1,    1,    1,    1,    5,
+        6,    7,    1,    8,    9,   10,   11,   12,   12,   12,
+       12,   12,   12,   12,   12,   12,   12,   13,   14,    1,
+        1,   15,    1,    1,   16,   16,   16,   16,   16,   16,
+       16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
+       16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
+       17,   18,   19,    1,   16,    1,   16,   16,   20,   16,
 
-       13,   17,   13,   13,   13,   13,   13,   13,   13,   18,
-       13,   13,   13,   13,   13,   13,   19,   13,   13,   13,
-       13,   13,   20,   21,   22,    1,    1,    1,    1,    1,
+       16,   21,   16,   16,   16,   16,   16,   16,   16,   22,
+       16,   16,   16,   16,   16,   16,   23,   16,   16,   16,
+       16,   16,   24,   25,   26,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -446,53 +447,66 @@ static yyconst flex_int32_t yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static yyconst flex_int32_t yy_meta[23] =
+static yyconst flex_int32_t yy_meta[27] =
     {   0,
-        1,    1,    1,    1,    1,    1,    1,    1,    2,    1,
-        1,    1,    2,    1,    1,    2,    2,    2,    2,    1,
-        1,    1
+        1,    1,    2,    1,    1,    1,    3,    1,    1,    1,
+        1,    4,    1,    1,    1,    4,    1,    1,    1,    4,
+        4,    4,    4,    1,    1,    1
     } ;
 
-static yyconst flex_int16_t yy_base[33] =
+static yyconst flex_int16_t yy_base[51] =
     {   0,
-        0,    0,   36,   37,   33,   37,   37,   37,   37,   22,
-       37,   15,   37,   37,    0,   37,   37,   14,   37,   37,
-       37,   30,   37,   22,   17,    0,   12,   20,   12,    0,
-       37,   25
+        0,    0,   24,   25,   61,   67,   58,   67,   25,   67,
+       67,   67,   34,   67,   23,   23,   67,   67,    0,   67,
+       67,   25,   67,   67,   67,    0,   36,   44,   32,   67,
+       42,   67,   67,    0,   32,   27,    0,   20,    0,   67,
+        0,   29,   20,    0,   67,   50,   54,   34,   58,   62
     } ;
 
-static yyconst flex_int16_t yy_def[33] =
+static yyconst flex_int16_t yy_def[51] =
     {   0,
-       31,    1,   31,   31,   31,   31,   31,   31,   31,   31,
-       31,   31,   31,   31,   32,   31,   31,   32,   31,   31,
-       31,   31,   31,   31,   31,   32,   32,   31,   32,   32,
-        0,   31
+       45,    1,   46,   46,   45,   45,   45,   45,   47,   45,
+       45,   45,   45,   45,   45,   45,   45,   45,   48,   45,
+       45,   48,   45,   45,   45,   49,   45,   45,   47,   45,
+       47,   45,   45,   50,   45,   45,   48,   48,   49,   45,
+       50,   45,   48,   48,    0,   45,   45,   45,   45,   45
     } ;
 
-static yyconst flex_int16_t yy_nxt[60] =
+static yyconst flex_int16_t yy_nxt[94] =
     {   0,
-        4,    5,    6,    7,    8,    9,   10,   11,   12,   13,
-       14,    4,   15,   16,   17,   15,   18,   15,   15,   19,
-       20,   21,   24,   25,   24,   25,   26,   30,   28,   29,
-       28,   22,   27,   23,   22,   31,    3,   31,   31,   31,
-       31,   31,   31,   31,   31,   31,   31,   31,   31,   31,
-       31,   31,   31,   31,   31,   31,   31,   31,   31
+        6,    7,    8,    9,   10,   11,    6,   12,   13,   14,
+       15,   16,   17,   18,    6,   19,   20,    6,   21,   19,
+       22,   19,   19,   23,   24,   25,    8,    8,   30,   33,
+       27,   27,   35,   34,   36,   30,   35,   37,   36,   44,
+       42,   43,   31,   42,   45,   28,   40,   38,   32,   31,
+       26,   26,   26,   26,   29,   29,   29,   29,   39,   28,
+       45,   39,   41,   45,   41,   41,    5,   45,   45,   45,
+       45,   45,   45,   45,   45,   45,   45,   45,   45,   45,
+       45,   45,   45,   45,   45,   45,   45,   45,   45,   45,
+       45,   45,   45
+
     } ;
 
-static yyconst flex_int16_t yy_chk[60] =
+static yyconst flex_int16_t yy_chk[94] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,   12,   12,   25,   25,   32,   29,   28,   27,
-       24,   22,   18,   10,    5,    3,   31,   31,   31,   31,
-       31,   31,   31,   31,   31,   31,   31,   31,   31,   31,
-       31,   31,   31,   31,   31,   31,   31,   31,   31
+        1,    1,    1,    1,    1,    1,    3,    4,    9,   15,
+        3,    4,   16,   15,   16,   29,   36,   48,   36,   43,
+       42,   38,    9,   35,   31,   28,   27,   22,   13,   29,
+       46,   46,   46,   46,   47,   47,   47,   47,   49,    7,
+        5,   49,   50,    0,   50,   50,   45,   45,   45,   45,
+       45,   45,   45,   45,   45,   45,   45,   45,   45,   45,
+       45,   45,   45,   45,   45,   45,   45,   45,   45,   45,
+       45,   45,   45
+
     } ;
 
-static yyconst flex_int16_t yy_rule_linenum[20] =
+static yyconst flex_int16_t yy_rule_linenum[26] =
     {   0,
-       47,   52,   58,   60,   61,   62,   64,   65,   66,   67,
-       68,   69,   71,   73,   74,   75,   76,   78,   81
+       48,   53,   59,   61,   64,   65,   66,   70,   73,   75,
+       76,   77,   79,   80,   81,   82,   83,   84,   86,   88,
+       89,   90,   91,   93,   96
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -526,9 +540,11 @@ typedef example::Parser::token_type token_type;
 /* Advance the location tracker during lexing. */
 #line 34 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 #define YY_USER_ACTION yylloc->columns(yyleng);
-#line 530 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
+
+#line 545 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
 
 #define INITIAL 0
+#define IN_COMMENT 1
 
 #ifndef YY_NO_UNISTD_H
 /* Special case for "unistd.h", since it is non-ANSI. We include it way
@@ -683,17 +699,17 @@ YY_DECL
 	register int yy_act;
     
 /* %% [7.0] user's declarations go here */
-#line 38 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 39 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 
 
  /* Whenever yylex() is invoked, we step the location tracker forward. */
 
-	// reset location
-	yylloc->step();
+    // reset location
+    yylloc->step();
 
 
  /* Ignore whitespaces. */
-#line 697 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
+#line 713 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
 
 	if ( !(yy_init) )
 		{
@@ -756,13 +772,13 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 32 )
+				if ( yy_current_state >= 46 )
 					yy_c = yy_meta[(unsigned int) yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 			++yy_cp;
 			}
-		while ( yy_current_state != 31 );
+		while ( yy_current_state != 45 );
 		yy_cp = (yy_last_accepting_cpos);
 		yy_current_state = (yy_last_accepting_state);
 
@@ -781,12 +797,12 @@ do_action:	/* This label is used only to access EOF actions. */
 			{
 			if ( yy_act == 0 )
 				std::cerr << "--scanner backing up\n";
-			else if ( yy_act < 20 )
+			else if ( yy_act < 26 )
 				std::cerr << "--accepting rule at line " << yy_rule_linenum[yy_act] <<
 				         "(\"" << yytext << "\")\n";
-			else if ( yy_act == 20 )
+			else if ( yy_act == 26 )
 				std::cerr << "--accepting default rule (\"" << yytext << "\")\n";
-			else if ( yy_act == 21 )
+			else if ( yy_act == 27 )
 				std::cerr << "--(end of buffer or a NUL)\n";
 			else
 				std::cerr << "--EOF (start condition " << YY_START << ")\n";
@@ -804,117 +820,155 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 47 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 48 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 {
-	yylloc->step();
+    yylloc->step();
 }
 	YY_BREAK
 /* Ignore newlines. */
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 52 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 53 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 {
-	yylloc->lines(yyleng);
-	yylloc->step();
+    yylloc->lines(yyleng);
+    yylloc->step();
 }
 	YY_BREAK
-/* Keywords */
+/* Eat comments. */
 case 3:
 YY_RULE_SETUP
-#line 58 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::FUNC;
+#line 59 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+; /* we might want to keep track of the comments, for automated documentation */
 	YY_BREAK
+
 case 4:
 YY_RULE_SETUP
-#line 60 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-storeToken; return token::IDENTIFIER;
+#line 61 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+BEGIN(IN_COMMENT);
 	YY_BREAK
+
+
 case 5:
 YY_RULE_SETUP
-#line 61 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-storeToken; return token::REAL;
+#line 64 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+BEGIN(INITIAL);
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 62 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-storeToken; return token::INTEGER;
+#line 65 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+// eat comment in chunks
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 64 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::LPAREN;
+#line 66 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+// eat the lone star
 	YY_BREAK
+
+/* Eat strings. */
 case 8:
+/* rule 8 can match eol */
 YY_RULE_SETUP
-#line 65 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::RPAREN;
+#line 70 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+storeToken; return token::STRING_LITERAL;
 	YY_BREAK
+/* Keywords */
 case 9:
 YY_RULE_SETUP
-#line 66 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::LBRACE;
+#line 73 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::FUNC;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 67 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::RBRACE;
+#line 75 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+storeToken; return token::IDENTIFIER;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 68 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::LBRACK;
+#line 76 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+storeToken; return token::REAL;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 69 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::RBRACK;
+#line 77 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+storeToken; return token::INTEGER;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 71 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::PIPE;
+#line 79 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::LPAREN;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 73 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::DOT;
+#line 80 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::RPAREN;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 74 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::COMMA;
+#line 81 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::LBRACE;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 75 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::COLON;
+#line 82 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::RBRACE;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 76 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::SEMICOLON;
+#line 83 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::LBRACK;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 78 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::RIGHTARROW;
+#line 84 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::RBRACK;
 	YY_BREAK
-/* All other characters are interpreted as a symbol. */
 case 19:
 YY_RULE_SETUP
-#line 81 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-{
-	yylval->symbol = yytext[0]; return token::SYMBOL;
-}
+#line 86 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::PIPE;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 86 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 88 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::DOT;
+	YY_BREAK
+case 21:
+YY_RULE_SETUP
+#line 89 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::COMMA;
+	YY_BREAK
+case 22:
+YY_RULE_SETUP
+#line 90 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::COLON;
+	YY_BREAK
+case 23:
+YY_RULE_SETUP
+#line 91 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::SEMICOLON;
+	YY_BREAK
+case 24:
+YY_RULE_SETUP
+#line 93 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::RIGHTARROW;
+	YY_BREAK
+/* All other characters are interpreted as a symbol. */
+case 25:
+YY_RULE_SETUP
+#line 96 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+{
+    yylval->symbol = yytext[0]; return token::SYMBOL;
+}
+	YY_BREAK
+case 26:
+YY_RULE_SETUP
+#line 101 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 ECHO;
 	YY_BREAK
-#line 917 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
+#line 970 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
 case YY_STATE_EOF(INITIAL):
+case YY_STATE_EOF(IN_COMMENT):
 	yyterminate();
 
 	case YY_END_OF_BUFFER:
@@ -1315,7 +1369,7 @@ int yyFlexLexer::yy_get_next_buffer()
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 32 )
+			if ( yy_current_state >= 46 )
 				yy_c = yy_meta[(unsigned int) yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
@@ -1348,11 +1402,11 @@ int yyFlexLexer::yy_get_next_buffer()
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 32 )
+		if ( yy_current_state >= 46 )
 			yy_c = yy_meta[(unsigned int) yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-	yy_is_jam = (yy_current_state == 31);
+	yy_is_jam = (yy_current_state == 45);
 
 	return yy_is_jam ? 0 : yy_current_state;
 }
@@ -1962,7 +2016,7 @@ void Examplefree (void * ptr )
 
 /* %ok-for-header */
 
-#line 86 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 101 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 
 
 
@@ -1990,8 +2044,8 @@ Scanner::~Scanner()
  */
 int ExampleFlexLexer::yylex()
 {
-	std::cerr << "in ExampleFlexLexer::yylex() !" << std::endl;
-	return 0;
+    std::cerr << "in ExampleFlexLexer::yylex() !" << std::endl;
+    return 0;
 }
 
 /**
@@ -2003,5 +2057,5 @@ int ExampleFlexLexer::yylex()
  */
 int ExampleFlexLexer::yywrap()
 {
-	return 1;
+    return 1;
 }

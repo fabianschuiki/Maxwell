@@ -41,6 +41,7 @@
 %token <string> IDENTIFIER "identifier"
 %token <string> REAL "real number constant"
 %token <string> INTEGER "integer number constant"
+%token <string> STRING_LITERAL "string constant"
 %token <symbol> SYMBOL "symbol"
 %token END 0 "end of input"
 

@@ -38,7 +38,7 @@
 #include "Parser.hpp"
 
 /* User implementation prologue.  */
-#line 71 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 72 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
 
 #include "Driver.hpp"
 #include "Scanner.hpp"
@@ -210,17 +210,17 @@ namespace example
     switch (yytype)
       {
         case 3: /* "\"identifier\"" */
-#line 64 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 65 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
 	{ delete (yyvaluep->string); };
 #line 216 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
 	break;
       case 4: /* "\"real number constant\"" */
-#line 64 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 65 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
 	{ delete (yyvaluep->string); };
 #line 221 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
 	break;
       case 5: /* "\"integer number constant\"" */
-#line 64 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 65 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
 	{ delete (yyvaluep->string); };
 #line 226 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
 	break;
@@ -420,62 +420,62 @@ namespace example
     switch (yyn)
       {
 	  case 6:
-#line 96 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 97 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "stateless method " << *(yysemantic_stack_[(3) - (2)].string) << endl; ;}
     break;
 
   case 7:
-#line 97 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 98 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "method " << *(yysemantic_stack_[(4) - (2)].string) << endl; ;}
     break;
 
   case 8:
-#line 98 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 99 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "stateless function " << *(yysemantic_stack_[(5) - (2)].string) << endl; ;}
     break;
 
   case 9:
-#line 99 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 100 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "function " << *(yysemantic_stack_[(6) - (2)].string) << endl; ;}
     break;
 
   case 15:
-#line 111 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 112 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "typeless function argument " << *(yysemantic_stack_[(1) - (1)].string) << endl; ;}
     break;
 
   case 16:
-#line 112 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 113 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "function argument " << *(yysemantic_stack_[(3) - (1)].string) << endl; ;}
     break;
 
   case 18:
-#line 118 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 119 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "type " << *(yysemantic_stack_[(1) - (1)].string) << " found" << endl; ;}
     break;
 
   case 19:
-#line 119 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 120 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "type tuple" << endl; ;}
     break;
 
   case 20:
-#line 122 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 123 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "union type" << endl; ;}
     break;
 
   case 24:
-#line 130 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 131 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "type tuple argument" << endl; ;}
     break;
 
   case 25:
-#line 133 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 134 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "empty body" << endl; ;}
     break;
 
   case 26:
-#line 134 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 135 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { cout << "filled body" << endl; ;}
     break;
 
@@ -692,11 +692,11 @@ namespace example
   const signed char
   Parser::yypact_[] =
   {
-         9,    22,    28,     9,   -14,   -14,     0,   -14,   -14,    15,
-      14,    19,     4,    -5,   -14,   -14,    21,   -14,    -3,   -14,
-     -14,    20,    23,     4,   -14,   -14,    21,   -14,   -14,    24,
-     -14,    31,   -14,   -14,    23,   -14,     2,   -14,    21,   -14,
-     -14,   -14,    21,   -14,   -14
+        -3,     5,    27,    -3,   -14,   -14,     3,   -14,   -14,    11,
+       0,    18,    10,    -4,   -14,   -14,    22,   -14,     1,   -14,
+     -14,    20,    23,    10,   -14,   -14,    22,   -14,   -14,    21,
+     -14,    30,   -14,   -14,    23,   -14,     7,   -14,    22,   -14,
+     -14,   -14,    22,   -14,   -14
   };
 
   /* YYDEFACT[S] -- default rule to reduce with in state S when YYTABLE
@@ -716,8 +716,8 @@ namespace example
   const signed char
   Parser::yypgoto_[] =
   {
-       -14,   -14,    25,    -1,   -14,    -8,   -14,    -9,    26,     1,
-     -14,   -14,    -7,   -13
+       -14,   -14,    24,    -1,   -14,    -8,   -14,    -9,    25,     2,
+     -14,   -14,    -5,   -13
   };
 
   /* YYDEFGOTO[NTERM-NUM].  */
@@ -735,22 +735,22 @@ namespace example
   const unsigned char
   Parser::yytable_[] =
   {
-        24,    19,     8,     9,    22,    11,    30,     9,    10,    33,
-      11,    41,    10,    31,    23,    34,     1,     9,    42,    12,
-       8,    40,    39,    17,    25,     6,     1,     1,     7,    26,
-      20,    32,    16,    11,     9,    44,    21,     0,    38,    43,
-       0,     0,    27
+        24,    19,     8,     9,    22,     1,     9,    11,     6,    33,
+      17,    30,    10,     9,    11,    34,    23,    41,    31,    10,
+       8,    40,    39,    12,    42,    25,     1,     7,     1,    16,
+      20,    26,    32,     9,    11,    21,    38,    44,     0,     0,
+      43,    27
   };
 
   /* YYCHECK.  */
   const signed char
   Parser::yycheck_[] =
   {
-        13,    10,     3,     3,    12,    10,     9,     3,     8,    22,
-      10,     9,     8,    16,    19,    23,     7,     3,    16,    19,
-      21,    34,    31,     9,     3,     3,     7,     7,     0,     8,
-      11,    11,    17,    10,     3,    42,    11,    -1,    14,    38,
-      -1,    -1,    16
+        13,    10,     3,     3,    12,     8,     3,    11,     3,    22,
+      10,    10,     9,     3,    11,    23,    20,    10,    17,     9,
+      21,    34,    31,    20,    17,     3,     8,     0,     8,    18,
+      12,     9,    12,     3,    11,    11,    15,    42,    -1,    -1,
+      38,    16
   };
 
   /* STOS_[STATE-NUM] -- The (internal number of the) accessing
@@ -758,11 +758,11 @@ namespace example
   const unsigned char
   Parser::yystos_[] =
   {
-         0,     7,    25,    26,    27,    28,     3,     0,    27,     3,
-       8,    10,    19,    29,    31,    37,    17,     9,    30,    31,
-      11,    26,    29,    19,    37,     3,     8,    32,    33,    34,
-       9,    16,    11,    37,    29,    32,    35,    36,    14,    31,
-      37,     9,    16,    33,    36
+         0,     8,    26,    27,    28,    29,     3,     0,    28,     3,
+       9,    11,    20,    30,    32,    38,    18,    10,    31,    32,
+      12,    27,    30,    20,    38,     3,     9,    33,    34,    35,
+      10,    17,    12,    38,    30,    33,    36,    37,    15,    32,
+      38,    10,    17,    34,    37
   };
 
 #if YYDEBUG
@@ -773,7 +773,7 @@ namespace example
   {
          0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277,   278
+     275,   276,   277,   278,   279
   };
 #endif
 
@@ -781,9 +781,9 @@ namespace example
   const unsigned char
   Parser::yyr1_[] =
   {
-         0,    24,    25,    26,    26,    27,    28,    28,    28,    28,
-      29,    29,    29,    30,    30,    31,    31,    32,    33,    33,
-      34,    34,    35,    35,    36,    37,    37
+         0,    25,    26,    27,    27,    28,    29,    29,    29,    29,
+      30,    30,    30,    31,    31,    32,    32,    33,    34,    34,
+      35,    35,    36,    36,    37,    38,    38
   };
 
   /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -802,15 +802,16 @@ namespace example
   const Parser::yytname_[] =
   {
     "\"end of input\"", "error", "$undefined", "\"identifier\"",
-  "\"real number constant\"", "\"integer number constant\"", "\"symbol\"",
-  "\"func keyword\"", "\"opening paranthesis (\"",
-  "\"closing paranthesis )\"", "\"opening braces {\"",
-  "\"closing braces }\"", "\"opening bracket [\"", "\"closing bracket ]\"",
-  "\"vertical pipe |\"", "\".\"", "\",\"", "\":\"", "\";\"",
-  "\"right arrow ->\"", "\"+\"", "\"-\"", "\"*\"", "\"/\"", "$accept",
-  "root", "root_stmts", "root_stmt", "func_decl", "func_arg_tuple",
-  "func_args", "func_arg", "type_expr", "nonunion_type_expr",
-  "union_type_expr", "type_tuple_args", "type_tuple_arg", "body", 0
+  "\"real number constant\"", "\"integer number constant\"",
+  "\"string constant\"", "\"symbol\"", "\"func keyword\"",
+  "\"opening paranthesis (\"", "\"closing paranthesis )\"",
+  "\"opening braces {\"", "\"closing braces }\"", "\"opening bracket [\"",
+  "\"closing bracket ]\"", "\"vertical pipe |\"", "\".\"", "\",\"",
+  "\":\"", "\";\"", "\"right arrow ->\"", "\"+\"", "\"-\"", "\"*\"",
+  "\"/\"", "$accept", "root", "root_stmts", "root_stmt", "func_decl",
+  "func_arg_tuple", "func_args", "func_arg", "type_expr",
+  "nonunion_type_expr", "union_type_expr", "type_tuple_args",
+  "type_tuple_arg", "body", 0
   };
 #endif
 
@@ -819,15 +820,15 @@ namespace example
   const Parser::rhs_number_type
   Parser::yyrhs_[] =
   {
-        25,     0,    -1,    26,    -1,    26,    27,    -1,    27,    -1,
-      28,    -1,     7,     3,    37,    -1,     7,     3,    29,    37,
-      -1,     7,     3,    19,    29,    37,    -1,     7,     3,    29,
-      19,    29,    37,    -1,     8,     9,    -1,    31,    -1,     8,
-      30,     9,    -1,    30,    16,    31,    -1,    31,    -1,     3,
-      -1,     3,    17,    32,    -1,    34,    -1,     3,    -1,     8,
-      35,     9,    -1,    34,    14,    33,    -1,    33,    -1,    35,
-      16,    36,    -1,    36,    -1,    32,    -1,    10,    11,    -1,
-      10,    26,    11,    -1
+        26,     0,    -1,    27,    -1,    27,    28,    -1,    28,    -1,
+      29,    -1,     8,     3,    38,    -1,     8,     3,    30,    38,
+      -1,     8,     3,    20,    30,    38,    -1,     8,     3,    30,
+      20,    30,    38,    -1,     9,    10,    -1,    32,    -1,     9,
+      31,    10,    -1,    31,    17,    32,    -1,    32,    -1,     3,
+      -1,     3,    18,    33,    -1,    35,    -1,     3,    -1,     9,
+      36,    10,    -1,    35,    15,    34,    -1,    34,    -1,    36,
+      17,    37,    -1,    37,    -1,    33,    -1,    11,    12,    -1,
+      11,    27,    12,    -1
   };
 
   /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
@@ -844,9 +845,9 @@ namespace example
   const unsigned char
   Parser::yyrline_[] =
   {
-         0,    86,    86,    89,    90,    93,    96,    97,    98,    99,
-     102,   103,   104,   107,   108,   111,   112,   115,   118,   119,
-     122,   123,   126,   127,   130,   133,   134
+         0,    87,    87,    90,    91,    94,    97,    98,    99,   100,
+     103,   104,   105,   108,   109,   112,   113,   116,   119,   120,
+     123,   124,   127,   128,   131,   134,   135
   };
 
   // Print the state stack on the debug stream.
@@ -913,7 +914,7 @@ namespace example
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    20,    21,    22,    23
+      15,    16,    17,    18,    19,    20,    21,    22,    23,    24
     };
     if ((unsigned int) t <= yyuser_token_number_max_)
       return translate_table[t];
@@ -922,20 +923,20 @@ namespace example
   }
 
   const int Parser::yyeof_ = 0;
-  const int Parser::yylast_ = 42;
+  const int Parser::yylast_ = 41;
   const int Parser::yynnts_ = 14;
   const int Parser::yyempty_ = -2;
   const int Parser::yyfinal_ = 7;
   const int Parser::yyterror_ = 1;
   const int Parser::yyerrcode_ = 256;
-  const int Parser::yyntokens_ = 24;
+  const int Parser::yyntokens_ = 25;
 
-  const unsigned int Parser::yyuser_token_number_max_ = 278;
+  const unsigned int Parser::yyuser_token_number_max_ = 279;
   const Parser::token_number_type Parser::yyundef_token_ = 2;
 
 } // namespace example
 
-#line 138 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 139 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
  /*** Additional Code ***/
 
 void example::Parser::error(const Parser::location_type& l, const std::string& m)

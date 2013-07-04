@@ -3,6 +3,7 @@
 #include "Node.hpp"
 #include <vector>
 #include <string>
+#include <sstream>
 #include <boost/smart_ptr.hpp>
 #include <stdexcept>
 
@@ -10,6 +11,8 @@ namespace ast {
 
 using std::vector;
 using std::string;
+using std::stringstream;
+using std::endl;
 using boost::shared_ptr;
 using std::runtime_error;
 
@@ -48,6 +51,18 @@ public:
 		return type;
 	}
 
+	virtual string describe(int depth = -1)
+	{
+		if (depth == 0) return "FuncArg{…}";
+		stringstream str, b;
+		str << "FuncArg{";
+		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
+		if (!this->type.empty()) b << endl << "  \033[1mtype\033[0m = '\033[33m" << this->type << "\033[0m'";
+		string bs = b.str();
+		if (!bs.empty()) str << bs << endl;
+		str << "}";
+		return str.str();
+	}
 protected:
 	string name;
 	string type;

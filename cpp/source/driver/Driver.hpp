@@ -1,7 +1,12 @@
 /* Copyright © 2013 Fabian Schuiki */
 #include <string>
+#include <iostream>
+#include <boost/smart_ptr.hpp>
+#include <ast/ast.hpp>
 
 namespace example {
+
+using boost::shared_ptr;
 
 class Driver
 {
@@ -36,6 +41,11 @@ public:
 	 * the scanner.
 	 */
 	class Scanner* lexer;
+
+	void add(const shared_ptr<ast::Node>& node)
+	{
+		std::cout << "parsed " << node->describe() << std::endl;
+	}
 };
 
 } // namespace example

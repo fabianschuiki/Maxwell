@@ -3,6 +3,7 @@
 #include "Node.hpp"
 #include <vector>
 #include <string>
+#include <sstream>
 #include <boost/smart_ptr.hpp>
 #include <stdexcept>
 
@@ -10,6 +11,8 @@ namespace ast {
 
 using std::vector;
 using std::string;
+using std::stringstream;
+using std::endl;
 using boost::shared_ptr;
 using std::runtime_error;
 
@@ -39,7 +42,7 @@ public:
 	void setIn(const shared_ptr<Node>& v)
 	{
 		if (v && !v->isKindOf(kFuncArgTuple)) {
-			throw std::runtime_error("'in' needs to be of kind {FuncArgTuple} or implement interface {}.");
+			throw runtime_error("'in' needs to be of kind {FuncArgTuple} or implement interface {}.");
 		}
 		if (v != in) {
 			modify();
@@ -54,7 +57,7 @@ public:
 	void setOut(const shared_ptr<Node>& v)
 	{
 		if (v && !v->isKindOf(kFuncArgTuple)) {
-			throw std::runtime_error("'out' needs to be of kind {FuncArgTuple} or implement interface {}.");
+			throw runtime_error("'out' needs to be of kind {FuncArgTuple} or implement interface {}.");
 		}
 		if (v != out) {
 			modify();
@@ -69,7 +72,7 @@ public:
 	void setBody(const shared_ptr<Node>& v)
 	{
 		if (v && !v->isKindOf(kFuncBody)) {
-			throw std::runtime_error("'body' needs to be of kind {FuncBody} or implement interface {}.");
+			throw runtime_error("'body' needs to be of kind {FuncBody} or implement interface {}.");
 		}
 		if (v != body) {
 			modify();
@@ -81,6 +84,20 @@ public:
 		return body;
 	}
 
+	virtual string describe(int depth = -1)
+	{
+		if (depth == 0) return "FunctionDefinition{…}";
+		stringstream str, b;
+		str << "FunctionDefinition{";
+		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
+		if (this->in) b << endl << "  \033[1min\033[0m = " << indent(this->in->describe(depth-1));
+		if (this->out) b << endl << "  \033[1mout\033[0m = " << indent(this->out->describe(depth-1));
+		if (this->body) b << endl << "  \033[1mbody\033[0m = " << indent(this->body->describe(depth-1));
+		string bs = b.str();
+		if (!bs.empty()) str << bs << endl;
+		str << "}";
+		return str.str();
+	}
 protected:
 	string name;
 	shared_ptr<Node> in;

@@ -47,7 +47,7 @@ typedef std::vector<shared_ptr<Node> > Nodes;
     int symbol;
 }
 
-%type <node> func_decl func_arg func_arg_tuple
+%type <node> func_decl func_arg func_arg_tuple body
 %type <nodes> func_args
 
 %token <string> IDENTIFIER "identifier"
@@ -103,24 +103,29 @@ root_stmts : root_stmts root_stmt
            | root_stmt
            ;
 
-root_stmt : func_decl
+root_stmt : func_decl {
+              driver.add(shared_ptr<Node>($1));
+            }
           ;
 
 func_decl : FUNC IDENTIFIER body {
               FunctionDefinition* d = new FunctionDefinition;
               d->setName(*$2); delete $2;
+              d->setBody(shared_ptr<Node>($3));
               $$ = d;
             }
           | FUNC IDENTIFIER func_arg_tuple body {
               FunctionDefinition *d = new FunctionDefinition;
               d->setName(*$2); delete $2;
               d->setIn(shared_ptr<Node>($3));
+              d->setBody(shared_ptr<Node>($4));
               $$ = d;
             }
           | FUNC IDENTIFIER RIGHTARROW func_arg_tuple body {
               FunctionDefinition *d = new FunctionDefinition;
               d->setName(*$2); delete $2;
               d->setOut(shared_ptr<Node>($4));
+              d->setBody(shared_ptr<Node>($5));
               $$ = d;
             }
           | FUNC IDENTIFIER func_arg_tuple RIGHTARROW func_arg_tuple body {
@@ -128,6 +133,7 @@ func_decl : FUNC IDENTIFIER body {
               d->setName(*$2); delete $2;
               d->setIn(shared_ptr<Node>($3));
               d->setOut(shared_ptr<Node>($5));
+              d->setBody(shared_ptr<Node>($6));
               $$ = d;
              }
           ;
@@ -184,9 +190,15 @@ type_tuple_args : type_tuple_args COMMA type_tuple_arg
 type_tuple_arg : type_expr { cout << "type tuple argument" << endl; }
                ;
 
-body : LBRACE RBRACE { cout << "empty body" << endl; }
-     | LBRACE root_stmts RBRACE { cout << "filled body" << endl; }
-     ;
+body  : LBRACE RBRACE {
+          FuncBody *b = new FuncBody;
+          $$ = b;
+        }
+      | LBRACE root_stmts RBRACE {
+          FuncBody *b = new FuncBody;
+          $$ = b;
+        }
+      ;
 
 
 %% /*** Additional Code ***/

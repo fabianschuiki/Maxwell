@@ -11,6 +11,7 @@ add_custom_command(
 	COMMENT "Generating Flex scanner")
 
 add_library(driver ${CMAKE_CURRENT_SOURCE_DIR}/Parser.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Scanner.cpp Driver.cpp)
+add_dependencies(driver ast-gen)
 
 # Add the test executable used to debug the parser.
 add_executable(test main.cpp)

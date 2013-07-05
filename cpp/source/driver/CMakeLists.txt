@@ -15,4 +15,4 @@ add_dependencies(driver ast-gen)
 
 # Add the test executable used to debug the parser.
 add_executable(test main.cpp)
-target_link_libraries(test driver)
+target_link_libraries(test driver ast)

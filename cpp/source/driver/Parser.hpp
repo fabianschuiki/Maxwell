@@ -41,7 +41,7 @@
 #include <iostream>
 #include "stack.hh"
 
-namespace example
+namespace driver
 {
   class position;
   class location;
@@ -103,7 +103,7 @@ do {							\
 } while (false)
 #endif
 
-namespace example
+namespace driver
 {
 
   /// A Bison parser.

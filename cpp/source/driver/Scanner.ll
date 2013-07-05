@@ -7,8 +7,8 @@
 #define storeToken yylval->string = new std::string(yytext, yyleng)
 
 /* Add local typedefs for the parser's tokens for our convenience. */
-typedef example::Parser::token token;
-typedef example::Parser::token_type token_type;
+typedef driver::Parser::token token;
+typedef driver::Parser::token_type token_type;
 
 /* Make yyterminate return a special token instead of 0. */
 #define yyterminate() return token::END;
@@ -20,8 +20,8 @@ typedef example::Parser::token_type token_type;
 /* Enable the C++ magic. */
 %option c++
 
-/* Change the name of the lexer class to "ExampleFlexLexer" */
-%option prefix="Example"
+/* Change the name of the lexer class to "DriverFlexLexer" */
+%option prefix="Driver"
 
 /* The manual says "somewhat more optimized", whatever that means. */
 %option batch
@@ -101,9 +101,9 @@ typedef example::Parser::token_type token_type;
 %% /*** Additional Code ***/
 
 /* Wrapper class around the lexer created by Flex which makes the interface look similar to the parser. */
-namespace example {
+namespace driver {
 
-Scanner::Scanner(std::istream* in, std::ostream* out) : ExampleFlexLexer(in, out)
+Scanner::Scanner(std::istream* in, std::ostream* out) : DriverFlexLexer(in, out)
 {
 }
 
@@ -118,13 +118,13 @@ Scanner::~Scanner()
 #endif
 
 /**
- * This implementation of ExampleFlexLexer::yylex() is required to fill the
- * vtable of the class ExampleFlexLexer. We define the scanner's main yylex
+ * This implementation of DriverFlexLexer::yylex() is required to fill the
+ * vtable of the class DriverFlexLexer. We define the scanner's main yylex
  * function via YY_DECL to reside in the Scanner class instead.
  */
-int ExampleFlexLexer::yylex()
+int DriverFlexLexer::yylex()
 {
-    std::cerr << "in ExampleFlexLexer::yylex() !" << std::endl;
+    std::cerr << "in DriverFlexLexer::yylex() !" << std::endl;
     return 0;
 }
 
@@ -135,7 +135,7 @@ int ExampleFlexLexer::yylex()
  * another input file, and scanning continues. If it returns true (non-zero),
  * then the scanner terminates, returning 0 to its caller.
  */
-int ExampleFlexLexer::yywrap()
+int DriverFlexLexer::yywrap()
 {
     return 1;
 }

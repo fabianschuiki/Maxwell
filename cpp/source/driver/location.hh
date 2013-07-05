@@ -34,7 +34,7 @@
 
 /**
  ** \file location.hh
- ** Define the example::location class.
+ ** Define the driver::location class.
  */
 
 #ifndef BISON_LOCATION_HH
@@ -44,7 +44,7 @@
 # include <string>
 # include "position.hh"
 
-namespace example
+namespace driver
 {
 
   /// Abstract a location.

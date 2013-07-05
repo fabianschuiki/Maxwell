@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[])
 {
-	example::Driver driver;
+	driver::Driver driver;
 	bool result = false;
 	if (argc >= 2) {
 		result = driver.parseFile(argv[1]);

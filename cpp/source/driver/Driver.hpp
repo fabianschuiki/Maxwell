@@ -4,7 +4,7 @@
 #include <boost/smart_ptr.hpp>
 #include <ast/ast.hpp>
 
-namespace example {
+namespace driver {
 
 using boost::shared_ptr;
 
@@ -48,4 +48,4 @@ public:
 	}
 };
 
-} // namespace example
+} // namespace driver

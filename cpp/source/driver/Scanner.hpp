@@ -2,27 +2,27 @@
 #pragma once
 
 #ifndef YY_DECL
-#define YY_DECL example::Parser::token_type example::Scanner::lex(\
-	example::Parser::semantic_type* yylval,\
-	example::Parser::location_type* yylloc\
+#define YY_DECL driver::Parser::token_type driver::Scanner::lex(\
+	driver::Parser::semantic_type* yylval,\
+	driver::Parser::location_type* yylloc\
 )
 #endif
 
 #ifndef __FLEX_LEXER_H
-#define yyFlexLexer ExampleFlexLexer
+#define yyFlexLexer DriverFlexLexer
 #include "FlexLexer.h"
 #undef yyFlexLexer
 #endif
 
 #include "Parser.hpp"
 
-namespace example {
+namespace driver {
 
 /**
  * Scanner is a convenience wrapper class around the Flex-generated
- * ExampleFlexLexer class. It adds some extra functionality to the scanner.
+ * DriverFlexLexer class. It adds some extra functionality to the scanner.
  */
-class Scanner : public ExampleFlexLexer
+class Scanner : public DriverFlexLexer
 {
 public:
 	Scanner(std::istream* in = 0, std::ostream* out = 0);
@@ -35,4 +35,4 @@ public:
 	virtual Parser::token_type lex(Parser::semantic_type* yylval, Parser::location_type* yylloc);
 };
 
-} // namespace example
+} // namespace driver

@@ -34,7 +34,7 @@
 
 /**
  ** \file position.hh
- ** Define the example::position class.
+ ** Define the driver::position class.
  */
 
 #ifndef BISON_POSITION_HH
@@ -43,7 +43,7 @@
 # include <iostream>
 # include <string>
 
-namespace example
+namespace driver
 {
   /// Abstract a position.
   class position

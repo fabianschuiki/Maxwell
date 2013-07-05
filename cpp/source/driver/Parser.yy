@@ -20,7 +20,7 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 
 /* Use the modern C++ skeleton file. */
 %skeleton "lalr1.cc"
-%name-prefix="example" /* namespace the parser will be enclosed in */
+%name-prefix="driver" /* namespace the parser will be enclosed in */
 %define "parser_class_name" "Parser" /* class name of the parser */
 
 /* Keep track of the current position within the input. */
@@ -203,7 +203,7 @@ body  : LBRACE RBRACE {
 
 %% /*** Additional Code ***/
 
-void example::Parser::error(const Parser::location_type& l, const std::string& m)
+void driver::Parser::error(const Parser::location_type& l, const std::string& m)
 {
 	driver.error(l,m);
 }

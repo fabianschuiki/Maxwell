@@ -3,7 +3,7 @@
 #include "Scanner.hpp"
 #include <fstream>
 
-using example::Driver;
+using driver::Driver;
 
 Driver::Driver()
 {

@@ -37,7 +37,7 @@
 
 #include <deque>
 
-namespace example
+namespace driver
 {
   template <class T, class S = std::deque<T> >
   class stack

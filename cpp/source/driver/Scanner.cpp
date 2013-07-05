@@ -29,7 +29,7 @@
      * We will address this in a future release of flex, or omit the C++ scanner
      * altogether.
      */
-    #define yyFlexLexer ExampleFlexLexer
+    #define yyFlexLexer DriverFlexLexer
 /* %endif */
 
 /* %if-c-only */
@@ -342,9 +342,9 @@ struct yy_buffer_state
 /* %endif */
 /* %endif */
 
-void *Examplealloc (yy_size_t  );
-void *Examplerealloc (void *,yy_size_t  );
-void Examplefree (void *  );
+void *Driveralloc (yy_size_t  );
+void *Driverrealloc (void *,yy_size_t  );
+void Driverfree (void *  );
 
 #define yy_new_buffer yy_create_buffer
 
@@ -525,8 +525,8 @@ static yyconst flex_int16_t yy_rule_linenum[26] =
 #define storeToken yylval->string = new std::string(yytext, yyleng)
 
 /* Add local typedefs for the parser's tokens for our convenience. */
-typedef example::Parser::token token;
-typedef example::Parser::token_type token_type;
+typedef driver::Parser::token token;
+typedef driver::Parser::token_type token_type;
 
 /* Make yyterminate return a special token instead of 0. */
 #define yyterminate() return token::END;
@@ -534,7 +534,7 @@ typedef example::Parser::token_type token_type;
 /* Disable unistd.h which is not available under Windows. */
 #define YY_NO_UNISTD_H
 /* Enable the C++ magic. */
-/* Change the name of the lexer class to "ExampleFlexLexer" */
+/* Change the name of the lexer class to "DriverFlexLexer" */
 /* The manual says "somewhat more optimized", whatever that means. */
 /* Produce some debug output. Disable this for the release version. */
 /* Advance the location tracker during lexing. */
@@ -1141,9 +1141,9 @@ yyFlexLexer::yyFlexLexer( std::istream* arg_yyin, std::ostream* arg_yyout )
 yyFlexLexer::~yyFlexLexer()
 {
 	delete [] yy_state_buf;
-	Examplefree(yy_start_stack  );
+	Driverfree(yy_start_stack  );
 	yy_delete_buffer( YY_CURRENT_BUFFER );
-	Examplefree(yy_buffer_stack  );
+	Driverfree(yy_buffer_stack  );
 }
 
 /* The contents of this function are C++ specific, so the () macro is not used.
@@ -1278,7 +1278,7 @@ int yyFlexLexer::yy_get_next_buffer()
 
 				b->yy_ch_buf = (char *)
 					/* Include room in for 2 EOB chars. */
-					Examplerealloc((void *) b->yy_ch_buf,b->yy_buf_size + 2  );
+					Driverrealloc((void *) b->yy_ch_buf,b->yy_buf_size + 2  );
 				}
 			else
 				/* Can't grow it, we don't own it. */
@@ -1327,7 +1327,7 @@ int yyFlexLexer::yy_get_next_buffer()
 	if ((yy_size_t) ((yy_n_chars) + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
 		/* Extend the array by 50%, plus the number we really need. */
 		yy_size_t new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
-		YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) Examplerealloc((void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf,new_size  );
+		YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) Driverrealloc((void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf,new_size  );
 		if ( ! YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
 			YY_FATAL_ERROR( "out of dynamic memory in yy_get_next_buffer()" );
 	}
@@ -1618,7 +1618,7 @@ int yyFlexLexer::yy_get_next_buffer()
 {
 	YY_BUFFER_STATE b;
     
-	b = (YY_BUFFER_STATE) Examplealloc(sizeof( struct yy_buffer_state )  );
+	b = (YY_BUFFER_STATE) Driveralloc(sizeof( struct yy_buffer_state )  );
 	if ( ! b )
 		YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
 
@@ -1627,7 +1627,7 @@ int yyFlexLexer::yy_get_next_buffer()
 	/* yy_ch_buf has to be 2 characters longer than the size given because
 	 * we need to put in 2 end-of-buffer characters.
 	 */
-	b->yy_ch_buf = (char *) Examplealloc(b->yy_buf_size + 2  );
+	b->yy_ch_buf = (char *) Driveralloc(b->yy_buf_size + 2  );
 	if ( ! b->yy_ch_buf )
 		YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
 
@@ -1656,9 +1656,9 @@ int yyFlexLexer::yy_get_next_buffer()
 		YY_CURRENT_BUFFER_LVALUE = (YY_BUFFER_STATE) 0;
 
 	if ( b->yy_is_our_buffer )
-		Examplefree((void *) b->yy_ch_buf  );
+		Driverfree((void *) b->yy_ch_buf  );
 
-	Examplefree((void *) b  );
+	Driverfree((void *) b  );
 }
 
 /* %if-c-only */
@@ -1819,7 +1819,7 @@ void yyFlexLexer::yyensure_buffer_stack(void)
 		 * immediate realloc on the next call.
          */
 		num_to_alloc = 1;
-		(yy_buffer_stack) = (struct yy_buffer_state**)Examplealloc
+		(yy_buffer_stack) = (struct yy_buffer_state**)Driveralloc
 								(num_to_alloc * sizeof(struct yy_buffer_state*)
 								);
 		if ( ! (yy_buffer_stack) )
@@ -1838,7 +1838,7 @@ void yyFlexLexer::yyensure_buffer_stack(void)
 		int grow_size = 8 /* arbitrary grow size */;
 
 		num_to_alloc = (yy_buffer_stack_max) + grow_size;
-		(yy_buffer_stack) = (struct yy_buffer_state**)Examplerealloc
+		(yy_buffer_stack) = (struct yy_buffer_state**)Driverrealloc
 								((yy_buffer_stack),
 								num_to_alloc * sizeof(struct yy_buffer_state*)
 								);
@@ -1875,10 +1875,10 @@ void yyFlexLexer::yyensure_buffer_stack(void)
 		new_size = (yy_start_stack_depth) * sizeof( int );
 
 		if ( ! (yy_start_stack) )
-			(yy_start_stack) = (int *) Examplealloc(new_size  );
+			(yy_start_stack) = (int *) Driveralloc(new_size  );
 
 		else
-			(yy_start_stack) = (int *) Examplerealloc((void *) (yy_start_stack),new_size  );
+			(yy_start_stack) = (int *) Driverrealloc((void *) (yy_start_stack),new_size  );
 
 		if ( ! (yy_start_stack) )
 			YY_FATAL_ERROR( "out of memory expanding start-condition stack" );
@@ -1987,12 +1987,12 @@ static int yy_flex_strlen (yyconst char * s )
 }
 #endif
 
-void *Examplealloc (yy_size_t  size )
+void *Driveralloc (yy_size_t  size )
 {
 	return (void *) malloc( size );
 }
 
-void *Examplerealloc  (void * ptr, yy_size_t  size )
+void *Driverrealloc  (void * ptr, yy_size_t  size )
 {
 	/* The cast to (char *) in the following accommodates both
 	 * implementations that use char* generic pointers, and those
@@ -2004,9 +2004,9 @@ void *Examplerealloc  (void * ptr, yy_size_t  size )
 	return (void *) realloc( (char *) ptr, size );
 }
 
-void Examplefree (void * ptr )
+void Driverfree (void * ptr )
 {
-	free( (char *) ptr );	/* see Examplerealloc() for (char *) cast */
+	free( (char *) ptr );	/* see Driverrealloc() for (char *) cast */
 }
 
 /* %if-tables-serialization definitions */
@@ -2021,9 +2021,9 @@ void Examplefree (void * ptr )
 
 
 /* Wrapper class around the lexer created by Flex which makes the interface look similar to the parser. */
-namespace example {
+namespace driver {
 
-Scanner::Scanner(std::istream* in, std::ostream* out) : ExampleFlexLexer(in, out)
+Scanner::Scanner(std::istream* in, std::ostream* out) : DriverFlexLexer(in, out)
 {
 }
 
@@ -2038,13 +2038,13 @@ Scanner::~Scanner()
 #endif
 
 /**
- * This implementation of ExampleFlexLexer::yylex() is required to fill the
- * vtable of the class ExampleFlexLexer. We define the scanner's main yylex
+ * This implementation of DriverFlexLexer::yylex() is required to fill the
+ * vtable of the class DriverFlexLexer. We define the scanner's main yylex
  * function via YY_DECL to reside in the Scanner class instead.
  */
-int ExampleFlexLexer::yylex()
+int DriverFlexLexer::yylex()
 {
-    std::cerr << "in ExampleFlexLexer::yylex() !" << std::endl;
+    std::cerr << "in DriverFlexLexer::yylex() !" << std::endl;
     return 0;
 }
 
@@ -2055,7 +2055,7 @@ int ExampleFlexLexer::yylex()
  * another input file, and scanning continues. If it returns true (non-zero),
  * then the scanner terminates, returning 0 to its caller.
  */
-int ExampleFlexLexer::yywrap()
+int DriverFlexLexer::yywrap()
 {
     return 1;
 }

@@ -33,7 +33,7 @@
    version 2.2 of Bison.  */
 
 // Take the name prefix into account.
-#define yylex   examplelex
+#define yylex   driverlex
 
 #include "Parser.hpp"
 
@@ -111,7 +111,7 @@ do {					\
 #define YYABORT		goto yyabortlab
 #define YYERROR		goto yyerrorlab
 
-namespace example
+namespace driver
 {
 #if YYERROR_VERBOSE
 
@@ -1022,12 +1022,12 @@ namespace example
   const unsigned int Parser::yyuser_token_number_max_ = 279;
   const Parser::token_number_type Parser::yyundef_token_ = 2;
 
-} // namespace example
+} // namespace driver
 
 #line 204 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
  /*** Additional Code ***/
 
-void example::Parser::error(const Parser::location_type& l, const std::string& m)
+void driver::Parser::error(const Parser::location_type& l, const std::string& m)
 {
 	driver.error(l,m);
 }

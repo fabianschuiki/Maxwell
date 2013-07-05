@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <ast/ast.hpp>
+#include <ast/nodes/ast.hpp>
 #include <boost/smart_ptr.hpp>
 
 using namespace ast;

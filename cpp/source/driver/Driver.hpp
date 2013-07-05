@@ -2,7 +2,7 @@
 #include <string>
 #include <iostream>
 #include <boost/smart_ptr.hpp>
-#include <ast/ast.hpp>
+#include <ast/nodes/ast.hpp>
 
 namespace driver {
 

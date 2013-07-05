@@ -5,7 +5,7 @@
 
 namespace ast {
 
-using std::shared_ptr;
+using boost::shared_ptr;
 
 /**
  * The Repository represents a persistent store on disk that holds AST nodes.

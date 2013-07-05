@@ -1,4 +1,5 @@
 /* Copyright © 2013 Fabian Schuiki */
+
 /**
  * @file This program serves as a testing facility for the ast::Repository
  * classes.

@@ -10,6 +10,20 @@ using std::stringstream;
 NodeId::NodeId() : source(0), root(0) {}
 NodeId::NodeId(int source, int root, string id) : source(source), root(root), id(id) {}
 
+NodeId::NodeId(string str)
+{
+	size_t firstDot = str.find('.');
+	if (firstDot == string::npos || firstDot == 0 || firstDot == str.size()-1) {
+		throw std::runtime_error("Invalid node id '" + str + "'. Must be of form <source>.<root>[.<id>].");
+	}
+	size_t secondDot = str.find('.', firstDot + 1);
+	source = atoi(str.substr(0, firstDot).c_str());
+	root = atoi(str.substr(firstDot+1, secondDot).c_str());
+	if (secondDot != string::npos) {
+		id = str.substr(secondDot+1);
+	}
+}
+
 bool NodeId::operator<(const NodeId& other) const
 {
 	if (source < other.source) return true;
@@ -45,7 +59,7 @@ NodeId NodeId::getRoot() const
 }
 
 /// Allows NodeId objects to be written directly to output streams.
-std::ostream& operator<<(std::ostream& s, const NodeId& id)
+std::ostream& ast::operator<<(std::ostream& s, const NodeId& id)
 {
 	s << id.str();
 	return s;

@@ -24,6 +24,7 @@ public:
 
 	NodeId();
 	NodeId(int source, int root, string id = "");
+	NodeId(string str);
 
 	bool operator<(const NodeId& other) const;
 	bool operator==(const NodeId& other) const;

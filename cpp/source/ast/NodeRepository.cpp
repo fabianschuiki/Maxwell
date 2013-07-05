@@ -2,6 +2,7 @@
 #include "nodes/ast.hpp"
 #include "NodeRepository.hpp"
 #include <cassert>
+#include <fstream>
 
 using ast::NodeRepository;
 using ast::NodeId;
@@ -12,6 +13,10 @@ using boost::shared_ptr;
 
 NodeRepository::NodeRepository(const boost::filesystem::path& path) : path(path)
 {
+	// Create the directory if required.
+	if (!boost::filesystem::exists(path)) {
+		boost::filesystem::create_directory(path);
+	}
 }
 
 NodeRepository::~NodeRepository()
@@ -72,10 +77,10 @@ NodeId NodeRepository::addNode(int source, const shared_ptr<Node>& node)
 	}
 
 	// Find a suitable id for the node.
-	NodeId id;
+	NodeId id(source, 1);
 	boost::filesystem::path basePath = getPathForSource(source);
 	char buf[32];
-	for (id.root = 1;; id.root++) {
+	for (;; id.root++) {
 		snprintf(buf, 31, "%i", id.root);
 		boost::filesystem::path p = basePath;
 		p /= buf;
@@ -162,7 +167,8 @@ void NodeRepository::removeNode(int source)
 	}
 	boost::filesystem::path p = getPathForSource(source);
 	if (boost::filesystem::exists(p)) {
-		std::cout << "Would remove source directory " << p.string() << "\n";
+		boost::filesystem::remove_all(p);
+		//std::cout << "Would remove source directory " << p.string() << "\n";
 	}
 }
 
@@ -203,6 +209,9 @@ void NodeRepository::store(const NodeId& id)
 
 	boost::filesystem::path p = getPathForNodeId(id);
 	std::cout << "Storing node to " << p.string() << "\n";
+	std::ofstream f(p.c_str());
+	f << "Hello!";
+	f.close();
 }
 
 /**

@@ -45,6 +45,16 @@ int main(int argc, char *argv[])
 				shared_ptr<Node> node = repo.getNode(NodeId(readNodes[i]));
 				cout << node->describe() << "\n";
 			}
+
+			// Dump the loaded nodes.
+			cout << "Loaded nodes: ";
+			bool first = true;
+			const NodeRepository::Nodes& loaded = repo.getLoadedNodes();
+			for (NodeRepository::Nodes::const_iterator it = loaded.begin(); it != loaded.end(); it++) {
+				if (!first) cout << ", "; else first = false;
+				cout << it->first;
+			}
+			cout << "\n";
 		} else {
 			// Add a node.
 			shared_ptr<FunctionDefinition> fdef(new FunctionDefinition);

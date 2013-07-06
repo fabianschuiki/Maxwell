@@ -1,5 +1,6 @@
 /* Copyright © 2013 Fabian Schuiki */
 #include "NodeRepository.hpp"
+#include "Serializer.hpp"
 #include <cassert>
 #include <fstream>
 
@@ -180,10 +181,15 @@ void NodeRepository::load(const NodeId& id)
 {
 	boost::filesystem::path p = getPathForNodeId(id);
 	if (!boost::filesystem::exists(p)) {
-		throw std::runtime_error("Loading node that does not exist in the repository.");
+		throw std::runtime_error("Loading node '" + id.str() + "' that does not exist in the repository.");
 	}
-	std::cout << "Loading node from " << p.string() << "\n";
-	throw std::runtime_error("Node loading not yet implemented!");
+
+	// Load the node through the ast::Serializer.
+	std::ifstream f(p.c_str());
+	Serializer ser;
+	NodeRef node = ser.decode(f);
+	node->setId(id);
+	nodes[id] = node;
 }
 
 /**
@@ -205,12 +211,12 @@ void NodeRepository::store(const NodeId& id)
 	if (!boost::filesystem::exists(sp)) {
 		boost::filesystem::create_directory(sp);
 	}
-
 	boost::filesystem::path p = getPathForNodeId(id);
-	std::cout << "Storing node to " << p.string() << "\n";
+
+	// Store the node through the ast::Serializer.
 	std::ofstream f(p.c_str());
-	f << "Hello!";
-	f.close();
+	Serializer ser;
+	ser.encode(f, node);
 }
 
 /**

@@ -1,11 +1,13 @@
 /* Copyright © 2013 Fabian Schuiki */
 #include "Node.hpp"
+#include "Repository.hpp"
 #include <stdexcept>
 #include <sstream>
 
 using ast::Node;
 using ast::NodeId;
 using ast::NodeVector;
+using ast::Repository;
 using std::string;
 using std::stringstream;
 
@@ -92,8 +94,16 @@ void Node::updateHierarchy(const NodeId& id, const weak_ptr<Repository>& reposit
  */
 void Node::modify()
 {
-	if (!modified) {
+	shared_ptr<Repository> r(repository.lock());
+	shared_ptr<Node> p(parent.lock());
+
+	if (!modified && r) {
 		modified = true;
+		if (p) {
+			p->modify();
+		} else {
+			r->markModified(id);
+		}
 	}
 }
 

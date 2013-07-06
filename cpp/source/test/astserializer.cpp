@@ -38,8 +38,10 @@ int main(int argc, char *argv[])
 		args.push_back(farg);
 		fargtup->setArgs(args);
 		fdef->setIn(fargtup);
+		fdef->updateHierarchy(NodeId(1,1));
 
 		// Dump it to the console.
+		cout << "Arg x has ID: " << farg->getId() << "\n";
 		cout << "Will serialize: " << fdef->describe() << "\n";
 
 		// Serialize.

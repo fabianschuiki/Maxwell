@@ -33,6 +33,8 @@ public:
 	int unregisterSource(const string& s);
 	void unregisterSource(int i);
 
+	void markModified(const NodeId& id);
+
 protected:
 	/// Repository maintaining the source file ids.
 	scoped_ptr<SourceRepository> sourceRepo;

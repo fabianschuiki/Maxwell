@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <boost/smart_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 
 namespace ast {
 
@@ -51,6 +52,9 @@ public:
 	bool isBuiltin() const { return source == 0; }
 	/// Returns whether this id is empty.
 	bool empty() const { return root == 0; }
+
+	NodeId operator+(string s) const { return NodeId(source, root, id.empty() ? s : id + '.' + s); }
+	NodeId operator+(const char* s) const { return *this + string(s); }
 };
 
 std::ostream& operator<<(std::ostream& s, const NodeId& id);
@@ -58,7 +62,7 @@ std::ostream& operator<<(std::ostream& s, const NodeId& id);
 /**
  * @brief Base class for all nodes in the abstract syntax tree.
  */
-class Node
+class Node : public boost::enable_shared_from_this<Node>
 {
 public:
 	Node();
@@ -84,7 +88,7 @@ public:
 	/// Returns the node's repository, or an empty weak_ptr if it is not part of one.
 	const weak_ptr<Repository>& getRepository() const { return repository; }
 
-	virtual void updateHierarchy(const NodeId& id, const weak_ptr<Repository>& repository, const weak_ptr<Node>& parent = weak_ptr<Node>());
+	virtual void updateHierarchy(const NodeId& id, const weak_ptr<Repository>& repository = weak_ptr<Repository>(), const weak_ptr<Node>& parent = weak_ptr<Node>());
 
 protected:
 	bool modified;

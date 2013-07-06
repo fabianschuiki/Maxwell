@@ -78,6 +78,12 @@ public:
 		d.decode(this->type);
 	}
 
+	virtual void updateHierarchy(const NodeId& id, const weak_ptr<Repository>& repository = weak_ptr<Repository>(), const weak_ptr<Node>& parent = weak_ptr<Node>())
+	{
+		Node::updateHierarchy(id, repository, parent);
+		const NodeRef& self(shared_from_this());
+	}
+
 protected:
 	string name;
 	string type;

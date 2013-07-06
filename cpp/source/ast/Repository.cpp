@@ -1,5 +1,6 @@
 /* Copyright © 2013 Fabian Schuiki */
 #include "Repository.hpp"
+#include <iostream>
 
 using ast::Repository;
 using ast::SourceRepository;
@@ -100,4 +101,13 @@ void Repository::unregisterSource(int i)
 void Repository::nodeLoaded(const NodeId& id, const NodeRef& node)
 {
 	node->updateHierarchy(id, shared_from_this());
+}
+
+/**
+ * @brief Marks the given node as modified.
+ */
+void Repository::markModified(const NodeId& id)
+{
+	nodeRepo->markModified(id);
+	std::cout << "Modified node " << id << "\n";
 }

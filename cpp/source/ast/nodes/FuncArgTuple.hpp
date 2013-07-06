@@ -63,6 +63,16 @@ public:
 		d.decode(this->args);
 	}
 
+	virtual void updateHierarchy(const NodeId& id, const weak_ptr<Repository>& repository = weak_ptr<Repository>(), const weak_ptr<Node>& parent = weak_ptr<Node>())
+	{
+		Node::updateHierarchy(id, repository, parent);
+		const NodeRef& self(shared_from_this());
+		for (int i = 0; i < this->args.size(); i++) {
+			char buf[32]; snprintf(buf, 31, "%i", i);
+			this->args[i]->updateHierarchy((id + "args") + buf, repository, self);
+		}
+	}
+
 protected:
 	NodeVector args;
 };

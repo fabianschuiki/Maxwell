@@ -74,23 +74,15 @@ Node::Node()
 }
 
 /**
- * @brief Returns the node's id.
- */
-const NodeId& Node::getId() const
-{
-	return id;
-}
-
-/**
- * @brief Sets the node's id.
+ * @brief Sets the node's id, parent and repository in one go.
  *
- * Note that this may also alter the ids of the node's children.
+ * Note that this may also alter the node's children.
  */
-void Node::setId(const NodeId& i)
+void Node::updateHierarchy(const NodeId& id, const weak_ptr<Repository>& repository, const weak_ptr<Node>& parent)
 {
-	if (id != i) {
-		id = i;
-	}
+	this->id = id;
+	this->parent = parent;
+	this->repository = repository;
 }
 
 /**

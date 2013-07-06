@@ -6,6 +6,7 @@
 #include <string>
 #include <boost/filesystem.hpp>
 #include <boost/smart_ptr.hpp>
+#include <boost/function.hpp>
 
 namespace ast {
 
@@ -36,6 +37,9 @@ public:
 	bool hasNode(const NodeId& id);
 	void removeNode(const NodeId& id);
 	void removeNode(int source);
+
+	/// Callback function invoked whenever a node is loaded (addNode or getNode).
+	boost::function<void (const NodeId&, const NodeRef&)> onNodeLoaded;
 
 private:
 	Nodes nodes;

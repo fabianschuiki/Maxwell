@@ -65,20 +65,25 @@ int SourceRepository::registerSource(const string& s)
 
 /**
  * @brief Removes the given file from the repository.
+ *
+ * Returns the id of the source file that was removed.
  */
-void SourceRepository::unregisterSource(const string& s)
+int SourceRepository::unregisterSource(const string& s)
 {
 	if (!loaded) load();
 	SourcesByName::iterator i = byName.find(s);
 	if (i != byName.end()) {
-		byId.erase(i->second);
+		int id = i->second;
+		byId.erase(id);
 		byName.erase(i);
 		modified = true;
+		return id;
 	}
+	return 0;
 }
 
 /**
- * brief Removes the file with the given id from the repository.
+ * @brief Removes the file with the given id from the repository.
  */
 void SourceRepository::unregisterSource(int i)
 {

@@ -28,7 +28,7 @@ public:
 	void flush();
 
 	int registerSource(const string& s);
-	void unregisterSource(const string& s);
+	int unregisterSource(const string& s);
 	void unregisterSource(int i);
 
 private:

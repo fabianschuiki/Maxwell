@@ -66,6 +66,10 @@ void NodeRepository::markModified(const NodeId& id)
  * This function will allocate a new root id within the source to the node. The
  * node is automatically marked as modified such that it is persisted to disk
  * upon the next call to flush().
+ *
+ * Note that the node's id is not update automatically. If you wish the node to
+ * represent the new id, the calling function must assign the result of this
+ * function as the node's id.
  */
 NodeId NodeRepository::addNode(int source, const shared_ptr<Node>& node)
 {
@@ -86,11 +90,11 @@ NodeId NodeRepository::addNode(int source, const shared_ptr<Node>& node)
 		p /= buf;
 		if (!boost::filesystem::exists(p)) break; // abort if this root does not exist
 	}
-	node->setId(id);
 
 	// Insert the node.
 	nodes[id] = node;
 	modified.insert(id);
+	if (onNodeLoaded) onNodeLoaded(id, node);
 	return id;
 }
 
@@ -188,8 +192,8 @@ void NodeRepository::load(const NodeId& id)
 	std::ifstream f(p.c_str());
 	Serializer ser;
 	NodeRef node = ser.decode(f);
-	node->setId(id);
 	nodes[id] = node;
+	if (onNodeLoaded) onNodeLoaded(id, node);
 }
 
 /**

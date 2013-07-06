@@ -11,9 +11,11 @@ namespace ast {
 using std::string;
 using std::vector;
 using boost::shared_ptr;
+using boost::weak_ptr;
 
 class Encoder;
 class Decoder;
+class Repository;
 
 /**
  * @brief Full id of a single node.
@@ -75,12 +77,20 @@ public:
 	/// Overridden by subclasses to reconstruct their member variables.
 	virtual void decode(Decoder& d) = 0;
 
-	const NodeId& getId() const;
-	void setId(const NodeId& i);
+	/// Returns the node's id.
+	const NodeId& getId() const { return id; }
+	/// Returns the node's parent node, or an empty weak_ptr if this is a root node.
+	const weak_ptr<Node>& getParent() const { return parent; }
+	/// Returns the node's repository, or an empty weak_ptr if it is not part of one.
+	const weak_ptr<Repository>& getRepository() const { return repository; }
+
+	virtual void updateHierarchy(const NodeId& id, const weak_ptr<Repository>& repository, const weak_ptr<Node>& parent = weak_ptr<Node>());
 
 protected:
 	bool modified;
 	NodeId id;
+	weak_ptr<Node> parent;
+	weak_ptr<Repository> repository;
 
 	void modify();
 	string indent(string in);

@@ -1,6 +1,6 @@
 /* Copyright © 2013 Fabian Schuiki */
-#include "nodes/ast.hpp"
 #include "Node.hpp"
+#include <stdexcept>
 
 using ast::Node;
 using ast::NodeId;

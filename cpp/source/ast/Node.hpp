@@ -1,5 +1,6 @@
 /* Copyright © 2013 Fabian Schuiki */
 #pragma once
+#include "nodes/types.hpp" // for ast::Kind
 #include <string>
 #include <sstream>
 
@@ -59,6 +60,9 @@ public:
 
 	/// Returns a description of this node and all its subnodes for debugging purposes.
 	virtual string describe(int depth = -1) { return "Node"; }
+
+	/// Returns the class name of this node used in serialization.
+	virtual string getClassName() const = 0;
 
 	const NodeId& getId() const;
 	void setId(const NodeId& i);

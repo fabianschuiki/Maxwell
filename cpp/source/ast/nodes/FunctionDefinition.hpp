@@ -27,6 +27,8 @@ public:
 		return k == kFunctionDefinition;
 	}
 
+	virtual string getClassName() const { return "FunctionDefinition"; }
+
 	void setName(const string& v)
 	{
 		if (v != name) {

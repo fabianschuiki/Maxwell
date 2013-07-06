@@ -27,6 +27,8 @@ public:
 		return k == kFuncArgTuple;
 	}
 
+	virtual string getClassName() const { return "FuncArgTuple"; }
+
 	void setArgs(const vector<shared_ptr<Node> >& v)
 	{
 		if (v != args) {

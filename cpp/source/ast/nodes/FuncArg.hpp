@@ -27,6 +27,8 @@ public:
 		return k == kFuncArg;
 	}
 
+	virtual string getClassName() const { return "FuncArg"; }
+
 	void setName(const string& v)
 	{
 		if (v != name) {

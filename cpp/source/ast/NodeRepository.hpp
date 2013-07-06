@@ -5,12 +5,14 @@
 #include <set>
 #include <string>
 #include <boost/filesystem.hpp>
+#include <boost/smart_ptr.hpp>
 
 namespace ast {
 
 using std::map;
 using std::set;
 using std::string;
+using boost::shared_ptr;
 
 /**
  * A NodeRepository maintains a persistent store of Node instances on disk. It

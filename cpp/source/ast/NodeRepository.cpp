@@ -1,5 +1,4 @@
 /* Copyright © 2013 Fabian Schuiki */
-#include "nodes/ast.hpp"
 #include "NodeRepository.hpp"
 #include <cassert>
 #include <fstream>

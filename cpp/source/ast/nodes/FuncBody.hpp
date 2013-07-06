@@ -27,6 +27,8 @@ public:
 		return k == kFuncBody;
 	}
 
+	virtual string getClassName() const { return "FuncBody"; }
+
 	void setStmts(const vector<shared_ptr<Node> >& v)
 	{
 		if (v != stmts) {

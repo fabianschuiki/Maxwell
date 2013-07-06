@@ -2,12 +2,18 @@
 #pragma once
 #include "nodes/types.hpp" // for ast::Kind
 #include <string>
-#include <sstream>
+#include <vector>
+#include <iostream>
+#include <boost/smart_ptr.hpp>
 
 namespace ast {
 
 using std::string;
-using std::stringstream;
+using std::vector;
+using boost::shared_ptr;
+
+class Encoder;
+class Decoder;
 
 /**
  * @brief Full id of a single node.
@@ -64,6 +70,11 @@ public:
 	/// Returns the class name of this node used in serialization.
 	virtual string getClassName() const = 0;
 
+	/// Overridden by subclasses to encode their member variables.
+	virtual void encode(Encoder& e) = 0;
+	/// Overridden by subclasses to reconstruct their member variables.
+	virtual void decode(Decoder& d) = 0;
+
 	const NodeId& getId() const;
 	void setId(const NodeId& i);
 
@@ -73,6 +84,11 @@ protected:
 
 	void modify();
 	string indent(string in);
+
+	string describeVector(const vector<shared_ptr<Node> >& nodes, int depth = -1);
 };
+
+typedef shared_ptr<Node> NodeRef;
+typedef vector<NodeRef> NodeVector;
 
 } // namespace ast

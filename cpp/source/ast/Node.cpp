@@ -1,9 +1,11 @@
 /* Copyright © 2013 Fabian Schuiki */
 #include "Node.hpp"
 #include <stdexcept>
+#include <sstream>
 
 using ast::Node;
 using ast::NodeId;
+using ast::NodeVector;
 using std::string;
 using std::stringstream;
 
@@ -117,4 +119,23 @@ string Node::indent(string in)
 			out += "  ";
 	}
 	return out;
+}
+
+/**
+ * @brief Helper function that describes a NodeVector.
+ */
+string Node::describeVector(const NodeVector& nodes, int depth)
+{
+	if (depth == 0) {
+		return "[…]";
+	}
+	stringstream out;
+	out << "[";
+	for (NodeVector::const_iterator it = nodes.begin(); it != nodes.end(); it++) {
+		out << "\n  - " << indent((*it)->describe(depth-1));
+	}
+	if (!nodes.empty())
+		out << "\n";
+	out << "]";
+	return out.str();
 }

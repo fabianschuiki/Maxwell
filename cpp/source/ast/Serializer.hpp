@@ -1,14 +1,14 @@
 /* Copyright © 2013 Fabian Schuiki */
 #pragma once
+#include "Node.hpp"
 #include <iostream>
 #include <string>
-#include <boost/smart_ptr.hpp>
 
 namespace ast {
 
 using std::ostream;
+using std::istream;
 using std::string;
-using boost::shared_ptr;
 
 class Node;
 
@@ -18,8 +18,11 @@ class Node;
 class Serializer
 {
 public:
-	void encode(ostream& out, const shared_ptr<Node>& node);
-	string encode(const shared_ptr<Node>& node);
+	void encode(ostream& out, const NodeRef& node);
+	string encode(const NodeRef& node);
+
+	NodeRef decode(istream& in);
+	NodeRef decode(const string& str);
 };
 
 } // namespace ast

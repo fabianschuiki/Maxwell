@@ -1,4 +1,4 @@
-add_executable(ast-gen main.cpp)
+add_executable(ast-gen main.cpp def.cpp)
 target_link_libraries(ast-gen ${Boost_LIBRARIES})
 
 # Generate the AST

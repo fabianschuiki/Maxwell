@@ -5,7 +5,7 @@
 using ast::Repository;
 using ast::SourceRepository;
 using ast::NodeRepository;
-using ast::NodeRef;
+using ast::NodePtr;
 using ast::NodeId;
 using boost::scoped_ptr;
 
@@ -30,7 +30,7 @@ void Repository::flush()
  *
  * Returns the id that was assigned to the node.
  */
-NodeId Repository::addNode(int source, const NodeRef& node)
+NodeId Repository::addNode(int source, const NodePtr& node)
 {
 	return nodeRepo->addNode(source, node);
 }
@@ -41,7 +41,7 @@ NodeId Repository::addNode(int source, const NodeRef& node)
  *
  * Returns the id that was assigned to the node.
  */
-NodeId Repository::addNode(const string& source, const NodeRef& node)
+NodeId Repository::addNode(const string& source, const NodePtr& node)
 {
 	return addNode(sourceRepo->registerSource(source), node);
 }
@@ -51,7 +51,7 @@ NodeId Repository::addNode(const string& source, const NodeRef& node)
  *
  * Throws an exception if the node does not exist.
  */
-NodeRef Repository::getNode(const NodeId& id)
+NodePtr Repository::getNode(const NodeId& id)
 {
 	return nodeRepo->getNode(id);
 }
@@ -98,7 +98,7 @@ void Repository::unregisterSource(int i)
  *
  * This callback will then properly setup the node dependencies and hierarchy.
  */
-void Repository::nodeLoaded(const NodeId& id, const NodeRef& node)
+void Repository::nodeLoaded(const NodeId& id, const NodePtr& node)
 {
 	node->updateHierarchy(id, shared_from_this());
 }

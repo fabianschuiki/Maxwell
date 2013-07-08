@@ -39,7 +39,7 @@ public:
 	void removeNode(int source);
 
 	/// Callback function invoked whenever a node is loaded (addNode or getNode).
-	boost::function<void (const NodeId&, const NodeRef&)> onNodeLoaded;
+	boost::function<void (const NodeId&, const NodePtr&)> onNodeLoaded;
 
 private:
 	Nodes nodes;

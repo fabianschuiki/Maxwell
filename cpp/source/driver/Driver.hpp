@@ -7,7 +7,7 @@
 namespace driver {
 
 using boost::shared_ptr;
-using ast::NodeRef;
+using ast::NodePtr;
 using ast::NodeVector;
 
 class Driver
@@ -47,7 +47,7 @@ public:
 	typedef NodeVector Nodes;
 	Nodes nodes;
 
-	void add(const NodeRef& node);
+	void add(const NodePtr& node);
 };
 
 } // namespace driver

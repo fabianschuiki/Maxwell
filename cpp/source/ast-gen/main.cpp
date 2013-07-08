@@ -83,7 +83,7 @@ void generateFactoryBody(std::ostream& out, NodeNames names, int indent, string 
 				string name = *newNames.begin();
 				out << pad << "\t// " << name << "\n";
 				out << pad << "\tif (size == " << name.size() << ") ";
-				out << "return NodeRef(new " << name << ");\n";
+				out << "return NodePtr(new " << name << ");\n";
 			}
 		}
 	} while (!names.empty());
@@ -109,7 +109,7 @@ void makeNodesHeader(const boost::filesystem::path& output, const Builder& build
 	h << "using std::string;\n\n";
 	h << "/// Node factory.\n";
 	h << "class NodeFactory\n{\npublic:\n";
-	h << "\tstatic NodeRef make(const string& name)\n\t{\n";
+	h << "\tstatic NodePtr make(const string& name)\n\t{\n";
 	h << "\t\tsize_t size = name.size();\n";
 	NodeNames names;
 	for (Builder::Nodes::const_iterator it = builder.nodes.begin(); it != builder.nodes.end(); it++) {
@@ -195,10 +195,19 @@ int main(int argc, char *argv[])
 			h << "\t\tif (v != " << f.name << ") {\n";
 			h << "\t\t\tmodify();\n";
 			h << "\t\t\t" << f.name << " = v;\n";
+			if (f.ref) {
+				h << "\t\t\t" << f.name << "_ref.clear();\n";
+			}
 			h << "\t\t}\n";
 			h << "\t}\n";
 
 			h << "\t" << ref << " get" << upper << "()\n\t{\n";
+			if (f.ref) {
+				h << "\tif (!" << f.name << "_ref.empty()) {\n";
+				h << "\t\t" << f.name << " = resolveReference(" << f.name << "_ref);\n";
+				h << "\t\t" << f.name << "_ref.clear();\n";
+				h << "\t}\n";
+			}
 			h << "\t\treturn " << f.name << ";\n\t}\n\n";
 		}
 
@@ -226,21 +235,25 @@ int main(int argc, char *argv[])
 		// Generate the encode() function.
 		h << "\tvirtual void encode(Encoder& e)\n\t{\n";
 		for (Node::Fields::iterator f = node.attributes.begin(); f != node.attributes.end(); f++) {
-			h << "\t\te.encode(this->" << (*f).name << ");\n";
+			h << "\t\te.encode(this->" << (*f).name;
+			if ((*f).ref) h << ", &" << (*f).name << "_ref";
+			h << ");\n";
 		}
 		h << "\t}\n\n";
 
 		// Generate the decode() function.
 		h << "\tvirtual void decode(Decoder& d)\n\t{\n";
 		for (Node::Fields::iterator f = node.attributes.begin(); f != node.attributes.end(); f++) {
-			h << "\t\td.decode(this->" << (*f).name << ");\n";
+			h << "\t\td.decode(this->" << (*f).name;
+			if ((*f).ref) h << ", &" << (*f).name << "_ref";
+			h << ");\n";
 		}
 		h << "\t}\n\n";
 
 		// Generate the updateHierarchy() function.
 		h << "\tvirtual void updateHierarchy(const NodeId& id, const weak_ptr<Repository>& repository = weak_ptr<Repository>(), const weak_ptr<Node>& parent = weak_ptr<Node>())\n\t{\n";
 		h << "\t\t" << node.parent << "::updateHierarchy(id, repository, parent);\n";
-		h << "\t\tconst NodeRef& self(shared_from_this());\n";
+		h << "\t\tconst NodePtr& self(shared_from_this());\n";
 		for (Node::Fields::iterator fit = node.attributes.begin(); fit != node.attributes.end(); fit++) {
 			Node::Field& f = *fit;
 			if (f.isNode) {
@@ -257,6 +270,7 @@ int main(int argc, char *argv[])
 		h << "protected:\n";
 		for (Node::Fields::iterator f = node.attributes.begin(); f != node.attributes.end(); f++) {
 			h << "\t" << (*f).cpp_type << " " << (*f).name << ";\n";
+			if ((*f).ref) h << "\tNodeId " << (*f).name << "_ref;\n";
 		}
 
 		h << "};\n\n";

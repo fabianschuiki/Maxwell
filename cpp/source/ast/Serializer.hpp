@@ -18,11 +18,11 @@ class Node;
 class Serializer
 {
 public:
-	void encode(ostream& out, const NodeRef& node);
-	string encode(const NodeRef& node);
+	void encode(ostream& out, const NodePtr& node);
+	string encode(const NodePtr& node);
 
-	NodeRef decode(istream& in);
-	NodeRef decode(const string& str);
+	NodePtr decode(istream& in);
+	NodePtr decode(const string& str);
 };
 
 } // namespace ast

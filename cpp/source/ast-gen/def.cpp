@@ -7,18 +7,25 @@
  */
 void buildAST(Builder &node)
 {
+	Node& graph = node("@graph")
+		.attr("graphPrev", "&any");
+
 	node("FunctionDefinition")
+		.intf(graph)
 		.attr("name", "string")
 		.attr("in", "FuncArgTuple")
 		.attr("out", "FuncArgTuple")
 		.attr("body", "FuncBody");
 
 	node("FuncArgTuple")
+		.intf(graph)
 		.attr("args", "[FuncArg]");
 	node("FuncArg")
+		.intf(graph)
 		.attr("name", "string")
 		.attr("type", "string");
 
 	node("FuncBody")
+		.intf(graph)
 		.attr("stmts", "[Stmt]");
 }

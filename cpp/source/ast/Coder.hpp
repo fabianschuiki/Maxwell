@@ -15,18 +15,18 @@ class Node;
 class Encoder
 {
 public:
-	virtual void encode(const NodeRef& node) = 0;
+	virtual void encode(const NodePtr& node, bool ref = false) = 0;
 	virtual void encode(const string& str) = 0;
-	virtual void encode(const NodeVector& nodes) = 0;
+	virtual void encode(const NodeVector& nodes, bool ref = false) = 0;
 };
 
 /// Decoder interface.
 class Decoder
 {
 public:
-	virtual void decode(NodeRef& node) = 0;
+	virtual void decode(NodePtr& node, bool ref = false) = 0;
 	virtual void decode(string& str) = 0;
-	virtual void decode(NodeVector& nodes) = 0;
+	virtual void decode(NodeVector& nodes, bool ref = false) = 0;
 };
 
 } // namespace ast

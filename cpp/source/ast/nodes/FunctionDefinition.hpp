@@ -29,6 +29,23 @@ public:
 
 	virtual string getClassName() const { return "FunctionDefinition"; }
 
+	void setGraphPrev(const NodePtr& v)
+	{
+		if (v != graphPrev) {
+			modify();
+			graphPrev = v;
+			graphPrev_ref.clear();
+		}
+	}
+	const NodePtr& getGraphPrev()
+	{
+	if (!graphPrev_ref.empty()) {
+		graphPrev = resolveReference(graphPrev_ref);
+		graphPrev_ref.clear();
+	}
+		return graphPrev;
+	}
+
 	void setName(const string& v)
 	{
 		if (v != name) {
@@ -41,7 +58,7 @@ public:
 		return name;
 	}
 
-	void setIn(const NodeRef& v)
+	void setIn(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kFuncArgTuple)) {
 			throw runtime_error("'in' needs to be of kind {FuncArgTuple} or implement interface {}.");
@@ -51,12 +68,12 @@ public:
 			in = v;
 		}
 	}
-	const NodeRef& getIn()
+	const NodePtr& getIn()
 	{
 		return in;
 	}
 
-	void setOut(const NodeRef& v)
+	void setOut(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kFuncArgTuple)) {
 			throw runtime_error("'out' needs to be of kind {FuncArgTuple} or implement interface {}.");
@@ -66,12 +83,12 @@ public:
 			out = v;
 		}
 	}
-	const NodeRef& getOut()
+	const NodePtr& getOut()
 	{
 		return out;
 	}
 
-	void setBody(const NodeRef& v)
+	void setBody(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kFuncBody)) {
 			throw runtime_error("'body' needs to be of kind {FuncBody} or implement interface {}.");
@@ -81,7 +98,7 @@ public:
 			body = v;
 		}
 	}
-	const NodeRef& getBody()
+	const NodePtr& getBody()
 	{
 		return body;
 	}
@@ -91,6 +108,7 @@ public:
 		if (depth == 0) return "FunctionDefinition{…}";
 		stringstream str, b;
 		str << "FunctionDefinition{";
+		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << indent(this->graphPrev->describe(depth-1));
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
 		if (this->in) b << endl << "  \033[1min\033[0m = " << indent(this->in->describe(depth-1));
 		if (this->out) b << endl << "  \033[1mout\033[0m = " << indent(this->out->describe(depth-1));
@@ -103,6 +121,7 @@ public:
 
 	virtual void encode(Encoder& e)
 	{
+		e.encode(this->graphPrev, &graphPrev_ref);
 		e.encode(this->name);
 		e.encode(this->in);
 		e.encode(this->out);
@@ -111,6 +130,7 @@ public:
 
 	virtual void decode(Decoder& d)
 	{
+		d.decode(this->graphPrev, &graphPrev_ref);
 		d.decode(this->name);
 		d.decode(this->in);
 		d.decode(this->out);
@@ -120,17 +140,20 @@ public:
 	virtual void updateHierarchy(const NodeId& id, const weak_ptr<Repository>& repository = weak_ptr<Repository>(), const weak_ptr<Node>& parent = weak_ptr<Node>())
 	{
 		Node::updateHierarchy(id, repository, parent);
-		const NodeRef& self(shared_from_this());
+		const NodePtr& self(shared_from_this());
+		if (this->graphPrev) this->graphPrev->updateHierarchy(id + "graphPrev", repository, self);
 		if (this->in) this->in->updateHierarchy(id + "in", repository, self);
 		if (this->out) this->out->updateHierarchy(id + "out", repository, self);
 		if (this->body) this->body->updateHierarchy(id + "body", repository, self);
 	}
 
 protected:
+	NodePtr graphPrev;
+	NodeId graphPrev_ref;
 	string name;
-	NodeRef in;
-	NodeRef out;
-	NodeRef body;
+	NodePtr in;
+	NodePtr out;
+	NodePtr body;
 };
 
 } // namespace ast

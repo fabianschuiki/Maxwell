@@ -24,6 +24,7 @@ public:
 	string parent;
 
 	struct Field {
+		bool ref; // whether or not only a reference to the node should be generated
 		string name;
 		string type;
 		string cpp_type;
@@ -34,15 +35,29 @@ public:
 		vector<string> allowedInterfaces;
 	};
 	typedef vector<Field> Fields;
-	Fields children, attributes;
+	typedef set<const Node*> Interfaces;
+	Fields attributes;
+	Interfaces interfaces;
 
-	Node& child(string name, string type) { children.push_back(makeField(name, type)); return *this; }
 	Node& attr(string name, string type) { attributes.push_back(makeField(name, type)); return *this; }
+	Node& intf(const Node& interface) {
+		interfaces.insert(&interface);
+		for (Node::Fields::const_iterator it = interface.attributes.begin(); it != interface.attributes.end(); it++) {
+			attributes.push_back(*it);
+		}
+		return *this;
+	}
 
 private:
 	Field makeField(string name, string type)
 	{
 		Field f;
+		if (type.size() >= 1 && type[0] == '&') {
+			type = type.substr(1);
+			f.ref = true;
+		} else {
+			f.ref = false;
+		}
 		f.name = name;
 		f.type = type;
 		f.isString = false;
@@ -56,8 +71,10 @@ private:
 			f.cpp_type = "NodeVector";
 		} else {
 			f.isNode = true;
-			f.cpp_type = "NodeRef";
-			f.allowedNodes.push_back(type);
+			f.cpp_type = "NodePtr";
+			if (type != "any") {
+				f.allowedNodes.push_back(type);
+			}
 		}
 		return f;
 	}
@@ -68,13 +85,14 @@ class Builder
 public:
 	Node& operator() (const string& nodeName, const string& parentName = "Node")
 	{
-		Node &n = nodes[nodeName];
+		Node &n = (nodeName.size() >= 1 && nodeName[0] == '@' ? interfaces[nodeName] : nodes[nodeName]);
 		n.name = nodeName;
 		n.parent = parentName;
 		return n;
 	}
 	typedef map<string, Node> Nodes;
 	Nodes nodes;
+	Nodes interfaces;
 };
 
 typedef vector<string> Headers;

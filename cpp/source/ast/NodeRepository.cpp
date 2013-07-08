@@ -191,7 +191,7 @@ void NodeRepository::load(const NodeId& id)
 	// Load the node through the ast::Serializer.
 	std::ifstream f(p.c_str());
 	Serializer ser;
-	NodeRef node = ser.decode(f);
+	NodePtr node = ser.decode(f);
 	nodes[id] = node;
 	if (onNodeLoaded) onNodeLoaded(id, node);
 }

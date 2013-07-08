@@ -5,6 +5,7 @@
 #include <sstream>
 
 using ast::Node;
+using ast::NodePtr;
 using ast::NodeId;
 using ast::NodeVector;
 using ast::Repository;
@@ -140,4 +141,14 @@ string Node::describeVector(const NodeVector& nodes, int depth)
 		out << "\n";
 	out << "]";
 	return out.str();
+}
+
+NodePtr Node::resolveReference(const NodeId& id)
+{
+	std::cout << "Resolving reference " << id << "\n";
+	shared_ptr<Repository> repo(repository.lock());
+	if (!repo) {
+		throw std::runtime_error("Resolving reference to node '" + id.str() + "' without a repository to query for the instance.");
+	}
+	return repo->getNode(id);
 }

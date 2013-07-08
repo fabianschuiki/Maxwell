@@ -53,6 +53,9 @@ public:
 	/// Returns whether this id is empty.
 	bool empty() const { return root == 0; }
 
+	// Resets this id to empty.
+	void clear() { source = 0; root = 0; id.clear(); }
+
 	NodeId operator+(string s) const { return NodeId(source, root, id.empty() ? s : id + '.' + s); }
 	NodeId operator+(const char* s) const { return *this + string(s); }
 };
@@ -66,6 +69,9 @@ class Node : public boost::enable_shared_from_this<Node>
 {
 public:
 	Node();
+
+	/// Overridden by subclasses to indicate a node reference.
+	virtual bool isReference() { return false; }
 
 	/// Overridden by subclasses to indicate what type of node they are.
 	virtual bool isKindOf(Kind k) { return false; }
@@ -100,9 +106,19 @@ protected:
 	string indent(string in);
 
 	string describeVector(const vector<shared_ptr<Node> >& nodes, int depth = -1);
+	shared_ptr<Node> resolveReference(const NodeId& id);
 };
 
-typedef shared_ptr<Node> NodeRef;
-typedef vector<NodeRef> NodeVector;
+typedef shared_ptr<Node> NodePtr;
+typedef vector<NodePtr> NodeVector;
+
+/// A special subclass of Node that acts as a placeholder for another node.
+/*class NodeReference : public Node
+{
+public:
+	virtual string getClassName() const { throw std::runtime_error("Calling getClassName() on a NodeReference does not make sense."); }
+	virtual void encode(Encoder& e) { throw std::runtime_error("Calling encode() on a NodeReference does not make sense."); }
+	virtual void decode(Decoder& d) { throw std::runtime_error("Calling decode() on a NodeReference does not make sense."); }
+};*/
 
 } // namespace ast

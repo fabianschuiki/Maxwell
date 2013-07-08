@@ -29,6 +29,23 @@ public:
 
 	virtual string getClassName() const { return "FuncArg"; }
 
+	void setGraphPrev(const NodePtr& v)
+	{
+		if (v != graphPrev) {
+			modify();
+			graphPrev = v;
+			graphPrev_ref.clear();
+		}
+	}
+	const NodePtr& getGraphPrev()
+	{
+	if (!graphPrev_ref.empty()) {
+		graphPrev = resolveReference(graphPrev_ref);
+		graphPrev_ref.clear();
+	}
+		return graphPrev;
+	}
+
 	void setName(const string& v)
 	{
 		if (v != name) {
@@ -58,6 +75,7 @@ public:
 		if (depth == 0) return "FuncArg{…}";
 		stringstream str, b;
 		str << "FuncArg{";
+		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << indent(this->graphPrev->describe(depth-1));
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
 		if (!this->type.empty()) b << endl << "  \033[1mtype\033[0m = '\033[33m" << this->type << "\033[0m'";
 		string bs = b.str();
@@ -68,12 +86,14 @@ public:
 
 	virtual void encode(Encoder& e)
 	{
+		e.encode(this->graphPrev, &graphPrev_ref);
 		e.encode(this->name);
 		e.encode(this->type);
 	}
 
 	virtual void decode(Decoder& d)
 	{
+		d.decode(this->graphPrev, &graphPrev_ref);
 		d.decode(this->name);
 		d.decode(this->type);
 	}
@@ -81,10 +101,13 @@ public:
 	virtual void updateHierarchy(const NodeId& id, const weak_ptr<Repository>& repository = weak_ptr<Repository>(), const weak_ptr<Node>& parent = weak_ptr<Node>())
 	{
 		Node::updateHierarchy(id, repository, parent);
-		const NodeRef& self(shared_from_this());
+		const NodePtr& self(shared_from_this());
+		if (this->graphPrev) this->graphPrev->updateHierarchy(id + "graphPrev", repository, self);
 	}
 
 protected:
+	NodePtr graphPrev;
+	NodeId graphPrev_ref;
 	string name;
 	string type;
 };

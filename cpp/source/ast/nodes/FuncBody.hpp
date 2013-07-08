@@ -29,6 +29,23 @@ public:
 
 	virtual string getClassName() const { return "FuncBody"; }
 
+	void setGraphPrev(const NodePtr& v)
+	{
+		if (v != graphPrev) {
+			modify();
+			graphPrev = v;
+			graphPrev_ref.clear();
+		}
+	}
+	const NodePtr& getGraphPrev()
+	{
+	if (!graphPrev_ref.empty()) {
+		graphPrev = resolveReference(graphPrev_ref);
+		graphPrev_ref.clear();
+	}
+		return graphPrev;
+	}
+
 	void setStmts(const NodeVector& v)
 	{
 		if (v != stmts) {
@@ -46,6 +63,7 @@ public:
 		if (depth == 0) return "FuncBody{…}";
 		stringstream str, b;
 		str << "FuncBody{";
+		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << indent(this->graphPrev->describe(depth-1));
 		if (!this->stmts.empty()) b << endl << "  \033[1mstmts\033[0m = " << indent(describeVector(this->stmts, depth-1)) << "";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
@@ -55,18 +73,21 @@ public:
 
 	virtual void encode(Encoder& e)
 	{
+		e.encode(this->graphPrev, &graphPrev_ref);
 		e.encode(this->stmts);
 	}
 
 	virtual void decode(Decoder& d)
 	{
+		d.decode(this->graphPrev, &graphPrev_ref);
 		d.decode(this->stmts);
 	}
 
 	virtual void updateHierarchy(const NodeId& id, const weak_ptr<Repository>& repository = weak_ptr<Repository>(), const weak_ptr<Node>& parent = weak_ptr<Node>())
 	{
 		Node::updateHierarchy(id, repository, parent);
-		const NodeRef& self(shared_from_this());
+		const NodePtr& self(shared_from_this());
+		if (this->graphPrev) this->graphPrev->updateHierarchy(id + "graphPrev", repository, self);
 		for (int i = 0; i < this->stmts.size(); i++) {
 			char buf[32]; snprintf(buf, 31, "%i", i);
 			this->stmts[i]->updateHierarchy((id + "stmts") + buf, repository, self);
@@ -74,6 +95,8 @@ public:
 	}
 
 protected:
+	NodePtr graphPrev;
+	NodeId graphPrev_ref;
 	NodeVector stmts;
 };
 

@@ -24,9 +24,9 @@ public:
 	void flush();
 
 	// Node store.
-	NodeId addNode(int source, const NodeRef& node);
-	NodeId addNode(const string& source, const NodeRef& node);
-	NodeRef getNode(const NodeId& id);
+	NodeId addNode(int source, const NodePtr& node);
+	NodeId addNode(const string& source, const NodePtr& node);
+	NodePtr getNode(const NodeId& id);
 
 	// Source store.
 	int registerSource(const string& s);
@@ -41,7 +41,7 @@ protected:
 	/// Repository maintaining the nodes per source file.
 	scoped_ptr<NodeRepository> nodeRepo;
 
-	void nodeLoaded(const NodeId& id, const NodeRef& node);
+	void nodeLoaded(const NodeId& id, const NodePtr& node);
 };
 
 }

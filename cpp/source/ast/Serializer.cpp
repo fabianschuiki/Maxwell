@@ -8,7 +8,7 @@
 
 using ast::Serializer;
 using ast::Node;
-using ast::NodeRef;
+using ast::NodePtr;
 using ast::NodeVector;
 using ast::NodeFactory;
 using ast::Encoder;
@@ -29,12 +29,16 @@ public:
 	ostream& out;
 	EncoderImpl(ostream& o) : out(o) {}
 
-	virtual void encode(const NodeRef& node)
+	virtual void encode(const NodePtr& node, bool ref = false)
 	{
 		if (node) {
-			out << node->getClassName() << " { ";
-			node->encode(*this);
-			out << "} ";
+			if (ref) {
+				out << node->getId() << " ";
+			} else {
+				out << node->getClassName() << " { ";
+				node->encode(*this);
+				out << "} ";
+			}
 		} else {
 			out << "@ ";
 		}
@@ -49,7 +53,7 @@ public:
 		}
 	}
 
-	virtual void encode(const NodeVector& nodes)
+	virtual void encode(const NodeVector& nodes, bool ref = false)
 	{
 		if (nodes.empty()) {
 			out << "[] ";
@@ -62,7 +66,7 @@ public:
 				} else {
 					out << ", ";
 				}
-				encode(*it);
+				encode(*it, ref);
 			}
 			out << "] ";
 		}
@@ -79,7 +83,7 @@ public:
 	istream& in;
 	DecoderImpl(istream& i) : in(i) {}
 
-	virtual void decode(NodeRef& node)
+	virtual void decode(NodePtr& node, bool ref = false)
 	{
 		string className;
 		in >> className;
@@ -113,7 +117,7 @@ public:
 		}
 	}
 
-	virtual void decode(NodeVector& nodes)
+	virtual void decode(NodeVector& nodes, bool ref = false)
 	{
 		string rd;
 		in >> rd;
@@ -124,8 +128,8 @@ public:
 				throw std::runtime_error("Vector of nodes expected to commence with an opening bracket [, got '" + rd + "' instead.");
 			}
 			do {
-				NodeRef node;
-				decode(node);
+				NodePtr node;
+				decode(node, ref);
 				nodes.push_back(node);
 				in >> rd;
 			} while (rd == ",");
@@ -139,7 +143,7 @@ public:
 /**
  * @brief Serializes the given node to the given stream.
  */
-void Serializer::encode(ostream& out, const NodeRef& node)
+void Serializer::encode(ostream& out, const NodePtr& node)
 {
 	EncoderImpl enc(out);
 	enc.encode(node);
@@ -151,7 +155,7 @@ void Serializer::encode(ostream& out, const NodeRef& node)
  * Simply calls encode() with a stringstream and the node, then returns the
  * generated string.
  */
-string Serializer::encode(const NodeRef& node)
+string Serializer::encode(const NodePtr& node)
 {
 	stringstream s;
 	encode(s, node);
@@ -161,10 +165,10 @@ string Serializer::encode(const NodeRef& node)
 /**
  * @brief Unserializes a node from the given stream.
  */
-NodeRef Serializer::decode(istream& in)
+NodePtr Serializer::decode(istream& in)
 {
 	DecoderImpl dec(in);
-	NodeRef node;
+	NodePtr node;
 	dec.decode(node);
 	return node;
 }
@@ -175,7 +179,7 @@ NodeRef Serializer::decode(istream& in)
  * Simply calls decode() with a string stream and the node, then returns the
  * generated node.
  */
-NodeRef Serializer::decode(const string& str)
+NodePtr Serializer::decode(const string& str)
 {
 	stringstream s(str);
 	return decode(s);

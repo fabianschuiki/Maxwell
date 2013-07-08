@@ -15,7 +15,7 @@ using std::string;
 class NodeFactory
 {
 public:
-	static NodeRef make(const string& name)
+	static NodePtr make(const string& name)
 	{
 		size_t size = name.size();
 		// Func.*
@@ -23,22 +23,22 @@ public:
 			// FuncArg.*
 			if (size >= 7 && name[4] == 'A' && name[5] == 'r' && name[6] == 'g') {
 				// FuncArg
-				if (size == 7) return NodeRef(new FuncArg);
+				if (size == 7) return NodePtr(new FuncArg);
 				// FuncArgTuple.*
 				if (size >= 12 && name[7] == 'T' && name[8] == 'u' && name[9] == 'p' && name[10] == 'l' && name[11] == 'e') {
 					// FuncArgTuple
-					if (size == 12) return NodeRef(new FuncArgTuple);
+					if (size == 12) return NodePtr(new FuncArgTuple);
 				}
 			}
 			// FuncBody.*
 			if (size >= 8 && name[4] == 'B' && name[5] == 'o' && name[6] == 'd' && name[7] == 'y') {
 				// FuncBody
-				if (size == 8) return NodeRef(new FuncBody);
+				if (size == 8) return NodePtr(new FuncBody);
 			}
 			// FunctionDefinition.*
 			if (size >= 18 && name[4] == 't' && name[5] == 'i' && name[6] == 'o' && name[7] == 'n' && name[8] == 'D' && name[9] == 'e' && name[10] == 'f' && name[11] == 'i' && name[12] == 'n' && name[13] == 'i' && name[14] == 't' && name[15] == 'i' && name[16] == 'o' && name[17] == 'n') {
 				// FunctionDefinition
-				if (size == 18) return NodeRef(new FunctionDefinition);
+				if (size == 18) return NodePtr(new FunctionDefinition);
 			}
 		}
 		throw std::runtime_error("Node class name '" + name + "' not known to NodeFactory.");

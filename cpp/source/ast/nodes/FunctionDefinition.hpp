@@ -33,19 +33,18 @@ public:
 
 	void setGraphPrev(const NodePtr& v)
 	{
-		if (v != graphPrev) {
+		if (!v && graphPrev) {
 			modify();
-			graphPrev = v;
-			graphPrev_ref.clear();
+			graphPrev.reset();
+		}
+		if (!graphPrev || v->getId() != graphPrev.id) {
+			modify();
+			graphPrev.set(v);
 		}
 	}
 	const NodePtr& getGraphPrev()
 	{
-	if (!graphPrev_ref.empty()) {
-		graphPrev = resolveReference(graphPrev_ref);
-		graphPrev_ref.clear();
-	}
-		return graphPrev;
+		return graphPrev.get(repository);
 	}
 
 	void setName(const string& v)
@@ -110,7 +109,7 @@ public:
 		if (depth == 0) return "FunctionDefinition{…}";
 		stringstream str, b;
 		str << "FunctionDefinition{";
-		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << indent(this->graphPrev->describe(depth-1));
+		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "@" << this->graphPrev.id;
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
 		if (this->in) b << endl << "  \033[1min\033[0m = " << indent(this->in->describe(depth-1));
 		if (this->out) b << endl << "  \033[1mout\033[0m = " << indent(this->out->describe(depth-1));
@@ -123,7 +122,7 @@ public:
 
 	virtual void encode(Encoder& e)
 	{
-		e.encode(this->graphPrev, &graphPrev_ref);
+		e.encode(this->graphPrev);
 		e.encode(this->name);
 		e.encode(this->in);
 		e.encode(this->out);
@@ -132,7 +131,7 @@ public:
 
 	virtual void decode(Decoder& d)
 	{
-		d.decode(this->graphPrev, &graphPrev_ref);
+		d.decode(this->graphPrev);
 		d.decode(this->name);
 		d.decode(this->in);
 		d.decode(this->out);
@@ -142,7 +141,6 @@ public:
 	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
 	{
 		Node::updateHierarchy(id, repository, parent);
-		if (this->graphPrev) this->graphPrev->updateHierarchy(id + "graphPrev", repository, this);
 		if (this->in) this->in->updateHierarchy(id + "in", repository, this);
 		if (this->out) this->out->updateHierarchy(id + "out", repository, this);
 		if (this->body) this->body->updateHierarchy(id + "body", repository, this);
@@ -206,8 +204,7 @@ public:
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 
 protected:
-	NodePtr graphPrev;
-	NodeId graphPrev_ref;
+	NodeRef graphPrev;
 	string name;
 	NodePtr in;
 	NodePtr out;

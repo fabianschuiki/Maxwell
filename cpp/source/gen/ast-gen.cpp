@@ -373,23 +373,31 @@ int main(int argc, char *argv[])
 				h << "\t\t}\n";
 			}
 
-			h << "\t\tif (v != " << f.name << ") {\n";
-			h << "\t\t\tmodify();\n";
-			h << "\t\t\t" << f.name << " = v;\n";
 			if (f.ref) {
-				h << "\t\t\t" << f.name << "_ref.clear();\n";
+				h << "\t\tif (!v && " << f.name << ") {\n";
+				h << "\t\t\tmodify();\n";
+				h << "\t\t\t" << f.name << ".reset();\n";
+				h << "\t\t}\n";
+				h << "\t\tif (!" << f.name << " || v->getId() != " << f.name << ".id) {\n";
+			} else {
+				h << "\t\tif (v != " << f.name << ") {\n";
+			}
+			h << "\t\t\tmodify();\n";
+			if (f.ref) {
+				h << "\t\t\t" << f.name << ".set(v);\n";
+			} else {
+				h << "\t\t\t" << f.name << " = v;\n";
 			}
 			h << "\t\t}\n";
 			h << "\t}\n";
 
 			h << "\t" << ref << " get" << upper << "()\n\t{\n";
 			if (f.ref) {
-				h << "\tif (!" << f.name << "_ref.empty()) {\n";
-				h << "\t\t" << f.name << " = resolveReference(" << f.name << "_ref);\n";
-				h << "\t\t" << f.name << "_ref.clear();\n";
-				h << "\t}\n";
+				h << "\t\treturn " << f.name << ".get(repository);\n";
+			} else {
+				h << "\t\treturn " << f.name << ";\n";
 			}
-			h << "\t\treturn " << f.name << ";\n\t}\n\n";
+			h << "\t}\n\n";
 		}
 
 		// Generate the describe() function.
@@ -402,7 +410,13 @@ int main(int argc, char *argv[])
 			if (f.isString) {
 				h << "\t\tif (!this->"<<f.name<<".empty()) b << endl << \"  \\033[1m"<<f.name<<"\\033[0m = '\\033[33m\" << this->"<<f.name<<" << \"\\033[0m'\";\n";
 			} else if (f.isNode) {
-				h << "\t\tif (this->"<<f.name<<") b << endl << \"  \\033[1m"<<f.name<<"\\033[0m = \" << indent(this->"<<f.name<<"->describe(depth-1));\n";
+				h << "\t\tif (this->" << f.name << ")";
+				h << " b << endl << \"  \\033[1m"<<f.name<<"\\033[0m = \"";
+				if (f.ref) {
+					h << " << \"@\" << this->" << f.name << ".id;\n";
+				} else {
+					h << " << indent(this->"<<f.name<<"->describe(depth-1));\n";
+				}
 			} else if (f.isArray) {
 				h << "\t\tif (!this->"<<f.name<<".empty()) b << endl << \"  \\033[1m"<<f.name<<"\\033[0m = \" << indent(describeVector(this->"<<f.name<<", depth-1)) << \"\";\n";
 			}
@@ -416,18 +430,14 @@ int main(int argc, char *argv[])
 		// Generate the encode() function.
 		h << "\tvirtual void encode(Encoder& e)\n\t{\n";
 		for (Node::Fields::iterator f = node.attributes.begin(); f != node.attributes.end(); f++) {
-			h << "\t\te.encode(this->" << (*f).name;
-			if ((*f).ref) h << ", &" << (*f).name << "_ref";
-			h << ");\n";
+			h << "\t\te.encode(this->" << (*f).name << ");\n";
 		}
 		h << "\t}\n\n";
 
 		// Generate the decode() function.
 		h << "\tvirtual void decode(Decoder& d)\n\t{\n";
 		for (Node::Fields::iterator f = node.attributes.begin(); f != node.attributes.end(); f++) {
-			h << "\t\td.decode(this->" << (*f).name;
-			if ((*f).ref) h << ", &" << (*f).name << "_ref";
-			h << ");\n";
+			h << "\t\td.decode(this->" << (*f).name << ");\n";
 		}
 		h << "\t}\n\n";
 
@@ -436,7 +446,7 @@ int main(int argc, char *argv[])
 		h << "\t\t" << node.parent << "::updateHierarchy(id, repository, parent);\n";
 		for (Node::Fields::iterator fit = node.attributes.begin(); fit != node.attributes.end(); fit++) {
 			Node::Field& f = *fit;
-			if (f.isNode) {
+			if (f.isNode && !f.ref) {
 				h << "\t\tif (this->"<<f.name<<") this->"<<f.name<<"->updateHierarchy(id + \""<<f.name<<"\", repository, this);\n";
 			} else if (f.isArray) {
 				h << "\t\tfor (int i = 0; i < this->"<<f.name<<".size(); i++) {\n";
@@ -493,8 +503,11 @@ int main(int argc, char *argv[])
 
 		h << "protected:\n";
 		for (Node::Fields::iterator f = node.attributes.begin(); f != node.attributes.end(); f++) {
-			h << "\t" << (*f).cpp_type << " " << (*f).name << ";\n";
-			if ((*f).ref) h << "\tNodeId " << (*f).name << "_ref;\n";
+			if ((*f).ref) {
+				h << "\tNodeRef " << (*f).name << ";\n";
+			} else {
+				h << "\t" << (*f).cpp_type << " " << (*f).name << ";\n";
+			}
 		}
 		if (!node.interfaces.empty()) {
 			h << "\n\t// Interfaces\n";

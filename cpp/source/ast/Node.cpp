@@ -6,6 +6,7 @@
 
 using ast::Node;
 using ast::NodePtr;
+using ast::NodeRef;
 using ast::NodeId;
 using ast::NodeVector;
 using ast::Repository;
@@ -140,11 +141,51 @@ string Node::describeVector(const NodeVector& nodes, int depth)
 	return out.str();
 }
 
-NodePtr Node::resolveReference(const NodeId& id)
+/**
+ * @brief Returns the referenced node, resolving it if necessary.
+ */
+const NodePtr& NodeRef::get(Repository* repository)
 {
-	std::cout << "Resolving reference " << id << "\n";
-	if (!repository) {
-		throw std::runtime_error("Resolving reference to node '" + id.str() + "' without a repository to query for the instance.");
+	if (!resolved && !id.empty()) {
+		std::cout << "Resolving reference " << id << "\n";
+		if (!repository) {
+			throw std::runtime_error("Resolving reference to node '" + id.str() + "' without a repository to query for the instance.");
+		}
+		resolved = repository->getNode(id);
 	}
-	return repository->getNode(id);
+	return resolved;
+}
+
+/**
+ * @brief Sets the referenced node.
+ */
+void NodeRef::set(const NodePtr& node)
+{
+	if (resolved != node) {
+		resolved = node;
+		if (node) {
+			id = node->getId();
+		} else {
+			id.clear();
+		}
+	}
+}
+
+/**
+ * @brief Sets the referenced node's id.
+ */
+void NodeRef::set(const NodeId& id)
+{
+	if (this->id != id) {
+		this->id = id;
+		resolved.reset();
+	}
+}
+
+/**
+ * @brief Resets the reference to empty.
+ */
+void NodeRef::reset()
+{
+
 }

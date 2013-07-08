@@ -112,10 +112,33 @@ protected:
 	string indent(string in);
 
 	string describeVector(const vector<shared_ptr<Node> >& nodes, int depth = -1);
-	shared_ptr<Node> resolveReference(const NodeId& id);
 };
 
 typedef shared_ptr<Node> NodePtr;
 typedef vector<NodePtr> NodeVector;
+
+/**
+ * @brief Reference to another node in the repository.
+ *
+ * A NodeRef acts a special node wrapping a by-id-reference to another node
+ * in the NodeRef's repository. Concrete nodes should be aware of this class
+ * and transparently use get() to resolve the reference.
+ */
+class NodeRef
+{
+public:
+	NodeRef() {}
+	NodeRef(const NodeId& id) : id(id) {}
+
+	NodeId id;
+	NodePtr resolved;
+
+	const NodePtr& get(Repository* repository);
+	void set(const NodePtr& node);
+	void set(const NodeId& id);
+	void reset();
+	bool empty() const { return id.empty(); }
+	operator bool() const { return !id.empty(); }
+};
 
 } // namespace ast

@@ -33,19 +33,18 @@ public:
 
 	void setGraphPrev(const NodePtr& v)
 	{
-		if (v != graphPrev) {
+		if (!v && graphPrev) {
 			modify();
-			graphPrev = v;
-			graphPrev_ref.clear();
+			graphPrev.reset();
+		}
+		if (!graphPrev || v->getId() != graphPrev.id) {
+			modify();
+			graphPrev.set(v);
 		}
 	}
 	const NodePtr& getGraphPrev()
 	{
-	if (!graphPrev_ref.empty()) {
-		graphPrev = resolveReference(graphPrev_ref);
-		graphPrev_ref.clear();
-	}
-		return graphPrev;
+		return graphPrev.get(repository);
 	}
 
 	void setName(const string& v)
@@ -77,7 +76,7 @@ public:
 		if (depth == 0) return "FuncArg{…}";
 		stringstream str, b;
 		str << "FuncArg{";
-		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << indent(this->graphPrev->describe(depth-1));
+		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "@" << this->graphPrev.id;
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
 		if (!this->type.empty()) b << endl << "  \033[1mtype\033[0m = '\033[33m" << this->type << "\033[0m'";
 		string bs = b.str();
@@ -88,14 +87,14 @@ public:
 
 	virtual void encode(Encoder& e)
 	{
-		e.encode(this->graphPrev, &graphPrev_ref);
+		e.encode(this->graphPrev);
 		e.encode(this->name);
 		e.encode(this->type);
 	}
 
 	virtual void decode(Decoder& d)
 	{
-		d.decode(this->graphPrev, &graphPrev_ref);
+		d.decode(this->graphPrev);
 		d.decode(this->name);
 		d.decode(this->type);
 	}
@@ -103,7 +102,6 @@ public:
 	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
 	{
 		Node::updateHierarchy(id, repository, parent);
-		if (this->graphPrev) this->graphPrev->updateHierarchy(id + "graphPrev", repository, this);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -125,8 +123,7 @@ public:
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 
 protected:
-	NodePtr graphPrev;
-	NodeId graphPrev_ref;
+	NodeRef graphPrev;
 	string name;
 	string type;
 

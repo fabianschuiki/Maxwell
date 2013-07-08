@@ -9,6 +9,8 @@
 using ast::Serializer;
 using ast::Node;
 using ast::NodePtr;
+using ast::NodeRef;
+using ast::NodeId;
 using ast::NodeVector;
 using ast::NodeFactory;
 using ast::Encoder;
@@ -29,16 +31,21 @@ public:
 	ostream& out;
 	EncoderImpl(ostream& o) : out(o) {}
 
-	virtual void encode(const NodePtr& node, bool ref = false)
+	virtual void encode(const NodePtr& node)
 	{
 		if (node) {
-			if (ref) {
-				out << node->getId() << " ";
-			} else {
-				out << node->getClassName() << " { ";
-				node->encode(*this);
-				out << "} ";
-			}
+			out << node->getClassName() << " { ";
+			node->encode(*this);
+			out << "} ";
+		} else {
+			out << "@ ";
+		}
+	}
+
+	virtual void encode(const NodeRef& node)
+	{
+		if (node) {
+			out << node.id << " ";
 		} else {
 			out << "@ ";
 		}
@@ -53,7 +60,7 @@ public:
 		}
 	}
 
-	virtual void encode(const NodeVector& nodes, bool ref = false)
+	virtual void encode(const NodeVector& nodes)
 	{
 		if (nodes.empty()) {
 			out << "[] ";
@@ -66,7 +73,7 @@ public:
 				} else {
 					out << ", ";
 				}
-				encode(*it, ref);
+				encode(*it);
 			}
 			out << "] ";
 		}
@@ -83,17 +90,12 @@ public:
 	istream& in;
 	DecoderImpl(istream& i) : in(i) {}
 
-	virtual void decode(NodePtr& node, NodeId* ref = NULL)
+	virtual void decode(NodePtr& node)
 	{
 		string className;
 		in >> className;
 		if (className == "@") {
 			node.reset();
-		} else if (ref) {
-			string rd;
-			in >> rd;
-			node.reset();
-			*ref = NodeId(rd);
 		} else {
 			string rd;
 			in >> rd;
@@ -111,6 +113,17 @@ public:
 		}
 	}
 
+	virtual void decode(NodeRef& node)
+	{
+		string rd;
+		in >> rd;
+		if (rd == "@") {
+			node.reset();
+		} else {
+			node.set(NodeId(rd));
+		}
+	}
+
 	virtual void decode(string& str)
 	{
 		string rd;
@@ -122,7 +135,7 @@ public:
 		}
 	}
 
-	virtual void decode(NodeVector& nodes, NodeId* ref = NULL)
+	virtual void decode(NodeVector& nodes)
 	{
 		string rd;
 		in >> rd;
@@ -134,7 +147,7 @@ public:
 			}
 			do {
 				NodePtr node;
-				decode(node, ref);
+				decode(node);
 				nodes.push_back(node);
 				in >> rd;
 			} while (rd == ",");

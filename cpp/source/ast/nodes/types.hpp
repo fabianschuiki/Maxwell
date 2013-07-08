@@ -5,10 +5,12 @@ namespace ast {
 
 /// Node kinds that may be used to test whether a Node is of a given subclass.
 typedef enum {
+	kExprStmt,
 	kFuncArg,
 	kFuncArgTuple,
 	kFuncBody,
-	kFunctionDefinition
+	kFunctionDefinition,
+	kIdentifierExpr
 } Kind;
 
 } // namespace ast

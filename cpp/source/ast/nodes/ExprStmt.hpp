@@ -17,19 +17,19 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class FuncArg : public Node
+class ExprStmt : public Node
 {
 public:
-	FuncArg() : Node(),
+	ExprStmt() : Node(),
 		interfaceGraph(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kFuncArg;
+		return k == kExprStmt;
 	}
 
-	virtual string getClassName() const { return "FuncArg"; }
+	virtual string getClassName() const { return "ExprStmt"; }
 
 	void setGraphPrev(const NodePtr& v)
 	{
@@ -54,38 +54,25 @@ public:
 		return graphPrev.get(repository);
 	}
 
-	void setName(const string& v)
+	void setExpr(const NodePtr& v)
 	{
-		if (v != name) {
+		if (v != expr) {
 			modify();
-			name = v;
+			expr = v;
 		}
 	}
-	const string& getName()
+	const NodePtr& getExpr()
 	{
-		return name;
-	}
-
-	void setType(const string& v)
-	{
-		if (v != type) {
-			modify();
-			type = v;
-		}
-	}
-	const string& getType()
-	{
-		return type;
+		return expr;
 	}
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "FuncArg{…}";
+		if (depth == 0) return "ExprStmt{…}";
 		stringstream str, b;
-		str << "FuncArg{";
+		str << "ExprStmt{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
-		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
-		if (!this->type.empty()) b << endl << "  \033[1mtype\033[0m = '\033[33m" << this->type << "\033[0m'";
+		if (this->expr) b << endl << "  \033[1mexpr\033[0m = " << indent(this->expr->describe(depth-1));
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -95,35 +82,53 @@ public:
 	virtual void encode(Encoder& e)
 	{
 		e.encode(this->graphPrev);
-		e.encode(this->name);
-		e.encode(this->type);
+		e.encode(this->expr);
 	}
 
 	virtual void decode(Decoder& d)
 	{
 		d.decode(this->graphPrev);
-		d.decode(this->name);
-		d.decode(this->type);
+		d.decode(this->expr);
 	}
 
 	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
 	{
 		Node::updateHierarchy(id, repository, parent);
+		if (this->expr) this->expr->updateHierarchy(id + "expr", repository, this);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
 	{
 		size_t size = path.size();
-		// graphPrev.*
-		if (size >= 9 && path[0] == 'g' && path[1] == 'r' && path[2] == 'a' && path[3] == 'p' && path[4] == 'h' && path[5] == 'P' && path[6] == 'r' && path[7] == 'e' && path[8] == 'v') {
-			// graphPrev
-			if (size == 9) {
-				return getGraphPrev();
-			} else if (path[9] == '.') {
-				return getGraphPrev()->resolvePath(path.substr(10));
+		// .*
+		if (true) {
+			// expr.*
+			if (size >= 4 && path[0] == 'e' && path[1] == 'x' && path[2] == 'p' && path[3] == 'r') {
+				// expr
+				if (size == 4) {
+					return getExpr();
+				} else if (path[4] == '.') {
+					return getExpr()->resolvePath(path.substr(5));
+				}
+			}
+			// graphPrev.*
+			if (size >= 9 && path[0] == 'g' && path[1] == 'r' && path[2] == 'a' && path[3] == 'p' && path[4] == 'h' && path[5] == 'P' && path[6] == 'r' && path[7] == 'e' && path[8] == 'v') {
+				// graphPrev
+				if (size == 9) {
+					return getGraphPrev();
+				} else if (path[9] == '.') {
+					return getGraphPrev()->resolvePath(path.substr(10));
+				}
 			}
 		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
+	}
+
+	virtual NodeVector getChildren()
+	{
+		NodeVector v;
+		if (const NodePtr& n = this->getExpr()) v.push_back(n);
+		return v;
 	}
 
 	// Interfaces
@@ -131,11 +136,10 @@ public:
 
 protected:
 	NodeRef graphPrev;
-	string name;
-	string type;
+	NodePtr expr;
 
 	// Interfaces
-	GraphInterfaceImpl<FuncArg> interfaceGraph;
+	GraphInterfaceImpl<ExprStmt> interfaceGraph;
 };
 
 } // namespace ast

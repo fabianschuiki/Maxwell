@@ -47,8 +47,8 @@ typedef std::vector<shared_ptr<Node> > Nodes;
     int symbol;
 }
 
-%type <node> func_decl func_arg func_arg_tuple body
-%type <nodes> func_args
+%type <node> func_decl func_arg func_arg_tuple body stmt expr
+%type <nodes> func_args stmts
 
 %token <string> IDENTIFIER "identifier"
 %token <string> REAL "real number constant"
@@ -194,9 +194,35 @@ body  : LBRACE RBRACE {
           FuncBody *b = new FuncBody;
           $$ = b;
         }
-      | LBRACE root_stmts RBRACE {
+      | LBRACE stmts RBRACE {
           FuncBody *b = new FuncBody;
+          b->setStmts(*$2);
           $$ = b;
+          delete $2;
+        }
+      ;
+
+stmts : stmt {
+          $$ = new Nodes;
+          $$->push_back(shared_ptr<Node>($1));
+        }
+      | stmts stmt {
+          $1->push_back(shared_ptr<Node>($2));
+        }
+      ;
+
+stmt  : expr SEMICOLON {
+          ExprStmt *s = new ExprStmt;
+          s->setExpr(shared_ptr<Node>($1));
+          $$ = s;
+        }
+      ;
+
+expr  : IDENTIFIER {
+          IdentifierExpr *i = new IdentifierExpr;
+          i->setName(*$1);
+          $$ = i;
+          delete $1;
         }
       ;
 

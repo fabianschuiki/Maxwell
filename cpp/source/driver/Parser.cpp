@@ -563,13 +563,49 @@ namespace driver
 #line 197 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
           FuncBody *b = new FuncBody;
+          b->setStmts(*(yysemantic_stack_[(3) - (2)].nodes));
           (yyval.node) = b;
+          delete (yysemantic_stack_[(3) - (2)].nodes);
+        ;}
+    break;
+
+  case 27:
+#line 205 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+    {
+          (yyval.nodes) = new Nodes;
+          (yyval.nodes)->push_back(shared_ptr<Node>((yysemantic_stack_[(1) - (1)].node)));
+        ;}
+    break;
+
+  case 28:
+#line 209 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+    {
+          (yysemantic_stack_[(2) - (1)].nodes)->push_back(shared_ptr<Node>((yysemantic_stack_[(2) - (2)].node)));
+        ;}
+    break;
+
+  case 29:
+#line 214 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+    {
+          ExprStmt *s = new ExprStmt;
+          s->setExpr(shared_ptr<Node>((yysemantic_stack_[(2) - (1)].node)));
+          (yyval.node) = s;
+        ;}
+    break;
+
+  case 30:
+#line 221 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+    {
+          IdentifierExpr *i = new IdentifierExpr;
+          i->setName(*(yysemantic_stack_[(1) - (1)].string));
+          (yyval.node) = i;
+          delete (yysemantic_stack_[(1) - (1)].string);
         ;}
     break;
 
 
     /* Line 675 of lalr1.cc.  */
-#line 573 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
+#line 609 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
 	default: break;
       }
     YY_SYMBOL_PRINT ("-> $$ =", yyr1_[yyn], &yyval, &yyloc);
@@ -780,11 +816,11 @@ namespace driver
   const signed char
   Parser::yypact_[] =
   {
-        -3,     5,    27,    -3,   -14,   -14,     3,   -14,   -14,    11,
-       0,    18,    10,    -4,   -14,   -14,    22,   -14,     1,   -14,
-     -14,    20,    23,    10,   -14,   -14,    22,   -14,   -14,    21,
-     -14,    30,   -14,   -14,    23,   -14,     7,   -14,    22,   -14,
-     -14,   -14,    22,   -14,   -14
+         3,    19,    27,     3,   -14,   -14,    -1,   -14,   -14,    12,
+      10,     2,     0,    -5,   -14,   -14,    20,   -14,     7,   -14,
+     -14,   -14,     4,   -14,    13,    22,     0,   -14,   -14,    20,
+     -14,   -14,    16,   -14,    31,   -14,   -14,   -14,   -14,    22,
+     -14,    11,   -14,    20,   -14,   -14,   -14,    20,   -14,   -14
   };
 
   /* YYDEFACT[S] -- default rule to reduce with in state S when YYTABLE
@@ -795,25 +831,25 @@ namespace driver
   {
          0,     0,     0,     2,     4,     5,     0,     1,     3,    15,
        0,     0,     0,     0,    11,     6,     0,    10,     0,    13,
-      25,     0,     0,     0,     7,    18,     0,    16,    21,    17,
-      12,     0,    26,     8,     0,    24,     0,    23,     0,    14,
-       9,    19,     0,    20,    22
+      30,    25,     0,    27,     0,     0,     0,     7,    18,     0,
+      16,    21,    17,    12,     0,    26,    28,    29,     8,     0,
+      24,     0,    23,     0,    14,     9,    19,     0,    20,    22
   };
 
   /* YYPGOTO[NTERM-NUM].  */
   const signed char
   Parser::yypgoto_[] =
   {
-       -14,   -14,    24,    -1,   -14,    -8,   -14,    -9,    25,     2,
-     -14,   -14,    -5,   -13
+       -14,   -14,   -14,    32,   -14,    -8,   -14,    -9,    21,    -7,
+     -14,   -14,    -6,   -13,   -14,    17,   -14
   };
 
   /* YYDEFGOTO[NTERM-NUM].  */
   const signed char
   Parser::yydefgoto_[] =
   {
-        -1,     2,     3,     4,     5,    13,    18,    14,    35,    28,
-      29,    36,    37,    15
+        -1,     2,     3,     4,     5,    13,    18,    14,    40,    31,
+      32,    41,    42,    15,    22,    23,    24
   };
 
   /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -823,22 +859,22 @@ namespace driver
   const unsigned char
   Parser::yytable_[] =
   {
-        24,    19,     8,     9,    22,     1,     9,    11,     6,    33,
-      17,    30,    10,     9,    11,    34,    23,    41,    31,    10,
-       8,    40,    39,    12,    42,    25,     1,     7,     1,    16,
-      20,    26,    32,     9,    11,    21,    38,    44,     0,     0,
-      43,    27
+        27,    19,     9,     9,    25,    20,    11,    20,    10,    10,
+      11,     1,    38,     9,    21,    26,    35,    33,    39,    12,
+      17,    46,     6,    28,    34,    44,    45,     7,    47,    29,
+      16,    43,    37,    11,     9,     8,    48,    30,     0,    36,
+       0,    49
   };
 
   /* YYCHECK.  */
   const signed char
   Parser::yycheck_[] =
   {
-        13,    10,     3,     3,    12,     8,     3,    11,     3,    22,
-      10,    10,     9,     3,    11,    23,    20,    10,    17,     9,
-      21,    34,    31,    20,    17,     3,     8,     0,     8,    18,
-      12,     9,    12,     3,    11,    11,    15,    42,    -1,    -1,
-      38,    16
+        13,    10,     3,     3,    12,     3,    11,     3,     9,     9,
+      11,     8,    25,     3,    12,    20,    12,    10,    26,    20,
+      10,    10,     3,     3,    17,    34,    39,     0,    17,     9,
+      18,    15,    19,    11,     3,     3,    43,    16,    -1,    22,
+      -1,    47
   };
 
   /* STOS_[STATE-NUM] -- The (internal number of the) accessing
@@ -848,9 +884,9 @@ namespace driver
   {
          0,     8,    26,    27,    28,    29,     3,     0,    28,     3,
        9,    11,    20,    30,    32,    38,    18,    10,    31,    32,
-      12,    27,    30,    20,    38,     3,     9,    33,    34,    35,
-      10,    17,    12,    38,    30,    33,    36,    37,    15,    32,
-      38,    10,    17,    34,    37
+       3,    12,    39,    40,    41,    30,    20,    38,     3,     9,
+      33,    34,    35,    10,    17,    12,    40,    19,    38,    30,
+      33,    36,    37,    15,    32,    38,    10,    17,    34,    37
   };
 
 #if YYDEBUG
@@ -871,7 +907,8 @@ namespace driver
   {
          0,    25,    26,    27,    27,    28,    29,    29,    29,    29,
       30,    30,    30,    31,    31,    32,    32,    33,    34,    34,
-      35,    35,    36,    36,    37,    38,    38
+      35,    35,    36,    36,    37,    38,    38,    39,    39,    40,
+      41
   };
 
   /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -880,7 +917,8 @@ namespace driver
   {
          0,     2,     1,     2,     1,     1,     3,     4,     5,     6,
        2,     1,     3,     1,     3,     1,     3,     1,     1,     3,
-       3,     1,     3,     1,     1,     2,     3
+       3,     1,     3,     1,     1,     2,     3,     1,     2,     2,
+       1
   };
 
 #if YYDEBUG || YYERROR_VERBOSE || YYTOKEN_TABLE
@@ -899,7 +937,7 @@ namespace driver
   "\"/\"", "$accept", "root", "root_stmts", "root_stmt", "func_decl",
   "func_arg_tuple", "func_args", "func_arg", "type_expr",
   "nonunion_type_expr", "union_type_expr", "type_tuple_args",
-  "type_tuple_arg", "body", 0
+  "type_tuple_arg", "body", "stmts", "stmt", "expr", 0
   };
 #endif
 
@@ -916,7 +954,8 @@ namespace driver
       -1,     3,    18,    33,    -1,    35,    -1,     3,    -1,     9,
       36,    10,    -1,    35,    15,    34,    -1,    34,    -1,    36,
       17,    37,    -1,    37,    -1,    33,    -1,    11,    12,    -1,
-      11,    27,    12,    -1
+      11,    39,    12,    -1,    40,    -1,    39,    40,    -1,    41,
+      19,    -1,     3,    -1
   };
 
   /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
@@ -926,7 +965,8 @@ namespace driver
   {
          0,     0,     3,     5,     8,    10,    12,    16,    21,    27,
       34,    37,    39,    43,    45,    49,    51,    55,    57,    59,
-      63,    67,    69,    73,    75,    77,    80
+      63,    67,    69,    73,    75,    77,    80,    84,    86,    89,
+      92
   };
 
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
@@ -935,7 +975,8 @@ namespace driver
   {
          0,    99,    99,   102,   103,   106,   111,   117,   124,   131,
      141,   142,   149,   157,   161,   166,   172,   175,   178,   179,
-     182,   183,   186,   187,   190,   193,   197
+     182,   183,   186,   187,   190,   193,   197,   205,   209,   214,
+     221
   };
 
   // Print the state stack on the debug stream.
@@ -1012,7 +1053,7 @@ namespace driver
 
   const int Parser::yyeof_ = 0;
   const int Parser::yylast_ = 41;
-  const int Parser::yynnts_ = 14;
+  const int Parser::yynnts_ = 17;
   const int Parser::yyempty_ = -2;
   const int Parser::yyfinal_ = 7;
   const int Parser::yyterror_ = 1;
@@ -1024,7 +1065,7 @@ namespace driver
 
 } // namespace driver
 
-#line 204 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 230 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
  /*** Additional Code ***/
 
 void driver::Parser::error(const Parser::location_type& l, const std::string& m)

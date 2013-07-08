@@ -11,9 +11,16 @@ public:
 	virtual void process(const NodePtr& node);
 	BuildGraph(Repository& r) : Stage(r) {}
 
-/* Copyright © 2013 Fabian Schuiki */
+	/* Copyright © 2013 Fabian Schuiki */
+	NodePtr process(const NodePtr& node, const NodePtr& carry);
+};
 
-NodePtr process(const NodePtr& node, const NodePtr& carry);
+class BindIdentifiers : public Stage
+{
+public:
+	string getName() const { return "BindIdentifiers"; }
+	virtual void process(const NodePtr& node);
+	BindIdentifiers(Repository& r) : Stage(r) {}
 };
 
 } // namespace stage

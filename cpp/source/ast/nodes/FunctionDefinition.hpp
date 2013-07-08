@@ -42,6 +42,13 @@ public:
 			graphPrev.set(v);
 		}
 	}
+	void setGraphPrev(const NodeId& v)
+	{
+		if (v != graphPrev.id) {
+			modify();
+			graphPrev.set(v);
+		}
+	}
 	const NodePtr& getGraphPrev()
 	{
 		return graphPrev.get(repository);

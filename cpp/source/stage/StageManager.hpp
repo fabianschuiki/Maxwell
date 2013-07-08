@@ -17,10 +17,13 @@ public:
 	Repository& repository;
 
 	StageManager(Repository& r) : repository(r),
-		stageBuildGraph(r)
+		stageBuildGraph(r),
+		stageBindIdentifiers(r)
 	{
 		stageIndices["BuildGraph"] = stages.size();
 		stages.push_back(&stageBuildGraph);
+		stageIndices["BindIdentifiers"] = stages.size();
+		stages.push_back(&stageBindIdentifiers);
 	}
 
 	typedef vector<Stage*> Stages;
@@ -30,6 +33,7 @@ public:
 
 protected:
 	BuildGraph stageBuildGraph;
+	BindIdentifiers stageBindIdentifiers;
 };
 
 } // namespace stage

@@ -35,19 +35,26 @@ int main(int argc, char *argv[])
 		}
 
 		// Perform the next stage step.
+		bool failed = false;
 		for (int i = 0; i < mgr.stages.size(); i++) {
 			Stage& st = *mgr.stages[i];
 			for (int n = 0; n < ids.size(); n++) {
 				const NodeId& id = ids[n];
-				NodePtr node = repo.getNode(id);
-				cout << "Performing \033[36;1m" << st.getName() << "\033[0m on " << id << "\n";
-				st.process(node);
+				try {
+					NodePtr node = repo.getNode(id);
+					cout << "Performing \033[36;1m" << st.getName() << "\033[0m on " << id << "\n";
+					st.process(node);
+				} catch (std::exception &e) {
+					cerr << "*** \033[31;1munclassified error:\033[0m " << st.getName() << " " << id << ": " << e.what() << "\n";
+					failed = true;
+				}
 			}
 		}
+
+		return failed ? 1 : 0;
 
 	} catch (std::exception &e) {
 		cerr << "*** \033[31;1mexception:\033[0m " << e.what() << "\n";
 		return 1;
 	}
-	return 0;
 }

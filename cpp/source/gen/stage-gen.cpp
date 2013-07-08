@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
 	typedef vector<string> Stages;
 	Stages stages;
 	stages.push_back("BuildGraph");
+	stages.push_back("BindIdentifiers");
 
 	// Generate the stages header file.
 	boost::filesystem::path hpath = output;

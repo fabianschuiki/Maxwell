@@ -7,9 +7,11 @@
  */
 void buildAST(Builder &node)
 {
+	// Interfaces
 	Node& graph = node("@graph")
 		.attr("graphPrev", "&any");
 
+	// Nodes
 	node("FunctionDefinition")
 		.intf(graph)
 		.attr("name", "string")
@@ -27,5 +29,14 @@ void buildAST(Builder &node)
 
 	node("FuncBody")
 		.intf(graph)
-		.child("stmts", "[Stmt]");
+		.child("stmts", "[any]");
+
+	node("ExprStmt")
+		.intf(graph)
+		.child("expr", "any");
+
+	node("IdentifierExpr")
+		.intf(graph)
+		.attr("name", "string")
+		.attr("bindingTarget", "&any");
 }

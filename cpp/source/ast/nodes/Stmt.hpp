@@ -17,19 +17,19 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class FuncArg : public Node
+class Stmt : public Node
 {
 public:
-	FuncArg() : Node(),
+	Stmt() : Node(),
 		interfaceGraph(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kFuncArg;
+		return k == kStmt;
 	}
 
-	virtual string getClassName() const { return "FuncArg"; }
+	virtual string getClassName() const { return "Stmt"; }
 
 	void setGraphPrev(const NodePtr& v)
 	{
@@ -42,50 +42,17 @@ public:
 			graphPrev.set(v);
 		}
 	}
-	void setGraphPrev(const NodeId& v)
-	{
-		if (v != graphPrev.id) {
-			modify();
-			graphPrev.set(v);
-		}
-	}
 	const NodePtr& getGraphPrev()
 	{
 		return graphPrev.get(repository);
 	}
 
-	void setName(const string& v)
-	{
-		if (v != name) {
-			modify();
-			name = v;
-		}
-	}
-	const string& getName()
-	{
-		return name;
-	}
-
-	void setType(const string& v)
-	{
-		if (v != type) {
-			modify();
-			type = v;
-		}
-	}
-	const string& getType()
-	{
-		return type;
-	}
-
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "FuncArg{…}";
+		if (depth == 0) return "Stmt{…}";
 		stringstream str, b;
-		str << "FuncArg{";
+		str << "Stmt{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
-		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
-		if (!this->type.empty()) b << endl << "  \033[1mtype\033[0m = '\033[33m" << this->type << "\033[0m'";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -95,15 +62,11 @@ public:
 	virtual void encode(Encoder& e)
 	{
 		e.encode(this->graphPrev);
-		e.encode(this->name);
-		e.encode(this->type);
 	}
 
 	virtual void decode(Decoder& d)
 	{
 		d.decode(this->graphPrev);
-		d.decode(this->name);
-		d.decode(this->type);
 	}
 
 	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
@@ -131,11 +94,9 @@ public:
 
 protected:
 	NodeRef graphPrev;
-	string name;
-	string type;
 
 	// Interfaces
-	GraphInterfaceImpl<FuncArg> interfaceGraph;
+	GraphInterfaceImpl<Stmt> interfaceGraph;
 };
 
 } // namespace ast

@@ -68,7 +68,11 @@ void generateFactoryBody(std::ostream& out, NodeNames names, int indent, string 
 			if (common) {
 				common = false;
 				out << pad << "// " << commonPrefix << ".*\n";
-				out << pad << "if (size >= " << commonPrefix.size();
+				out << pad << "if (";
+				if (!commonPrefix.empty())
+					out << "size >= " << commonPrefix.size();
+				else
+					out << "true";
 				for (int i = basePrefix.size(); i < commonPrefix.size(); i++) {
 					out << " && name[" << i <<"] == '" << commonPrefix[i] << "'";
 				}
@@ -328,6 +332,7 @@ int main(int argc, char *argv[])
 		h << "#include \"../Node.hpp\"\n";
 		h << "#include \"../Coder.hpp\"\n";
 		h << "#include \"interfaces.hpp\"\n";
+		if (node.parent != "Node") h << "#include \"" << node.parent << ".hpp\"\n";
 		h << "#include <vector>\n#include <string>\n#include <sstream>\n#include <boost/smart_ptr.hpp>\n#include <stdexcept>\n\n";
 		h << "namespace ast {\n\n";
 		h << "using std::vector;\nusing std::string;\nusing std::stringstream;\nusing std::endl;\nusing std::runtime_error;\n\n";
@@ -390,6 +395,15 @@ int main(int argc, char *argv[])
 			}
 			h << "\t\t}\n";
 			h << "\t}\n";
+
+			if (f.ref) {
+				h << "\tvoid set" << upper << "(const NodeId& v)\n\t{\n";
+				h << "\t\tif (v != " << f.name << ".id) {\n";
+				h << "\t\t\tmodify();\n";
+				h << "\t\t\t" << f.name << ".set(v);\n";
+				h << "\t\t}\n";
+				h << "\t}\n";
+			}
 
 			h << "\t" << ref << " get" << upper << "()\n\t{\n";
 			if (f.ref) {

@@ -13,7 +13,7 @@ Repository::Repository(const boost::filesystem::path& path) : path(path)
 {
 	boost::filesystem::path p = path; p /= "sources";
 	sourceRepo.reset(new SourceRepository(p));
-	nodeRepo.reset(new NodeRepository(p));
+	nodeRepo.reset(new NodeRepository(path));
 }
 
 /**

@@ -7,6 +7,8 @@
 namespace driver {
 
 using boost::shared_ptr;
+using ast::NodeRef;
+using ast::NodeVector;
 
 class Driver
 {
@@ -42,10 +44,10 @@ public:
 	 */
 	class Scanner* lexer;
 
-	void add(const shared_ptr<ast::Node>& node)
-	{
-		std::cout << "parsed " << node->describe() << std::endl;
-	}
+	typedef NodeVector Nodes;
+	Nodes nodes;
+
+	void add(const NodeRef& node);
 };
 
 } // namespace driver

@@ -34,3 +34,8 @@ void Driver::error(const std::string& m)
 {
 	std::cerr << m << std::endl;
 }
+
+void Driver::add(const NodeRef& node)
+{
+	nodes.push_back(node);
+}

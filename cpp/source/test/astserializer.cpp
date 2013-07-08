@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
 
 	} catch (std::exception &e) {
 		cerr << "*** \033[31;1mexception:\033[0m " << e.what() << "\n";
+		return 1;
 	}
-	return 1;
+	return 0;
 }

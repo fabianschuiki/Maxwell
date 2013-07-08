@@ -102,7 +102,7 @@ void Repository::unregisterSource(int i)
  */
 void Repository::nodeLoaded(const NodeId& id, const NodePtr& node)
 {
-	node->updateHierarchy(id, shared_from_this());
+	node->updateHierarchy(id, this);
 }
 
 /**

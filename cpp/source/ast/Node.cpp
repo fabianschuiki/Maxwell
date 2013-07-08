@@ -81,7 +81,7 @@ Node::Node()
  *
  * Note that this may also alter the node's children.
  */
-void Node::updateHierarchy(const NodeId& id, const weak_ptr<Repository>& repository, const weak_ptr<Node>& parent)
+void Node::updateHierarchy(const NodeId& id, Repository* repository, Node* parent)
 {
 	this->id = id;
 	this->parent = parent;
@@ -95,15 +95,12 @@ void Node::updateHierarchy(const NodeId& id, const weak_ptr<Repository>& reposit
  */
 void Node::modify()
 {
-	shared_ptr<Repository> r(repository.lock());
-	shared_ptr<Node> p(parent.lock());
-
-	if (!modified && r) {
+	if (!modified && repository) {
 		modified = true;
-		if (p) {
-			p->modify();
+		if (parent) {
+			parent->modify();
 		} else {
-			r->markModified(id);
+			repository->markModified(id);
 		}
 	}
 }
@@ -146,9 +143,8 @@ string Node::describeVector(const NodeVector& nodes, int depth)
 NodePtr Node::resolveReference(const NodeId& id)
 {
 	std::cout << "Resolving reference " << id << "\n";
-	shared_ptr<Repository> repo(repository.lock());
-	if (!repo) {
+	if (!repository) {
 		throw std::runtime_error("Resolving reference to node '" + id.str() + "' without a repository to query for the instance.");
 	}
-	return repo->getNode(id);
+	return repository->getNode(id);
 }

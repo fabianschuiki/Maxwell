@@ -13,7 +13,6 @@ namespace ast {
 using std::string;
 using std::vector;
 using boost::shared_ptr;
-using boost::weak_ptr;
 
 class Encoder;
 class Decoder;
@@ -96,18 +95,18 @@ public:
 
 	/// Returns the node's id.
 	const NodeId& getId() const { return id; }
-	/// Returns the node's parent node, or an empty weak_ptr if this is a root node.
-	const weak_ptr<Node>& getParent() const { return parent; }
-	/// Returns the node's repository, or an empty weak_ptr if it is not part of one.
-	const weak_ptr<Repository>& getRepository() const { return repository; }
+	/// Returns the node's parent node, or an empty pointer if this is a root node.
+	const Node* getParent() const { return parent; }
+	/// Returns the node's repository, or an empty pointer if it is not part of one.
+	const Repository* getRepository() const { return repository; }
 
-	virtual void updateHierarchy(const NodeId& id, const weak_ptr<Repository>& repository = weak_ptr<Repository>(), const weak_ptr<Node>& parent = weak_ptr<Node>());
+	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL);
 
 protected:
 	bool modified;
 	NodeId id;
-	weak_ptr<Node> parent;
-	weak_ptr<Repository> repository;
+	Node* parent;
+	Repository* repository;
 
 	void modify();
 	string indent(string in);

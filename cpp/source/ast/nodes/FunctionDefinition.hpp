@@ -139,14 +139,13 @@ public:
 		d.decode(this->body);
 	}
 
-	virtual void updateHierarchy(const NodeId& id, const weak_ptr<Repository>& repository = weak_ptr<Repository>(), const weak_ptr<Node>& parent = weak_ptr<Node>())
+	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
 	{
 		Node::updateHierarchy(id, repository, parent);
-		const NodePtr& self(shared_from_this());
-		if (this->graphPrev) this->graphPrev->updateHierarchy(id + "graphPrev", repository, self);
-		if (this->in) this->in->updateHierarchy(id + "in", repository, self);
-		if (this->out) this->out->updateHierarchy(id + "out", repository, self);
-		if (this->body) this->body->updateHierarchy(id + "body", repository, self);
+		if (this->graphPrev) this->graphPrev->updateHierarchy(id + "graphPrev", repository, this);
+		if (this->in) this->in->updateHierarchy(id + "in", repository, this);
+		if (this->out) this->out->updateHierarchy(id + "out", repository, this);
+		if (this->body) this->body->updateHierarchy(id + "body", repository, this);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)

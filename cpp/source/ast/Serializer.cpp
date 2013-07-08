@@ -83,12 +83,17 @@ public:
 	istream& in;
 	DecoderImpl(istream& i) : in(i) {}
 
-	virtual void decode(NodePtr& node, bool ref = false)
+	virtual void decode(NodePtr& node, NodeId* ref = NULL)
 	{
 		string className;
 		in >> className;
 		if (className == "@") {
 			node.reset();
+		} else if (ref) {
+			string rd;
+			in >> rd;
+			node.reset();
+			*ref = NodeId(rd);
 		} else {
 			string rd;
 			in >> rd;
@@ -117,7 +122,7 @@ public:
 		}
 	}
 
-	virtual void decode(NodeVector& nodes, bool ref = false)
+	virtual void decode(NodeVector& nodes, NodeId* ref = NULL)
 	{
 		string rd;
 		in >> rd;

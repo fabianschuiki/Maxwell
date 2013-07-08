@@ -432,17 +432,16 @@ int main(int argc, char *argv[])
 		h << "\t}\n\n";
 
 		// Generate the updateHierarchy() function.
-		h << "\tvirtual void updateHierarchy(const NodeId& id, const weak_ptr<Repository>& repository = weak_ptr<Repository>(), const weak_ptr<Node>& parent = weak_ptr<Node>())\n\t{\n";
+		h << "\tvirtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)\n\t{\n";
 		h << "\t\t" << node.parent << "::updateHierarchy(id, repository, parent);\n";
-		h << "\t\tconst NodePtr& self(shared_from_this());\n";
 		for (Node::Fields::iterator fit = node.attributes.begin(); fit != node.attributes.end(); fit++) {
 			Node::Field& f = *fit;
 			if (f.isNode) {
-				h << "\t\tif (this->"<<f.name<<") this->"<<f.name<<"->updateHierarchy(id + \""<<f.name<<"\", repository, self);\n";
+				h << "\t\tif (this->"<<f.name<<") this->"<<f.name<<"->updateHierarchy(id + \""<<f.name<<"\", repository, this);\n";
 			} else if (f.isArray) {
 				h << "\t\tfor (int i = 0; i < this->"<<f.name<<".size(); i++) {\n";
 				h << "\t\t\tchar buf[32]; snprintf(buf, 31, \"%i\", i);\n";
-				h << "\t\t\tthis->"<<f.name<<"[i]->updateHierarchy((id + \""<<f.name<<"\") + buf, repository, self);\n";
+				h << "\t\t\tthis->"<<f.name<<"[i]->updateHierarchy((id + \""<<f.name<<"\") + buf, repository, this);\n";
 				h << "\t\t}\n";
 			}
 		}

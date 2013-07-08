@@ -100,11 +100,10 @@ public:
 		d.decode(this->type);
 	}
 
-	virtual void updateHierarchy(const NodeId& id, const weak_ptr<Repository>& repository = weak_ptr<Repository>(), const weak_ptr<Node>& parent = weak_ptr<Node>())
+	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
 	{
 		Node::updateHierarchy(id, repository, parent);
-		const NodePtr& self(shared_from_this());
-		if (this->graphPrev) this->graphPrev->updateHierarchy(id + "graphPrev", repository, self);
+		if (this->graphPrev) this->graphPrev->updateHierarchy(id + "graphPrev", repository, this);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)

@@ -36,9 +36,7 @@ void generateFactoryBody(std::ostream& out, NodeNames names, int indent, string 
 	string prefix;
 	string commonPrefix = basePrefix;
 	bool common = true;
-	int guard = 0;
 	do {
-		if (guard++ > 15) break;
 		NodeNames newNames;
 		NodeNames::iterator nambeg = names.begin();
 		bool singleMatch = false;
@@ -120,6 +118,95 @@ void makeNodesHeader(const boost::filesystem::path& output, const Builder& build
 	h << "\t}\n";
 	h << "};\n";
 	h << "\n} // namespace ast\n\n";
+}
+
+typedef set<string> FieldNames;
+void generateResolvePathBody(std::ostream& out, FieldNames names, const FieldNames& arrayFields, int indent, string basePrefix = "")
+{
+	string pad(indent, '\t');
+
+	// Extract the prefixes.
+	string prefix;
+	string commonPrefix = basePrefix;
+	bool common = true;
+	do {
+		NodeNames newNames;
+		NodeNames::iterator nambeg = names.begin();
+		bool singleMatch = false;
+		if ((*nambeg).size() == commonPrefix.size()) {
+			newNames.insert(*nambeg);
+			names.erase(nambeg);
+			prefix = commonPrefix;
+			singleMatch = true;
+		} else {
+			prefix = commonPrefix + (*nambeg)[commonPrefix.size()];
+			for (NodeNames::iterator it = names.begin(); it != names.end();) {
+				string name = *it;
+				NodeNames::iterator tmpit = it;
+				it++;
+				if (name.size() < prefix.size() || name.substr(0, prefix.size()) != prefix)
+					break;
+				newNames.insert(name);
+				names.erase(tmpit);
+			}
+		}
+		if (names.empty() && common && !singleMatch) {
+			commonPrefix = prefix;
+			names = newNames;
+		} else {
+			if (common) {
+				common = false;
+				out << pad << "// " << commonPrefix << ".*\n";
+				out << pad << "if (";
+				if (!commonPrefix.empty())
+					out << "size >= " << commonPrefix.size();
+				else
+					out << "true";
+				for (int i = basePrefix.size(); i < commonPrefix.size(); i++) {
+					out << " && path[" << i <<"] == '" << commonPrefix[i] << "'";
+				}
+				out << ") {\n";
+			}
+			//cout << "-> generating subbranch for " << commonPrefix << " with " << newNames.size() << " names, with " << names.size() << " names remaining\n";
+			if (newNames.size() > 1 || (newNames.size() == 1 && !singleMatch)) {
+				generateResolvePathBody(out, newNames, arrayFields, indent + 1, commonPrefix);
+			} else {
+				string name = *newNames.begin();
+				bool isArray = arrayFields.count(name);
+				string upper = (char)toupper(name[0]) + name.substr(1);
+
+				out << pad << "\t// " << name << "\n";
+				out << pad << "\tif (size == " << name.size() << ") {\n";
+				if (isArray) {
+					out << pad << "\t\tthrow std::runtime_error(\"Path '\" + path + \"' refers to an array instead of a concrete array element.\");\n";
+				} else {
+					out << pad << "\t\treturn get" << upper << "();\n";	
+				}
+				out << pad << "\t} else if (path[" << name.size() << "] == '.') {\n";
+				if (isArray) {
+					out << pad << "\t\tsize_t dot = path.find(\".\", " << name.size() + 1 << ");\n";
+					out << pad << "\t\tstring idx_str = path.substr(" << name.size() + 1 << ", dot);\n";
+					out << pad << "\t\tint idx = atoi(idx_str.c_str());\n";
+					out << pad << "\t\tconst NodeVector& a = get" << upper << "();\n";
+					out << pad << "\t\tif (idx < 0 || idx >= a.size()) {\n";
+					out << pad << "\t\t\tthrow std::runtime_error(\"Index into array '\" + path.substr(0, " << name.size() << ") + \"' is out of bounds.\");\n";
+					out << pad << "\t\t}\n";
+					out << pad << "\t\tif (dot == string::npos) {\n";
+					out << pad << "\t\t\treturn a[idx];\n";
+					out << pad << "\t\t} else {\n";
+					out << pad << "\t\t\treturn a[idx]->resolvePath(path.substr(dot + 1));\n";
+					out << pad << "\t\t}\n";
+				} else {
+					out << pad << "\t\treturn get" << upper << "()->resolvePath(path.substr(" << name.size() + 1 << "));\n";
+				}
+				out << pad << "\t}\n";
+			}
+		}
+	} while (!names.empty());
+	if (!common) {
+		out << pad << "}\n";
+	}
+	//cout << "common prefix = " << commonPrefix << "\n";
 }
 
 int main(int argc, char *argv[])
@@ -266,6 +353,23 @@ int main(int argc, char *argv[])
 			}
 		}
 		h << "\t}\n\n";
+
+		// Generate the resolvePath() function.
+		h << "\tvirtual const NodePtr& resolvePath(const string& path)\n\t{\n";
+		FieldNames fields, arrayFields;
+		for (Node::Fields::iterator fit = node.attributes.begin(); fit != node.attributes.end(); fit++) {
+			Node::Field& f = *fit;
+			if (f.isNode) {
+				fields.insert(f.name);
+			} else if (f.isArray) {
+				fields.insert(f.name);
+				arrayFields.insert(f.name);
+			}
+		}
+		h << "\t\tsize_t size = path.size();\n";
+		generateResolvePathBody(h, fields, arrayFields, 2);
+		h << "\t\tthrow std::runtime_error(\"Node path '\" + path + \"' does not point to a node or array of nodes.\");\n";
+		h << "\t}\n";
 
 		h << "protected:\n";
 		for (Node::Fields::iterator f = node.attributes.begin(); f != node.attributes.end(); f++) {

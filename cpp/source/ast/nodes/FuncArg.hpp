@@ -105,6 +105,20 @@ public:
 		if (this->graphPrev) this->graphPrev->updateHierarchy(id + "graphPrev", repository, self);
 	}
 
+	virtual const NodePtr& resolvePath(const string& path)
+	{
+		size_t size = path.size();
+		// graphPrev.*
+		if (size >= 9 && path[0] == 'g' && path[1] == 'r' && path[2] == 'a' && path[3] == 'p' && path[4] == 'h' && path[5] == 'P' && path[6] == 'r' && path[7] == 'e' && path[8] == 'v') {
+			// graphPrev
+			if (size == 9) {
+				return getGraphPrev();
+			} else if (path[9] == '.') {
+				return getGraphPrev()->resolvePath(path.substr(10));
+			}
+		}
+		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
+	}
 protected:
 	NodePtr graphPrev;
 	NodeId graphPrev_ref;

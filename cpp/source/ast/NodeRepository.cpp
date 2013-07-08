@@ -114,7 +114,8 @@ shared_ptr<Node> NodeRepository::getNode(const NodeId& id)
 	const shared_ptr<Node>& node = nodes[rootId]; // guaranteed to exist by the call to load()
 	if (id.isRoot())
 		return node;
-	throw std::runtime_error("getNode() with non-root node ids is not yet supported. Implement a path resolver in Node.cpp.");
+	else
+		return node->resolvePath(id.id);
 }
 
 /**

@@ -147,6 +147,50 @@ public:
 		if (this->body) this->body->updateHierarchy(id + "body", repository, self);
 	}
 
+	virtual const NodePtr& resolvePath(const string& path)
+	{
+		size_t size = path.size();
+		// .*
+		if (true) {
+			// body.*
+			if (size >= 4 && path[0] == 'b' && path[1] == 'o' && path[2] == 'd' && path[3] == 'y') {
+				// body
+				if (size == 4) {
+					return getBody();
+				} else if (path[4] == '.') {
+					return getBody()->resolvePath(path.substr(5));
+				}
+			}
+			// graphPrev.*
+			if (size >= 9 && path[0] == 'g' && path[1] == 'r' && path[2] == 'a' && path[3] == 'p' && path[4] == 'h' && path[5] == 'P' && path[6] == 'r' && path[7] == 'e' && path[8] == 'v') {
+				// graphPrev
+				if (size == 9) {
+					return getGraphPrev();
+				} else if (path[9] == '.') {
+					return getGraphPrev()->resolvePath(path.substr(10));
+				}
+			}
+			// in.*
+			if (size >= 2 && path[0] == 'i' && path[1] == 'n') {
+				// in
+				if (size == 2) {
+					return getIn();
+				} else if (path[2] == '.') {
+					return getIn()->resolvePath(path.substr(3));
+				}
+			}
+			// out.*
+			if (size >= 3 && path[0] == 'o' && path[1] == 'u' && path[2] == 't') {
+				// out
+				if (size == 3) {
+					return getOut();
+				} else if (path[3] == '.') {
+					return getOut()->resolvePath(path.substr(4));
+				}
+			}
+		}
+		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
+	}
 protected:
 	NodePtr graphPrev;
 	NodeId graphPrev_ref;

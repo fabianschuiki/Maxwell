@@ -87,6 +87,9 @@ public:
 	/// Overridden by subclasses to reconstruct their member variables.
 	virtual void decode(Decoder& d) = 0;
 
+	/// Overridden by subclasses to descend into the tree to lookup a node.
+	virtual const shared_ptr<Node>& resolvePath(const string& path) = 0;
+
 	/// Returns the node's id.
 	const NodeId& getId() const { return id; }
 	/// Returns the node's parent node, or an empty weak_ptr if this is a root node.

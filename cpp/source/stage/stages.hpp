@@ -4,13 +4,12 @@
 
 namespace stage {
 
-using std::runtime_error;
-
-class BuildGraphBase : public Stage
+class BuildGraph : public Stage
 {
 public:
 	string getName() const { return "BuildGraph"; }
-	BuildGraphBase(const shared_ptr<Repository>& r) : Stage(r) {}
+	virtual void process(const NodePtr& node);
+	BuildGraph(Repository& r) : Stage(r) {}
 };
 
 } // namespace stage

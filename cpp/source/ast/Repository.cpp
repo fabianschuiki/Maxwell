@@ -10,12 +10,19 @@ using ast::NodePtr;
 using ast::NodeId;
 using boost::scoped_ptr;
 
-Repository::Repository(const boost::filesystem::path& path) : path(path)
+Repository::Repository(const boost::filesystem::path& path) : path(path), builtinRepository(*this)
 {
 	boost::filesystem::path p = path; p /= "sources";
 	sourceRepo.reset(new SourceRepository(p));
 	nodeRepo.reset(new NodeRepository(path));
 	nodeRepo->onNodeLoaded = boost::bind(&Repository::nodeLoaded, this, _1, _2);
+
+	// Create the map of builtin nodes.
+	const BuiltinRepository::NodeNames& names = builtinRepository.getNodeNames();
+	for (BuiltinRepository::NodeNames::const_iterator it = names.begin(); it != names.end(); it++) {
+		NodeId id(0, it->first);
+		builtinNodes[id] = it->second;
+	}
 }
 
 /**
@@ -111,4 +118,14 @@ void Repository::nodeLoaded(const NodeId& id, const NodePtr& node)
 void Repository::markModified(const NodeId& id)
 {
 	nodeRepo->markModified(id);
+}
+
+/**
+ * @brief Returns a map of external nodes known to the node given by id.
+ */
+Repository::ExternalNames Repository::getExternalNamesForNodeId(const NodeId& id)
+{
+	ExternalNames nodes(builtinNodes);
+	// TODO: add the known nodes for that node
+	return nodes;
 }

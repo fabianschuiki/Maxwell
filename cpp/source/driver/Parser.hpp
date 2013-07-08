@@ -143,19 +143,20 @@ namespace driver
      SYMBOL = 262,
      FUNC = 263,
      VAR = 264,
-     LPAREN = 265,
-     RPAREN = 266,
-     LBRACE = 267,
-     RBRACE = 268,
-     LBRACK = 269,
-     RBRACK = 270,
-     PIPE = 271,
-     DOT = 272,
-     COMMA = 273,
-     COLON = 274,
-     SEMICOLON = 275,
-     RIGHTARROW = 276,
-     ASSIGN = 277
+     TYPE = 265,
+     LPAREN = 266,
+     RPAREN = 267,
+     LBRACE = 268,
+     RBRACE = 269,
+     LBRACK = 270,
+     RBRACK = 271,
+     PIPE = 272,
+     DOT = 273,
+     COMMA = 274,
+     COLON = 275,
+     SEMICOLON = 276,
+     RIGHTARROW = 277,
+     ASSIGN = 278
    };
 
     };

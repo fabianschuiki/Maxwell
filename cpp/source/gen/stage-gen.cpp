@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
 	Stages stages;
 	stages.push_back("BuildGraph");
 	stages.push_back("BindIdentifiers");
+	stages.push_back("BindNamedTypes");
 
 	// Generate the stages header file.
 	boost::filesystem::path hpath = output;

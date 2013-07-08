@@ -4,4 +4,5 @@ add_library(ast
 	SourceRepository.cpp
 	NodeRepository.cpp
 	Serializer.cpp
+	BuiltinRepository.cpp
 )

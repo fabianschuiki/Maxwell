@@ -48,7 +48,7 @@ typedef std::vector<shared_ptr<Node> > Nodes;
     int symbol;
 }
 
-%type <node> func_decl func_arg func_arg_tuple body stmt expr type_expr union_type_expr nonunion_type_expr
+%type <node> func_decl func_arg func_arg_tuple type_decl body stmt expr type_expr union_type_expr nonunion_type_expr
 %type <nodes> func_args stmts union_type_exprs
 %type <varDefExpr> var_expr
 
@@ -61,6 +61,7 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 
 %token FUNC "func keyword"
 %token VAR "var keyword"
+%token TYPE "type keyword"
 
 %token LPAREN "opening paranthesis ("
 %token RPAREN "closing paranthesis )"
@@ -109,6 +110,9 @@ root_stmts : root_stmts root_stmt
            ;
 
 root_stmt : func_decl {
+              driver.add(shared_ptr<Node>($1));
+            }
+          | type_decl {
               driver.add(shared_ptr<Node>($1));
             }
           ;
@@ -180,6 +184,14 @@ func_arg  : IDENTIFIER {
               a->setType(shared_ptr<Node>($2));
               $$ = a;
               delete $1;
+            }
+          ;
+
+type_decl : TYPE IDENTIFIER {
+              TypeDef *t = new TypeDef;
+              t->setName(*$2);
+              $$ = t;
+              delete $2;
             }
           ;
 

@@ -3,6 +3,7 @@
 #include "SourceRepository.hpp"
 #include "NodeRepository.hpp"
 #include "Node.hpp"
+#include "BuiltinRepository.hpp"
 #include <boost/smart_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/filesystem.hpp>
@@ -35,6 +36,9 @@ public:
 
 	void markModified(const NodeId& id);
 
+	typedef map<NodeId, string> ExternalNames;
+	ExternalNames getExternalNamesForNodeId(const NodeId& id);
+
 protected:
 	/// Repository maintaining the source file ids.
 	scoped_ptr<SourceRepository> sourceRepo;
@@ -42,6 +46,9 @@ protected:
 	scoped_ptr<NodeRepository> nodeRepo;
 
 	void nodeLoaded(const NodeId& id, const NodePtr& node);
+
+	BuiltinRepository builtinRepository;
+	ExternalNames builtinNodes;
 };
 
 }

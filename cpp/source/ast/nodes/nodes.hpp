@@ -9,6 +9,7 @@
 #include "FuncDef.hpp"
 #include "IdentifierExpr.hpp"
 #include "NamedType.hpp"
+#include "TypeDef.hpp"
 #include "UnionType.hpp"
 #include "VarDefExpr.hpp"
 
@@ -62,6 +63,11 @@ public:
 			if (size >= 9 && name[0] == 'N' && name[1] == 'a' && name[2] == 'm' && name[3] == 'e' && name[4] == 'd' && name[5] == 'T' && name[6] == 'y' && name[7] == 'p' && name[8] == 'e') {
 				// NamedType
 				if (size == 9) return NodePtr(new NamedType);
+			}
+			// TypeDef.*
+			if (size >= 7 && name[0] == 'T' && name[1] == 'y' && name[2] == 'p' && name[3] == 'e' && name[4] == 'D' && name[5] == 'e' && name[6] == 'f') {
+				// TypeDef
+				if (size == 7) return NodePtr(new TypeDef);
 			}
 			// UnionType.*
 			if (size >= 9 && name[0] == 'U' && name[1] == 'n' && name[2] == 'i' && name[3] == 'o' && name[4] == 'n' && name[5] == 'T' && name[6] == 'y' && name[7] == 'p' && name[8] == 'e') {

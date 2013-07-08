@@ -88,7 +88,8 @@ NodeId NodeRepository::addNode(int source, const shared_ptr<Node>& node)
 		snprintf(buf, 31, "%i", id.root);
 		boost::filesystem::path p = basePath;
 		p /= buf;
-		if (!boost::filesystem::exists(p)) break; // abort if this root does not exist
+		if (!boost::filesystem::exists(p) && !nodes.count(id))
+			break; // abort if this root does not exist
 	}
 
 	// Insert the node.

@@ -23,4 +23,12 @@ public:
 	BindIdentifiers(Repository& r) : Stage(r) {}
 };
 
+class BindNamedTypes : public Stage
+{
+public:
+	string getName() const { return "BindNamedTypes"; }
+	virtual void process(const NodePtr& node);
+	BindNamedTypes(Repository& r) : Stage(r) {}
+};
+
 } // namespace stage

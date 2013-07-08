@@ -10,6 +10,8 @@ void buildAST(Builder &node)
 	// Interfaces
 	Node& graph = node("@graph")
 		.attr("graphPrev", "&any");
+	/*Node& typeDef = node("@typeDef")
+		.attr("name", "string");*/
 
 	// Nodes
 	node("FuncDef")
@@ -18,29 +20,29 @@ void buildAST(Builder &node)
 		.child("in", "FuncArgTuple")
 		.child("out", "FuncArgTuple")
 		.child("body", "FuncBody");
-
 	node("FuncArgTuple")
 		.intf(graph)
 		.child("args", "[FuncArg]");
 	node("FuncArg")
 		.intf(graph)
 		.attr("name", "string")
-		.attr("type", "any");
-
+		.child("type", "any");
 	node("FuncBody")
 		.intf(graph)
 		.child("stmts", "[any]");
-
 	node("ExprStmt")
 		.intf(graph)
 		.child("expr", "any");
+
+	node("TypeDef")
+		.intf(graph)
+		.attr("name", "string");
 
 	// Expressions
 	node("IdentifierExpr")
 		.intf(graph)
 		.attr("name", "string")
 		.attr("bindingTarget", "&any");
-
 	node("VarDefExpr")
 		.intf(graph)
 		.attr("name", "string")
@@ -51,7 +53,7 @@ void buildAST(Builder &node)
 	node("NamedType")
 		.intf(graph)
 		.attr("name", "string")
-		.attr("definition", "any");
+		.attr("definition", "&any");
 	node("UnionType")
 		.intf(graph)
 		.child("types", "[any]");

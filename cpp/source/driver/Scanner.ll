@@ -72,6 +72,7 @@ typedef driver::Parser::token_type token_type;
  /* Keywords */
 "func"  return token::FUNC;
 "var"   return token::VAR;
+"type"  return token::TYPE;
 
 [a-zA-Z_][a-zA-Z0-9_]*    storeToken; return token::IDENTIFIER;
 [0-9]+"."[0-9]*           storeToken; return token::REAL;

@@ -139,6 +139,13 @@ public:
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
 
+	virtual NodeVector getChildren()
+	{
+		NodeVector v;
+		if (const NodePtr& n = this->getType()) v.push_back(n);
+		return v;
+	}
+
 	// Interfaces
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 

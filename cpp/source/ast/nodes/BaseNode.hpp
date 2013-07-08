@@ -4,12 +4,19 @@
 
 namespace ast {
 
+class CallInterface;
 class GraphInterface;
+class TypeInterface;
 
 class BaseNode
 {
 public:
-	virtual GraphInterface* asGraph() { throw std::runtime_error("Node does not implement Graph interface."); }
+	virtual CallInterface* asCall() { return NULL; }
+	CallInterface* needCall() { CallInterface* i = asCall(); if (i) return i; throw std::runtime_error("Node does not implement Call interface."); }
+	virtual GraphInterface* asGraph() { return NULL; }
+	GraphInterface* needGraph() { GraphInterface* i = asGraph(); if (i) return i; throw std::runtime_error("Node does not implement Graph interface."); }
+	virtual TypeInterface* asType() { return NULL; }
+	TypeInterface* needType() { TypeInterface* i = asType(); if (i) return i; throw std::runtime_error("Node does not implement Type interface."); }
 };
 
 } // namespace ast

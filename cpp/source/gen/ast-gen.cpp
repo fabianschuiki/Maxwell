@@ -293,7 +293,8 @@ void makeBaseNodeHeader(const boost::filesystem::path& output, const Builder& bu
 	h << "class BaseNode\n{\npublic:\n";
 	for (Builder::Nodes::const_iterator it = builder.interfaces.begin(); it != builder.interfaces.end(); it++) {
 		const Node& intf = it->second;
-		h << "\tvirtual " << intf.intfName << "* as" << intf.name << "() { throw std::runtime_error(\"Node does not implement " << intf.name << " interface.\"); }\n";
+		h << "\tvirtual " << intf.intfName << "* as" << intf.name << "() { return NULL; }\n";
+		h << "\t" << intf.intfName << "* need" << intf.name << "() { " << intf.intfName << "* i = as" << intf.name << "(); if (i) return i; throw std::runtime_error(\"Node does not implement " << intf.name << " interface.\"); }\n";
 	}
 	h << "};\n\n";
 	h << "} // namespace ast\n";

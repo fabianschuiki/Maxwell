@@ -4,6 +4,42 @@
 
 namespace ast {
 
+class CallInterface
+{
+public:
+	virtual Node* getNode() = 0;
+
+	virtual void setCallName(const string& v) = 0;
+	virtual const string& getCallName() = 0;
+
+	virtual void setCallArgs(const NodeVector& v) = 0;
+	virtual const NodeVector& getCallArgs() = 0;
+
+	virtual void setCallCandidates(const NodeVector& v) = 0;
+	virtual const NodeVector& getCallCandidates() = 0;
+
+	virtual void setSelectedCallCandidate(const NodePtr& v) = 0;
+	virtual const NodePtr& getSelectedCallCandidate() = 0;
+};
+template <typename T> class CallInterfaceImpl : public CallInterface
+{
+public:
+	Node* getNode() { return node; }
+	CallInterfaceImpl(T* node) : node(node) {}
+
+	const string& getCallName() { return node->getCallName(); }
+	void setCallName(const string& v) { node->setCallName(v); }
+	const NodeVector& getCallArgs() { return node->getCallArgs(); }
+	void setCallArgs(const NodeVector& v) { node->setCallArgs(v); }
+	const NodeVector& getCallCandidates() { return node->getCallCandidates(); }
+	void setCallCandidates(const NodeVector& v) { node->setCallCandidates(v); }
+	const NodePtr& getSelectedCallCandidate() { return node->getSelectedCallCandidate(); }
+	void setSelectedCallCandidate(const NodePtr& v) { node->setSelectedCallCandidate(v); }
+
+protected:
+	T* const node;
+};
+
 class GraphInterface
 {
 public:
@@ -20,6 +56,37 @@ public:
 
 	const NodePtr& getGraphPrev() { return node->getGraphPrev(); }
 	void setGraphPrev(const NodePtr& v) { node->setGraphPrev(v); }
+
+protected:
+	T* const node;
+};
+
+class TypeInterface
+{
+public:
+	virtual Node* getNode() = 0;
+
+	virtual void setPossibleType(const NodePtr& v) = 0;
+	virtual const NodePtr& getPossibleType() = 0;
+
+	virtual void setRequiredType(const NodePtr& v) = 0;
+	virtual const NodePtr& getRequiredType() = 0;
+
+	virtual void setActualType(const NodePtr& v) = 0;
+	virtual const NodePtr& getActualType() = 0;
+};
+template <typename T> class TypeInterfaceImpl : public TypeInterface
+{
+public:
+	Node* getNode() { return node; }
+	TypeInterfaceImpl(T* node) : node(node) {}
+
+	const NodePtr& getPossibleType() { return node->getPossibleType(); }
+	void setPossibleType(const NodePtr& v) { node->setPossibleType(v); }
+	const NodePtr& getRequiredType() { return node->getRequiredType(); }
+	void setRequiredType(const NodePtr& v) { node->setRequiredType(v); }
+	const NodePtr& getActualType() { return node->getActualType(); }
+	void setActualType(const NodePtr& v) { node->setActualType(v); }
 
 protected:
 	T* const node;

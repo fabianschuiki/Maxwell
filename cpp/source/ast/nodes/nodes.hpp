@@ -2,11 +2,15 @@
 #pragma once
 #include <string>
 
+#include "CallArg.hpp"
+#include "CallCandidate.hpp"
+#include "CallExpr.hpp"
 #include "ExprStmt.hpp"
 #include "FuncArg.hpp"
 #include "FuncArgTuple.hpp"
 #include "FuncBody.hpp"
 #include "FuncDef.hpp"
+#include "GenericType.hpp"
 #include "IdentifierExpr.hpp"
 #include "NamedType.hpp"
 #include "TypeDef.hpp"
@@ -26,6 +30,24 @@ public:
 		size_t size = name.size();
 		// .*
 		if (true) {
+			// Call.*
+			if (size >= 4 && name[0] == 'C' && name[1] == 'a' && name[2] == 'l' && name[3] == 'l') {
+				// CallArg.*
+				if (size >= 7 && name[4] == 'A' && name[5] == 'r' && name[6] == 'g') {
+					// CallArg
+					if (size == 7) return NodePtr(new CallArg);
+				}
+				// CallCandidate.*
+				if (size >= 13 && name[4] == 'C' && name[5] == 'a' && name[6] == 'n' && name[7] == 'd' && name[8] == 'i' && name[9] == 'd' && name[10] == 'a' && name[11] == 't' && name[12] == 'e') {
+					// CallCandidate
+					if (size == 13) return NodePtr(new CallCandidate);
+				}
+				// CallExpr.*
+				if (size >= 8 && name[4] == 'E' && name[5] == 'x' && name[6] == 'p' && name[7] == 'r') {
+					// CallExpr
+					if (size == 8) return NodePtr(new CallExpr);
+				}
+			}
 			// ExprStmt.*
 			if (size >= 8 && name[0] == 'E' && name[1] == 'x' && name[2] == 'p' && name[3] == 'r' && name[4] == 'S' && name[5] == 't' && name[6] == 'm' && name[7] == 't') {
 				// ExprStmt
@@ -53,6 +75,11 @@ public:
 					// FuncDef
 					if (size == 7) return NodePtr(new FuncDef);
 				}
+			}
+			// GenericType.*
+			if (size >= 11 && name[0] == 'G' && name[1] == 'e' && name[2] == 'n' && name[3] == 'e' && name[4] == 'r' && name[5] == 'i' && name[6] == 'c' && name[7] == 'T' && name[8] == 'y' && name[9] == 'p' && name[10] == 'e') {
+				// GenericType
+				if (size == 11) return NodePtr(new GenericType);
 			}
 			// IdentifierExpr.*
 			if (size >= 14 && name[0] == 'I' && name[1] == 'd' && name[2] == 'e' && name[3] == 'n' && name[4] == 't' && name[5] == 'i' && name[6] == 'f' && name[7] == 'i' && name[8] == 'e' && name[9] == 'r' && name[10] == 'E' && name[11] == 'x' && name[12] == 'p' && name[13] == 'r') {

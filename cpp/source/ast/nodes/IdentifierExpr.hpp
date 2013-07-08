@@ -21,7 +21,8 @@ class IdentifierExpr : public Node
 {
 public:
 	IdentifierExpr() : Node(),
-		interfaceGraph(this) {}
+		interfaceGraph(this),
+		interfaceType(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -52,6 +53,42 @@ public:
 	const NodePtr& getGraphPrev()
 	{
 		return graphPrev.get(repository);
+	}
+
+	void setPossibleType(const NodePtr& v)
+	{
+		if (v != possibleType) {
+			modify();
+			possibleType = v;
+		}
+	}
+	const NodePtr& getPossibleType()
+	{
+		return possibleType;
+	}
+
+	void setRequiredType(const NodePtr& v)
+	{
+		if (v != requiredType) {
+			modify();
+			requiredType = v;
+		}
+	}
+	const NodePtr& getRequiredType()
+	{
+		return requiredType;
+	}
+
+	void setActualType(const NodePtr& v)
+	{
+		if (v != actualType) {
+			modify();
+			actualType = v;
+		}
+	}
+	const NodePtr& getActualType()
+	{
+		return actualType;
 	}
 
 	void setName(const string& v)
@@ -95,6 +132,9 @@ public:
 		stringstream str, b;
 		str << "IdentifierExpr{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
+		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
+		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
+		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
 		if (this->bindingTarget) b << endl << "  \033[1mbindingTarget\033[0m = " << "\033[36m" << this->bindingTarget.id << "\033[0m";
 		string bs = b.str();
@@ -106,6 +146,9 @@ public:
 	virtual void encode(Encoder& e)
 	{
 		e.encode(this->graphPrev);
+		e.encode(this->possibleType);
+		e.encode(this->requiredType);
+		e.encode(this->actualType);
 		e.encode(this->name);
 		e.encode(this->bindingTarget);
 	}
@@ -113,6 +156,9 @@ public:
 	virtual void decode(Decoder& d)
 	{
 		d.decode(this->graphPrev);
+		d.decode(this->possibleType);
+		d.decode(this->requiredType);
+		d.decode(this->actualType);
 		d.decode(this->name);
 		d.decode(this->bindingTarget);
 	}
@@ -120,6 +166,9 @@ public:
 	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
 	{
 		Node::updateHierarchy(id, repository, parent);
+		if (this->possibleType) this->possibleType->updateHierarchy(id + "possibleType", repository, this);
+		if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
+		if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -127,6 +176,15 @@ public:
 		size_t size = path.size();
 		// .*
 		if (true) {
+			// actualType.*
+			if (size >= 10 && path[0] == 'a' && path[1] == 'c' && path[2] == 't' && path[3] == 'u' && path[4] == 'a' && path[5] == 'l' && path[6] == 'T' && path[7] == 'y' && path[8] == 'p' && path[9] == 'e') {
+				// actualType
+				if (size == 10) {
+					return getActualType();
+				} else if (path[10] == '.') {
+					return getActualType()->resolvePath(path.substr(11));
+				}
+			}
 			// bindingTarget.*
 			if (size >= 13 && path[0] == 'b' && path[1] == 'i' && path[2] == 'n' && path[3] == 'd' && path[4] == 'i' && path[5] == 'n' && path[6] == 'g' && path[7] == 'T' && path[8] == 'a' && path[9] == 'r' && path[10] == 'g' && path[11] == 'e' && path[12] == 't') {
 				// bindingTarget
@@ -145,20 +203,43 @@ public:
 					return getGraphPrev()->resolvePath(path.substr(10));
 				}
 			}
+			// possibleType.*
+			if (size >= 12 && path[0] == 'p' && path[1] == 'o' && path[2] == 's' && path[3] == 's' && path[4] == 'i' && path[5] == 'b' && path[6] == 'l' && path[7] == 'e' && path[8] == 'T' && path[9] == 'y' && path[10] == 'p' && path[11] == 'e') {
+				// possibleType
+				if (size == 12) {
+					return getPossibleType();
+				} else if (path[12] == '.') {
+					return getPossibleType()->resolvePath(path.substr(13));
+				}
+			}
+			// requiredType.*
+			if (size >= 12 && path[0] == 'r' && path[1] == 'e' && path[2] == 'q' && path[3] == 'u' && path[4] == 'i' && path[5] == 'r' && path[6] == 'e' && path[7] == 'd' && path[8] == 'T' && path[9] == 'y' && path[10] == 'p' && path[11] == 'e') {
+				// requiredType
+				if (size == 12) {
+					return getRequiredType();
+				} else if (path[12] == '.') {
+					return getRequiredType()->resolvePath(path.substr(13));
+				}
+			}
 		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
 
 	// Interfaces
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+	virtual TypeInterface* asType() { return &this->interfaceType; }
 
 protected:
 	NodeRef graphPrev;
+	NodePtr possibleType;
+	NodePtr requiredType;
+	NodePtr actualType;
 	string name;
 	NodeRef bindingTarget;
 
 	// Interfaces
 	GraphInterfaceImpl<IdentifierExpr> interfaceGraph;
+	TypeInterfaceImpl<IdentifierExpr> interfaceType;
 };
 
 } // namespace ast

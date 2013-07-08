@@ -10,8 +10,22 @@ void buildAST(Builder &node)
 	// Interfaces
 	Node& graph = node("@graph")
 		.attr("graphPrev", "&any");
-	/*Node& typeDef = node("@typeDef")
-		.attr("name", "string");*/
+	Node& call = node("@call")
+		.attr("callName", "string")
+		.child("callArgs", "[CallArg]")
+		.child("callCandidates", "[CallCandidate]")
+		.attr("selectedCallCandidate", "&CallCandidate");
+	Node& type = node("@type")
+		.attr("possibleType", "any")
+		.attr("requiredType", "any")
+		.attr("actualType", "any");
+
+	// Call Support.
+	node("CallArg")
+		.attr("name", "string")
+		.attr("expr", "&any");
+	node("CallCandidate")
+		.attr("func", "&any");
 
 	// Nodes
 	node("FuncDef")
@@ -41,15 +55,24 @@ void buildAST(Builder &node)
 	// Expressions
 	node("IdentifierExpr")
 		.intf(graph)
+		.intf(type)
 		.attr("name", "string")
 		.attr("bindingTarget", "&any");
 	node("VarDefExpr")
 		.intf(graph)
+		.intf(type)
 		.attr("name", "string")
 		.child("type", "any")
 		.child("initialExpr", "any");
+	node("CallExpr")
+		.intf(graph)
+		.intf(call)
+		.attr("name", "string")
+		.child("args", "[any]");
 
 	// Type Expressions
+	node("GenericType")
+		.intf(graph); // actually no required, but there's a bug ;)
 	node("NamedType")
 		.intf(graph)
 		.attr("name", "string")

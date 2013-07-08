@@ -31,4 +31,15 @@ public:
 	BindNamedTypes(Repository& r) : Stage(r) {}
 };
 
+class CalcPossibleTypes : public Stage
+{
+public:
+	string getName() const { return "CalcPossibleTypes"; }
+	virtual void process(const NodePtr& node);
+	CalcPossibleTypes(Repository& r) : Stage(r) {}
+
+	/* Copyright © 2013 Fabian Schuiki */
+	void processChildren(const NodePtr& node);
+};
+
 } // namespace stage

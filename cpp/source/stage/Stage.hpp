@@ -27,6 +27,8 @@ public:
 	virtual void process(const NodePtr& node) = 0;
 
 	Stage(Repository& r) : repository(r) {}
+
+	void addDependency(const NodePtr& node, string type) {}
 };
 
 }

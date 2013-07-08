@@ -19,7 +19,8 @@ public:
 	StageManager(Repository& r) : repository(r),
 		stageBuildGraph(r),
 		stageBindIdentifiers(r),
-		stageBindNamedTypes(r)
+		stageBindNamedTypes(r),
+		stageCalcPossibleTypes(r)
 	{
 		stageIndices["BuildGraph"] = stages.size();
 		stages.push_back(&stageBuildGraph);
@@ -27,6 +28,8 @@ public:
 		stages.push_back(&stageBindIdentifiers);
 		stageIndices["BindNamedTypes"] = stages.size();
 		stages.push_back(&stageBindNamedTypes);
+		stageIndices["CalcPossibleTypes"] = stages.size();
+		stages.push_back(&stageCalcPossibleTypes);
 	}
 
 	typedef vector<Stage*> Stages;
@@ -38,6 +41,7 @@ protected:
 	BuildGraph stageBuildGraph;
 	BindIdentifiers stageBindIdentifiers;
 	BindNamedTypes stageBindNamedTypes;
+	CalcPossibleTypes stageCalcPossibleTypes;
 };
 
 } // namespace stage

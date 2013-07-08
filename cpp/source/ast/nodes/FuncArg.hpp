@@ -2,6 +2,7 @@
 #pragma once
 #include "../Node.hpp"
 #include "../Coder.hpp"
+#include "interfaces.hpp"
 #include <vector>
 #include <string>
 #include <sstream>
@@ -19,7 +20,8 @@ using std::runtime_error;
 class FuncArg : public Node
 {
 public:
-	FuncArg() : Node() {}
+	FuncArg() : Node(),
+		interfaceGraph(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -119,11 +121,18 @@ public:
 		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
+
+	// Interfaces
+	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+
 protected:
 	NodePtr graphPrev;
 	NodeId graphPrev_ref;
 	string name;
 	string type;
+
+	// Interfaces
+	GraphInterfaceImpl<FuncArg> interfaceGraph;
 };
 
 } // namespace ast

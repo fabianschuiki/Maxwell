@@ -1,6 +1,7 @@
 /* Copyright © 2013 Fabian Schuiki */
 #include "Repository.hpp"
 #include <iostream>
+#include <boost/bind.hpp>
 
 using ast::Repository;
 using ast::SourceRepository;
@@ -14,6 +15,7 @@ Repository::Repository(const boost::filesystem::path& path) : path(path)
 	boost::filesystem::path p = path; p /= "sources";
 	sourceRepo.reset(new SourceRepository(p));
 	nodeRepo.reset(new NodeRepository(path));
+	nodeRepo->onNodeLoaded = boost::bind(&Repository::nodeLoaded, this, _1, _2);
 }
 
 /**

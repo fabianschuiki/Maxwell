@@ -1,6 +1,7 @@
 /* Copyright © 2013 Fabian Schuiki */
 #pragma once
 #include "nodes/types.hpp" // for ast::Kind
+#include "nodes/BaseNode.hpp" // for ast::BaseNode
 #include <string>
 #include <vector>
 #include <iostream>
@@ -65,7 +66,7 @@ std::ostream& operator<<(std::ostream& s, const NodeId& id);
 /**
  * @brief Base class for all nodes in the abstract syntax tree.
  */
-class Node : public boost::enable_shared_from_this<Node>
+class Node : public boost::enable_shared_from_this<Node>, public BaseNode
 {
 public:
 	Node();
@@ -86,6 +87,9 @@ public:
 	virtual void encode(Encoder& e) = 0;
 	/// Overridden by subclasses to reconstruct their member variables.
 	virtual void decode(Decoder& d) = 0;
+
+	/// Overridden by subclasses to contain child nodes.
+	virtual vector<shared_ptr<Node> > getChildren() { return vector<shared_ptr<Node> >(); }
 
 	/// Overridden by subclasses to descend into the tree to lookup a node.
 	virtual const shared_ptr<Node>& resolvePath(const string& path) = 0;
@@ -114,14 +118,5 @@ protected:
 
 typedef shared_ptr<Node> NodePtr;
 typedef vector<NodePtr> NodeVector;
-
-/// A special subclass of Node that acts as a placeholder for another node.
-/*class NodeReference : public Node
-{
-public:
-	virtual string getClassName() const { throw std::runtime_error("Calling getClassName() on a NodeReference does not make sense."); }
-	virtual void encode(Encoder& e) { throw std::runtime_error("Calling encode() on a NodeReference does not make sense."); }
-	virtual void decode(Decoder& d) { throw std::runtime_error("Calling decode() on a NodeReference does not make sense."); }
-};*/
 
 } // namespace ast

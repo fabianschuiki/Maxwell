@@ -2,6 +2,7 @@
 #pragma once
 #include "../Node.hpp"
 #include "../Coder.hpp"
+#include "interfaces.hpp"
 #include <vector>
 #include <string>
 #include <sstream>
@@ -19,7 +20,8 @@ using std::runtime_error;
 class FuncArgTuple : public Node
 {
 public:
-	FuncArgTuple() : Node() {}
+	FuncArgTuple() : Node(),
+		interfaceGraph(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -131,10 +133,24 @@ public:
 		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
+
+	virtual NodeVector getChildren()
+	{
+		NodeVector v;
+		v.insert(v.end(), this->args.begin(), this->args.end());
+		return v;
+	}
+
+	// Interfaces
+	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+
 protected:
 	NodePtr graphPrev;
 	NodeId graphPrev_ref;
 	NodeVector args;
+
+	// Interfaces
+	GraphInterfaceImpl<FuncArgTuple> interfaceGraph;
 };
 
 } // namespace ast

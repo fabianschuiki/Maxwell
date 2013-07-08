@@ -21,10 +21,12 @@ class Node
 {
 public:
 	string name;
+	string intfName;
 	string parent;
 
 	struct Field {
 		bool ref; // whether or not only a reference to the node should be generated
+		bool child;
 		string name;
 		string type;
 		string cpp_type;
@@ -35,11 +37,14 @@ public:
 		vector<string> allowedInterfaces;
 	};
 	typedef vector<Field> Fields;
+	typedef vector<int> FieldIndices;
 	typedef set<const Node*> Interfaces;
 	Fields attributes;
+	FieldIndices children;
 	Interfaces interfaces;
 
-	Node& attr(string name, string type) { attributes.push_back(makeField(name, type)); return *this; }
+	Node& attr(string name, string type, bool child = false) { attributes.push_back(makeField(name, type, child)); return *this; }
+	Node& child(string name, string type) { children.push_back(attributes.size()); return attr(name, type, true); }
 	Node& intf(const Node& interface) {
 		interfaces.insert(&interface);
 		for (Node::Fields::const_iterator it = interface.attributes.begin(); it != interface.attributes.end(); it++) {
@@ -49,9 +54,10 @@ public:
 	}
 
 private:
-	Field makeField(string name, string type)
+	Field makeField(string name, string type, bool child)
 	{
 		Field f;
+		f.child = child;
 		if (type.size() >= 1 && type[0] == '&') {
 			type = type.substr(1);
 			f.ref = true;
@@ -83,12 +89,21 @@ private:
 class Builder
 {
 public:
-	Node& operator() (const string& nodeName, const string& parentName = "Node")
+	Node& operator() (string nodeName, const string& parentName = "Node")
 	{
-		Node &n = (nodeName.size() >= 1 && nodeName[0] == '@' ? interfaces[nodeName] : nodes[nodeName]);
-		n.name = nodeName;
-		n.parent = parentName;
-		return n;
+		if (nodeName.size() >= 1 && nodeName[0] == '@') {
+			nodeName = (char)toupper(nodeName[1]) + nodeName.substr(2);
+			Node &n = interfaces[nodeName];
+			n.name = nodeName;
+			n.intfName = nodeName + "Interface";
+			n.parent = parentName;
+			return n;
+		} else {
+			Node &n = nodes[nodeName];
+			n.name = nodeName;
+			n.parent = parentName;
+			return n;
+		}
 	}
 	typedef map<string, Node> Nodes;
 	Nodes nodes;

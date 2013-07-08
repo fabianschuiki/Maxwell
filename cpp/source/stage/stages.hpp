@@ -10,6 +10,10 @@ public:
 	string getName() const { return "BuildGraph"; }
 	virtual void process(const NodePtr& node);
 	BuildGraph(Repository& r) : Stage(r) {}
+
+/* Copyright © 2013 Fabian Schuiki */
+
+NodePtr process(const NodePtr& node, const NodePtr& carry);
 };
 
 } // namespace stage

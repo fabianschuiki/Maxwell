@@ -13,13 +13,13 @@ void buildAST(Builder &node)
 	node("FunctionDefinition")
 		.intf(graph)
 		.attr("name", "string")
-		.attr("in", "FuncArgTuple")
-		.attr("out", "FuncArgTuple")
-		.attr("body", "FuncBody");
+		.child("in", "FuncArgTuple")
+		.child("out", "FuncArgTuple")
+		.child("body", "FuncBody");
 
 	node("FuncArgTuple")
 		.intf(graph)
-		.attr("args", "[FuncArg]");
+		.child("args", "[FuncArg]");
 	node("FuncArg")
 		.intf(graph)
 		.attr("name", "string")
@@ -27,5 +27,5 @@ void buildAST(Builder &node)
 
 	node("FuncBody")
 		.intf(graph)
-		.attr("stmts", "[Stmt]");
+		.child("stmts", "[Stmt]");
 }

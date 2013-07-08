@@ -1,5 +1,5 @@
 /* Copyright © 2013 Fabian Schuiki */
-#include "def.hpp"
+#include "ast-def.hpp"
 
 /**
  * This function generates all AST nodes. It is called by the main function

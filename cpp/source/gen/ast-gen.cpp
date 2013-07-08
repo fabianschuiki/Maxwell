@@ -5,7 +5,7 @@
  * syntax tree.
  */
 
-#include "def.hpp"
+#include "ast-def.hpp"
 
 void makeTypesHeader(const boost::filesystem::path& output, const Builder& builder)
 {

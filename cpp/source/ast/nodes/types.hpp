@@ -9,8 +9,11 @@ typedef enum {
 	kFuncArg,
 	kFuncArgTuple,
 	kFuncBody,
-	kFunctionDefinition,
-	kIdentifierExpr
+	kFuncDef,
+	kIdentifierExpr,
+	kNamedType,
+	kUnionType,
+	kVarDefExpr
 } Kind;
 
 } // namespace ast

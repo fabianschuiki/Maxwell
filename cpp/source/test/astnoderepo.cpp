@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 			cout << "\n";
 		} else {
 			// Add a node.
-			shared_ptr<FunctionDefinition> fdef(new FunctionDefinition);
+			shared_ptr<FuncDef> fdef(new FuncDef);
 			fdef->setName("main");
 			cout << "Adding node " << fdef->describe() << " to source #1... ";
 			NodeId id = repo.addNode(1, fdef);

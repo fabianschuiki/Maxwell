@@ -6,8 +6,11 @@
 #include "FuncArg.hpp"
 #include "FuncArgTuple.hpp"
 #include "FuncBody.hpp"
-#include "FunctionDefinition.hpp"
+#include "FuncDef.hpp"
 #include "IdentifierExpr.hpp"
+#include "NamedType.hpp"
+#include "UnionType.hpp"
+#include "VarDefExpr.hpp"
 
 namespace ast {
 
@@ -44,16 +47,31 @@ public:
 					// FuncBody
 					if (size == 8) return NodePtr(new FuncBody);
 				}
-				// FunctionDefinition.*
-				if (size >= 18 && name[4] == 't' && name[5] == 'i' && name[6] == 'o' && name[7] == 'n' && name[8] == 'D' && name[9] == 'e' && name[10] == 'f' && name[11] == 'i' && name[12] == 'n' && name[13] == 'i' && name[14] == 't' && name[15] == 'i' && name[16] == 'o' && name[17] == 'n') {
-					// FunctionDefinition
-					if (size == 18) return NodePtr(new FunctionDefinition);
+				// FuncDef.*
+				if (size >= 7 && name[4] == 'D' && name[5] == 'e' && name[6] == 'f') {
+					// FuncDef
+					if (size == 7) return NodePtr(new FuncDef);
 				}
 			}
 			// IdentifierExpr.*
 			if (size >= 14 && name[0] == 'I' && name[1] == 'd' && name[2] == 'e' && name[3] == 'n' && name[4] == 't' && name[5] == 'i' && name[6] == 'f' && name[7] == 'i' && name[8] == 'e' && name[9] == 'r' && name[10] == 'E' && name[11] == 'x' && name[12] == 'p' && name[13] == 'r') {
 				// IdentifierExpr
 				if (size == 14) return NodePtr(new IdentifierExpr);
+			}
+			// NamedType.*
+			if (size >= 9 && name[0] == 'N' && name[1] == 'a' && name[2] == 'm' && name[3] == 'e' && name[4] == 'd' && name[5] == 'T' && name[6] == 'y' && name[7] == 'p' && name[8] == 'e') {
+				// NamedType
+				if (size == 9) return NodePtr(new NamedType);
+			}
+			// UnionType.*
+			if (size >= 9 && name[0] == 'U' && name[1] == 'n' && name[2] == 'i' && name[3] == 'o' && name[4] == 'n' && name[5] == 'T' && name[6] == 'y' && name[7] == 'p' && name[8] == 'e') {
+				// UnionType
+				if (size == 9) return NodePtr(new UnionType);
+			}
+			// VarDefExpr.*
+			if (size >= 10 && name[0] == 'V' && name[1] == 'a' && name[2] == 'r' && name[3] == 'D' && name[4] == 'e' && name[5] == 'f' && name[6] == 'E' && name[7] == 'x' && name[8] == 'p' && name[9] == 'r') {
+				// VarDefExpr
+				if (size == 10) return NodePtr(new VarDefExpr);
 			}
 		}
 		throw std::runtime_error("Node class name '" + name + "' not known to NodeFactory.");

@@ -33,12 +33,12 @@ void BindIdentifiers::process(const NodePtr& node)
 			}
 
 			// Bind to variable definitions.
-			/*if (VarDefExpr *var = dynamic_cast<VarDefExpr*>(current.get())) {
+			if (VarDefExpr *var = dynamic_cast<VarDefExpr*>(current.get())) {
 				if (var->getName() == name) {
 					target = current->getId();
 					break;
 				}
-			}*/
+			}
 
 			current = current->asGraph()->getGraphPrev();
 		}

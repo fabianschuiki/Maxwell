@@ -118,11 +118,12 @@ namespace driver
     Node *node;
     std::string *string;
     Nodes *nodes;
+    VarDefExpr *varDefExpr;
     int token;
     int symbol;
 }
 /* Line 303 of lalr1.cc.  */
-#line 126 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.hpp"
+#line 127 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.hpp"
 	;
 #else
     typedef YYSTYPE semantic_type;
@@ -141,18 +142,20 @@ namespace driver
      STRING_LITERAL = 261,
      SYMBOL = 262,
      FUNC = 263,
-     LPAREN = 264,
-     RPAREN = 265,
-     LBRACE = 266,
-     RBRACE = 267,
-     LBRACK = 268,
-     RBRACK = 269,
-     PIPE = 270,
-     DOT = 271,
-     COMMA = 272,
-     COLON = 273,
-     SEMICOLON = 274,
-     RIGHTARROW = 275
+     VAR = 264,
+     LPAREN = 265,
+     RPAREN = 266,
+     LBRACE = 267,
+     RBRACE = 268,
+     LBRACK = 269,
+     RBRACK = 270,
+     PIPE = 271,
+     DOT = 272,
+     COMMA = 273,
+     COLON = 274,
+     SEMICOLON = 275,
+     RIGHTARROW = 276,
+     ASSIGN = 277
    };
 
     };
@@ -275,7 +278,7 @@ namespace driver
     /// For each rule, the index of the first RHS symbol in \a yyrhs_.
     static const unsigned char yyprhs_[];
     /// For each rule, its source line number.
-    static const unsigned char yyrline_[];
+    static const unsigned short int yyrline_[];
     /// For each scanner token number, its symbol number.
     static const unsigned short int yytoken_number_[];
     /// Report on the debug stream that the rule \a r is going to be reduced.

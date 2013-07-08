@@ -17,19 +17,19 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class FuncDef : public Node
+class VarDefExpr : public Node
 {
 public:
-	FuncDef() : Node(),
+	VarDefExpr() : Node(),
 		interfaceGraph(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kFuncDef;
+		return k == kVarDefExpr;
 	}
 
-	virtual string getClassName() const { return "FuncDef"; }
+	virtual string getClassName() const { return "VarDefExpr"; }
 
 	void setGraphPrev(const NodePtr& v)
 	{
@@ -66,61 +66,39 @@ public:
 		return name;
 	}
 
-	void setIn(const NodePtr& v)
+	void setType(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kFuncArgTuple)) {
-			throw runtime_error("'in' needs to be of kind {FuncArgTuple} or implement interface {}.");
-		}
-		if (v != in) {
+		if (v != type) {
 			modify();
-			in = v;
+			type = v;
 		}
 	}
-	const NodePtr& getIn()
+	const NodePtr& getType()
 	{
-		return in;
+		return type;
 	}
 
-	void setOut(const NodePtr& v)
+	void setInitialExpr(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kFuncArgTuple)) {
-			throw runtime_error("'out' needs to be of kind {FuncArgTuple} or implement interface {}.");
-		}
-		if (v != out) {
+		if (v != initialExpr) {
 			modify();
-			out = v;
+			initialExpr = v;
 		}
 	}
-	const NodePtr& getOut()
+	const NodePtr& getInitialExpr()
 	{
-		return out;
-	}
-
-	void setBody(const NodePtr& v)
-	{
-		if (v && !v->isKindOf(kFuncBody)) {
-			throw runtime_error("'body' needs to be of kind {FuncBody} or implement interface {}.");
-		}
-		if (v != body) {
-			modify();
-			body = v;
-		}
-	}
-	const NodePtr& getBody()
-	{
-		return body;
+		return initialExpr;
 	}
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "FuncDef{…}";
+		if (depth == 0) return "VarDefExpr{…}";
 		stringstream str, b;
-		str << "FuncDef{";
+		str << "VarDefExpr{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
-		if (this->in) b << endl << "  \033[1min\033[0m = " << indent(this->in->describe(depth-1));
-		if (this->out) b << endl << "  \033[1mout\033[0m = " << indent(this->out->describe(depth-1));
-		if (this->body) b << endl << "  \033[1mbody\033[0m = " << indent(this->body->describe(depth-1));
+		if (this->type) b << endl << "  \033[1mtype\033[0m = " << indent(this->type->describe(depth-1));
+		if (this->initialExpr) b << endl << "  \033[1minitialExpr\033[0m = " << indent(this->initialExpr->describe(depth-1));
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -131,26 +109,23 @@ public:
 	{
 		e.encode(this->graphPrev);
 		e.encode(this->name);
-		e.encode(this->in);
-		e.encode(this->out);
-		e.encode(this->body);
+		e.encode(this->type);
+		e.encode(this->initialExpr);
 	}
 
 	virtual void decode(Decoder& d)
 	{
 		d.decode(this->graphPrev);
 		d.decode(this->name);
-		d.decode(this->in);
-		d.decode(this->out);
-		d.decode(this->body);
+		d.decode(this->type);
+		d.decode(this->initialExpr);
 	}
 
 	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
 	{
 		Node::updateHierarchy(id, repository, parent);
-		if (this->in) this->in->updateHierarchy(id + "in", repository, this);
-		if (this->out) this->out->updateHierarchy(id + "out", repository, this);
-		if (this->body) this->body->updateHierarchy(id + "body", repository, this);
+		if (this->type) this->type->updateHierarchy(id + "type", repository, this);
+		if (this->initialExpr) this->initialExpr->updateHierarchy(id + "initialExpr", repository, this);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -158,15 +133,6 @@ public:
 		size_t size = path.size();
 		// .*
 		if (true) {
-			// body.*
-			if (size >= 4 && path[0] == 'b' && path[1] == 'o' && path[2] == 'd' && path[3] == 'y') {
-				// body
-				if (size == 4) {
-					return getBody();
-				} else if (path[4] == '.') {
-					return getBody()->resolvePath(path.substr(5));
-				}
-			}
 			// graphPrev.*
 			if (size >= 9 && path[0] == 'g' && path[1] == 'r' && path[2] == 'a' && path[3] == 'p' && path[4] == 'h' && path[5] == 'P' && path[6] == 'r' && path[7] == 'e' && path[8] == 'v') {
 				// graphPrev
@@ -176,22 +142,22 @@ public:
 					return getGraphPrev()->resolvePath(path.substr(10));
 				}
 			}
-			// in.*
-			if (size >= 2 && path[0] == 'i' && path[1] == 'n') {
-				// in
-				if (size == 2) {
-					return getIn();
-				} else if (path[2] == '.') {
-					return getIn()->resolvePath(path.substr(3));
+			// initialExpr.*
+			if (size >= 11 && path[0] == 'i' && path[1] == 'n' && path[2] == 'i' && path[3] == 't' && path[4] == 'i' && path[5] == 'a' && path[6] == 'l' && path[7] == 'E' && path[8] == 'x' && path[9] == 'p' && path[10] == 'r') {
+				// initialExpr
+				if (size == 11) {
+					return getInitialExpr();
+				} else if (path[11] == '.') {
+					return getInitialExpr()->resolvePath(path.substr(12));
 				}
 			}
-			// out.*
-			if (size >= 3 && path[0] == 'o' && path[1] == 'u' && path[2] == 't') {
-				// out
-				if (size == 3) {
-					return getOut();
-				} else if (path[3] == '.') {
-					return getOut()->resolvePath(path.substr(4));
+			// type.*
+			if (size >= 4 && path[0] == 't' && path[1] == 'y' && path[2] == 'p' && path[3] == 'e') {
+				// type
+				if (size == 4) {
+					return getType();
+				} else if (path[4] == '.') {
+					return getType()->resolvePath(path.substr(5));
 				}
 			}
 		}
@@ -201,9 +167,8 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		if (const NodePtr& n = this->getIn()) v.push_back(n);
-		if (const NodePtr& n = this->getOut()) v.push_back(n);
-		if (const NodePtr& n = this->getBody()) v.push_back(n);
+		if (const NodePtr& n = this->getType()) v.push_back(n);
+		if (const NodePtr& n = this->getInitialExpr()) v.push_back(n);
 		return v;
 	}
 
@@ -213,12 +178,11 @@ public:
 protected:
 	NodeRef graphPrev;
 	string name;
-	NodePtr in;
-	NodePtr out;
-	NodePtr body;
+	NodePtr type;
+	NodePtr initialExpr;
 
 	// Interfaces
-	GraphInterfaceImpl<FuncDef> interfaceGraph;
+	GraphInterfaceImpl<VarDefExpr> interfaceGraph;
 };
 
 } // namespace ast

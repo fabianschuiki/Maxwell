@@ -17,19 +17,19 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class FuncArg : public Node
+class UnionType : public Node
 {
 public:
-	FuncArg() : Node(),
+	UnionType() : Node(),
 		interfaceGraph(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kFuncArg;
+		return k == kUnionType;
 	}
 
-	virtual string getClassName() const { return "FuncArg"; }
+	virtual string getClassName() const { return "UnionType"; }
 
 	void setGraphPrev(const NodePtr& v)
 	{
@@ -54,38 +54,25 @@ public:
 		return graphPrev.get(repository);
 	}
 
-	void setName(const string& v)
+	void setTypes(const NodeVector& v)
 	{
-		if (v != name) {
+		if (v != types) {
 			modify();
-			name = v;
+			types = v;
 		}
 	}
-	const string& getName()
+	const NodeVector& getTypes()
 	{
-		return name;
-	}
-
-	void setType(const NodePtr& v)
-	{
-		if (v != type) {
-			modify();
-			type = v;
-		}
-	}
-	const NodePtr& getType()
-	{
-		return type;
+		return types;
 	}
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "FuncArg{…}";
+		if (depth == 0) return "UnionType{…}";
 		stringstream str, b;
-		str << "FuncArg{";
+		str << "UnionType{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
-		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
-		if (this->type) b << endl << "  \033[1mtype\033[0m = " << indent(this->type->describe(depth-1));
+		if (!this->types.empty()) b << endl << "  \033[1mtypes\033[0m = " << indent(describeVector(this->types, depth-1)) << "";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -95,21 +82,22 @@ public:
 	virtual void encode(Encoder& e)
 	{
 		e.encode(this->graphPrev);
-		e.encode(this->name);
-		e.encode(this->type);
+		e.encode(this->types);
 	}
 
 	virtual void decode(Decoder& d)
 	{
 		d.decode(this->graphPrev);
-		d.decode(this->name);
-		d.decode(this->type);
+		d.decode(this->types);
 	}
 
 	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
 	{
 		Node::updateHierarchy(id, repository, parent);
-		if (this->type) this->type->updateHierarchy(id + "type", repository, this);
+		for (int i = 0; i < this->types.size(); i++) {
+			char buf[32]; snprintf(buf, 31, "%i", i);
+			this->types[i]->updateHierarchy((id + "types") + buf, repository, this);
+		}
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -126,17 +114,35 @@ public:
 					return getGraphPrev()->resolvePath(path.substr(10));
 				}
 			}
-			// type.*
-			if (size >= 4 && path[0] == 't' && path[1] == 'y' && path[2] == 'p' && path[3] == 'e') {
-				// type
-				if (size == 4) {
-					return getType();
-				} else if (path[4] == '.') {
-					return getType()->resolvePath(path.substr(5));
+			// types.*
+			if (size >= 5 && path[0] == 't' && path[1] == 'y' && path[2] == 'p' && path[3] == 'e' && path[4] == 's') {
+				// types
+				if (size == 5) {
+					throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
+				} else if (path[5] == '.') {
+					size_t dot = path.find(".", 6);
+					string idx_str = path.substr(6, dot);
+					int idx = atoi(idx_str.c_str());
+					const NodeVector& a = getTypes();
+					if (idx < 0 || idx >= a.size()) {
+						throw std::runtime_error("Index into array '" + path.substr(0, 5) + "' is out of bounds.");
+					}
+					if (dot == string::npos) {
+						return a[idx];
+					} else {
+						return a[idx]->resolvePath(path.substr(dot + 1));
+					}
 				}
 			}
 		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
+	}
+
+	virtual NodeVector getChildren()
+	{
+		NodeVector v;
+		v.insert(v.end(), this->types.begin(), this->types.end());
+		return v;
 	}
 
 	// Interfaces
@@ -144,11 +150,10 @@ public:
 
 protected:
 	NodeRef graphPrev;
-	string name;
-	NodePtr type;
+	NodeVector types;
 
 	// Interfaces
-	GraphInterfaceImpl<FuncArg> interfaceGraph;
+	GraphInterfaceImpl<UnionType> interfaceGraph;
 };
 
 } // namespace ast

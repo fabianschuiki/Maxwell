@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 		Serializer ser;
 
 		// Create a function definition.
-		shared_ptr<FunctionDefinition> fdef(new FunctionDefinition);
+		shared_ptr<FuncDef> fdef(new FuncDef);
 		fdef->setName("main");
 		shared_ptr<FuncBody> fbody(new FuncBody);
 		fdef->setBody(fbody);

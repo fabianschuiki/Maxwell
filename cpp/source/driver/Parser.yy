@@ -43,12 +43,14 @@ typedef std::vector<shared_ptr<Node> > Nodes;
     Node *node;
     std::string *string;
     Nodes *nodes;
+    VarDefExpr *varDefExpr;
     int token;
     int symbol;
 }
 
-%type <node> func_decl func_arg func_arg_tuple body stmt expr
-%type <nodes> func_args stmts
+%type <node> func_decl func_arg func_arg_tuple body stmt expr type_expr union_type_expr nonunion_type_expr
+%type <nodes> func_args stmts union_type_exprs
+%type <varDefExpr> var_expr
 
 %token <string> IDENTIFIER "identifier"
 %token <string> REAL "real number constant"
@@ -58,6 +60,8 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 %token END 0 "end of input"
 
 %token FUNC "func keyword"
+%token VAR "var keyword"
+
 %token LPAREN "opening paranthesis ("
 %token RPAREN "closing paranthesis )"
 %token LBRACE "opening braces {"
@@ -70,6 +74,7 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 %token COLON ":"
 %token SEMICOLON ";"
 %token RIGHTARROW "right arrow ->"
+%token ASSIGN "assignment operator ="
 
 %left "+" "-"
 %left "*" "/"
@@ -109,27 +114,27 @@ root_stmt : func_decl {
           ;
 
 func_decl : FUNC IDENTIFIER body {
-              FunctionDefinition* d = new FunctionDefinition;
+              FuncDef* d = new FuncDef;
               d->setName(*$2); delete $2;
               d->setBody(shared_ptr<Node>($3));
               $$ = d;
             }
           | FUNC IDENTIFIER func_arg_tuple body {
-              FunctionDefinition *d = new FunctionDefinition;
+              FuncDef *d = new FuncDef;
               d->setName(*$2); delete $2;
               d->setIn(shared_ptr<Node>($3));
               d->setBody(shared_ptr<Node>($4));
               $$ = d;
             }
           | FUNC IDENTIFIER RIGHTARROW func_arg_tuple body {
-              FunctionDefinition *d = new FunctionDefinition;
+              FuncDef *d = new FuncDef;
               d->setName(*$2); delete $2;
               d->setOut(shared_ptr<Node>($4));
               d->setBody(shared_ptr<Node>($5));
               $$ = d;
             }
           | FUNC IDENTIFIER func_arg_tuple RIGHTARROW func_arg_tuple body {
-              FunctionDefinition *d = new FunctionDefinition;
+              FuncDef *d = new FuncDef;
               d->setName(*$2); delete $2;
               d->setIn(shared_ptr<Node>($3));
               d->setOut(shared_ptr<Node>($5));
@@ -169,26 +174,44 @@ func_arg  : IDENTIFIER {
               $$ = a;
               delete $1;
             }
-          | IDENTIFIER COLON type_expr { cout << "function argument " << *$1 << endl; }
+          | IDENTIFIER type_expr {
+              FuncArg *a = new FuncArg;
+              a->setName(*$1);
+              a->setType(shared_ptr<Node>($2));
+              $$ = a;
+              delete $1;
+            }
           ;
 
 type_expr : union_type_expr
+          | nonunion_type_expr
           ;
 
-nonunion_type_expr : IDENTIFIER { cout << "type " << *$1 << " found" << endl; }
-                   | LPAREN type_tuple_args RPAREN { cout << "type tuple" << endl; }
-                   ;
+nonunion_type_expr  : IDENTIFIER {
+                        NamedType *n = new NamedType;
+                        n->setName(*$1);
+                        $$ = n;
+                        delete $1;
+                      }
+                    ;
 
-union_type_expr : union_type_expr PIPE nonunion_type_expr { cout << "union type" << endl; }
-                | nonunion_type_expr
+union_type_expr : union_type_exprs {
+                    UnionType *t = new UnionType;
+                    t->setTypes(*$1);
+                    $$ = t;
+                    delete $1;
+                  }
                 ;
 
-type_tuple_args : type_tuple_args COMMA type_tuple_arg
-                | type_tuple_arg
-                ;
-
-type_tuple_arg : type_expr { cout << "type tuple argument" << endl; }
-               ;
+union_type_exprs  : nonunion_type_expr PIPE nonunion_type_expr {
+                      $$ = new Nodes;
+                      $$->push_back(shared_ptr<Node>($1));
+                      $$->push_back(shared_ptr<Node>($3));
+                    }
+                  | union_type_exprs PIPE nonunion_type_expr {
+                      $1->push_back(shared_ptr<Node>($3));
+                    }
+                  ;
 
 body  : LBRACE RBRACE {
           FuncBody *b = new FuncBody;
@@ -224,7 +247,26 @@ expr  : IDENTIFIER {
           $$ = i;
           delete $1;
         }
+      | var_expr { $$ = $<node>1; }
+      | var_expr ASSIGN expr {
+          $1->setInitialExpr(shared_ptr<Node>($3));
+        }
       ;
+
+var_expr  : VAR IDENTIFIER type_expr {
+              VarDefExpr *v = new VarDefExpr;
+              v->setName(*$2);
+              v->setType(shared_ptr<Node>($3));
+              $$ = v;
+              delete $2;
+            }
+          | VAR IDENTIFIER {
+              VarDefExpr *v = new VarDefExpr;
+              v->setName(*$2);
+              $$ = v;
+              delete $2;
+            }
+          ;
 
 
 %% /*** Additional Code ***/

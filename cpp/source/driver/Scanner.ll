@@ -71,6 +71,7 @@ typedef driver::Parser::token_type token_type;
 
  /* Keywords */
 "func"  return token::FUNC;
+"var"   return token::VAR;
 
 [a-zA-Z_][a-zA-Z0-9_]*    storeToken; return token::IDENTIFIER;
 [0-9]+"."[0-9]*           storeToken; return token::REAL;
@@ -91,6 +92,7 @@ typedef driver::Parser::token_type token_type;
 ";"  return token::SEMICOLON;
 
 "->" return token::RIGHTARROW;
+"="  return token::ASSIGN;
 
  /* All other characters are interpreted as a symbol. */
 . {

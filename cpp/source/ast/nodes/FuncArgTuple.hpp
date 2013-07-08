@@ -64,7 +64,7 @@ public:
 		if (depth == 0) return "FuncArgTuple{…}";
 		stringstream str, b;
 		str << "FuncArgTuple{";
-		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "@" << this->graphPrev.id;
+		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
 		if (!this->args.empty()) b << endl << "  \033[1margs\033[0m = " << indent(describeVector(this->args, depth-1)) << "";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;

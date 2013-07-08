@@ -76,7 +76,7 @@ public:
 		if (depth == 0) return "FuncArg{…}";
 		stringstream str, b;
 		str << "FuncArg{";
-		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "@" << this->graphPrev.id;
+		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
 		if (!this->type.empty()) b << endl << "  \033[1mtype\033[0m = '\033[33m" << this->type << "\033[0m'";
 		string bs = b.str();

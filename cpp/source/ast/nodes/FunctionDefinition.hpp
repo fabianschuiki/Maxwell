@@ -109,7 +109,7 @@ public:
 		if (depth == 0) return "FunctionDefinition{…}";
 		stringstream str, b;
 		str << "FunctionDefinition{";
-		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "@" << this->graphPrev.id;
+		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
 		if (this->in) b << endl << "  \033[1min\033[0m = " << indent(this->in->describe(depth-1));
 		if (this->out) b << endl << "  \033[1mout\033[0m = " << indent(this->out->describe(depth-1));

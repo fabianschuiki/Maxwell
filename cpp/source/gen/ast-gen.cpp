@@ -413,7 +413,7 @@ int main(int argc, char *argv[])
 				h << "\t\tif (this->" << f.name << ")";
 				h << " b << endl << \"  \\033[1m"<<f.name<<"\\033[0m = \"";
 				if (f.ref) {
-					h << " << \"@\" << this->" << f.name << ".id;\n";
+					h << " << \"\\033[36m\" << this->" << f.name << ".id << \"\\033[0m\";\n";
 				} else {
 					h << " << indent(this->"<<f.name<<"->describe(depth-1));\n";
 				}

@@ -111,5 +111,4 @@ void Repository::nodeLoaded(const NodeId& id, const NodePtr& node)
 void Repository::markModified(const NodeId& id)
 {
 	nodeRepo->markModified(id);
-	std::cout << "Modified node " << id << "\n";
 }

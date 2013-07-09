@@ -273,7 +273,13 @@ postfix_expr
       $$ = u;
       delete $2;
     }
-  /*| postfix_expr DOT IDENTIFIER*/
+  | postfix_expr DOT IDENTIFIER {
+      std::cout << "access to " << *$3 << std::endl;
+      delete $3;
+    }
+  | postfix_expr LPAREN RPAREN {
+      std::cout << "call" << std::endl;
+    }
   ;
 
 prefix_expr

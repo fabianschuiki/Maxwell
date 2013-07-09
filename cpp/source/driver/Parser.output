@@ -6,7 +6,6 @@ Terminals which are not used
    "symbol"
    "opening bracket ["
    "closing bracket ]"
-   "."
    ":"
 
 
@@ -62,61 +61,63 @@ Grammar
 
    31 postfix_expr: primary_expr
    32             | postfix_expr OPERATOR
+   33             | postfix_expr "." "identifier"
+   34             | postfix_expr "opening paranthesis (" "closing paranthesis )"
 
-   33 prefix_expr: postfix_expr
-   34            | prefix_op prefix_expr
+   35 prefix_expr: postfix_expr
+   36            | prefix_op prefix_expr
 
-   35 prefix_op: MULTIPLICATIVE_OPERATOR
-   36          | ADDITIVE_OPERATOR
-   37          | RELATIONAL_OPERATOR
-   38          | OPERATOR
+   37 prefix_op: MULTIPLICATIVE_OPERATOR
+   38          | ADDITIVE_OPERATOR
+   39          | RELATIONAL_OPERATOR
+   40          | OPERATOR
 
-   39 multiplicative_expr: prefix_expr
-   40                    | multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr
+   41 multiplicative_expr: prefix_expr
+   42                    | multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr
 
-   41 additive_expr: multiplicative_expr
-   42              | additive_expr ADDITIVE_OPERATOR multiplicative_expr
+   43 additive_expr: multiplicative_expr
+   44              | additive_expr ADDITIVE_OPERATOR multiplicative_expr
 
-   43 relational_expr: additive_expr
-   44                | relational_expr RELATIONAL_OPERATOR additive_expr
+   45 relational_expr: additive_expr
+   46                | relational_expr RELATIONAL_OPERATOR additive_expr
 
-   45 expr: relational_expr
-   46     | var_expr
-   47     | var_expr "assignment operator =" relational_expr
+   47 expr: relational_expr
+   48     | var_expr
+   49     | var_expr "assignment operator =" relational_expr
 
-   48 var_expr: "var keyword" "identifier" type_expr
-   49         | "var keyword" "identifier"
+   50 var_expr: "var keyword" "identifier" type_expr
+   51         | "var keyword" "identifier"
 
 
 Terminals, with rules where they appear
 
 "end of input" (0) 0
 error (256)
-"identifier" (258) 6 7 8 9 15 16 17 20 29 48 49
+"identifier" (258) 6 7 8 9 15 16 17 20 29 33 50 51
 "real number constant" (259)
 "integer number constant" (260)
 "string constant" (261)
-MULTIPLICATIVE_OPERATOR (262) 35 40
-ADDITIVE_OPERATOR (263) 36 42
-RELATIONAL_OPERATOR (264) 37 44
-OPERATOR (265) 32 38
+MULTIPLICATIVE_OPERATOR (262) 37 42
+ADDITIVE_OPERATOR (263) 38 44
+RELATIONAL_OPERATOR (264) 39 46
+OPERATOR (265) 32 40
 "symbol" (266)
 "func keyword" (267) 6 7 8 9
-"var keyword" (268) 48 49
+"var keyword" (268) 50 51
 "type keyword" (269) 17
-"opening paranthesis (" (270) 10 12 30
-"closing paranthesis )" (271) 10 12 30
+"opening paranthesis (" (270) 10 12 30 34
+"closing paranthesis )" (271) 10 12 30 34
 "opening braces {" (272) 24 25
 "closing braces }" (273) 24 25
 "opening bracket [" (274)
 "closing bracket ]" (275)
 "vertical pipe |" (276) 22 23
-"." (277)
+"." (277) 33
 "," (278) 14
 ":" (279)
 ";" (280) 28
 "right arrow ->" (281) 8 9
-"assignment operator =" (282) 47
+"assignment operator =" (282) 49
 
 
 Nonterminals, with rules where they appear
@@ -140,7 +141,7 @@ func_arg (35)
 type_decl (36)
     on left: 17, on right: 5
 type_expr (37)
-    on left: 18 19, on right: 16 48
+    on left: 18 19, on right: 16 50
 nonunion_type_expr (38)
     on left: 20, on right: 19 22 23
 union_type_expr (39)
@@ -156,21 +157,21 @@ stmt (43)
 primary_expr (44)
     on left: 29 30, on right: 31
 postfix_expr (45)
-    on left: 31 32, on right: 32 33
+    on left: 31 32 33 34, on right: 32 33 34 35
 prefix_expr (46)
-    on left: 33 34, on right: 34 39 40
+    on left: 35 36, on right: 36 41 42
 prefix_op (47)
-    on left: 35 36 37 38, on right: 34
+    on left: 37 38 39 40, on right: 36
 multiplicative_expr (48)
-    on left: 39 40, on right: 40 41 42
-additive_expr (49)
     on left: 41 42, on right: 42 43 44
+additive_expr (49)
+    on left: 43 44, on right: 44 45 46
 relational_expr (50)
-    on left: 43 44, on right: 44 45 47
+    on left: 45 46, on right: 46 47 49
 expr (51)
-    on left: 45 46 47, on right: 28 30
+    on left: 47 48 49, on right: 28 30
 var_expr (52)
-    on left: 48 49, on right: 46 47
+    on left: 50 51, on right: 48 49
 
 
 state 0
@@ -357,23 +358,25 @@ state 14
    30             | . "opening paranthesis (" expr "closing paranthesis )"
    31 postfix_expr: . primary_expr
    32             | . postfix_expr OPERATOR
-   33 prefix_expr: . postfix_expr
-   34            | . prefix_op prefix_expr
-   35 prefix_op: . MULTIPLICATIVE_OPERATOR
-   36          | . ADDITIVE_OPERATOR
-   37          | . RELATIONAL_OPERATOR
-   38          | . OPERATOR
-   39 multiplicative_expr: . prefix_expr
-   40                    | . multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr
-   41 additive_expr: . multiplicative_expr
-   42              | . additive_expr ADDITIVE_OPERATOR multiplicative_expr
-   43 relational_expr: . additive_expr
-   44                | . relational_expr RELATIONAL_OPERATOR additive_expr
-   45 expr: . relational_expr
-   46     | . var_expr
-   47     | . var_expr "assignment operator =" relational_expr
-   48 var_expr: . "var keyword" "identifier" type_expr
-   49         | . "var keyword" "identifier"
+   33             | . postfix_expr "." "identifier"
+   34             | . postfix_expr "opening paranthesis (" "closing paranthesis )"
+   35 prefix_expr: . postfix_expr
+   36            | . prefix_op prefix_expr
+   37 prefix_op: . MULTIPLICATIVE_OPERATOR
+   38          | . ADDITIVE_OPERATOR
+   39          | . RELATIONAL_OPERATOR
+   40          | . OPERATOR
+   41 multiplicative_expr: . prefix_expr
+   42                    | . multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr
+   43 additive_expr: . multiplicative_expr
+   44              | . additive_expr ADDITIVE_OPERATOR multiplicative_expr
+   45 relational_expr: . additive_expr
+   46                | . relational_expr RELATIONAL_OPERATOR additive_expr
+   47 expr: . relational_expr
+   48     | . var_expr
+   49     | . var_expr "assignment operator =" relational_expr
+   50 var_expr: . "var keyword" "identifier" type_expr
+   51         | . "var keyword" "identifier"
 
     "identifier"             shift, and go to state 27
     MULTIPLICATIVE_OPERATOR  shift, and go to state 28
@@ -513,36 +516,36 @@ state 27
 
 state 28
 
-   35 prefix_op: MULTIPLICATIVE_OPERATOR .
-
-    $default  reduce using rule 35 (prefix_op)
-
-
-state 29
-
-   36 prefix_op: ADDITIVE_OPERATOR .
-
-    $default  reduce using rule 36 (prefix_op)
-
-
-state 30
-
-   37 prefix_op: RELATIONAL_OPERATOR .
+   37 prefix_op: MULTIPLICATIVE_OPERATOR .
 
     $default  reduce using rule 37 (prefix_op)
 
 
-state 31
+state 29
 
-   38 prefix_op: OPERATOR .
+   38 prefix_op: ADDITIVE_OPERATOR .
 
     $default  reduce using rule 38 (prefix_op)
 
 
+state 30
+
+   39 prefix_op: RELATIONAL_OPERATOR .
+
+    $default  reduce using rule 39 (prefix_op)
+
+
+state 31
+
+   40 prefix_op: OPERATOR .
+
+    $default  reduce using rule 40 (prefix_op)
+
+
 state 32
 
-   48 var_expr: "var keyword" . "identifier" type_expr
-   49         | "var keyword" . "identifier"
+   50 var_expr: "var keyword" . "identifier" type_expr
+   51         | "var keyword" . "identifier"
 
     "identifier"  shift, and go to state 53
 
@@ -554,23 +557,25 @@ state 33
    30             | "opening paranthesis (" . expr "closing paranthesis )"
    31 postfix_expr: . primary_expr
    32             | . postfix_expr OPERATOR
-   33 prefix_expr: . postfix_expr
-   34            | . prefix_op prefix_expr
-   35 prefix_op: . MULTIPLICATIVE_OPERATOR
-   36          | . ADDITIVE_OPERATOR
-   37          | . RELATIONAL_OPERATOR
-   38          | . OPERATOR
-   39 multiplicative_expr: . prefix_expr
-   40                    | . multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr
-   41 additive_expr: . multiplicative_expr
-   42              | . additive_expr ADDITIVE_OPERATOR multiplicative_expr
-   43 relational_expr: . additive_expr
-   44                | . relational_expr RELATIONAL_OPERATOR additive_expr
-   45 expr: . relational_expr
-   46     | . var_expr
-   47     | . var_expr "assignment operator =" relational_expr
-   48 var_expr: . "var keyword" "identifier" type_expr
-   49         | . "var keyword" "identifier"
+   33             | . postfix_expr "." "identifier"
+   34             | . postfix_expr "opening paranthesis (" "closing paranthesis )"
+   35 prefix_expr: . postfix_expr
+   36            | . prefix_op prefix_expr
+   37 prefix_op: . MULTIPLICATIVE_OPERATOR
+   38          | . ADDITIVE_OPERATOR
+   39          | . RELATIONAL_OPERATOR
+   40          | . OPERATOR
+   41 multiplicative_expr: . prefix_expr
+   42                    | . multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr
+   43 additive_expr: . multiplicative_expr
+   44              | . additive_expr ADDITIVE_OPERATOR multiplicative_expr
+   45 relational_expr: . additive_expr
+   46                | . relational_expr RELATIONAL_OPERATOR additive_expr
+   47 expr: . relational_expr
+   48     | . var_expr
+   49     | . var_expr "assignment operator =" relational_expr
+   50 var_expr: . "var keyword" "identifier" type_expr
+   51         | . "var keyword" "identifier"
 
     "identifier"             shift, and go to state 27
     MULTIPLICATIVE_OPERATOR  shift, and go to state 28
@@ -607,23 +612,25 @@ state 35
    30             | . "opening paranthesis (" expr "closing paranthesis )"
    31 postfix_expr: . primary_expr
    32             | . postfix_expr OPERATOR
-   33 prefix_expr: . postfix_expr
-   34            | . prefix_op prefix_expr
-   35 prefix_op: . MULTIPLICATIVE_OPERATOR
-   36          | . ADDITIVE_OPERATOR
-   37          | . RELATIONAL_OPERATOR
-   38          | . OPERATOR
-   39 multiplicative_expr: . prefix_expr
-   40                    | . multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr
-   41 additive_expr: . multiplicative_expr
-   42              | . additive_expr ADDITIVE_OPERATOR multiplicative_expr
-   43 relational_expr: . additive_expr
-   44                | . relational_expr RELATIONAL_OPERATOR additive_expr
-   45 expr: . relational_expr
-   46     | . var_expr
-   47     | . var_expr "assignment operator =" relational_expr
-   48 var_expr: . "var keyword" "identifier" type_expr
-   49         | . "var keyword" "identifier"
+   33             | . postfix_expr "." "identifier"
+   34             | . postfix_expr "opening paranthesis (" "closing paranthesis )"
+   35 prefix_expr: . postfix_expr
+   36            | . prefix_op prefix_expr
+   37 prefix_op: . MULTIPLICATIVE_OPERATOR
+   38          | . ADDITIVE_OPERATOR
+   39          | . RELATIONAL_OPERATOR
+   40          | . OPERATOR
+   41 multiplicative_expr: . prefix_expr
+   42                    | . multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr
+   43 additive_expr: . multiplicative_expr
+   44              | . additive_expr ADDITIVE_OPERATOR multiplicative_expr
+   45 relational_expr: . additive_expr
+   46                | . relational_expr RELATIONAL_OPERATOR additive_expr
+   47 expr: . relational_expr
+   48     | . var_expr
+   49     | . var_expr "assignment operator =" relational_expr
+   50 var_expr: . "var keyword" "identifier" type_expr
+   51         | . "var keyword" "identifier"
 
     "identifier"             shift, and go to state 27
     MULTIPLICATIVE_OPERATOR  shift, and go to state 28
@@ -663,18 +670,22 @@ state 37
 state 38
 
    32 postfix_expr: postfix_expr . OPERATOR
-   33 prefix_expr: postfix_expr .  [MULTIPLICATIVE_OPERATOR, ADDITIVE_OPERATOR, RELATIONAL_OPERATOR, "closing paranthesis )", ";"]
+   33             | postfix_expr . "." "identifier"
+   34             | postfix_expr . "opening paranthesis (" "closing paranthesis )"
+   35 prefix_expr: postfix_expr .  [MULTIPLICATIVE_OPERATOR, ADDITIVE_OPERATOR, RELATIONAL_OPERATOR, "closing paranthesis )", ";"]
 
-    OPERATOR  shift, and go to state 57
+    OPERATOR                 shift, and go to state 57
+    "opening paranthesis ("  shift, and go to state 58
+    "."                      shift, and go to state 59
 
-    $default  reduce using rule 33 (prefix_expr)
+    $default  reduce using rule 35 (prefix_expr)
 
 
 state 39
 
-   39 multiplicative_expr: prefix_expr .
+   41 multiplicative_expr: prefix_expr .
 
-    $default  reduce using rule 39 (multiplicative_expr)
+    $default  reduce using rule 41 (multiplicative_expr)
 
 
 state 40
@@ -683,13 +694,15 @@ state 40
    30             | . "opening paranthesis (" expr "closing paranthesis )"
    31 postfix_expr: . primary_expr
    32             | . postfix_expr OPERATOR
-   33 prefix_expr: . postfix_expr
-   34            | . prefix_op prefix_expr
-   34            | prefix_op . prefix_expr
-   35 prefix_op: . MULTIPLICATIVE_OPERATOR
-   36          | . ADDITIVE_OPERATOR
-   37          | . RELATIONAL_OPERATOR
-   38          | . OPERATOR
+   33             | . postfix_expr "." "identifier"
+   34             | . postfix_expr "opening paranthesis (" "closing paranthesis )"
+   35 prefix_expr: . postfix_expr
+   36            | . prefix_op prefix_expr
+   36            | prefix_op . prefix_expr
+   37 prefix_op: . MULTIPLICATIVE_OPERATOR
+   38          | . ADDITIVE_OPERATOR
+   39          | . RELATIONAL_OPERATOR
+   40          | . OPERATOR
 
     "identifier"             shift, and go to state 27
     MULTIPLICATIVE_OPERATOR  shift, and go to state 28
@@ -700,55 +713,55 @@ state 40
 
     primary_expr  go to state 37
     postfix_expr  go to state 38
-    prefix_expr   go to state 58
+    prefix_expr   go to state 60
     prefix_op     go to state 40
 
 
 state 41
 
-   40 multiplicative_expr: multiplicative_expr . MULTIPLICATIVE_OPERATOR prefix_expr
-   41 additive_expr: multiplicative_expr .  [ADDITIVE_OPERATOR, RELATIONAL_OPERATOR, "closing paranthesis )", ";"]
+   42 multiplicative_expr: multiplicative_expr . MULTIPLICATIVE_OPERATOR prefix_expr
+   43 additive_expr: multiplicative_expr .  [ADDITIVE_OPERATOR, RELATIONAL_OPERATOR, "closing paranthesis )", ";"]
 
-    MULTIPLICATIVE_OPERATOR  shift, and go to state 59
+    MULTIPLICATIVE_OPERATOR  shift, and go to state 61
 
-    $default  reduce using rule 41 (additive_expr)
+    $default  reduce using rule 43 (additive_expr)
 
 
 state 42
 
-   42 additive_expr: additive_expr . ADDITIVE_OPERATOR multiplicative_expr
-   43 relational_expr: additive_expr .  [RELATIONAL_OPERATOR, "closing paranthesis )", ";"]
+   44 additive_expr: additive_expr . ADDITIVE_OPERATOR multiplicative_expr
+   45 relational_expr: additive_expr .  [RELATIONAL_OPERATOR, "closing paranthesis )", ";"]
 
-    ADDITIVE_OPERATOR  shift, and go to state 60
+    ADDITIVE_OPERATOR  shift, and go to state 62
 
-    $default  reduce using rule 43 (relational_expr)
+    $default  reduce using rule 45 (relational_expr)
 
 
 state 43
 
-   44 relational_expr: relational_expr . RELATIONAL_OPERATOR additive_expr
-   45 expr: relational_expr .  ["closing paranthesis )", ";"]
+   46 relational_expr: relational_expr . RELATIONAL_OPERATOR additive_expr
+   47 expr: relational_expr .  ["closing paranthesis )", ";"]
 
-    RELATIONAL_OPERATOR  shift, and go to state 61
+    RELATIONAL_OPERATOR  shift, and go to state 63
 
-    $default  reduce using rule 45 (expr)
+    $default  reduce using rule 47 (expr)
 
 
 state 44
 
    28 stmt: expr . ";"
 
-    ";"  shift, and go to state 62
+    ";"  shift, and go to state 64
 
 
 state 45
 
-   46 expr: var_expr .  ["closing paranthesis )", ";"]
-   47     | var_expr . "assignment operator =" relational_expr
+   48 expr: var_expr .  ["closing paranthesis )", ";"]
+   49     | var_expr . "assignment operator =" relational_expr
 
-    "assignment operator ="  shift, and go to state 63
+    "assignment operator ="  shift, and go to state 65
 
-    $default  reduce using rule 46 (expr)
+    $default  reduce using rule 48 (expr)
 
 
 state 46
@@ -759,7 +772,7 @@ state 46
 
     "opening braces {"  shift, and go to state 14
 
-    body  go to state 64
+    body  go to state 66
 
 
 state 47
@@ -774,7 +787,7 @@ state 47
     "identifier"             shift, and go to state 12
     "opening paranthesis ("  shift, and go to state 13
 
-    func_arg_tuple  go to state 65
+    func_arg_tuple  go to state 67
     func_arg        go to state 17
 
 
@@ -792,7 +805,7 @@ state 49
 
     "identifier"  shift, and go to state 19
 
-    nonunion_type_expr  go to state 66
+    nonunion_type_expr  go to state 68
 
 
 state 50
@@ -802,7 +815,7 @@ state 50
 
     "identifier"  shift, and go to state 19
 
-    nonunion_type_expr  go to state 67
+    nonunion_type_expr  go to state 69
 
 
 state 51
@@ -820,7 +833,7 @@ state 52
 
     "identifier"  shift, and go to state 12
 
-    func_arg  go to state 68
+    func_arg  go to state 70
 
 
 state 53
@@ -831,14 +844,14 @@ state 53
    21 union_type_expr: . union_type_exprs
    22 union_type_exprs: . nonunion_type_expr "vertical pipe |" nonunion_type_expr
    23                 | . union_type_exprs "vertical pipe |" nonunion_type_expr
-   48 var_expr: "var keyword" "identifier" . type_expr
-   49         | "var keyword" "identifier" .  ["closing paranthesis )", ";", "assignment operator ="]
+   50 var_expr: "var keyword" "identifier" . type_expr
+   51         | "var keyword" "identifier" .  ["closing paranthesis )", ";", "assignment operator ="]
 
     "identifier"  shift, and go to state 19
 
-    $default  reduce using rule 49 (var_expr)
+    $default  reduce using rule 51 (var_expr)
 
-    type_expr           go to state 69
+    type_expr           go to state 71
     nonunion_type_expr  go to state 21
     union_type_expr     go to state 22
     union_type_exprs    go to state 23
@@ -848,7 +861,7 @@ state 54
 
    30 primary_expr: "opening paranthesis (" expr . "closing paranthesis )"
 
-    "closing paranthesis )"  shift, and go to state 70
+    "closing paranthesis )"  shift, and go to state 72
 
 
 state 55
@@ -874,24 +887,40 @@ state 57
 
 state 58
 
-   34 prefix_expr: prefix_op prefix_expr .
+   34 postfix_expr: postfix_expr "opening paranthesis (" . "closing paranthesis )"
 
-    $default  reduce using rule 34 (prefix_expr)
+    "closing paranthesis )"  shift, and go to state 73
 
 
 state 59
+
+   33 postfix_expr: postfix_expr "." . "identifier"
+
+    "identifier"  shift, and go to state 74
+
+
+state 60
+
+   36 prefix_expr: prefix_op prefix_expr .
+
+    $default  reduce using rule 36 (prefix_expr)
+
+
+state 61
 
    29 primary_expr: . "identifier"
    30             | . "opening paranthesis (" expr "closing paranthesis )"
    31 postfix_expr: . primary_expr
    32             | . postfix_expr OPERATOR
-   33 prefix_expr: . postfix_expr
-   34            | . prefix_op prefix_expr
-   35 prefix_op: . MULTIPLICATIVE_OPERATOR
-   36          | . ADDITIVE_OPERATOR
-   37          | . RELATIONAL_OPERATOR
-   38          | . OPERATOR
-   40 multiplicative_expr: multiplicative_expr MULTIPLICATIVE_OPERATOR . prefix_expr
+   33             | . postfix_expr "." "identifier"
+   34             | . postfix_expr "opening paranthesis (" "closing paranthesis )"
+   35 prefix_expr: . postfix_expr
+   36            | . prefix_op prefix_expr
+   37 prefix_op: . MULTIPLICATIVE_OPERATOR
+   38          | . ADDITIVE_OPERATOR
+   39          | . RELATIONAL_OPERATOR
+   40          | . OPERATOR
+   42 multiplicative_expr: multiplicative_expr MULTIPLICATIVE_OPERATOR . prefix_expr
 
     "identifier"             shift, and go to state 27
     MULTIPLICATIVE_OPERATOR  shift, and go to state 28
@@ -902,25 +931,27 @@ state 59
 
     primary_expr  go to state 37
     postfix_expr  go to state 38
-    prefix_expr   go to state 71
+    prefix_expr   go to state 75
     prefix_op     go to state 40
 
 
-state 60
+state 62
 
    29 primary_expr: . "identifier"
    30             | . "opening paranthesis (" expr "closing paranthesis )"
    31 postfix_expr: . primary_expr
    32             | . postfix_expr OPERATOR
-   33 prefix_expr: . postfix_expr
-   34            | . prefix_op prefix_expr
-   35 prefix_op: . MULTIPLICATIVE_OPERATOR
-   36          | . ADDITIVE_OPERATOR
-   37          | . RELATIONAL_OPERATOR
-   38          | . OPERATOR
-   39 multiplicative_expr: . prefix_expr
-   40                    | . multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr
-   42 additive_expr: additive_expr ADDITIVE_OPERATOR . multiplicative_expr
+   33             | . postfix_expr "." "identifier"
+   34             | . postfix_expr "opening paranthesis (" "closing paranthesis )"
+   35 prefix_expr: . postfix_expr
+   36            | . prefix_op prefix_expr
+   37 prefix_op: . MULTIPLICATIVE_OPERATOR
+   38          | . ADDITIVE_OPERATOR
+   39          | . RELATIONAL_OPERATOR
+   40          | . OPERATOR
+   41 multiplicative_expr: . prefix_expr
+   42                    | . multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr
+   44 additive_expr: additive_expr ADDITIVE_OPERATOR . multiplicative_expr
 
     "identifier"             shift, and go to state 27
     MULTIPLICATIVE_OPERATOR  shift, and go to state 28
@@ -933,26 +964,28 @@ state 60
     postfix_expr         go to state 38
     prefix_expr          go to state 39
     prefix_op            go to state 40
-    multiplicative_expr  go to state 72
+    multiplicative_expr  go to state 76
 
 
-state 61
+state 63
 
    29 primary_expr: . "identifier"
    30             | . "opening paranthesis (" expr "closing paranthesis )"
    31 postfix_expr: . primary_expr
    32             | . postfix_expr OPERATOR
-   33 prefix_expr: . postfix_expr
-   34            | . prefix_op prefix_expr
-   35 prefix_op: . MULTIPLICATIVE_OPERATOR
-   36          | . ADDITIVE_OPERATOR
-   37          | . RELATIONAL_OPERATOR
-   38          | . OPERATOR
-   39 multiplicative_expr: . prefix_expr
-   40                    | . multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr
-   41 additive_expr: . multiplicative_expr
-   42              | . additive_expr ADDITIVE_OPERATOR multiplicative_expr
-   44 relational_expr: relational_expr RELATIONAL_OPERATOR . additive_expr
+   33             | . postfix_expr "." "identifier"
+   34             | . postfix_expr "opening paranthesis (" "closing paranthesis )"
+   35 prefix_expr: . postfix_expr
+   36            | . prefix_op prefix_expr
+   37 prefix_op: . MULTIPLICATIVE_OPERATOR
+   38          | . ADDITIVE_OPERATOR
+   39          | . RELATIONAL_OPERATOR
+   40          | . OPERATOR
+   41 multiplicative_expr: . prefix_expr
+   42                    | . multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr
+   43 additive_expr: . multiplicative_expr
+   44              | . additive_expr ADDITIVE_OPERATOR multiplicative_expr
+   46 relational_expr: relational_expr RELATIONAL_OPERATOR . additive_expr
 
     "identifier"             shift, and go to state 27
     MULTIPLICATIVE_OPERATOR  shift, and go to state 28
@@ -966,35 +999,37 @@ state 61
     prefix_expr          go to state 39
     prefix_op            go to state 40
     multiplicative_expr  go to state 41
-    additive_expr        go to state 73
+    additive_expr        go to state 77
 
 
-state 62
+state 64
 
    28 stmt: expr ";" .
 
     $default  reduce using rule 28 (stmt)
 
 
-state 63
+state 65
 
    29 primary_expr: . "identifier"
    30             | . "opening paranthesis (" expr "closing paranthesis )"
    31 postfix_expr: . primary_expr
    32             | . postfix_expr OPERATOR
-   33 prefix_expr: . postfix_expr
-   34            | . prefix_op prefix_expr
-   35 prefix_op: . MULTIPLICATIVE_OPERATOR
-   36          | . ADDITIVE_OPERATOR
-   37          | . RELATIONAL_OPERATOR
-   38          | . OPERATOR
-   39 multiplicative_expr: . prefix_expr
-   40                    | . multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr
-   41 additive_expr: . multiplicative_expr
-   42              | . additive_expr ADDITIVE_OPERATOR multiplicative_expr
-   43 relational_expr: . additive_expr
-   44                | . relational_expr RELATIONAL_OPERATOR additive_expr
-   47 expr: var_expr "assignment operator =" . relational_expr
+   33             | . postfix_expr "." "identifier"
+   34             | . postfix_expr "opening paranthesis (" "closing paranthesis )"
+   35 prefix_expr: . postfix_expr
+   36            | . prefix_op prefix_expr
+   37 prefix_op: . MULTIPLICATIVE_OPERATOR
+   38          | . ADDITIVE_OPERATOR
+   39          | . RELATIONAL_OPERATOR
+   40          | . OPERATOR
+   41 multiplicative_expr: . prefix_expr
+   42                    | . multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr
+   43 additive_expr: . multiplicative_expr
+   44              | . additive_expr ADDITIVE_OPERATOR multiplicative_expr
+   45 relational_expr: . additive_expr
+   46                | . relational_expr RELATIONAL_OPERATOR additive_expr
+   49 expr: var_expr "assignment operator =" . relational_expr
 
     "identifier"             shift, and go to state 27
     MULTIPLICATIVE_OPERATOR  shift, and go to state 28
@@ -1009,17 +1044,17 @@ state 63
     prefix_op            go to state 40
     multiplicative_expr  go to state 41
     additive_expr        go to state 42
-    relational_expr      go to state 74
+    relational_expr      go to state 78
 
 
-state 64
+state 66
 
     8 func_decl: "func keyword" "identifier" "right arrow ->" func_arg_tuple body .
 
     $default  reduce using rule 8 (func_decl)
 
 
-state 65
+state 67
 
     9 func_decl: "func keyword" "identifier" func_arg_tuple "right arrow ->" func_arg_tuple . body
    24 body: . "opening braces {" "closing braces }"
@@ -1027,82 +1062,96 @@ state 65
 
     "opening braces {"  shift, and go to state 14
 
-    body  go to state 75
+    body  go to state 79
 
 
-state 66
+state 68
 
    22 union_type_exprs: nonunion_type_expr "vertical pipe |" nonunion_type_expr .
 
     $default  reduce using rule 22 (union_type_exprs)
 
 
-state 67
+state 69
 
    23 union_type_exprs: union_type_exprs "vertical pipe |" nonunion_type_expr .
 
     $default  reduce using rule 23 (union_type_exprs)
 
 
-state 68
+state 70
 
    14 func_args: func_args "," func_arg .
 
     $default  reduce using rule 14 (func_args)
 
 
-state 69
+state 71
 
-   48 var_expr: "var keyword" "identifier" type_expr .
+   50 var_expr: "var keyword" "identifier" type_expr .
 
-    $default  reduce using rule 48 (var_expr)
+    $default  reduce using rule 50 (var_expr)
 
 
-state 70
+state 72
 
    30 primary_expr: "opening paranthesis (" expr "closing paranthesis )" .
 
     $default  reduce using rule 30 (primary_expr)
 
 
-state 71
-
-   40 multiplicative_expr: multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr .
-
-    $default  reduce using rule 40 (multiplicative_expr)
-
-
-state 72
-
-   40 multiplicative_expr: multiplicative_expr . MULTIPLICATIVE_OPERATOR prefix_expr
-   42 additive_expr: additive_expr ADDITIVE_OPERATOR multiplicative_expr .  [ADDITIVE_OPERATOR, RELATIONAL_OPERATOR, "closing paranthesis )", ";"]
-
-    MULTIPLICATIVE_OPERATOR  shift, and go to state 59
-
-    $default  reduce using rule 42 (additive_expr)
-
-
 state 73
 
-   42 additive_expr: additive_expr . ADDITIVE_OPERATOR multiplicative_expr
-   44 relational_expr: relational_expr RELATIONAL_OPERATOR additive_expr .  [RELATIONAL_OPERATOR, "closing paranthesis )", ";"]
+   34 postfix_expr: postfix_expr "opening paranthesis (" "closing paranthesis )" .
 
-    ADDITIVE_OPERATOR  shift, and go to state 60
-
-    $default  reduce using rule 44 (relational_expr)
+    $default  reduce using rule 34 (postfix_expr)
 
 
 state 74
 
-   44 relational_expr: relational_expr . RELATIONAL_OPERATOR additive_expr
-   47 expr: var_expr "assignment operator =" relational_expr .  ["closing paranthesis )", ";"]
+   33 postfix_expr: postfix_expr "." "identifier" .
 
-    RELATIONAL_OPERATOR  shift, and go to state 61
-
-    $default  reduce using rule 47 (expr)
+    $default  reduce using rule 33 (postfix_expr)
 
 
 state 75
+
+   42 multiplicative_expr: multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr .
+
+    $default  reduce using rule 42 (multiplicative_expr)
+
+
+state 76
+
+   42 multiplicative_expr: multiplicative_expr . MULTIPLICATIVE_OPERATOR prefix_expr
+   44 additive_expr: additive_expr ADDITIVE_OPERATOR multiplicative_expr .  [ADDITIVE_OPERATOR, RELATIONAL_OPERATOR, "closing paranthesis )", ";"]
+
+    MULTIPLICATIVE_OPERATOR  shift, and go to state 61
+
+    $default  reduce using rule 44 (additive_expr)
+
+
+state 77
+
+   44 additive_expr: additive_expr . ADDITIVE_OPERATOR multiplicative_expr
+   46 relational_expr: relational_expr RELATIONAL_OPERATOR additive_expr .  [RELATIONAL_OPERATOR, "closing paranthesis )", ";"]
+
+    ADDITIVE_OPERATOR  shift, and go to state 62
+
+    $default  reduce using rule 46 (relational_expr)
+
+
+state 78
+
+   46 relational_expr: relational_expr . RELATIONAL_OPERATOR additive_expr
+   49 expr: var_expr "assignment operator =" relational_expr .  ["closing paranthesis )", ";"]
+
+    RELATIONAL_OPERATOR  shift, and go to state 63
+
+    $default  reduce using rule 49 (expr)
+
+
+state 79
 
     9 func_decl: "func keyword" "identifier" func_arg_tuple "right arrow ->" func_arg_tuple body .
 

@@ -54,21 +54,23 @@ void buildAST(Builder &node)
 
 	// Expressions
 	node("IdentifierExpr")
-		.intf(graph)
-		.intf(type)
+		.intf(graph).intf(type)
 		.attr("name", "string")
 		.attr("bindingTarget", "&any");
 	node("VarDefExpr")
-		.intf(graph)
-		.intf(type)
+		.intf(graph).intf(type)
 		.attr("name", "string")
 		.child("type", "any")
 		.child("initialExpr", "any");
 	node("CallExpr")
-		.intf(graph)
-		.intf(call)
+		.intf(graph).intf(call).intf(type)
 		.attr("name", "string")
 		.child("args", "[any]");
+	node("BinaryOpExpr")
+		.intf(graph).intf(call).intf(type)
+		.attr("operatorName", "string") // 'operator' would be a keyword
+		.child("lhs", "any")
+		.child("rhs", "any");
 
 	// Type Expressions
 	node("GenericType")

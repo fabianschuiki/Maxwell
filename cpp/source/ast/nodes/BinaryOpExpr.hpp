@@ -17,10 +17,10 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class CallExpr : public Node
+class BinaryOpExpr : public Node
 {
 public:
-	CallExpr() : Node(),
+	BinaryOpExpr() : Node(),
 		interfaceGraph(this),
 		interfaceCall(this),
 		interfaceType(this) {}
@@ -28,10 +28,10 @@ public:
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kCallExpr;
+		return k == kBinaryOpExpr;
 	}
 
-	virtual string getClassName() const { return "CallExpr"; }
+	virtual string getClassName() const { return "BinaryOpExpr"; }
 
 	void setGraphPrev(const NodePtr& v)
 	{
@@ -154,35 +154,47 @@ public:
 		return actualType;
 	}
 
-	void setName(const string& v)
+	void setOperatorName(const string& v)
 	{
-		if (v != name) {
+		if (v != operatorName) {
 			modify();
-			name = v;
+			operatorName = v;
 		}
 	}
-	const string& getName()
+	const string& getOperatorName()
 	{
-		return name;
+		return operatorName;
 	}
 
-	void setArgs(const NodeVector& v)
+	void setLhs(const NodePtr& v)
 	{
-		if (v != args) {
+		if (v != lhs) {
 			modify();
-			args = v;
+			lhs = v;
 		}
 	}
-	const NodeVector& getArgs()
+	const NodePtr& getLhs()
 	{
-		return args;
+		return lhs;
+	}
+
+	void setRhs(const NodePtr& v)
+	{
+		if (v != rhs) {
+			modify();
+			rhs = v;
+		}
+	}
+	const NodePtr& getRhs()
+	{
+		return rhs;
 	}
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "CallExpr{…}";
+		if (depth == 0) return "BinaryOpExpr{…}";
 		stringstream str, b;
-		str << "CallExpr{";
+		str << "BinaryOpExpr{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
 		if (!this->callName.empty()) b << endl << "  \033[1mcallName\033[0m = '\033[33m" << this->callName << "\033[0m'";
 		if (!this->callArgs.empty()) b << endl << "  \033[1mcallArgs\033[0m = " << indent(describeVector(this->callArgs, depth-1)) << "";
@@ -191,8 +203,9 @@ public:
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
-		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
-		if (!this->args.empty()) b << endl << "  \033[1margs\033[0m = " << indent(describeVector(this->args, depth-1)) << "";
+		if (!this->operatorName.empty()) b << endl << "  \033[1moperatorName\033[0m = '\033[33m" << this->operatorName << "\033[0m'";
+		if (this->lhs) b << endl << "  \033[1mlhs\033[0m = " << indent(this->lhs->describe(depth-1));
+		if (this->rhs) b << endl << "  \033[1mrhs\033[0m = " << indent(this->rhs->describe(depth-1));
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -209,8 +222,9 @@ public:
 		e.encode(this->possibleType);
 		e.encode(this->requiredType);
 		e.encode(this->actualType);
-		e.encode(this->name);
-		e.encode(this->args);
+		e.encode(this->operatorName);
+		e.encode(this->lhs);
+		e.encode(this->rhs);
 	}
 
 	virtual void decode(Decoder& d)
@@ -223,8 +237,9 @@ public:
 		d.decode(this->possibleType);
 		d.decode(this->requiredType);
 		d.decode(this->actualType);
-		d.decode(this->name);
-		d.decode(this->args);
+		d.decode(this->operatorName);
+		d.decode(this->lhs);
+		d.decode(this->rhs);
 	}
 
 	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
@@ -241,10 +256,8 @@ public:
 		if (this->possibleType) this->possibleType->updateHierarchy(id + "possibleType", repository, this);
 		if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
 		if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
-		for (int i = 0; i < this->args.size(); i++) {
-			char buf[32]; snprintf(buf, 31, "%i", i);
-			this->args[i]->updateHierarchy((id + "args") + buf, repository, this);
-		}
+		if (this->lhs) this->lhs->updateHierarchy(id + "lhs", repository, this);
+		if (this->rhs) this->rhs->updateHierarchy(id + "rhs", repository, this);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -252,36 +265,13 @@ public:
 		size_t size = path.size();
 		// .*
 		if (true) {
-			// a.*
-			if (size >= 1 && path[0] == 'a') {
-				// actualType.*
-				if (size >= 10 && path[1] == 'c' && path[2] == 't' && path[3] == 'u' && path[4] == 'a' && path[5] == 'l' && path[6] == 'T' && path[7] == 'y' && path[8] == 'p' && path[9] == 'e') {
-					// actualType
-					if (size == 10) {
-						return getActualType();
-					} else if (path[10] == '.') {
-						return getActualType()->resolvePath(path.substr(11));
-					}
-				}
-				// args.*
-				if (size >= 4 && path[1] == 'r' && path[2] == 'g' && path[3] == 's') {
-					// args
-					if (size == 4) {
-						throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
-					} else if (path[4] == '.') {
-						size_t dot = path.find(".", 5);
-						string idx_str = path.substr(5, dot);
-						int idx = atoi(idx_str.c_str());
-						const NodeVector& a = getArgs();
-						if (idx < 0 || idx >= a.size()) {
-							throw std::runtime_error("Index into array '" + path.substr(0, 4) + "' is out of bounds.");
-						}
-						if (dot == string::npos) {
-							return a[idx];
-						} else {
-							return a[idx]->resolvePath(path.substr(dot + 1));
-						}
-					}
+			// actualType.*
+			if (size >= 10 && path[0] == 'a' && path[1] == 'c' && path[2] == 't' && path[3] == 'u' && path[4] == 'a' && path[5] == 'l' && path[6] == 'T' && path[7] == 'y' && path[8] == 'p' && path[9] == 'e') {
+				// actualType
+				if (size == 10) {
+					return getActualType();
+				} else if (path[10] == '.') {
+					return getActualType()->resolvePath(path.substr(11));
 				}
 			}
 			// call.*
@@ -336,6 +326,15 @@ public:
 					return getGraphPrev()->resolvePath(path.substr(10));
 				}
 			}
+			// lhs.*
+			if (size >= 3 && path[0] == 'l' && path[1] == 'h' && path[2] == 's') {
+				// lhs
+				if (size == 3) {
+					return getLhs();
+				} else if (path[3] == '.') {
+					return getLhs()->resolvePath(path.substr(4));
+				}
+			}
 			// possibleType.*
 			if (size >= 12 && path[0] == 'p' && path[1] == 'o' && path[2] == 's' && path[3] == 's' && path[4] == 'i' && path[5] == 'b' && path[6] == 'l' && path[7] == 'e' && path[8] == 'T' && path[9] == 'y' && path[10] == 'p' && path[11] == 'e') {
 				// possibleType
@@ -345,13 +344,25 @@ public:
 					return getPossibleType()->resolvePath(path.substr(13));
 				}
 			}
-			// requiredType.*
-			if (size >= 12 && path[0] == 'r' && path[1] == 'e' && path[2] == 'q' && path[3] == 'u' && path[4] == 'i' && path[5] == 'r' && path[6] == 'e' && path[7] == 'd' && path[8] == 'T' && path[9] == 'y' && path[10] == 'p' && path[11] == 'e') {
-				// requiredType
-				if (size == 12) {
-					return getRequiredType();
-				} else if (path[12] == '.') {
-					return getRequiredType()->resolvePath(path.substr(13));
+			// r.*
+			if (size >= 1 && path[0] == 'r') {
+				// requiredType.*
+				if (size >= 12 && path[1] == 'e' && path[2] == 'q' && path[3] == 'u' && path[4] == 'i' && path[5] == 'r' && path[6] == 'e' && path[7] == 'd' && path[8] == 'T' && path[9] == 'y' && path[10] == 'p' && path[11] == 'e') {
+					// requiredType
+					if (size == 12) {
+						return getRequiredType();
+					} else if (path[12] == '.') {
+						return getRequiredType()->resolvePath(path.substr(13));
+					}
+				}
+				// rhs.*
+				if (size >= 3 && path[1] == 'h' && path[2] == 's') {
+					// rhs
+					if (size == 3) {
+						return getRhs();
+					} else if (path[3] == '.') {
+						return getRhs()->resolvePath(path.substr(4));
+					}
 				}
 			}
 			// selectedCallCandidate.*
@@ -370,7 +381,8 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		v.insert(v.end(), this->args.begin(), this->args.end());
+		if (const NodePtr& n = this->getLhs()) v.push_back(n);
+		if (const NodePtr& n = this->getRhs()) v.push_back(n);
 		return v;
 	}
 
@@ -388,13 +400,14 @@ protected:
 	NodePtr possibleType;
 	NodePtr requiredType;
 	NodePtr actualType;
-	string name;
-	NodeVector args;
+	string operatorName;
+	NodePtr lhs;
+	NodePtr rhs;
 
 	// Interfaces
-	GraphInterfaceImpl<CallExpr> interfaceGraph;
-	CallInterfaceImpl<CallExpr> interfaceCall;
-	TypeInterfaceImpl<CallExpr> interfaceType;
+	GraphInterfaceImpl<BinaryOpExpr> interfaceGraph;
+	CallInterfaceImpl<BinaryOpExpr> interfaceCall;
+	TypeInterfaceImpl<BinaryOpExpr> interfaceType;
 };
 
 } // namespace ast

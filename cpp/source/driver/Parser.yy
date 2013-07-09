@@ -49,6 +49,7 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 }
 
 %type <node> func_decl func_arg func_arg_tuple type_decl body stmt expr type_expr union_type_expr nonunion_type_expr
+%type <node> primary_expr multiplicative_expr additive_expr relational_expr
 %type <nodes> func_args stmts union_type_exprs
 %type <varDefExpr> var_expr
 
@@ -56,6 +57,8 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 %token <string> REAL "real number constant"
 %token <string> INTEGER "integer number constant"
 %token <string> STRING_LITERAL "string constant"
+%token <string> OPERATOR "operator"
+%token <string> MULTIPLICATIVE_OPERATOR ADDITIVE_OPERATOR RELATIONAL_OPERATOR
 %token <symbol> SYMBOL "symbol"
 %token END 0 "end of input"
 
@@ -77,10 +80,7 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 %token RIGHTARROW "right arrow ->"
 %token ASSIGN "assignment operator ="
 
-%left "+" "-"
-%left "*" "/"
-
-%destructor { delete $$; } IDENTIFIER REAL INTEGER STRING_LITERAL
+%destructor { delete $$; } IDENTIFIER REAL INTEGER STRING_LITERAL OPERATOR
 
 %start root
 
@@ -253,14 +253,54 @@ stmt  : expr SEMICOLON {
         }
       ;
 
-expr  : IDENTIFIER {
-          IdentifierExpr *i = new IdentifierExpr;
-          i->setName(*$1);
-          $$ = i;
-          delete $1;
-        }
+primary_expr  : IDENTIFIER {
+                  IdentifierExpr *i = new IdentifierExpr;
+                  i->setName(*$1);
+                  $$ = i;
+                  delete $1;
+                }
+              | LPAREN expr RPAREN { $$ = $2; }
+              ;
+
+multiplicative_expr
+  : primary_expr
+  | multiplicative_expr MULTIPLICATIVE_OPERATOR primary_expr {
+      BinaryOpExpr *e = new BinaryOpExpr;
+      e->setOperatorName(*$2);
+      e->setLhs(shared_ptr<Node>($1));
+      e->setRhs(shared_ptr<Node>($3));
+      $$ = e;
+      delete $2;
+    }
+  ;
+
+additive_expr
+  : multiplicative_expr
+  | additive_expr ADDITIVE_OPERATOR multiplicative_expr {
+      BinaryOpExpr *e = new BinaryOpExpr;
+      e->setOperatorName(*$2);
+      e->setLhs(shared_ptr<Node>($1));
+      e->setRhs(shared_ptr<Node>($3));
+      $$ = e;
+      delete $2;
+    }
+  ;
+
+relational_expr
+  : additive_expr
+  | relational_expr RELATIONAL_OPERATOR additive_expr {
+      BinaryOpExpr *e = new BinaryOpExpr;
+      e->setOperatorName(*$2);
+      e->setLhs(shared_ptr<Node>($1));
+      e->setRhs(shared_ptr<Node>($3));
+      $$ = e;
+      delete $2;
+    }
+  ;
+
+expr  : relational_expr
       | var_expr { $$ = $<node>1; }
-      | var_expr ASSIGN expr {
+      | var_expr ASSIGN relational_expr {
           $1->setInitialExpr(shared_ptr<Node>($3));
         }
       ;

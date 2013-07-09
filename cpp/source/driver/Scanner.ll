@@ -36,6 +36,11 @@ typedef driver::Parser::token_type token_type;
 
 %x IN_COMMENT
 
+additive_op         [+\-]
+multiplicative_op   [*%/]
+relational_op       [<>]=?
+symbol              {additive_op}|{multiplicative_op}|{relational_op}|[\.:~&]
+
 %% /*** Token Regular Expressions ***/
 
  /* Whenever yylex() is invoked, we step the location tracker forward. */
@@ -85,15 +90,18 @@ typedef driver::Parser::token_type token_type;
 "["  return token::LBRACK;
 "]"  return token::RBRACK;
 
-"|"  return token::PIPE;
-
 "."  return token::DOT;
 ","  return token::COMMA;
 ":"  return token::COLON;
 ";"  return token::SEMICOLON;
 
 "->" return token::RIGHTARROW;
+"|"  return token::PIPE;
 "="  return token::ASSIGN;
+
+({additive_op}{symbol}*|{symbol}*{additive_op})             storeToken; return token::ADDITIVE_OPERATOR;
+({multiplicative_op}{symbol}*|{symbol}*{multiplicative_op}) storeToken; return token::MULTIPLICATIVE_OPERATOR;
+({relational_op}{symbol}*|{symbol}*{relational_op})         storeToken; return token::RELATIONAL_OPERATOR;
 
  /* All other characters are interpreted as a symbol. */
 . {

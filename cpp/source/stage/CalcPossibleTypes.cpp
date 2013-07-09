@@ -33,10 +33,11 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 	if (IdentifierExpr *ident = dynamic_cast<IdentifierExpr*>(node.get())) {
 		const NodePtr& target = ident->getBindingTarget();
 		if (VarDefExpr *t = dynamic_cast<VarDefExpr*>(target.get())) {
-			// addDependency(ident, "actualType");
+			addDependency(ident, "actualType");
 			ident->setPossibleType(t->getActualType());
 		} else if (FuncArg *t = dynamic_cast<FuncArg*>(target.get())) {
-			std::cout << "Function arguments binding targets of identifiers not yet supported for CalcPossibleTypes\n";
+			addDependency(ident, "type");
+			ident->setPossibleType(t->getType());
 		} else {
 			throw std::runtime_error("Identifier target '" + target->getId().str() + "' not supported for CalcPossibleTypes.");
 		}

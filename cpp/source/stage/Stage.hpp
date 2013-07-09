@@ -8,6 +8,7 @@
 namespace stage {
 
 using std::string;
+using ast::Node;
 using ast::NodePtr;
 using ast::Repository;
 
@@ -28,7 +29,7 @@ public:
 
 	Stage(Repository& r) : repository(r) {}
 
-	void addDependency(const NodePtr& node, string type) {}
+	void addDependency(Node* node, string type) {}
 };
 
 }

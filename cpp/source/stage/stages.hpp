@@ -31,6 +31,14 @@ public:
 	BindNamedTypes(Repository& r) : Stage(r) {}
 };
 
+class ConfigureCalls : public Stage
+{
+public:
+	string getName() const { return "ConfigureCalls"; }
+	virtual void process(const NodePtr& node);
+	ConfigureCalls(Repository& r) : Stage(r) {}
+};
+
 class CalcPossibleTypes : public Stage
 {
 public:

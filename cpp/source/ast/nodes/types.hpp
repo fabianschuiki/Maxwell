@@ -5,6 +5,7 @@ namespace ast {
 
 /// Node kinds that may be used to test whether a Node is of a given subclass.
 typedef enum {
+	kBinaryOpExpr,
 	kCallArg,
 	kCallCandidate,
 	kCallExpr,

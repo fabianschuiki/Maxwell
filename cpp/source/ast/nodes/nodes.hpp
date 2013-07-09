@@ -6,6 +6,7 @@
 #include "CallArg.hpp"
 #include "CallCandidate.hpp"
 #include "CallExpr.hpp"
+#include "CallExprArg.hpp"
 #include "ExprStmt.hpp"
 #include "FuncArg.hpp"
 #include "FuncArgTuple.hpp"
@@ -13,6 +14,7 @@
 #include "FuncDef.hpp"
 #include "GenericType.hpp"
 #include "IdentifierExpr.hpp"
+#include "MemberAccessExpr.hpp"
 #include "NamedType.hpp"
 #include "TypeDef.hpp"
 #include "UnaryOpExpr.hpp"
@@ -53,6 +55,11 @@ public:
 				if (size >= 8 && name[4] == 'E' && name[5] == 'x' && name[6] == 'p' && name[7] == 'r') {
 					// CallExpr
 					if (size == 8) return NodePtr(new CallExpr);
+					// CallExprArg.*
+					if (size >= 11 && name[8] == 'A' && name[9] == 'r' && name[10] == 'g') {
+						// CallExprArg
+						if (size == 11) return NodePtr(new CallExprArg);
+					}
 				}
 			}
 			// ExprStmt.*
@@ -92,6 +99,11 @@ public:
 			if (size >= 14 && name[0] == 'I' && name[1] == 'd' && name[2] == 'e' && name[3] == 'n' && name[4] == 't' && name[5] == 'i' && name[6] == 'f' && name[7] == 'i' && name[8] == 'e' && name[9] == 'r' && name[10] == 'E' && name[11] == 'x' && name[12] == 'p' && name[13] == 'r') {
 				// IdentifierExpr
 				if (size == 14) return NodePtr(new IdentifierExpr);
+			}
+			// MemberAccessExpr.*
+			if (size >= 16 && name[0] == 'M' && name[1] == 'e' && name[2] == 'm' && name[3] == 'b' && name[4] == 'e' && name[5] == 'r' && name[6] == 'A' && name[7] == 'c' && name[8] == 'c' && name[9] == 'e' && name[10] == 's' && name[11] == 's' && name[12] == 'E' && name[13] == 'x' && name[14] == 'p' && name[15] == 'r') {
+				// MemberAccessExpr
+				if (size == 16) return NodePtr(new MemberAccessExpr);
 			}
 			// NamedType.*
 			if (size >= 9 && name[0] == 'N' && name[1] == 'a' && name[2] == 'm' && name[3] == 'e' && name[4] == 'd' && name[5] == 'T' && name[6] == 'y' && name[7] == 'p' && name[8] == 'e') {

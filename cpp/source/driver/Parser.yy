@@ -48,9 +48,9 @@ typedef std::vector<shared_ptr<Node> > Nodes;
     int symbol;
 }
 
-%type <node> func_decl func_arg func_arg_tuple type_decl body stmt expr type_expr union_type_expr nonunion_type_expr
-%type <node> primary_expr postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr 
-%type <nodes> func_args stmts union_type_exprs
+%type <node> func_decl func_arg func_arg_tuple type_decl body stmt expr type_expr union_type_expr nonunion_type_expr call_arg
+%type <node> primary_expr postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr
+%type <nodes> func_args stmts union_type_exprs call_args
 %type <varDefExpr> var_expr
 %type <string> prefix_op
 
@@ -274,11 +274,48 @@ postfix_expr
       delete $2;
     }
   | postfix_expr DOT IDENTIFIER {
-      std::cout << "access to " << *$3 << std::endl;
+      MemberAccessExpr *m = new MemberAccessExpr;
+      m->setExpr(shared_ptr<Node>($1));
+      m->setName(*$3);
+      $$ = m;
       delete $3;
     }
   | postfix_expr LPAREN RPAREN {
-      std::cout << "call" << std::endl;
+      CallExpr *c = new CallExpr;
+      c->setExpr(shared_ptr<Node>($1));
+      $$ = c;
+    }
+  | postfix_expr LPAREN call_args RPAREN {
+      CallExpr *c = new CallExpr;
+      c->setExpr(shared_ptr<Node>($1));
+      c->setArgs(*$3);
+      $$ = c;
+      delete $3;
+    }
+  ;
+
+call_args
+  : call_arg {
+      $$ = new Nodes;
+      $$->push_back(shared_ptr<Node>($1));
+    }
+  | call_args COMMA call_arg {
+      $1->push_back(shared_ptr<Node>($3));
+    }
+  ;
+
+call_arg
+  : IDENTIFIER COLON expr {
+      CallExprArg *a = new CallExprArg;
+      a->setName(*$1);
+      a->setExpr(shared_ptr<Node>($3));
+      $$ = a;
+      delete $1;
+    }
+  | expr {
+      CallExprArg *a = new CallExprArg;
+      a->setExpr(shared_ptr<Node>($1));
+      $$ = a;
     }
   ;
 

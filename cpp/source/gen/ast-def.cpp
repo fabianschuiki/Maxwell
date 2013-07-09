@@ -64,8 +64,12 @@ void buildAST(Builder &node)
 		.child("initialExpr", "any");
 	node("CallExpr")
 		.intf(graph).intf(call).intf(type)
-		.attr("name", "string")
+		.child("expr", "any")
 		.child("args", "[any]");
+	node("CallExprArg")
+		.intf(graph)
+		.attr("name", "string")
+		.child("expr", "any");
 	node("BinaryOpExpr")
 		.intf(graph).intf(call).intf(type)
 		.attr("operatorName", "string") // 'operator' would be a keyword
@@ -76,6 +80,10 @@ void buildAST(Builder &node)
 		.attr("operatorName", "string")
 		.attr("postfix", "bool")
 		.child("expr", "any");
+	node("MemberAccessExpr")
+		.intf(graph).intf(type)
+		.child("expr", "any")
+		.attr("name", "string");
 
 	// Type Expressions
 	node("GenericType")

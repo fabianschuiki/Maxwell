@@ -154,16 +154,16 @@ public:
 		return actualType;
 	}
 
-	void setName(const string& v)
+	void setExpr(const NodePtr& v)
 	{
-		if (v != name) {
+		if (v != expr) {
 			modify();
-			name = v;
+			expr = v;
 		}
 	}
-	const string& getName()
+	const NodePtr& getExpr()
 	{
-		return name;
+		return expr;
 	}
 
 	void setArgs(const NodeVector& v)
@@ -191,7 +191,7 @@ public:
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
-		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
+		if (this->expr) b << endl << "  \033[1mexpr\033[0m = " << indent(this->expr->describe(depth-1));
 		if (!this->args.empty()) b << endl << "  \033[1margs\033[0m = " << indent(describeVector(this->args, depth-1)) << "";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
@@ -209,7 +209,7 @@ public:
 		e.encode(this->possibleType);
 		e.encode(this->requiredType);
 		e.encode(this->actualType);
-		e.encode(this->name);
+		e.encode(this->expr);
 		e.encode(this->args);
 	}
 
@@ -223,7 +223,7 @@ public:
 		d.decode(this->possibleType);
 		d.decode(this->requiredType);
 		d.decode(this->actualType);
-		d.decode(this->name);
+		d.decode(this->expr);
 		d.decode(this->args);
 	}
 
@@ -241,6 +241,7 @@ public:
 		if (this->possibleType) this->possibleType->updateHierarchy(id + "possibleType", repository, this);
 		if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
 		if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
+		if (this->expr) this->expr->updateHierarchy(id + "expr", repository, this);
 		for (int i = 0; i < this->args.size(); i++) {
 			char buf[32]; snprintf(buf, 31, "%i", i);
 			this->args[i]->updateHierarchy((id + "args") + buf, repository, this);
@@ -327,6 +328,15 @@ public:
 					}
 				}
 			}
+			// expr.*
+			if (size >= 4 && path[0] == 'e' && path[1] == 'x' && path[2] == 'p' && path[3] == 'r') {
+				// expr
+				if (size == 4) {
+					return getExpr();
+				} else if (path[4] == '.') {
+					return getExpr()->resolvePath(path.substr(5));
+				}
+			}
 			// graphPrev.*
 			if (size >= 9 && path[0] == 'g' && path[1] == 'r' && path[2] == 'a' && path[3] == 'p' && path[4] == 'h' && path[5] == 'P' && path[6] == 'r' && path[7] == 'e' && path[8] == 'v') {
 				// graphPrev
@@ -370,6 +380,7 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
+		if (const NodePtr& n = this->getExpr()) v.push_back(n);
 		v.insert(v.end(), this->args.begin(), this->args.end());
 		return v;
 	}
@@ -388,7 +399,7 @@ protected:
 	NodePtr possibleType;
 	NodePtr requiredType;
 	NodePtr actualType;
-	string name;
+	NodePtr expr;
 	NodeVector args;
 
 	// Interfaces

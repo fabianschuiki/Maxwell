@@ -2,6 +2,7 @@
 #include "Driver.hpp"
 #include "Scanner.hpp"
 #include <fstream>
+#include <sstream>
 
 using driver::Driver;
 
@@ -27,12 +28,14 @@ bool Driver::parseFile(const std::string& filename)
 
 void Driver::error(const class location& l, const std::string& m)
 {
-	std::cerr << l << ": " << m << std::endl;
+	std::stringstream s;
+	s << l << ": " << m;
+	throw std::runtime_error(s.str());
 }
 
 void Driver::error(const std::string& m)
 {
-	std::cerr << m << std::endl;
+	throw std::runtime_error(m);
 }
 
 void Driver::add(const NodePtr& node)

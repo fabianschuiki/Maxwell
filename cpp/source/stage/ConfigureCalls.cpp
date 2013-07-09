@@ -19,7 +19,24 @@ void ConfigureCalls::process(const NodePtr& node)
 	}
 
 	// Configure binary operators.
-	if (BinaryOpExpr *call = dynamic_cast<BinaryOpExpr*>(node.get())) {
-		
+	if (BinaryOpExpr *binop = dynamic_cast<BinaryOpExpr*>(node.get())) {
+		if (binop->getCallName().empty() || binop->getCallArgs().empty())
+		{
+			// Use the operator as function name.
+			binop->setCallName(binop->getOperatorName());
+
+			// Create references to the left and right hand side.
+			shared_ptr<CallArg> lhs(new CallArg), rhs(new CallArg);
+			lhs->setExpr(binop->getLhs());
+			rhs->setExpr(binop->getRhs());
+
+			// Create the argument vector.
+			NodeVector args(2);
+			args[0] = lhs;
+			args[1] = rhs;
+
+			// Store the arguments in the call interface.
+			binop->setCallArgs(args);
+		}
 	}
 }

@@ -60,6 +60,11 @@ public:
 		}
 	}
 
+	virtual void encode(const bool& b)
+	{
+		out << (b ? "1 " : "0 ");
+	}
+
 	virtual void encode(const NodeVector& nodes)
 	{
 		if (nodes.empty()) {
@@ -132,6 +137,19 @@ public:
 			str.clear();
 		} else {
 			str = base64::decode(rd);
+		}
+	}
+
+	virtual void decode(bool& b)
+	{
+		string rd;
+		in >> rd;
+		if (rd == "0") {
+			b = false;
+		} else if (rd == "1") {
+			b = true;
+		} else {
+			throw std::runtime_error("Boolean value must either be 1 or 0, got '" + rd + "' instead.");
 		}
 	}
 

@@ -39,4 +39,28 @@ void ConfigureCalls::process(const NodePtr& node)
 			binop->setCallArgs(args);
 		}
 	}
+
+	// Configure unary operators.
+	if (UnaryOpExpr *unop = dynamic_cast<UnaryOpExpr*>(node.get())) {
+		if (unop->getCallName().empty() || unop->getCallArgs().empty())
+		{
+			// Use the operator as function name.
+			string name = unop->getOperatorName();
+			if (unop->getPostfix()) {
+				name = '_' + name;
+			}
+			unop->setCallName(name);
+
+			// Create a reference to the operand.
+			shared_ptr<CallArg> arg(new CallArg);
+			arg->setExpr(unop->getExpr());
+
+			// Create the argument vector.
+			NodeVector args(1);
+			args[0] = arg;
+
+			// Store the arguments in the call interface.
+			unop->setCallArgs(args);
+		}
+	}
 }

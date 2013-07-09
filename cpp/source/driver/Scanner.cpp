@@ -397,8 +397,8 @@ typedef unsigned char YY_CHAR;
 	(yy_c_buf_p) = yy_cp;
 
 /* %% [4.0] data tables for the DFA and the user's section 1 definitions go here */
-#define YY_NUM_RULES 32
-#define YY_END_OF_BUFFER 33
+#define YY_NUM_RULES 33
+#define YY_END_OF_BUFFER 34
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -408,11 +408,11 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[81] =
     {   0,
-        0,    0,    0,    0,   33,   31,    1,    2,   31,   29,
+       31,   31,    0,    0,   34,   32,    1,    2,   32,   29,
        31,   15,   16,   28,   22,   28,   21,   29,   14,   23,
        24,   30,   27,   12,   19,   20,   12,   12,   12,   17,
        26,   18,    6,    7,    1,    0,    8,    0,   29,   28,
-       29,   29,    0,   28,   30,   28,   28,   28,   25,    4,
+       29,   29,   31,   28,   30,   28,   28,   28,   25,    4,
         3,   13,   14,   29,   30,   28,   30,   30,   12,   12,
        12,   12,    6,    5,   29,   30,   28,    3,    3,    3,
         3,   13,   30,   12,   12,   10,    3,    9,   11,    0
@@ -423,13 +423,13 @@ static yyconst flex_int32_t yy_ec[256] =
         1,    1,    1,    1,    1,    1,    1,    1,    2,    3,
         1,    1,    2,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    2,    1,    4,    1,    1,    5,    6,    1,    7,
+        1,    2,    1,    4,    1,    1,    5,    6,    6,    7,
         8,    9,   10,   11,   12,   13,   14,   15,   15,   15,
        15,   15,   15,   15,   15,   15,   15,   16,   17,   18,
        19,   20,    1,    1,   21,   21,   21,   21,   21,   21,
        21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
        21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
-       22,   23,   24,    1,   21,    1,   25,   21,   26,   21,
+       22,   23,   24,    6,   21,    1,   25,   21,   26,   21,
 
        27,   28,   21,   21,   21,   21,   21,   21,   21,   29,
        21,   30,   21,   31,   21,   32,   33,   34,   21,   21,
@@ -540,12 +540,12 @@ static yyconst flex_int16_t yy_chk[212] =
        80
     } ;
 
-static yyconst flex_int16_t yy_rule_linenum[32] =
+static yyconst flex_int16_t yy_rule_linenum[33] =
     {   0,
        53,   58,   64,   66,   69,   70,   71,   75,   78,   79,
        80,   82,   83,   84,   86,   87,   88,   89,   90,   91,
        93,   94,   95,   96,   98,   99,  100,  102,  103,  104,
-      107
+      105,  108
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -836,12 +836,12 @@ do_action:	/* This label is used only to access EOF actions. */
 			{
 			if ( yy_act == 0 )
 				std::cerr << "--scanner backing up\n";
-			else if ( yy_act < 32 )
+			else if ( yy_act < 33 )
 				std::cerr << "--accepting rule at line " << yy_rule_linenum[yy_act] <<
 				         "(\"" << yytext << "\")\n";
-			else if ( yy_act == 32 )
-				std::cerr << "--accepting default rule (\"" << yytext << "\")\n";
 			else if ( yy_act == 33 )
+				std::cerr << "--accepting default rule (\"" << yytext << "\")\n";
+			else if ( yy_act == 34 )
 				std::cerr << "--(end of buffer or a NUL)\n";
 			else
 				std::cerr << "--EOF (start condition " << YY_START << ")\n";
@@ -1022,20 +1022,27 @@ YY_RULE_SETUP
 #line 104 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 storeToken; return token::RELATIONAL_OPERATOR;
 	YY_BREAK
-/* All other characters are interpreted as a symbol. */
 case 31:
 YY_RULE_SETUP
-#line 107 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-{
-    yylval->symbol = yytext[0]; return token::SYMBOL;
-}
+#line 105 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+storeToken; return token::OPERATOR;
 	YY_BREAK
+/* All other characters are rejected. */
 case 32:
 YY_RULE_SETUP
-#line 112 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 108 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+{
+    std::stringstream s;
+    s << "Unknown token '" << yytext[0] << "'";
+    throw std::runtime_error(s.str());
+}
+	YY_BREAK
+case 33:
+YY_RULE_SETUP
+#line 115 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 ECHO;
 	YY_BREAK
-#line 1039 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
+#line 1046 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(IN_COMMENT):
 	yyterminate();
@@ -2085,7 +2092,7 @@ void Driverfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 112 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 115 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 
 
 

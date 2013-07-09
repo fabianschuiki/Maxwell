@@ -15,6 +15,7 @@
 #include "IdentifierExpr.hpp"
 #include "NamedType.hpp"
 #include "TypeDef.hpp"
+#include "UnaryOpExpr.hpp"
 #include "UnionType.hpp"
 #include "VarDefExpr.hpp"
 
@@ -102,10 +103,18 @@ public:
 				// TypeDef
 				if (size == 7) return NodePtr(new TypeDef);
 			}
-			// UnionType.*
-			if (size >= 9 && name[0] == 'U' && name[1] == 'n' && name[2] == 'i' && name[3] == 'o' && name[4] == 'n' && name[5] == 'T' && name[6] == 'y' && name[7] == 'p' && name[8] == 'e') {
-				// UnionType
-				if (size == 9) return NodePtr(new UnionType);
+			// Un.*
+			if (size >= 2 && name[0] == 'U' && name[1] == 'n') {
+				// UnaryOpExpr.*
+				if (size >= 11 && name[2] == 'a' && name[3] == 'r' && name[4] == 'y' && name[5] == 'O' && name[6] == 'p' && name[7] == 'E' && name[8] == 'x' && name[9] == 'p' && name[10] == 'r') {
+					// UnaryOpExpr
+					if (size == 11) return NodePtr(new UnaryOpExpr);
+				}
+				// UnionType.*
+				if (size >= 9 && name[2] == 'i' && name[3] == 'o' && name[4] == 'n' && name[5] == 'T' && name[6] == 'y' && name[7] == 'p' && name[8] == 'e') {
+					// UnionType
+					if (size == 9) return NodePtr(new UnionType);
+				}
 			}
 			// VarDefExpr.*
 			if (size >= 10 && name[0] == 'V' && name[1] == 'a' && name[2] == 'r' && name[3] == 'D' && name[4] == 'e' && name[5] == 'f' && name[6] == 'E' && name[7] == 'x' && name[8] == 'p' && name[9] == 'r') {

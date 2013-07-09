@@ -18,6 +18,7 @@ typedef enum {
 	kIdentifierExpr,
 	kNamedType,
 	kTypeDef,
+	kUnaryOpExpr,
 	kUnionType,
 	kVarDefExpr
 } Kind;

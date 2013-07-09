@@ -33,6 +33,7 @@ public:
 		bool isString;
 		bool isArray;
 		bool isNode;
+		bool isBool;
 		vector<string> allowedNodes;
 		vector<string> allowedInterfaces;
 	};
@@ -69,9 +70,13 @@ private:
 		f.isString = false;
 		f.isArray = false;
 		f.isNode = false;
+		f.isBool = false;
 		if (type == "string") {
 			f.isString = true;
 			f.cpp_type = "string";
+		} else if (type == "bool") {
+			f.isBool = true;
+			f.cpp_type = "bool";
 		} else if (type.size() > 2 && type[0] == '[') {
 			f.isArray = true;
 			f.cpp_type = "NodeVector";

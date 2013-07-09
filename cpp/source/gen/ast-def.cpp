@@ -71,6 +71,11 @@ void buildAST(Builder &node)
 		.attr("operatorName", "string") // 'operator' would be a keyword
 		.child("lhs", "any")
 		.child("rhs", "any");
+	node("UnaryOpExpr")
+		.intf(graph).intf(call).intf(type)
+		.attr("operatorName", "string")
+		.attr("postfix", "bool")
+		.child("expr", "any");
 
 	// Type Expressions
 	node("GenericType")

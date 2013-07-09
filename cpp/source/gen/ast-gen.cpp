@@ -424,6 +424,8 @@ int main(int argc, char *argv[])
 			Node::Field& f = *fit;
 			if (f.isString) {
 				h << "\t\tif (!this->"<<f.name<<".empty()) b << endl << \"  \\033[1m"<<f.name<<"\\033[0m = '\\033[33m\" << this->"<<f.name<<" << \"\\033[0m'\";\n";
+			} else if (f.isBool) {
+				h << "\t\tb << endl << \"  \\033[1m"<<f.name<<"\\033[0m = \\033[34m\" << (this->"<<f.name<<" ? \"true\" : \"false\") << \"\\033[0m\";\n";
 			} else if (f.isNode) {
 				h << "\t\tif (this->" << f.name << ")";
 				h << " b << endl << \"  \\033[1m"<<f.name<<"\\033[0m = \"";

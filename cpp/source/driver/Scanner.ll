@@ -39,7 +39,7 @@ typedef driver::Parser::token_type token_type;
 additive_op         [+\-]
 multiplicative_op   [*%/]
 relational_op       [<>]=?
-symbol              {additive_op}|{multiplicative_op}|{relational_op}|[\.:~&]
+symbol              {additive_op}|{multiplicative_op}|{relational_op}|[\.:~&''^]
 
 %% /*** Token Regular Expressions ***/
 
@@ -102,10 +102,13 @@ symbol              {additive_op}|{multiplicative_op}|{relational_op}|[\.:~&]
 ({additive_op}{symbol}*|{symbol}*{additive_op})             storeToken; return token::ADDITIVE_OPERATOR;
 ({multiplicative_op}{symbol}*|{symbol}*{multiplicative_op}) storeToken; return token::MULTIPLICATIVE_OPERATOR;
 ({relational_op}{symbol}*|{symbol}*{relational_op})         storeToken; return token::RELATIONAL_OPERATOR;
+{symbol}*  storeToken; return token::OPERATOR;
 
- /* All other characters are interpreted as a symbol. */
+ /* All other characters are rejected. */
 . {
-    yylval->symbol = yytext[0]; return token::SYMBOL;
+    std::stringstream s;
+    s << "Unknown token '" << yytext[0] << "'";
+    throw std::runtime_error(s.str());
 }
 
 

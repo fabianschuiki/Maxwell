@@ -49,16 +49,16 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 }
 
 %type <node> func_decl func_arg func_arg_tuple type_decl body stmt expr type_expr union_type_expr nonunion_type_expr
-%type <node> primary_expr multiplicative_expr additive_expr relational_expr
+%type <node> primary_expr postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr 
 %type <nodes> func_args stmts union_type_exprs
 %type <varDefExpr> var_expr
+%type <string> prefix_op
 
 %token <string> IDENTIFIER "identifier"
 %token <string> REAL "real number constant"
 %token <string> INTEGER "integer number constant"
 %token <string> STRING_LITERAL "string constant"
-%token <string> OPERATOR "operator"
-%token <string> MULTIPLICATIVE_OPERATOR ADDITIVE_OPERATOR RELATIONAL_OPERATOR
+%token <string> MULTIPLICATIVE_OPERATOR ADDITIVE_OPERATOR RELATIONAL_OPERATOR OPERATOR
 %token <symbol> SYMBOL "symbol"
 %token END 0 "end of input"
 
@@ -253,18 +253,45 @@ stmt  : expr SEMICOLON {
         }
       ;
 
-primary_expr  : IDENTIFIER {
-                  IdentifierExpr *i = new IdentifierExpr;
-                  i->setName(*$1);
-                  $$ = i;
-                  delete $1;
-                }
-              | LPAREN expr RPAREN { $$ = $2; }
-              ;
+primary_expr
+  : IDENTIFIER {
+      IdentifierExpr *i = new IdentifierExpr;
+      i->setName(*$1);
+      $$ = i;
+      delete $1;
+    }
+  | LPAREN expr RPAREN { $$ = $2; }
+  ;
+
+postfix_expr
+  : primary_expr
+  | postfix_expr OPERATOR {
+      UnaryOpExpr *u = new UnaryOpExpr;
+      u->setPostfix(true);
+      u->setOperatorName(*$2);
+      u->setExpr(shared_ptr<Node>($1));
+      $$ = u;
+      delete $2;
+    }
+  /*| postfix_expr DOT IDENTIFIER*/
+  ;
+
+prefix_expr
+  : postfix_expr
+  | prefix_op prefix_expr {
+      UnaryOpExpr *u = new UnaryOpExpr;
+      u->setPostfix(false);
+      u->setOperatorName(*$1);
+      u->setExpr(shared_ptr<Node>($2));
+      $$ = u;
+      delete $1;
+    }
+  ;
+prefix_op: MULTIPLICATIVE_OPERATOR | ADDITIVE_OPERATOR | RELATIONAL_OPERATOR | OPERATOR;
 
 multiplicative_expr
-  : primary_expr
-  | multiplicative_expr MULTIPLICATIVE_OPERATOR primary_expr {
+  : prefix_expr
+  | multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr {
       BinaryOpExpr *e = new BinaryOpExpr;
       e->setOperatorName(*$2);
       e->setLhs(shared_ptr<Node>($1));

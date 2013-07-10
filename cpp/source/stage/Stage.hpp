@@ -10,6 +10,7 @@ namespace stage {
 using std::string;
 using ast::Node;
 using ast::NodePtr;
+using ast::NodeId;
 using ast::Repository;
 
 /**
@@ -29,7 +30,8 @@ public:
 
 	Stage(Repository& r) : repository(r) {}
 
-	void addDependency(Node* node, string type) {}
+	void addDependency(const NodeId& id, string path) {}
+	template <typename T> void addDependency(const T& node, string path) { addDependency(node->getId(), path); }
 };
 
 }

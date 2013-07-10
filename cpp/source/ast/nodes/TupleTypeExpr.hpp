@@ -187,6 +187,7 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
+		if (const NodePtr& n = this->getEvaluatedType(false)) v.push_back(n);
 		v.insert(v.end(), this->args.begin(), this->args.end());
 		return v;
 	}

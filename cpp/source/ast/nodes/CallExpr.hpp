@@ -453,6 +453,8 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
+		v.insert(v.end(), this->callArgs.begin(), this->callArgs.end());
+		v.insert(v.end(), this->callCandidates.begin(), this->callCandidates.end());
 		if (const NodePtr& n = this->getContext(false)) v.push_back(n);
 		v.insert(v.end(), this->args.begin(), this->args.end());
 		return v;

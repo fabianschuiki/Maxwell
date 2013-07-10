@@ -298,6 +298,7 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
+		if (const NodePtr& n = this->getType(false)) v.push_back(n);
 		if (const NodePtr& n = this->getInitialExpr(false)) v.push_back(n);
 		return v;
 	}

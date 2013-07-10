@@ -437,6 +437,8 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
+		v.insert(v.end(), this->callArgs.begin(), this->callArgs.end());
+		v.insert(v.end(), this->callCandidates.begin(), this->callCandidates.end());
 		if (const NodePtr& n = this->getLhs(false)) v.push_back(n);
 		if (const NodePtr& n = this->getRhs(false)) v.push_back(n);
 		return v;

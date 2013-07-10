@@ -23,41 +23,23 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		process(*it);
 	}
 
-	// Variable definitions.
-	if (VarDefExpr *var = dynamic_cast<VarDefExpr*>(node.get())) {
+	// Variable-like nodes.
+	if (VariableInterface *var = node->asVariable()) {
 		if (const NodePtr& type = var->getType(false)) {
-			addDependency(var, "type.evaluatedType");
+			addDependency(node, "type.evaluatedType");
 			var->setPossibleType(type->asTypeExpr()->getEvaluatedType());
 		} else {
-			addDependency(var, "type");
+			addDependency(node, "type");
 			var->setPossibleType(NodePtr(new GenericType));
-		}
-	}
-
-	// Function arguments.
-	if (FuncArg *arg = dynamic_cast<FuncArg*>(node.get())) {
-		if (const NodePtr& type = arg->getType(false)) {
-			addDependency(arg, "type.evaluatedType");
-			arg->setPossibleType(type->asTypeExpr()->getEvaluatedType());
-		} else {
-			addDependency(arg, "type");
-			arg->setPossibleType(NodePtr(new GenericType));
 		}
 	}
 
 	// Identifier expressions.
 	if (IdentifierExpr *ident = dynamic_cast<IdentifierExpr*>(node.get())) {
 		const NodePtr& target = ident->getBindingTarget();
-		if (VarDefExpr *t = dynamic_cast<VarDefExpr*>(target.get())) {
-			addDependency(ident, "actualType");
-			ident->setPossibleType(t->getActualType());
-		} else if (FuncArg *t = dynamic_cast<FuncArg*>(target.get())) {
-			addDependency(ident, "actualType");
-			ident->setPossibleType(t->getActualType());
-		} else if (FuncDef *f = dynamic_cast<FuncDef*>(target.get())) {
-			// addDependency(f, "type");
-			// TODO: this is just a dummy, actually calculate the function type!
-			ident->setPossibleType(NodePtr(new GenericType));
+		if (VariableInterface *intf = target->asVariable()) {
+			addDependency(target, "actualType");
+			ident->setPossibleType(intf->getActualType());
 		} else {
 			throw std::runtime_error("Identifier target '" + target->getId().str() + "' (a " + target->getClassName() + ") not supported for CalcPossibleTypes.");
 		}

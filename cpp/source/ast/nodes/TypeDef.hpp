@@ -29,6 +29,13 @@ public:
 		return k == kTypeDef;
 	}
 
+	virtual bool implements(Interface i)
+	{
+		if (Node::implements(i)) return true;
+		if (i == kGraphInterface) return true;
+		return false;
+	}
+
 	virtual string getClassName() const { return "TypeDef"; }
 
 	void setGraphPrev(const NodePtr& v)

@@ -30,6 +30,14 @@ public:
 		return k == kVarDefExpr;
 	}
 
+	virtual bool implements(Interface i)
+	{
+		if (Node::implements(i)) return true;
+		if (i == kGraphInterface) return true;
+		if (i == kTypeInterface) return true;
+		return false;
+	}
+
 	virtual string getClassName() const { return "VarDefExpr"; }
 
 	void setGraphPrev(const NodePtr& v)
@@ -117,6 +125,9 @@ public:
 
 	void setInitialExpr(const NodePtr& v)
 	{
+		if (v && !v->implements(kTypeInterface)) {
+			throw runtime_error("'initialExpr' needs to be of kind {} or implement interface {Type}.");
+		}
 		if (v != initialExpr) {
 			modify();
 			initialExpr = v;

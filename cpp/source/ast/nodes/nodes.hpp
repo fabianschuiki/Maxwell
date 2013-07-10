@@ -7,6 +7,7 @@
 #include "CallCandidate.hpp"
 #include "CallExpr.hpp"
 #include "CallExprArg.hpp"
+#include "DefinedType.hpp"
 #include "ExprStmt.hpp"
 #include "FuncArg.hpp"
 #include "FuncArgTuple.hpp"
@@ -61,6 +62,11 @@ public:
 						if (size == 11) return NodePtr(new CallExprArg);
 					}
 				}
+			}
+			// DefinedType.*
+			if (size >= 11 && name[0] == 'D' && name[1] == 'e' && name[2] == 'f' && name[3] == 'i' && name[4] == 'n' && name[5] == 'e' && name[6] == 'd' && name[7] == 'T' && name[8] == 'y' && name[9] == 'p' && name[10] == 'e') {
+				// DefinedType
+				if (size == 11) return NodePtr(new DefinedType);
 			}
 			// ExprStmt.*
 			if (size >= 8 && name[0] == 'E' && name[1] == 'x' && name[2] == 'p' && name[3] == 'r' && name[4] == 'S' && name[5] == 't' && name[6] == 'm' && name[7] == 't') {

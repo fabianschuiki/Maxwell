@@ -10,6 +10,7 @@ typedef enum {
 	kCallCandidate,
 	kCallExpr,
 	kCallExprArg,
+	kDefinedType,
 	kExprStmt,
 	kFuncArg,
 	kFuncArgTuple,
@@ -24,6 +25,13 @@ typedef enum {
 	kUnionType,
 	kVarDefExpr
 } Kind;
+
+/// Node interfaces that may be used to test whether a Node implements a given interface.
+typedef enum {
+	kCallInterface,
+	kGraphInterface,
+	kTypeInterface
+} Interface;
 
 } // namespace ast
 

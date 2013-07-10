@@ -20,8 +20,7 @@ using std::runtime_error;
 class GenericType : public Node
 {
 public:
-	GenericType() : Node(),
-		interfaceGraph(this) {}
+	GenericType() : Node() {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -29,37 +28,19 @@ public:
 		return k == kGenericType;
 	}
 
-	virtual string getClassName() const { return "GenericType"; }
+	virtual bool implements(Interface i)
+	{
+		if (Node::implements(i)) return true;
+		return false;
+	}
 
-	void setGraphPrev(const NodePtr& v)
-	{
-		if (!v && graphPrev) {
-			modify();
-			graphPrev.reset();
-		}
-		if (!graphPrev || v->getId() != graphPrev.id) {
-			modify();
-			graphPrev.set(v);
-		}
-	}
-	void setGraphPrev(const NodeId& v)
-	{
-		if (v != graphPrev.id) {
-			modify();
-			graphPrev.set(v);
-		}
-	}
-	const NodePtr& getGraphPrev()
-	{
-		return graphPrev.get(repository);
-	}
+	virtual string getClassName() const { return "GenericType"; }
 
 	virtual string describe(int depth = -1)
 	{
 		if (depth == 0) return "GenericType{…}";
 		stringstream str, b;
 		str << "GenericType{";
-		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -68,12 +49,10 @@ public:
 
 	virtual void encode(Encoder& e)
 	{
-		e.encode(this->graphPrev);
 	}
 
 	virtual void decode(Decoder& d)
 	{
-		d.decode(this->graphPrev);
 	}
 
 	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
@@ -83,27 +62,10 @@ public:
 
 	virtual const NodePtr& resolvePath(const string& path)
 	{
-		size_t size = path.size();
-		// graphPrev.*
-		if (size >= 9 && path[0] == 'g' && path[1] == 'r' && path[2] == 'a' && path[3] == 'p' && path[4] == 'h' && path[5] == 'P' && path[6] == 'r' && path[7] == 'e' && path[8] == 'v') {
-			// graphPrev
-			if (size == 9) {
-				return getGraphPrev();
-			} else if (path[9] == '.') {
-				return getGraphPrev()->resolvePath(path.substr(10));
-			}
-		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
 
-	// Interfaces
-	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
-
 protected:
-	NodeRef graphPrev;
-
-	// Interfaces
-	GraphInterfaceImpl<GenericType> interfaceGraph;
 };
 
 } // namespace ast

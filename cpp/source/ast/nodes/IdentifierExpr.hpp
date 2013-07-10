@@ -30,6 +30,14 @@ public:
 		return k == kIdentifierExpr;
 	}
 
+	virtual bool implements(Interface i)
+	{
+		if (Node::implements(i)) return true;
+		if (i == kGraphInterface) return true;
+		if (i == kTypeInterface) return true;
+		return false;
+	}
+
 	virtual string getClassName() const { return "IdentifierExpr"; }
 
 	void setGraphPrev(const NodePtr& v)

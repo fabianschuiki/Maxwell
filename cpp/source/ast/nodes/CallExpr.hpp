@@ -31,6 +31,15 @@ public:
 		return k == kCallExpr;
 	}
 
+	virtual bool implements(Interface i)
+	{
+		if (Node::implements(i)) return true;
+		if (i == kGraphInterface) return true;
+		if (i == kCallInterface) return true;
+		if (i == kTypeInterface) return true;
+		return false;
+	}
+
 	virtual string getClassName() const { return "CallExpr"; }
 
 	void setGraphPrev(const NodePtr& v)
@@ -154,16 +163,28 @@ public:
 		return actualType;
 	}
 
-	void setExpr(const NodePtr& v)
+	void setName(const string& v)
 	{
-		if (v != expr) {
+		if (v != name) {
 			modify();
-			expr = v;
+			name = v;
 		}
 	}
-	const NodePtr& getExpr()
+	const string& getName()
 	{
-		return expr;
+		return name;
+	}
+
+	void setContext(const NodePtr& v)
+	{
+		if (v != context) {
+			modify();
+			context = v;
+		}
+	}
+	const NodePtr& getContext()
+	{
+		return context;
 	}
 
 	void setArgs(const NodeVector& v)
@@ -191,7 +212,8 @@ public:
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
-		if (this->expr) b << endl << "  \033[1mexpr\033[0m = " << indent(this->expr->describe(depth-1));
+		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
+		if (this->context) b << endl << "  \033[1mcontext\033[0m = " << indent(this->context->describe(depth-1));
 		if (!this->args.empty()) b << endl << "  \033[1margs\033[0m = " << indent(describeVector(this->args, depth-1)) << "";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
@@ -209,7 +231,8 @@ public:
 		e.encode(this->possibleType);
 		e.encode(this->requiredType);
 		e.encode(this->actualType);
-		e.encode(this->expr);
+		e.encode(this->name);
+		e.encode(this->context);
 		e.encode(this->args);
 	}
 
@@ -223,7 +246,8 @@ public:
 		d.decode(this->possibleType);
 		d.decode(this->requiredType);
 		d.decode(this->actualType);
-		d.decode(this->expr);
+		d.decode(this->name);
+		d.decode(this->context);
 		d.decode(this->args);
 	}
 
@@ -241,7 +265,7 @@ public:
 		if (this->possibleType) this->possibleType->updateHierarchy(id + "possibleType", repository, this);
 		if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
 		if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
-		if (this->expr) this->expr->updateHierarchy(id + "expr", repository, this);
+		if (this->context) this->context->updateHierarchy(id + "context", repository, this);
 		for (int i = 0; i < this->args.size(); i++) {
 			char buf[32]; snprintf(buf, 31, "%i", i);
 			this->args[i]->updateHierarchy((id + "args") + buf, repository, this);
@@ -285,56 +309,59 @@ public:
 					}
 				}
 			}
-			// call.*
-			if (size >= 4 && path[0] == 'c' && path[1] == 'a' && path[2] == 'l' && path[3] == 'l') {
-				// callArgs.*
-				if (size >= 8 && path[4] == 'A' && path[5] == 'r' && path[6] == 'g' && path[7] == 's') {
-					// callArgs
-					if (size == 8) {
-						throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
-					} else if (path[8] == '.') {
-						size_t dot = path.find(".", 9);
-						string idx_str = path.substr(9, dot);
-						int idx = atoi(idx_str.c_str());
-						const NodeVector& a = getCallArgs();
-						if (idx < 0 || idx >= a.size()) {
-							throw std::runtime_error("Index into array '" + path.substr(0, 8) + "' is out of bounds.");
+			// c.*
+			if (size >= 1 && path[0] == 'c') {
+				// call.*
+				if (size >= 4 && path[1] == 'a' && path[2] == 'l' && path[3] == 'l') {
+					// callArgs.*
+					if (size >= 8 && path[4] == 'A' && path[5] == 'r' && path[6] == 'g' && path[7] == 's') {
+						// callArgs
+						if (size == 8) {
+							throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
+						} else if (path[8] == '.') {
+							size_t dot = path.find(".", 9);
+							string idx_str = path.substr(9, dot);
+							int idx = atoi(idx_str.c_str());
+							const NodeVector& a = getCallArgs();
+							if (idx < 0 || idx >= a.size()) {
+								throw std::runtime_error("Index into array '" + path.substr(0, 8) + "' is out of bounds.");
+							}
+							if (dot == string::npos) {
+								return a[idx];
+							} else {
+								return a[idx]->resolvePath(path.substr(dot + 1));
+							}
 						}
-						if (dot == string::npos) {
-							return a[idx];
-						} else {
-							return a[idx]->resolvePath(path.substr(dot + 1));
+					}
+					// callCandidates.*
+					if (size >= 14 && path[4] == 'C' && path[5] == 'a' && path[6] == 'n' && path[7] == 'd' && path[8] == 'i' && path[9] == 'd' && path[10] == 'a' && path[11] == 't' && path[12] == 'e' && path[13] == 's') {
+						// callCandidates
+						if (size == 14) {
+							throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
+						} else if (path[14] == '.') {
+							size_t dot = path.find(".", 15);
+							string idx_str = path.substr(15, dot);
+							int idx = atoi(idx_str.c_str());
+							const NodeVector& a = getCallCandidates();
+							if (idx < 0 || idx >= a.size()) {
+								throw std::runtime_error("Index into array '" + path.substr(0, 14) + "' is out of bounds.");
+							}
+							if (dot == string::npos) {
+								return a[idx];
+							} else {
+								return a[idx]->resolvePath(path.substr(dot + 1));
+							}
 						}
 					}
 				}
-				// callCandidates.*
-				if (size >= 14 && path[4] == 'C' && path[5] == 'a' && path[6] == 'n' && path[7] == 'd' && path[8] == 'i' && path[9] == 'd' && path[10] == 'a' && path[11] == 't' && path[12] == 'e' && path[13] == 's') {
-					// callCandidates
-					if (size == 14) {
-						throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
-					} else if (path[14] == '.') {
-						size_t dot = path.find(".", 15);
-						string idx_str = path.substr(15, dot);
-						int idx = atoi(idx_str.c_str());
-						const NodeVector& a = getCallCandidates();
-						if (idx < 0 || idx >= a.size()) {
-							throw std::runtime_error("Index into array '" + path.substr(0, 14) + "' is out of bounds.");
-						}
-						if (dot == string::npos) {
-							return a[idx];
-						} else {
-							return a[idx]->resolvePath(path.substr(dot + 1));
-						}
+				// context.*
+				if (size >= 7 && path[1] == 'o' && path[2] == 'n' && path[3] == 't' && path[4] == 'e' && path[5] == 'x' && path[6] == 't') {
+					// context
+					if (size == 7) {
+						return getContext();
+					} else if (path[7] == '.') {
+						return getContext()->resolvePath(path.substr(8));
 					}
-				}
-			}
-			// expr.*
-			if (size >= 4 && path[0] == 'e' && path[1] == 'x' && path[2] == 'p' && path[3] == 'r') {
-				// expr
-				if (size == 4) {
-					return getExpr();
-				} else if (path[4] == '.') {
-					return getExpr()->resolvePath(path.substr(5));
 				}
 			}
 			// graphPrev.*
@@ -380,7 +407,7 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		if (const NodePtr& n = this->getExpr()) v.push_back(n);
+		if (const NodePtr& n = this->getContext()) v.push_back(n);
 		v.insert(v.end(), this->args.begin(), this->args.end());
 		return v;
 	}
@@ -399,7 +426,8 @@ protected:
 	NodePtr possibleType;
 	NodePtr requiredType;
 	NodePtr actualType;
-	NodePtr expr;
+	string name;
+	NodePtr context;
 	NodeVector args;
 
 	// Interfaces

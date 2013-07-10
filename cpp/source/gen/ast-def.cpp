@@ -8,14 +8,14 @@
 void buildAST(Builder &node)
 {
 	// Interfaces
-	Node& graph = node("@graph")
+	Node& graph = node("@Graph")
 		.attr("graphPrev", "&any");
-	Node& call = node("@call")
+	Node& call = node("@Call")
 		.attr("callName", "string")
 		.child("callArgs", "[CallArg]")
 		.child("callCandidates", "[CallCandidate]")
 		.attr("selectedCallCandidate", "&CallCandidate");
-	Node& type = node("@type")
+	Node& type = node("@Type")
 		.attr("possibleType", "any")
 		.attr("requiredType", "any")
 		.attr("actualType", "any");
@@ -61,15 +61,16 @@ void buildAST(Builder &node)
 		.intf(graph).intf(type)
 		.attr("name", "string")
 		.child("type", "any")
-		.child("initialExpr", "any");
+		.child("initialExpr", "@Type");
 	node("CallExpr")
 		.intf(graph).intf(call).intf(type)
-		.child("expr", "any")
-		.child("args", "[any]");
+		.attr("name", "string")
+		.child("context", "any")
+		.child("args", "[CallExprArg]");
 	node("CallExprArg")
 		.intf(graph)
 		.attr("name", "string")
-		.child("expr", "any");
+		.child("expr", "@Type");
 	node("BinaryOpExpr")
 		.intf(graph).intf(call).intf(type)
 		.attr("operatorName", "string") // 'operator' would be a keyword
@@ -86,8 +87,9 @@ void buildAST(Builder &node)
 		.attr("name", "string");
 
 	// Type Expressions
-	node("GenericType")
-		.intf(graph); // actually no required, but there's a bug ;)
+	node("GenericType");
+	node("DefinedType")
+		.attr("definition", "&any");
 	node("NamedType")
 		.intf(graph)
 		.attr("name", "string")

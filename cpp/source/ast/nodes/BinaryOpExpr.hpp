@@ -31,6 +31,15 @@ public:
 		return k == kBinaryOpExpr;
 	}
 
+	virtual bool implements(Interface i)
+	{
+		if (Node::implements(i)) return true;
+		if (i == kGraphInterface) return true;
+		if (i == kCallInterface) return true;
+		if (i == kTypeInterface) return true;
+		return false;
+	}
+
 	virtual string getClassName() const { return "BinaryOpExpr"; }
 
 	void setGraphPrev(const NodePtr& v)

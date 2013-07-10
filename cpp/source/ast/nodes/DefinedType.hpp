@@ -17,15 +17,15 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class CallArg : public Node
+class DefinedType : public Node
 {
 public:
-	CallArg() : Node() {}
+	DefinedType() : Node() {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kCallArg;
+		return k == kDefinedType;
 	}
 
 	virtual bool implements(Interface i)
@@ -34,50 +34,37 @@ public:
 		return false;
 	}
 
-	virtual string getClassName() const { return "CallArg"; }
+	virtual string getClassName() const { return "DefinedType"; }
 
-	void setName(const string& v)
+	void setDefinition(const NodePtr& v)
 	{
-		if (v != name) {
+		if (!v && definition) {
 			modify();
-			name = v;
+			definition.reset();
+		}
+		if (!definition || v->getId() != definition.id) {
+			modify();
+			definition.set(v);
 		}
 	}
-	const string& getName()
+	void setDefinition(const NodeId& v)
 	{
-		return name;
-	}
-
-	void setExpr(const NodePtr& v)
-	{
-		if (!v && expr) {
+		if (v != definition.id) {
 			modify();
-			expr.reset();
-		}
-		if (!expr || v->getId() != expr.id) {
-			modify();
-			expr.set(v);
+			definition.set(v);
 		}
 	}
-	void setExpr(const NodeId& v)
+	const NodePtr& getDefinition()
 	{
-		if (v != expr.id) {
-			modify();
-			expr.set(v);
-		}
-	}
-	const NodePtr& getExpr()
-	{
-		return expr.get(repository);
+		return definition.get(repository);
 	}
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "CallArg{…}";
+		if (depth == 0) return "DefinedType{…}";
 		stringstream str, b;
-		str << "CallArg{";
-		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
-		if (this->expr) b << endl << "  \033[1mexpr\033[0m = " << "\033[36m" << this->expr.id << "\033[0m";
+		str << "DefinedType{";
+		if (this->definition) b << endl << "  \033[1mdefinition\033[0m = " << "\033[36m" << this->definition.id << "\033[0m";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -86,14 +73,12 @@ public:
 
 	virtual void encode(Encoder& e)
 	{
-		e.encode(this->name);
-		e.encode(this->expr);
+		e.encode(this->definition);
 	}
 
 	virtual void decode(Decoder& d)
 	{
-		d.decode(this->name);
-		d.decode(this->expr);
+		d.decode(this->definition);
 	}
 
 	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
@@ -104,21 +89,20 @@ public:
 	virtual const NodePtr& resolvePath(const string& path)
 	{
 		size_t size = path.size();
-		// expr.*
-		if (size >= 4 && path[0] == 'e' && path[1] == 'x' && path[2] == 'p' && path[3] == 'r') {
-			// expr
-			if (size == 4) {
-				return getExpr();
-			} else if (path[4] == '.') {
-				return getExpr()->resolvePath(path.substr(5));
+		// definition.*
+		if (size >= 10 && path[0] == 'd' && path[1] == 'e' && path[2] == 'f' && path[3] == 'i' && path[4] == 'n' && path[5] == 'i' && path[6] == 't' && path[7] == 'i' && path[8] == 'o' && path[9] == 'n') {
+			// definition
+			if (size == 10) {
+				return getDefinition();
+			} else if (path[10] == '.') {
+				return getDefinition()->resolvePath(path.substr(11));
 			}
 		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
 
 protected:
-	string name;
-	NodeRef expr;
+	NodeRef definition;
 };
 
 } // namespace ast

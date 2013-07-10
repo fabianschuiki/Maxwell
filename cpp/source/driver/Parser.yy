@@ -273,6 +273,22 @@ postfix_expr
       $$ = u;
       delete $2;
     }
+  | postfix_expr DOT IDENTIFIER LPAREN RPAREN {
+      CallExpr *c = new CallExpr;
+      c->setName(*$3);
+      c->setContext(shared_ptr<Node>($1));
+      $$ = c;
+      delete $3;
+    }
+  | postfix_expr DOT IDENTIFIER LPAREN call_args RPAREN {
+      CallExpr *c = new CallExpr;
+      c->setName(*$3);
+      c->setArgs(*$5);
+      c->setContext(shared_ptr<Node>($1));
+      $$ = c;
+      delete $3;
+      delete $5;
+    }
   | postfix_expr DOT IDENTIFIER {
       MemberAccessExpr *m = new MemberAccessExpr;
       m->setExpr(shared_ptr<Node>($1));
@@ -280,16 +296,18 @@ postfix_expr
       $$ = m;
       delete $3;
     }
-  | postfix_expr LPAREN RPAREN {
+  | IDENTIFIER LPAREN RPAREN {
       CallExpr *c = new CallExpr;
-      c->setExpr(shared_ptr<Node>($1));
+      c->setName(*$1);
       $$ = c;
+      delete $1;
     }
-  | postfix_expr LPAREN call_args RPAREN {
+  | IDENTIFIER LPAREN call_args RPAREN {
       CallExpr *c = new CallExpr;
-      c->setExpr(shared_ptr<Node>($1));
+      c->setName(*$1);
       c->setArgs(*$3);
       $$ = c;
+      delete $1;
       delete $3;
     }
   ;

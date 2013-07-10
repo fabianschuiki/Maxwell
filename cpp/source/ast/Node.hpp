@@ -75,6 +75,8 @@ public:
 
 	/// Overridden by subclasses to indicate what type of node they are.
 	virtual bool isKindOf(Kind k) { return false; }
+	/// Overridden by subclasses to indicate what interfaces they implement.
+	virtual bool implements(Interface i) { return false; }
 
 	/// Returns a description of this node and all its subnodes for debugging purposes.
 	virtual string describe(int depth = -1) { return "Node"; }

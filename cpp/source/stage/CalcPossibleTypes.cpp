@@ -25,7 +25,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 
 	// Variable definitions.
 	if (VarDefExpr *var = dynamic_cast<VarDefExpr*>(node.get())) {
-		// addDependency(var, "type");
+		addDependency(var, "type");
 		var->setPossibleType(var->getType());
 	}
 

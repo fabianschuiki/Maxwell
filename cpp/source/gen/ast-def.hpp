@@ -84,7 +84,17 @@ private:
 			f.isNode = true;
 			f.cpp_type = "NodePtr";
 			if (type != "any") {
-				f.allowedNodes.push_back(type);
+				size_t pipe = -1, offset = 0;
+				do {
+					offset = pipe + 1;
+					pipe = type.find("|", pipe + 1);
+					string subtype = type.substr(offset, pipe);
+					if (subtype.size() >= 1 && subtype[0] == '@') {
+						f.allowedInterfaces.push_back(subtype.substr(1));
+					} else {
+						f.allowedNodes.push_back(subtype);
+					}
+				} while (pipe != string::npos);
 			}
 		}
 		return f;
@@ -97,7 +107,7 @@ public:
 	Node& operator() (string nodeName, const string& parentName = "Node")
 	{
 		if (nodeName.size() >= 1 && nodeName[0] == '@') {
-			nodeName = (char)toupper(nodeName[1]) + nodeName.substr(2);
+			nodeName = nodeName.substr(1);
 			Node &n = interfaces[nodeName];
 			n.name = nodeName;
 			n.intfName = nodeName + "Interface";

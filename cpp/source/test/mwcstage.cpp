@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
 		// Perform the next stage step.
 		bool failed = false;
-		for (int i = 0; i < mgr.stages.size(); i++) {
+		for (int i = 0; i < mgr.stages.size() && !failed; i++) {
 			Stage& st = *mgr.stages[i];
 			for (int n = 0; n < ids.size(); n++) {
 				const NodeId& id = ids[n];

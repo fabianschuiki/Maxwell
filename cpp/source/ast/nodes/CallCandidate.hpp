@@ -28,6 +28,12 @@ public:
 		return k == kCallCandidate;
 	}
 
+	virtual bool implements(Interface i)
+	{
+		if (Node::implements(i)) return true;
+		return false;
+	}
+
 	virtual string getClassName() const { return "CallCandidate"; }
 
 	void setFunc(const NodePtr& v)

@@ -29,6 +29,13 @@ public:
 		return k == kCallExprArg;
 	}
 
+	virtual bool implements(Interface i)
+	{
+		if (Node::implements(i)) return true;
+		if (i == kGraphInterface) return true;
+		return false;
+	}
+
 	virtual string getClassName() const { return "CallExprArg"; }
 
 	void setGraphPrev(const NodePtr& v)
@@ -68,6 +75,9 @@ public:
 
 	void setExpr(const NodePtr& v)
 	{
+		if (v && !v->implements(kTypeInterface)) {
+			throw runtime_error("'expr' needs to be of kind {} or implement interface {Type}.");
+		}
 		if (v != expr) {
 			modify();
 			expr = v;

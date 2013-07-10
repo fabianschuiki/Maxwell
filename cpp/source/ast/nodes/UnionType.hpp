@@ -29,6 +29,13 @@ public:
 		return k == kUnionType;
 	}
 
+	virtual bool implements(Interface i)
+	{
+		if (Node::implements(i)) return true;
+		if (i == kGraphInterface) return true;
+		return false;
+	}
+
 	virtual string getClassName() const { return "UnionType"; }
 
 	void setGraphPrev(const NodePtr& v)

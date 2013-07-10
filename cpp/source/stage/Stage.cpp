@@ -14,7 +14,6 @@ void Stage::run(const NodePtr& node)
 	currentNode = node;
 	dependencies.clear();
 	process(node);
-	std::cout << "(" << getName() << "," << node->getId() << ") has " << dependencies.size() << " dependencies\n";
 	// TODO: commit dependencies to the repository for this (stage,node) tuple.
 	currentNode.reset();
 }

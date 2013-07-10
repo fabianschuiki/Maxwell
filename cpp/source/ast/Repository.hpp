@@ -4,6 +4,7 @@
 #include "NodeRepository.hpp"
 #include "Node.hpp"
 #include "BuiltinRepository.hpp"
+#include "SymbolRepository.hpp"
 #include <boost/smart_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/filesystem.hpp>
@@ -44,6 +45,8 @@ protected:
 	scoped_ptr<SourceRepository> sourceRepo;
 	/// Repository maintaining the nodes per source file.
 	scoped_ptr<NodeRepository> nodeRepo;
+	/// Repository maintaining the imported/exported symbol names per source file.
+	scoped_ptr<SymbolRepository> symbolRepo;
 
 	void nodeLoaded(const NodeId& id, const NodePtr& node);
 

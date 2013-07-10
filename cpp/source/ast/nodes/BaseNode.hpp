@@ -8,6 +8,7 @@ class CallInterface;
 class GraphInterface;
 class TypeInterface;
 class TypeExprInterface;
+class VariableInterface;
 
 class BaseNode
 {
@@ -20,6 +21,8 @@ public:
 	TypeInterface* needType() { TypeInterface* i = asType(); if (i) return i; throw std::runtime_error("Node does not implement Type interface."); }
 	virtual TypeExprInterface* asTypeExpr() { return NULL; }
 	TypeExprInterface* needTypeExpr() { TypeExprInterface* i = asTypeExpr(); if (i) return i; throw std::runtime_error("Node does not implement TypeExpr interface."); }
+	virtual VariableInterface* asVariable() { return NULL; }
+	VariableInterface* needVariable() { VariableInterface* i = asVariable(); if (i) return i; throw std::runtime_error("Node does not implement Variable interface."); }
 };
 
 } // namespace ast

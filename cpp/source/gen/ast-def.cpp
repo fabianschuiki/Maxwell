@@ -25,6 +25,10 @@ void buildAST(Builder &node)
 		.attr("actualType", "#type");
 	Node& typeExpr = node("@TypeExpr")
 		.child("evaluatedType", "#type");
+	Node& variable = node("@Variable") // everything that looks like a variable (var, val, func arg, ...)
+		.intf(type)
+		.attr("name", "string")
+		.child("type", "#typeExpr");
 
 	// Call Support.
 	node("CallArg")
@@ -44,9 +48,9 @@ void buildAST(Builder &node)
 		.intf(graph)
 		.child("args", "[FuncArg]");
 	node("FuncArg")
-		.intf(graph)
-		.attr("name", "string")
-		.child("type", "any");
+		.intf(graph)./*intf(type)*/intf(variable)
+		/*.attr("name", "string")
+		.child("type", "any")*/;
 	node("FuncBody")
 		.intf(graph)
 		.child("stmts", "[any]");
@@ -64,9 +68,9 @@ void buildAST(Builder &node)
 		.attr("name", "string")
 		.attr("bindingTarget", "&any");
 	node("VarDefExpr")
-		.intf(graph).intf(type)
-		.attr("name", "string")
-		.child("type", "#typeExpr")
+		.intf(graph)./*intf(type).*/intf(variable)
+		/*.attr("name", "string")
+		.child("type", "#typeExpr")*/
 		.child("initialExpr", "@Type");
 	node("CallExpr")
 		.intf(graph).intf(call).intf(type)

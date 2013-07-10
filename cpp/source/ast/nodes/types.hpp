@@ -36,7 +36,8 @@ typedef enum {
 	kCallInterface,
 	kGraphInterface,
 	kTypeInterface,
-	kTypeExprInterface
+	kTypeExprInterface,
+	kVariableInterface
 } Interface;
 
 } // namespace ast

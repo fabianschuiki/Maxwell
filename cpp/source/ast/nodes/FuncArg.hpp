@@ -21,7 +21,9 @@ class FuncArg : public Node
 {
 public:
 	FuncArg() : Node(),
-		interfaceGraph(this) {}
+		interfaceGraph(this),
+		interfaceType(this),
+		interfaceVariable(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -33,6 +35,8 @@ public:
 	{
 		if (Node::implements(i)) return true;
 		if (i == kGraphInterface) return true;
+		if (i == kTypeInterface) return true;
+		if (i == kVariableInterface) return true;
 		return false;
 	}
 
@@ -65,6 +69,63 @@ public:
 		return v;
 	}
 
+	void setPossibleType(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'possibleType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
+		if (v != possibleType) {
+			modify();
+			possibleType = v;
+		}
+	}
+	const NodePtr& getPossibleType(bool required = true)
+	{
+		const NodePtr& v = possibleType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have possibleType set to a non-null value.");
+		}
+		return v;
+	}
+
+	void setRequiredType(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'requiredType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
+		if (v != requiredType) {
+			modify();
+			requiredType = v;
+		}
+	}
+	const NodePtr& getRequiredType(bool required = true)
+	{
+		const NodePtr& v = requiredType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have requiredType set to a non-null value.");
+		}
+		return v;
+	}
+
+	void setActualType(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'actualType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
+		if (v != actualType) {
+			modify();
+			actualType = v;
+		}
+	}
+	const NodePtr& getActualType(bool required = true)
+	{
+		const NodePtr& v = actualType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have actualType set to a non-null value.");
+		}
+		return v;
+	}
+
 	void setName(const string& v)
 	{
 		if (v != name) {
@@ -83,6 +144,9 @@ public:
 
 	void setType(const NodePtr& v)
 	{
+		if (v && !v->isKindOf(kNamedTypeExpr) && !v->isKindOf(kUnionTypeExpr) && !v->isKindOf(kTupleTypeExpr)) {
+			throw runtime_error("'type' needs to be of kind {NamedTypeExpr, UnionTypeExpr, TupleTypeExpr} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
 		if (v != type) {
 			modify();
 			type = v;
@@ -103,6 +167,9 @@ public:
 		stringstream str, b;
 		str << "FuncArg{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
+		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
+		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
+		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
 		if (this->type) b << endl << "  \033[1mtype\033[0m = " << indent(this->type->describe(depth-1));
 		string bs = b.str();
@@ -114,6 +181,9 @@ public:
 	virtual void encode(Encoder& e)
 	{
 		e.encode(this->graphPrev);
+		e.encode(this->possibleType);
+		e.encode(this->requiredType);
+		e.encode(this->actualType);
 		e.encode(this->name);
 		e.encode(this->type);
 	}
@@ -121,6 +191,9 @@ public:
 	virtual void decode(Decoder& d)
 	{
 		d.decode(this->graphPrev);
+		d.decode(this->possibleType);
+		d.decode(this->requiredType);
+		d.decode(this->actualType);
 		d.decode(this->name);
 		d.decode(this->type);
 	}
@@ -128,6 +201,9 @@ public:
 	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
 	{
 		Node::updateHierarchy(id, repository, parent);
+		if (this->possibleType) this->possibleType->updateHierarchy(id + "possibleType", repository, this);
+		if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
+		if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
 		if (this->type) this->type->updateHierarchy(id + "type", repository, this);
 	}
 
@@ -136,6 +212,15 @@ public:
 		size_t size = path.size();
 		// .*
 		if (true) {
+			// actualType.*
+			if (size >= 10 && path[0] == 'a' && path[1] == 'c' && path[2] == 't' && path[3] == 'u' && path[4] == 'a' && path[5] == 'l' && path[6] == 'T' && path[7] == 'y' && path[8] == 'p' && path[9] == 'e') {
+				// actualType
+				if (size == 10) {
+					return getActualType();
+				} else if (path[10] == '.') {
+					return getActualType()->resolvePath(path.substr(11));
+				}
+			}
 			// graphPrev.*
 			if (size >= 9 && path[0] == 'g' && path[1] == 'r' && path[2] == 'a' && path[3] == 'p' && path[4] == 'h' && path[5] == 'P' && path[6] == 'r' && path[7] == 'e' && path[8] == 'v') {
 				// graphPrev
@@ -143,6 +228,24 @@ public:
 					return getGraphPrev();
 				} else if (path[9] == '.') {
 					return getGraphPrev()->resolvePath(path.substr(10));
+				}
+			}
+			// possibleType.*
+			if (size >= 12 && path[0] == 'p' && path[1] == 'o' && path[2] == 's' && path[3] == 's' && path[4] == 'i' && path[5] == 'b' && path[6] == 'l' && path[7] == 'e' && path[8] == 'T' && path[9] == 'y' && path[10] == 'p' && path[11] == 'e') {
+				// possibleType
+				if (size == 12) {
+					return getPossibleType();
+				} else if (path[12] == '.') {
+					return getPossibleType()->resolvePath(path.substr(13));
+				}
+			}
+			// requiredType.*
+			if (size >= 12 && path[0] == 'r' && path[1] == 'e' && path[2] == 'q' && path[3] == 'u' && path[4] == 'i' && path[5] == 'r' && path[6] == 'e' && path[7] == 'd' && path[8] == 'T' && path[9] == 'y' && path[10] == 'p' && path[11] == 'e') {
+				// requiredType
+				if (size == 12) {
+					return getRequiredType();
+				} else if (path[12] == '.') {
+					return getRequiredType()->resolvePath(path.substr(13));
 				}
 			}
 			// type.*
@@ -158,23 +261,23 @@ public:
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
 
-	virtual NodeVector getChildren()
-	{
-		NodeVector v;
-		if (const NodePtr& n = this->getType(false)) v.push_back(n);
-		return v;
-	}
-
 	// Interfaces
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+	virtual TypeInterface* asType() { return &this->interfaceType; }
+	virtual VariableInterface* asVariable() { return &this->interfaceVariable; }
 
 protected:
 	NodeRef graphPrev;
+	NodePtr possibleType;
+	NodePtr requiredType;
+	NodePtr actualType;
 	string name;
 	NodePtr type;
 
 	// Interfaces
 	GraphInterfaceImpl<FuncArg> interfaceGraph;
+	TypeInterfaceImpl<FuncArg> interfaceType;
+	VariableInterfaceImpl<FuncArg> interfaceVariable;
 };
 
 } // namespace ast

@@ -6,3 +6,5 @@ add_library(stage
 	ConfigureCalls.cpp
 	CalcPossibleTypes.cpp
 )
+
+add_dependencies(stage stage-gen)

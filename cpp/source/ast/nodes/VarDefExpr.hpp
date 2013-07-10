@@ -22,7 +22,8 @@ class VarDefExpr : public Node
 public:
 	VarDefExpr() : Node(),
 		interfaceGraph(this),
-		interfaceType(this) {}
+		interfaceType(this),
+		interfaceVariable(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -35,6 +36,7 @@ public:
 		if (Node::implements(i)) return true;
 		if (i == kGraphInterface) return true;
 		if (i == kTypeInterface) return true;
+		if (i == kVariableInterface) return true;
 		return false;
 	}
 
@@ -294,7 +296,6 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		if (const NodePtr& n = this->getType(false)) v.push_back(n);
 		if (const NodePtr& n = this->getInitialExpr(false)) v.push_back(n);
 		return v;
 	}
@@ -302,6 +303,7 @@ public:
 	// Interfaces
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual TypeInterface* asType() { return &this->interfaceType; }
+	virtual VariableInterface* asVariable() { return &this->interfaceVariable; }
 
 protected:
 	NodeRef graphPrev;
@@ -315,6 +317,7 @@ protected:
 	// Interfaces
 	GraphInterfaceImpl<VarDefExpr> interfaceGraph;
 	TypeInterfaceImpl<VarDefExpr> interfaceType;
+	VariableInterfaceImpl<VarDefExpr> interfaceVariable;
 };
 
 } // namespace ast

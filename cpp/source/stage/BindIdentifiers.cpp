@@ -44,14 +44,14 @@ void BindIdentifiers::process(const NodePtr& node)
 		}
 
 		// Find an external entity.
-		/*if (target.empty()) {
-			const Repository::ImportedNames& externals = repository->getImportedNamesForNodeId(node->getId());
-			for (Repository::ImportedNames::const_iterator it = externals.begin(); it != externals.end(); it++) {
+		if (target.empty()) {
+			const Repository::ExternalNames& externals = repository.getExternalNamesForNodeId(node->getId());
+			for (Repository::ExternalNames::const_iterator it = externals.begin(); it != externals.end(); it++) {
 				if (it->second == name) {
 					target = it->first;
 				}
 			}
-		}*/
+		}
 
 		// Check whether we've found something.
 		if (target.empty()) {

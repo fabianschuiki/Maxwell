@@ -113,4 +113,45 @@ protected:
 	T* const node;
 };
 
+class VariableInterface
+{
+public:
+	virtual Node* getNode() = 0;
+
+	virtual void setPossibleType(const NodePtr& v) = 0;
+	virtual const NodePtr& getPossibleType(bool required = true) = 0;
+
+	virtual void setRequiredType(const NodePtr& v) = 0;
+	virtual const NodePtr& getRequiredType(bool required = true) = 0;
+
+	virtual void setActualType(const NodePtr& v) = 0;
+	virtual const NodePtr& getActualType(bool required = true) = 0;
+
+	virtual void setName(const string& v) = 0;
+	virtual const string& getName(bool required = true) = 0;
+
+	virtual void setType(const NodePtr& v) = 0;
+	virtual const NodePtr& getType(bool required = true) = 0;
+};
+template <typename T> class VariableInterfaceImpl : public VariableInterface
+{
+public:
+	Node* getNode() { return node; }
+	VariableInterfaceImpl(T* node) : node(node) {}
+
+	const NodePtr& getPossibleType(bool required = true) { return node->getPossibleType(required); }
+	void setPossibleType(const NodePtr& v) { node->setPossibleType(v); }
+	const NodePtr& getRequiredType(bool required = true) { return node->getRequiredType(required); }
+	void setRequiredType(const NodePtr& v) { node->setRequiredType(v); }
+	const NodePtr& getActualType(bool required = true) { return node->getActualType(required); }
+	void setActualType(const NodePtr& v) { node->setActualType(v); }
+	const string& getName(bool required = true) { return node->getName(required); }
+	void setName(const string& v) { node->setName(v); }
+	const NodePtr& getType(bool required = true) { return node->getType(required); }
+	void setType(const NodePtr& v) { node->setType(v); }
+
+protected:
+	T* const node;
+};
+
 } // namespace ast

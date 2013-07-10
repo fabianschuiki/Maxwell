@@ -5,4 +5,7 @@ add_library(ast
 	NodeRepository.cpp
 	Serializer.cpp
 	BuiltinRepository.cpp
+	SymbolRepository.cpp
 )
+
+add_dependencies(ast ast-gen)

@@ -29,6 +29,17 @@ void EvalTypeExprs::process(const NodePtr& node)
 			intf->setEvaluatedType(t);
 		}
 
+		if (UnionTypeExpr *expr = dynamic_cast<UnionTypeExpr*>(node.get())) {
+			const NodeVector& typeExprs = expr->getTypes();
+			NodeVector types(typeExprs.size());
+			for (int i = 0; i < typeExprs.size(); i++) {
+				types[i] = typeExprs[i]->asTypeExpr()->getEvaluatedType();
+			}
+			shared_ptr<UnionType> t(new UnionType);
+			t->setTypes(types);
+			intf->setEvaluatedType(t);
+		}
+
 		// Throw an error if we were unable to assign an evaluated type.
 		if (!intf->getEvaluatedType(false)) {
 			throw std::runtime_error("Could not evaluate type expression " + node->getId().str() + ".");

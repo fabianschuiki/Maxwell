@@ -1,5 +1,7 @@
 /* Copyright © 2013 Fabian Schuiki */
 #include "Repository.hpp"
+#include "nodes/FuncDef.hpp"
+#include "nodes/TypeDef.hpp"
 #include <iostream>
 #include <boost/bind.hpp>
 
@@ -12,9 +14,13 @@ using boost::scoped_ptr;
 
 Repository::Repository(const boost::filesystem::path& path) : path(path), builtinRepository(*this)
 {
-	boost::filesystem::path p = path; p /= "sources";
-	sourceRepo.reset(new SourceRepository(p));
+	boost::filesystem::path psrc = path; psrc /= "sources";
+	boost::filesystem::path psym = path; psym /= "symbols";
+	sourceRepo.reset(new SourceRepository(psrc));
 	nodeRepo.reset(new NodeRepository(path));
+	symbolRepo.reset(new SymbolRepository(psym));
+
+	// Configure the required callbacks.
 	nodeRepo->onNodeLoaded = boost::bind(&Repository::nodeLoaded, this, _1, _2);
 
 	// Create the map of builtin nodes.
@@ -41,7 +47,14 @@ void Repository::flush()
  */
 NodeId Repository::addNode(int source, const NodePtr& node)
 {
-	return nodeRepo->addNode(source, node);
+	NodeId id = nodeRepo->addNode(source, node);
+	// this is quite a hack, we should improve this
+	if (ast::FuncDef *f = dynamic_cast<ast::FuncDef*>(node.get())) {
+		symbolRepo->addExportedSymbol(id, f->getName());
+	} else if (ast::TypeDef *t = dynamic_cast<ast::TypeDef*>(node.get())) {
+		symbolRepo->addExportedSymbol(id, t->getName());
+	}
+	return id;
 }
 
 /**
@@ -94,6 +107,7 @@ int Repository::unregisterSource(const string& s)
 	int id = sourceRepo->unregisterSource(s);
 	if (id) {
 		nodeRepo->removeNode(id);
+		symbolRepo->removeExportedSymbol(id);
 	}
 	return id;
 }
@@ -107,6 +121,7 @@ void Repository::unregisterSource(int i)
 {
 	sourceRepo->unregisterSource(i);
 	nodeRepo->removeNode(i);
+	symbolRepo->removeExportedSymbol(i);
 }
 
 /**
@@ -135,5 +150,7 @@ Repository::ExternalNames Repository::getExternalNamesForNodeId(const NodeId& id
 {
 	ExternalNames nodes(builtinNodes);
 	// TODO: add the known nodes for that node
+	const SymbolRepository::Symbols& local = symbolRepo->getExportedSymbols(id.source);
+	nodes.insert(local.begin(), local.end());
 	return nodes;
 }

@@ -6,9 +6,10 @@ namespace stage {
 
 class BuildGraph : public Stage
 {
+protected:
+	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "BuildGraph"; }
-	virtual void process(const NodePtr& node);
 	BuildGraph(Repository& r) : Stage(r) {}
 
 	/* Copyright © 2013 Fabian Schuiki */
@@ -17,41 +18,46 @@ public:
 
 class BindIdentifiers : public Stage
 {
+protected:
+	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "BindIdentifiers"; }
-	virtual void process(const NodePtr& node);
 	BindIdentifiers(Repository& r) : Stage(r) {}
 };
 
 class BindNamedTypes : public Stage
 {
+protected:
+	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "BindNamedTypes"; }
-	virtual void process(const NodePtr& node);
 	BindNamedTypes(Repository& r) : Stage(r) {}
 };
 
 class EvalTypeExprs : public Stage
 {
+protected:
+	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "EvalTypeExprs"; }
-	virtual void process(const NodePtr& node);
 	EvalTypeExprs(Repository& r) : Stage(r) {}
 };
 
 class ConfigureCalls : public Stage
 {
+protected:
+	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "ConfigureCalls"; }
-	virtual void process(const NodePtr& node);
 	ConfigureCalls(Repository& r) : Stage(r) {}
 };
 
 class CalcPossibleTypes : public Stage
 {
+protected:
+	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "CalcPossibleTypes"; }
-	virtual void process(const NodePtr& node);
 	CalcPossibleTypes(Repository& r) : Stage(r) {}
 
 	/* Copyright © 2013 Fabian Schuiki */

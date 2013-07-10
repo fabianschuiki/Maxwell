@@ -1,4 +1,5 @@
 add_library(stage
+	Stage.cpp
 	BuildGraph.cpp
 	BindIdentifiers.cpp
 	BindNamedTypes.cpp

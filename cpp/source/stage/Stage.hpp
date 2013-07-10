@@ -24,13 +24,21 @@ class Stage
 {
 public:
 	Repository& repository;
-
-	virtual string getName() const = 0;
-	virtual void process(const NodePtr& node) = 0;
-
 	Stage(Repository& r) : repository(r) {}
 
-	void addDependency(const NodeId& id, string path) {}
+	/// Overridden by subclasses to return the stage name.
+	virtual string getName() const = 0;
+
+	void run(const NodePtr& node);
+	void run(const NodeId& id);
+
+protected:
+	NodePtr currentNode;
+
+	/// Overridden by subclasses to implement stage behaviour.
+	virtual void process(const NodePtr& node) = 0;
+
+	void addDependency(const NodeId& id, string path);
 	template <typename T> void addDependency(const T& node, string path) { addDependency(node->getId(), path); }
 };
 

@@ -50,9 +50,13 @@ int main(int argc, char *argv[])
 	h << "namespace stage {\n\n";
 	for (Stages::iterator it = stages.begin(); it != stages.end(); it++) {
 		h << "class " << *it << " : public Stage\n";
-		h << "{\npublic:\n";
-		h << "\tstring getName() const { return \"" << *it << "\"; }\n";
+		h << "{\n";
+		
+		h << "protected:\n";
 		h << "\tvirtual void process(const NodePtr& node);\n";
+
+		h << "public:\n";
+		h << "\tstring getName() const { return \"" << *it << "\"; }\n";
 		h << "\t" << *it << "(Repository& r) : Stage(r) {}\n";
 
 		// Custom header fields.

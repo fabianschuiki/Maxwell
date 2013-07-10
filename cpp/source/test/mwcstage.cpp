@@ -41,9 +41,8 @@ int main(int argc, char *argv[])
 			for (int n = 0; n < ids.size(); n++) {
 				const NodeId& id = ids[n];
 				try {
-					NodePtr node = repo.getNode(id);
 					cout << "Performing \033[36;1m" << st.getName() << "\033[0m on " << id << "\n";
-					st.process(node);
+					st.run(id);
 				} catch (std::exception &e) {
 					cerr << "*** \033[31;1munclassified error:\033[0m " << st.getName() << " " << id << ": " << e.what() << "\n";
 					failed = true;

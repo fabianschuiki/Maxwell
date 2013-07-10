@@ -147,7 +147,6 @@ string Node::describeVector(const NodeVector& nodes, int depth)
 const NodePtr& NodeRef::get(Repository* repository)
 {
 	if (!resolved && !id.empty()) {
-		std::cout << "Resolving reference " << id << "\n";
 		if (!repository) {
 			throw std::runtime_error("Resolving reference to node '" + id.str() + "' without a repository to query for the instance.");
 		}

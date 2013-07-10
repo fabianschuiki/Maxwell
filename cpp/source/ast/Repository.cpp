@@ -62,6 +62,14 @@ NodeId Repository::addNode(const string& source, const NodePtr& node)
  */
 NodePtr Repository::getNode(const NodeId& id)
 {
+	if (id.source == 0) {
+		const NodePtr& n = builtinRepository.getNode(id.root);
+		if (!id.id.empty()) {
+			return n->resolvePath(id.id);
+		} else {
+			return n;
+		}
+	}
 	return nodeRepo->getNode(id);
 }
 

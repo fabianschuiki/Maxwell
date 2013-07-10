@@ -17,15 +17,15 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class UnionType : public Node
+class TupleType : public Node
 {
 public:
-	UnionType() : Node() {}
+	TupleType() : Node() {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kUnionType;
+		return k == kTupleType;
 	}
 
 	virtual bool implements(Interface i)
@@ -34,27 +34,27 @@ public:
 		return false;
 	}
 
-	virtual string getClassName() const { return "UnionType"; }
+	virtual string getClassName() const { return "TupleType"; }
 
-	void setTypes(const NodeVector& v)
+	void setArgs(const NodeVector& v)
 	{
-		if (v != types) {
+		if (v != args) {
 			modify();
-			types = v;
+			args = v;
 		}
 	}
-	const NodeVector& getTypes(bool required = true)
+	const NodeVector& getArgs(bool required = true)
 	{
-		const NodeVector& v = types;
+		const NodeVector& v = args;
 		return v;
 	}
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "UnionType{…}";
+		if (depth == 0) return "TupleType{…}";
 		stringstream str, b;
-		str << "UnionType{";
-		if (!this->types.empty()) b << endl << "  \033[1mtypes\033[0m = " << indent(describeVector(this->types, depth-1)) << "";
+		str << "TupleType{";
+		if (!this->args.empty()) b << endl << "  \033[1margs\033[0m = " << indent(describeVector(this->args, depth-1)) << "";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -63,38 +63,38 @@ public:
 
 	virtual void encode(Encoder& e)
 	{
-		e.encode(this->types);
+		e.encode(this->args);
 	}
 
 	virtual void decode(Decoder& d)
 	{
-		d.decode(this->types);
+		d.decode(this->args);
 	}
 
 	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
 	{
 		Node::updateHierarchy(id, repository, parent);
-		for (int i = 0; i < this->types.size(); i++) {
+		for (int i = 0; i < this->args.size(); i++) {
 			char buf[32]; snprintf(buf, 31, "%i", i);
-			this->types[i]->updateHierarchy((id + "types") + buf, repository, this);
+			this->args[i]->updateHierarchy((id + "args") + buf, repository, this);
 		}
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
 	{
 		size_t size = path.size();
-		// types.*
-		if (size >= 5 && path[0] == 't' && path[1] == 'y' && path[2] == 'p' && path[3] == 'e' && path[4] == 's') {
-			// types
-			if (size == 5) {
+		// args.*
+		if (size >= 4 && path[0] == 'a' && path[1] == 'r' && path[2] == 'g' && path[3] == 's') {
+			// args
+			if (size == 4) {
 				throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
-			} else if (path[5] == '.') {
-				size_t dot = path.find(".", 6);
-				string idx_str = path.substr(6, dot);
+			} else if (path[4] == '.') {
+				size_t dot = path.find(".", 5);
+				string idx_str = path.substr(5, dot);
 				int idx = atoi(idx_str.c_str());
-				const NodeVector& a = getTypes();
+				const NodeVector& a = getArgs();
 				if (idx < 0 || idx >= a.size()) {
-					throw std::runtime_error("Index into array '" + path.substr(0, 5) + "' is out of bounds.");
+					throw std::runtime_error("Index into array '" + path.substr(0, 4) + "' is out of bounds.");
 				}
 				if (dot == string::npos) {
 					return a[idx];
@@ -109,12 +109,12 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		v.insert(v.end(), this->types.begin(), this->types.end());
+		v.insert(v.end(), this->args.begin(), this->args.end());
 		return v;
 	}
 
 protected:
-	NodeVector types;
+	NodeVector args;
 };
 
 } // namespace ast

@@ -14,9 +14,9 @@ void BindNamedTypes::process(const NodePtr& node)
 	}
 
 	// Operate on all identifier nodes.
-	if (NamedType *type = dynamic_cast<NamedType*>(node.get())) {
+	if (NamedTypeExpr *type = dynamic_cast<NamedTypeExpr*>(node.get())) {
 		// Do nothing if the name is already bound.
-		if (type->getDefinition())
+		if (type->getDefinition(false))
 			return;
 
 		// Traverse graph looking for a type with this name.
@@ -30,7 +30,7 @@ void BindNamedTypes::process(const NodePtr& node)
 					break;
 				}
 			}
-			current = current->asGraph()->getGraphPrev();
+			current = current->asGraph()->getGraphPrev(false);
 		}
 
 		// Find an external type if nothing has been found yet.

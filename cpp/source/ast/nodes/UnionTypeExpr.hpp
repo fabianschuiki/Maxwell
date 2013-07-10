@@ -17,26 +17,28 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class FuncBody : public Node
+class UnionTypeExpr : public Node
 {
 public:
-	FuncBody() : Node(),
-		interfaceGraph(this) {}
+	UnionTypeExpr() : Node(),
+		interfaceGraph(this),
+		interfaceTypeExpr(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kFuncBody;
+		return k == kUnionTypeExpr;
 	}
 
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
 		if (i == kGraphInterface) return true;
+		if (i == kTypeExprInterface) return true;
 		return false;
 	}
 
-	virtual string getClassName() const { return "FuncBody"; }
+	virtual string getClassName() const { return "UnionTypeExpr"; }
 
 	void setGraphPrev(const NodePtr& v)
 	{
@@ -65,26 +67,46 @@ public:
 		return v;
 	}
 
-	void setStmts(const NodeVector& v)
+	void setEvaluatedType(const NodePtr& v)
 	{
-		if (v != stmts) {
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'evaluatedType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
+		if (v != evaluatedType) {
 			modify();
-			stmts = v;
+			evaluatedType = v;
 		}
 	}
-	const NodeVector& getStmts(bool required = true)
+	const NodePtr& getEvaluatedType(bool required = true)
 	{
-		const NodeVector& v = stmts;
+		const NodePtr& v = evaluatedType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have evaluatedType set to a non-null value.");
+		}
+		return v;
+	}
+
+	void setTypes(const NodeVector& v)
+	{
+		if (v != types) {
+			modify();
+			types = v;
+		}
+	}
+	const NodeVector& getTypes(bool required = true)
+	{
+		const NodeVector& v = types;
 		return v;
 	}
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "FuncBody{…}";
+		if (depth == 0) return "UnionTypeExpr{…}";
 		stringstream str, b;
-		str << "FuncBody{";
+		str << "UnionTypeExpr{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
-		if (!this->stmts.empty()) b << endl << "  \033[1mstmts\033[0m = " << indent(describeVector(this->stmts, depth-1)) << "";
+		if (this->evaluatedType) b << endl << "  \033[1mevaluatedType\033[0m = " << indent(this->evaluatedType->describe(depth-1));
+		if (!this->types.empty()) b << endl << "  \033[1mtypes\033[0m = " << indent(describeVector(this->types, depth-1)) << "";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -94,21 +116,24 @@ public:
 	virtual void encode(Encoder& e)
 	{
 		e.encode(this->graphPrev);
-		e.encode(this->stmts);
+		e.encode(this->evaluatedType);
+		e.encode(this->types);
 	}
 
 	virtual void decode(Decoder& d)
 	{
 		d.decode(this->graphPrev);
-		d.decode(this->stmts);
+		d.decode(this->evaluatedType);
+		d.decode(this->types);
 	}
 
 	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
 	{
 		Node::updateHierarchy(id, repository, parent);
-		for (int i = 0; i < this->stmts.size(); i++) {
+		if (this->evaluatedType) this->evaluatedType->updateHierarchy(id + "evaluatedType", repository, this);
+		for (int i = 0; i < this->types.size(); i++) {
 			char buf[32]; snprintf(buf, 31, "%i", i);
-			this->stmts[i]->updateHierarchy((id + "stmts") + buf, repository, this);
+			this->types[i]->updateHierarchy((id + "types") + buf, repository, this);
 		}
 	}
 
@@ -117,6 +142,15 @@ public:
 		size_t size = path.size();
 		// .*
 		if (true) {
+			// evaluatedType.*
+			if (size >= 13 && path[0] == 'e' && path[1] == 'v' && path[2] == 'a' && path[3] == 'l' && path[4] == 'u' && path[5] == 'a' && path[6] == 't' && path[7] == 'e' && path[8] == 'd' && path[9] == 'T' && path[10] == 'y' && path[11] == 'p' && path[12] == 'e') {
+				// evaluatedType
+				if (size == 13) {
+					return getEvaluatedType();
+				} else if (path[13] == '.') {
+					return getEvaluatedType()->resolvePath(path.substr(14));
+				}
+			}
 			// graphPrev.*
 			if (size >= 9 && path[0] == 'g' && path[1] == 'r' && path[2] == 'a' && path[3] == 'p' && path[4] == 'h' && path[5] == 'P' && path[6] == 'r' && path[7] == 'e' && path[8] == 'v') {
 				// graphPrev
@@ -126,16 +160,16 @@ public:
 					return getGraphPrev()->resolvePath(path.substr(10));
 				}
 			}
-			// stmts.*
-			if (size >= 5 && path[0] == 's' && path[1] == 't' && path[2] == 'm' && path[3] == 't' && path[4] == 's') {
-				// stmts
+			// types.*
+			if (size >= 5 && path[0] == 't' && path[1] == 'y' && path[2] == 'p' && path[3] == 'e' && path[4] == 's') {
+				// types
 				if (size == 5) {
 					throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
 				} else if (path[5] == '.') {
 					size_t dot = path.find(".", 6);
 					string idx_str = path.substr(6, dot);
 					int idx = atoi(idx_str.c_str());
-					const NodeVector& a = getStmts();
+					const NodeVector& a = getTypes();
 					if (idx < 0 || idx >= a.size()) {
 						throw std::runtime_error("Index into array '" + path.substr(0, 5) + "' is out of bounds.");
 					}
@@ -153,19 +187,22 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		v.insert(v.end(), this->stmts.begin(), this->stmts.end());
+		v.insert(v.end(), this->types.begin(), this->types.end());
 		return v;
 	}
 
 	// Interfaces
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+	virtual TypeExprInterface* asTypeExpr() { return &this->interfaceTypeExpr; }
 
 protected:
 	NodeRef graphPrev;
-	NodeVector stmts;
+	NodePtr evaluatedType;
+	NodeVector types;
 
 	// Interfaces
-	GraphInterfaceImpl<FuncBody> interfaceGraph;
+	GraphInterfaceImpl<UnionTypeExpr> interfaceGraph;
+	TypeExprInterfaceImpl<UnionTypeExpr> interfaceTypeExpr;
 };
 
 } // namespace ast

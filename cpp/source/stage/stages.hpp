@@ -31,6 +31,14 @@ public:
 	BindNamedTypes(Repository& r) : Stage(r) {}
 };
 
+class EvalTypeExprs : public Stage
+{
+public:
+	string getName() const { return "EvalTypeExprs"; }
+	virtual void process(const NodePtr& node);
+	EvalTypeExprs(Repository& r) : Stage(r) {}
+};
+
 class ConfigureCalls : public Stage
 {
 public:

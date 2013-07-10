@@ -54,9 +54,13 @@ public:
 			definition.set(v);
 		}
 	}
-	const NodePtr& getDefinition()
+	const NodePtr& getDefinition(bool required = true)
 	{
-		return definition.get(repository);
+		const NodePtr& v = definition.get(repository);
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have definition set to a non-null value.");
+		}
+		return v;
 	}
 
 	virtual string describe(int depth = -1)

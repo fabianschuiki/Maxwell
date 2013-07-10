@@ -56,9 +56,13 @@ public:
 			graphPrev.set(v);
 		}
 	}
-	const NodePtr& getGraphPrev()
+	const NodePtr& getGraphPrev(bool required = true)
 	{
-		return graphPrev.get(repository);
+		const NodePtr& v = graphPrev.get(repository);
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have graphPrev set to a non-null value.");
+		}
+		return v;
 	}
 
 	void setExpr(const NodePtr& v)
@@ -68,9 +72,13 @@ public:
 			expr = v;
 		}
 	}
-	const NodePtr& getExpr()
+	const NodePtr& getExpr(bool required = true)
 	{
-		return expr;
+		const NodePtr& v = expr;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have expr set to a non-null value.");
+		}
+		return v;
 	}
 
 	virtual string describe(int depth = -1)
@@ -134,7 +142,7 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		if (const NodePtr& n = this->getExpr()) v.push_back(n);
+		if (const NodePtr& n = this->getExpr(false)) v.push_back(n);
 		return v;
 	}
 

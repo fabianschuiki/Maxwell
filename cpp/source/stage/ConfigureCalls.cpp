@@ -20,7 +20,7 @@ void ConfigureCalls::process(const NodePtr& node)
 
 	// Configure binary operators.
 	if (BinaryOpExpr *binop = dynamic_cast<BinaryOpExpr*>(node.get())) {
-		if (binop->getCallName().empty() || binop->getCallArgs().empty())
+		if (binop->getCallName(false).empty() || binop->getCallArgs().empty())
 		{
 			// Use the operator as function name.
 			binop->setCallName(binop->getOperatorName());
@@ -42,7 +42,7 @@ void ConfigureCalls::process(const NodePtr& node)
 
 	// Configure unary operators.
 	if (UnaryOpExpr *unop = dynamic_cast<UnaryOpExpr*>(node.get())) {
-		if (unop->getCallName().empty() || unop->getCallArgs().empty())
+		if (unop->getCallName(false).empty() || unop->getCallArgs().empty())
 		{
 			// Use the operator as function name.
 			string name = unop->getOperatorName();

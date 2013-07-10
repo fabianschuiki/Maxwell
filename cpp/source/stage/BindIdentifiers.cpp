@@ -16,7 +16,7 @@ void BindIdentifiers::process(const NodePtr& node)
 	// Operate on all identifier nodes.
 	if (IdentifierExpr *ident = dynamic_cast<IdentifierExpr*>(node.get())) {
 		// Do nothing if the identifier already has a valid target.
-		if (ident->getBindingTarget())
+		if (ident->getBindingTarget(false))
 			return;
 
 		// Traverse graph looking for any object with this name.
@@ -40,7 +40,7 @@ void BindIdentifiers::process(const NodePtr& node)
 				}
 			}
 
-			current = current->asGraph()->getGraphPrev();
+			current = current->asGraph()->getGraphPrev(false);
 		}
 
 		// Find an external entity.

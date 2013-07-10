@@ -20,6 +20,7 @@ public:
 		stageBuildGraph(r),
 		stageBindIdentifiers(r),
 		stageBindNamedTypes(r),
+		stageEvalTypeExprs(r),
 		stageConfigureCalls(r),
 		stageCalcPossibleTypes(r)
 	{
@@ -29,6 +30,8 @@ public:
 		stages.push_back(&stageBindIdentifiers);
 		stageIndices["BindNamedTypes"] = stages.size();
 		stages.push_back(&stageBindNamedTypes);
+		stageIndices["EvalTypeExprs"] = stages.size();
+		stages.push_back(&stageEvalTypeExprs);
 		stageIndices["ConfigureCalls"] = stages.size();
 		stages.push_back(&stageConfigureCalls);
 		stageIndices["CalcPossibleTypes"] = stages.size();
@@ -44,6 +47,7 @@ protected:
 	BuildGraph stageBuildGraph;
 	BindIdentifiers stageBindIdentifiers;
 	BindNamedTypes stageBindNamedTypes;
+	EvalTypeExprs stageEvalTypeExprs;
 	ConfigureCalls stageConfigureCalls;
 	CalcPossibleTypes stageCalcPossibleTypes;
 };

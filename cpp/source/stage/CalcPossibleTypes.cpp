@@ -8,7 +8,7 @@ using stage::CalcPossibleTypes;
 void CalcPossibleTypes::process(const NodePtr& node)
 {
 	if (TypeInterface *intf = node->asType()) {
-		if (!intf->getRequiredType()) {
+		if (!intf->getRequiredType(false)) {
 			intf->setRequiredType(NodePtr(new GenericType));
 		}
 	}
@@ -26,7 +26,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 	// Variable definitions.
 	if (VarDefExpr *var = dynamic_cast<VarDefExpr*>(node.get())) {
 		addDependency(var, "type");
-		var->setPossibleType(var->getType());
+		var->setPossibleType(var->getType()->asTypeExpr()->getEvaluatedType());
 	}
 
 	// Identifier expressions.
@@ -37,7 +37,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 			ident->setPossibleType(t->getActualType());
 		} else if (FuncArg *t = dynamic_cast<FuncArg*>(target.get())) {
 			addDependency(ident, "type");
-			ident->setPossibleType(t->getType());
+			ident->setPossibleType(t->getType()->asTypeExpr()->getEvaluatedType());
 		} else {
 			throw std::runtime_error("Identifier target '" + target->getId().str() + "' not supported for CalcPossibleTypes.");
 		}
@@ -45,7 +45,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 
 	// In case no actualy type has been set yet, simply copy the possible type over.
 	if (TypeInterface *intf = node->asType()) {
-		if (!intf->getActualType()) {
+		if (!intf->getActualType(false)) {
 			intf->setActualType(intf->getPossibleType());
 		}
 	}

@@ -10,16 +10,16 @@ public:
 	virtual Node* getNode() = 0;
 
 	virtual void setCallName(const string& v) = 0;
-	virtual const string& getCallName() = 0;
+	virtual const string& getCallName(bool required = true) = 0;
 
 	virtual void setCallArgs(const NodeVector& v) = 0;
-	virtual const NodeVector& getCallArgs() = 0;
+	virtual const NodeVector& getCallArgs(bool required = true) = 0;
 
 	virtual void setCallCandidates(const NodeVector& v) = 0;
-	virtual const NodeVector& getCallCandidates() = 0;
+	virtual const NodeVector& getCallCandidates(bool required = true) = 0;
 
 	virtual void setSelectedCallCandidate(const NodePtr& v) = 0;
-	virtual const NodePtr& getSelectedCallCandidate() = 0;
+	virtual const NodePtr& getSelectedCallCandidate(bool required = true) = 0;
 };
 template <typename T> class CallInterfaceImpl : public CallInterface
 {
@@ -27,13 +27,13 @@ public:
 	Node* getNode() { return node; }
 	CallInterfaceImpl(T* node) : node(node) {}
 
-	const string& getCallName() { return node->getCallName(); }
+	const string& getCallName(bool required = true) { return node->getCallName(required); }
 	void setCallName(const string& v) { node->setCallName(v); }
-	const NodeVector& getCallArgs() { return node->getCallArgs(); }
+	const NodeVector& getCallArgs(bool required = true) { return node->getCallArgs(required); }
 	void setCallArgs(const NodeVector& v) { node->setCallArgs(v); }
-	const NodeVector& getCallCandidates() { return node->getCallCandidates(); }
+	const NodeVector& getCallCandidates(bool required = true) { return node->getCallCandidates(required); }
 	void setCallCandidates(const NodeVector& v) { node->setCallCandidates(v); }
-	const NodePtr& getSelectedCallCandidate() { return node->getSelectedCallCandidate(); }
+	const NodePtr& getSelectedCallCandidate(bool required = true) { return node->getSelectedCallCandidate(required); }
 	void setSelectedCallCandidate(const NodePtr& v) { node->setSelectedCallCandidate(v); }
 
 protected:
@@ -46,7 +46,7 @@ public:
 	virtual Node* getNode() = 0;
 
 	virtual void setGraphPrev(const NodePtr& v) = 0;
-	virtual const NodePtr& getGraphPrev() = 0;
+	virtual const NodePtr& getGraphPrev(bool required = true) = 0;
 };
 template <typename T> class GraphInterfaceImpl : public GraphInterface
 {
@@ -54,7 +54,7 @@ public:
 	Node* getNode() { return node; }
 	GraphInterfaceImpl(T* node) : node(node) {}
 
-	const NodePtr& getGraphPrev() { return node->getGraphPrev(); }
+	const NodePtr& getGraphPrev(bool required = true) { return node->getGraphPrev(required); }
 	void setGraphPrev(const NodePtr& v) { node->setGraphPrev(v); }
 
 protected:
@@ -67,13 +67,13 @@ public:
 	virtual Node* getNode() = 0;
 
 	virtual void setPossibleType(const NodePtr& v) = 0;
-	virtual const NodePtr& getPossibleType() = 0;
+	virtual const NodePtr& getPossibleType(bool required = true) = 0;
 
 	virtual void setRequiredType(const NodePtr& v) = 0;
-	virtual const NodePtr& getRequiredType() = 0;
+	virtual const NodePtr& getRequiredType(bool required = true) = 0;
 
 	virtual void setActualType(const NodePtr& v) = 0;
-	virtual const NodePtr& getActualType() = 0;
+	virtual const NodePtr& getActualType(bool required = true) = 0;
 };
 template <typename T> class TypeInterfaceImpl : public TypeInterface
 {
@@ -81,12 +81,33 @@ public:
 	Node* getNode() { return node; }
 	TypeInterfaceImpl(T* node) : node(node) {}
 
-	const NodePtr& getPossibleType() { return node->getPossibleType(); }
+	const NodePtr& getPossibleType(bool required = true) { return node->getPossibleType(required); }
 	void setPossibleType(const NodePtr& v) { node->setPossibleType(v); }
-	const NodePtr& getRequiredType() { return node->getRequiredType(); }
+	const NodePtr& getRequiredType(bool required = true) { return node->getRequiredType(required); }
 	void setRequiredType(const NodePtr& v) { node->setRequiredType(v); }
-	const NodePtr& getActualType() { return node->getActualType(); }
+	const NodePtr& getActualType(bool required = true) { return node->getActualType(required); }
 	void setActualType(const NodePtr& v) { node->setActualType(v); }
+
+protected:
+	T* const node;
+};
+
+class TypeExprInterface
+{
+public:
+	virtual Node* getNode() = 0;
+
+	virtual void setEvaluatedType(const NodePtr& v) = 0;
+	virtual const NodePtr& getEvaluatedType(bool required = true) = 0;
+};
+template <typename T> class TypeExprInterfaceImpl : public TypeExprInterface
+{
+public:
+	Node* getNode() { return node; }
+	TypeExprInterfaceImpl(T* node) : node(node) {}
+
+	const NodePtr& getEvaluatedType(bool required = true) { return node->getEvaluatedType(required); }
+	void setEvaluatedType(const NodePtr& v) { node->setEvaluatedType(v); }
 
 protected:
 	T* const node;

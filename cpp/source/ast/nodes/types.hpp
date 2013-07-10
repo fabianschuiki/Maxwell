@@ -19,10 +19,15 @@ typedef enum {
 	kGenericType,
 	kIdentifierExpr,
 	kMemberAccessExpr,
-	kNamedType,
+	kNamedTypeExpr,
+	kTupleType,
+	kTupleTypeArg,
+	kTupleTypeExpr,
+	kTupleTypeExprArg,
 	kTypeDef,
 	kUnaryOpExpr,
 	kUnionType,
+	kUnionTypeExpr,
 	kVarDefExpr
 } Kind;
 
@@ -30,7 +35,8 @@ typedef enum {
 typedef enum {
 	kCallInterface,
 	kGraphInterface,
-	kTypeInterface
+	kTypeInterface,
+	kTypeExprInterface
 } Interface;
 
 } // namespace ast

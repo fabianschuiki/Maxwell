@@ -17,26 +17,28 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class FuncArgTuple : public Node
+class TupleTypeExpr : public Node
 {
 public:
-	FuncArgTuple() : Node(),
-		interfaceGraph(this) {}
+	TupleTypeExpr() : Node(),
+		interfaceGraph(this),
+		interfaceTypeExpr(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kFuncArgTuple;
+		return k == kTupleTypeExpr;
 	}
 
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
 		if (i == kGraphInterface) return true;
+		if (i == kTypeExprInterface) return true;
 		return false;
 	}
 
-	virtual string getClassName() const { return "FuncArgTuple"; }
+	virtual string getClassName() const { return "TupleTypeExpr"; }
 
 	void setGraphPrev(const NodePtr& v)
 	{
@@ -65,6 +67,25 @@ public:
 		return v;
 	}
 
+	void setEvaluatedType(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'evaluatedType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
+		if (v != evaluatedType) {
+			modify();
+			evaluatedType = v;
+		}
+	}
+	const NodePtr& getEvaluatedType(bool required = true)
+	{
+		const NodePtr& v = evaluatedType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have evaluatedType set to a non-null value.");
+		}
+		return v;
+	}
+
 	void setArgs(const NodeVector& v)
 	{
 		if (v != args) {
@@ -80,10 +101,11 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "FuncArgTuple{…}";
+		if (depth == 0) return "TupleTypeExpr{…}";
 		stringstream str, b;
-		str << "FuncArgTuple{";
+		str << "TupleTypeExpr{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
+		if (this->evaluatedType) b << endl << "  \033[1mevaluatedType\033[0m = " << indent(this->evaluatedType->describe(depth-1));
 		if (!this->args.empty()) b << endl << "  \033[1margs\033[0m = " << indent(describeVector(this->args, depth-1)) << "";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
@@ -94,18 +116,21 @@ public:
 	virtual void encode(Encoder& e)
 	{
 		e.encode(this->graphPrev);
+		e.encode(this->evaluatedType);
 		e.encode(this->args);
 	}
 
 	virtual void decode(Decoder& d)
 	{
 		d.decode(this->graphPrev);
+		d.decode(this->evaluatedType);
 		d.decode(this->args);
 	}
 
 	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
 	{
 		Node::updateHierarchy(id, repository, parent);
+		if (this->evaluatedType) this->evaluatedType->updateHierarchy(id + "evaluatedType", repository, this);
 		for (int i = 0; i < this->args.size(); i++) {
 			char buf[32]; snprintf(buf, 31, "%i", i);
 			this->args[i]->updateHierarchy((id + "args") + buf, repository, this);
@@ -137,6 +162,15 @@ public:
 					}
 				}
 			}
+			// evaluatedType.*
+			if (size >= 13 && path[0] == 'e' && path[1] == 'v' && path[2] == 'a' && path[3] == 'l' && path[4] == 'u' && path[5] == 'a' && path[6] == 't' && path[7] == 'e' && path[8] == 'd' && path[9] == 'T' && path[10] == 'y' && path[11] == 'p' && path[12] == 'e') {
+				// evaluatedType
+				if (size == 13) {
+					return getEvaluatedType();
+				} else if (path[13] == '.') {
+					return getEvaluatedType()->resolvePath(path.substr(14));
+				}
+			}
 			// graphPrev.*
 			if (size >= 9 && path[0] == 'g' && path[1] == 'r' && path[2] == 'a' && path[3] == 'p' && path[4] == 'h' && path[5] == 'P' && path[6] == 'r' && path[7] == 'e' && path[8] == 'v') {
 				// graphPrev
@@ -159,13 +193,16 @@ public:
 
 	// Interfaces
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+	virtual TypeExprInterface* asTypeExpr() { return &this->interfaceTypeExpr; }
 
 protected:
 	NodeRef graphPrev;
+	NodePtr evaluatedType;
 	NodeVector args;
 
 	// Interfaces
-	GraphInterfaceImpl<FuncArgTuple> interfaceGraph;
+	GraphInterfaceImpl<TupleTypeExpr> interfaceGraph;
+	TypeExprInterfaceImpl<TupleTypeExpr> interfaceTypeExpr;
 };
 
 } // namespace ast

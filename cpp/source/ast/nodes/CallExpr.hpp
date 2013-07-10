@@ -60,9 +60,13 @@ public:
 			graphPrev.set(v);
 		}
 	}
-	const NodePtr& getGraphPrev()
+	const NodePtr& getGraphPrev(bool required = true)
 	{
-		return graphPrev.get(repository);
+		const NodePtr& v = graphPrev.get(repository);
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have graphPrev set to a non-null value.");
+		}
+		return v;
 	}
 
 	void setCallName(const string& v)
@@ -72,9 +76,13 @@ public:
 			callName = v;
 		}
 	}
-	const string& getCallName()
+	const string& getCallName(bool required = true)
 	{
-		return callName;
+		const string& v = callName;
+		if (required && v.empty()) {
+			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string callName set.");
+		}
+		return v;
 	}
 
 	void setCallArgs(const NodeVector& v)
@@ -84,9 +92,10 @@ public:
 			callArgs = v;
 		}
 	}
-	const NodeVector& getCallArgs()
+	const NodeVector& getCallArgs(bool required = true)
 	{
-		return callArgs;
+		const NodeVector& v = callArgs;
+		return v;
 	}
 
 	void setCallCandidates(const NodeVector& v)
@@ -96,15 +105,16 @@ public:
 			callCandidates = v;
 		}
 	}
-	const NodeVector& getCallCandidates()
+	const NodeVector& getCallCandidates(bool required = true)
 	{
-		return callCandidates;
+		const NodeVector& v = callCandidates;
+		return v;
 	}
 
 	void setSelectedCallCandidate(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kCallCandidate)) {
-			throw runtime_error("'selectedCallCandidate' needs to be of kind {CallCandidate} or implement interface {}.");
+			throw runtime_error("'selectedCallCandidate' needs to be of kind {CallCandidate} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (!v && selectedCallCandidate) {
 			modify();
@@ -122,45 +132,70 @@ public:
 			selectedCallCandidate.set(v);
 		}
 	}
-	const NodePtr& getSelectedCallCandidate()
+	const NodePtr& getSelectedCallCandidate(bool required = true)
 	{
-		return selectedCallCandidate.get(repository);
+		const NodePtr& v = selectedCallCandidate.get(repository);
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have selectedCallCandidate set to a non-null value.");
+		}
+		return v;
 	}
 
 	void setPossibleType(const NodePtr& v)
 	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'possibleType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
 		if (v != possibleType) {
 			modify();
 			possibleType = v;
 		}
 	}
-	const NodePtr& getPossibleType()
+	const NodePtr& getPossibleType(bool required = true)
 	{
-		return possibleType;
+		const NodePtr& v = possibleType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have possibleType set to a non-null value.");
+		}
+		return v;
 	}
 
 	void setRequiredType(const NodePtr& v)
 	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'requiredType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
 		if (v != requiredType) {
 			modify();
 			requiredType = v;
 		}
 	}
-	const NodePtr& getRequiredType()
+	const NodePtr& getRequiredType(bool required = true)
 	{
-		return requiredType;
+		const NodePtr& v = requiredType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have requiredType set to a non-null value.");
+		}
+		return v;
 	}
 
 	void setActualType(const NodePtr& v)
 	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'actualType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
 		if (v != actualType) {
 			modify();
 			actualType = v;
 		}
 	}
-	const NodePtr& getActualType()
+	const NodePtr& getActualType(bool required = true)
 	{
-		return actualType;
+		const NodePtr& v = actualType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have actualType set to a non-null value.");
+		}
+		return v;
 	}
 
 	void setName(const string& v)
@@ -170,9 +205,13 @@ public:
 			name = v;
 		}
 	}
-	const string& getName()
+	const string& getName(bool required = true)
 	{
-		return name;
+		const string& v = name;
+		if (required && v.empty()) {
+			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string name set.");
+		}
+		return v;
 	}
 
 	void setContext(const NodePtr& v)
@@ -182,9 +221,13 @@ public:
 			context = v;
 		}
 	}
-	const NodePtr& getContext()
+	const NodePtr& getContext(bool required = true)
 	{
-		return context;
+		const NodePtr& v = context;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have context set to a non-null value.");
+		}
+		return v;
 	}
 
 	void setArgs(const NodeVector& v)
@@ -194,9 +237,10 @@ public:
 			args = v;
 		}
 	}
-	const NodeVector& getArgs()
+	const NodeVector& getArgs(bool required = true)
 	{
-		return args;
+		const NodeVector& v = args;
+		return v;
 	}
 
 	virtual string describe(int depth = -1)
@@ -407,7 +451,7 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		if (const NodePtr& n = this->getContext()) v.push_back(n);
+		if (const NodePtr& n = this->getContext(false)) v.push_back(n);
 		v.insert(v.end(), this->args.begin(), this->args.end());
 		return v;
 	}

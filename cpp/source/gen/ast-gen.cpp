@@ -7,6 +7,54 @@
 
 #include "ast-def.hpp"
 
+Node::Field Node::makeField(string name, string type, bool child)
+{
+	Field f;
+	f.child = child;
+	if (type.size() >= 1 && type[0] == '&') {
+		type = type.substr(1);
+		f.ref = true;
+	} else {
+		f.ref = false;
+	}
+	for (Builder::Groups::reverse_iterator it = builder->groups.rbegin(); it != builder->groups.rend(); it++) {
+		boost::replace_all(type, "#" + it->first, it->second);
+	}
+	f.name = name;
+	f.type = type;
+	f.isString = false;
+	f.isArray = false;
+	f.isNode = false;
+	f.isBool = false;
+	if (type == "string") {
+		f.isString = true;
+		f.cpp_type = "string";
+	} else if (type == "bool") {
+		f.isBool = true;
+		f.cpp_type = "bool";
+	} else if (type.size() > 2 && type[0] == '[') {
+		f.isArray = true;
+		f.cpp_type = "NodeVector";
+	} else {
+		f.isNode = true;
+		f.cpp_type = "NodePtr";
+		if (type != "any") {
+			size_t pipe = -1, offset = 0;
+			do {
+				offset = pipe + 1;
+				pipe = type.find("|", offset);
+				string subtype = type.substr(offset, pipe - offset);
+				if (subtype.size() >= 1 && subtype[0] == '@') {
+					f.allowedInterfaces.push_back(subtype.substr(1));
+				} else {
+					f.allowedNodes.push_back(subtype);
+				}
+			} while (pipe != string::npos);
+		}
+	}
+	return f;
+}
+
 void makeTypesHeader(const boost::filesystem::path& output, const Builder& builder)
 {
 	boost::filesystem::path path = output;
@@ -254,8 +302,8 @@ void makeInterfacesHeader(const boost::filesystem::path& output, const Builder& 
 
 			InterfaceFunction getter;
 			getter.name = "get" + upper;
-			getter.prototype = "const " + f.cpp_type + "& " + getter.name + "()";
-			getter.args = "";
+			getter.prototype = "const " + f.cpp_type + "& " + getter.name + "(bool required = true)";
+			getter.args = "required";
 			getter.ret = true;
 			funcs.push_back(getter);
 
@@ -400,7 +448,7 @@ int main(int argc, char *argv[])
 					h << " && " << ifcomponents[i];
 				}
 				h << ") {\n";
-				h << "\t\t\tthrow runtime_error(\"'" << f.name << "' needs to be of kind {" << allowedNodes << "} or implement interface {" << allowedInterfaces << "}.\");\n";
+				h << "\t\t\tthrow runtime_error(\"'" << f.name << "' needs to be of kind {" << allowedNodes << "} or implement interface {" << allowedInterfaces << "}, got \" + v->getClassName() + \" instead.\");\n";
 				h << "\t\t}\n";
 			}
 
@@ -431,12 +479,23 @@ int main(int argc, char *argv[])
 				h << "\t}\n";
 			}
 
-			h << "\t" << ref << " get" << upper << "()\n\t{\n";
+			h << "\t" << ref << " get" << upper << "(bool required = true)\n\t{\n";
+			h << "\t\tconst " << f.cpp_type << "& v = ";
 			if (f.ref) {
-				h << "\t\treturn " << f.name << ".get(repository);\n";
+				h << f.name << ".get(repository);\n";
 			} else {
-				h << "\t\treturn " << f.name << ";\n";
+				h << f.name << ";\n";
 			}
+			if (f.isNode) {
+				h << "\t\tif (required && !v) {\n";
+				h << "\t\t\tthrow runtime_error(\"Node \" + getId().str() + \" is required to have " << f.name << " set to a non-null value.\");\n";
+				h << "\t\t}\n";
+			} else if (f.isString) {
+				h << "\t\tif (required && v.empty()) {\n";
+				h << "\t\t\tthrow runtime_error(\"Node \" + getId().str() + \" is required to have a non-empty string " << f.name << " set.\");\n";
+				h << "\t\t}\n";
+			}
+			h << "\t\treturn v;\n";
 			h << "\t}\n\n";
 		}
 
@@ -526,7 +585,7 @@ int main(int argc, char *argv[])
 				Node::Field& f = node.attributes[*c];
 				if (f.isNode) {
 					string upper = (char)toupper(f.name[0]) + f.name.substr(1);
-					h << "\t\tif (const NodePtr& n = this->get" << upper << "()) v.push_back(n);\n";
+					h << "\t\tif (const NodePtr& n = this->get" << upper << "(false)) v.push_back(n);\n";
 				} else if (f.isArray) {
 					h << "\t\tv.insert(v.end(), this->" << f.name << ".begin(), this->" << f.name << ".end());\n";
 				}

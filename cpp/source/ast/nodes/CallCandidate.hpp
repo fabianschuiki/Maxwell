@@ -54,9 +54,13 @@ public:
 			func.set(v);
 		}
 	}
-	const NodePtr& getFunc()
+	const NodePtr& getFunc(bool required = true)
 	{
-		return func.get(repository);
+		const NodePtr& v = func.get(repository);
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have func set to a non-null value.");
+		}
+		return v;
 	}
 
 	virtual string describe(int depth = -1)

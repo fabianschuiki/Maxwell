@@ -56,9 +56,13 @@ public:
 			graphPrev.set(v);
 		}
 	}
-	const NodePtr& getGraphPrev()
+	const NodePtr& getGraphPrev(bool required = true)
 	{
-		return graphPrev.get(repository);
+		const NodePtr& v = graphPrev.get(repository);
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have graphPrev set to a non-null value.");
+		}
+		return v;
 	}
 
 	void setName(const string& v)
@@ -68,54 +72,70 @@ public:
 			name = v;
 		}
 	}
-	const string& getName()
+	const string& getName(bool required = true)
 	{
-		return name;
+		const string& v = name;
+		if (required && v.empty()) {
+			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string name set.");
+		}
+		return v;
 	}
 
 	void setIn(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kFuncArgTuple)) {
-			throw runtime_error("'in' needs to be of kind {FuncArgTuple} or implement interface {}.");
+			throw runtime_error("'in' needs to be of kind {FuncArgTuple} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (v != in) {
 			modify();
 			in = v;
 		}
 	}
-	const NodePtr& getIn()
+	const NodePtr& getIn(bool required = true)
 	{
-		return in;
+		const NodePtr& v = in;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have in set to a non-null value.");
+		}
+		return v;
 	}
 
 	void setOut(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kFuncArgTuple)) {
-			throw runtime_error("'out' needs to be of kind {FuncArgTuple} or implement interface {}.");
+			throw runtime_error("'out' needs to be of kind {FuncArgTuple} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (v != out) {
 			modify();
 			out = v;
 		}
 	}
-	const NodePtr& getOut()
+	const NodePtr& getOut(bool required = true)
 	{
-		return out;
+		const NodePtr& v = out;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have out set to a non-null value.");
+		}
+		return v;
 	}
 
 	void setBody(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kFuncBody)) {
-			throw runtime_error("'body' needs to be of kind {FuncBody} or implement interface {}.");
+			throw runtime_error("'body' needs to be of kind {FuncBody} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (v != body) {
 			modify();
 			body = v;
 		}
 	}
-	const NodePtr& getBody()
+	const NodePtr& getBody(bool required = true)
 	{
-		return body;
+		const NodePtr& v = body;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have body set to a non-null value.");
+		}
+		return v;
 	}
 
 	virtual string describe(int depth = -1)
@@ -208,9 +228,9 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		if (const NodePtr& n = this->getIn()) v.push_back(n);
-		if (const NodePtr& n = this->getOut()) v.push_back(n);
-		if (const NodePtr& n = this->getBody()) v.push_back(n);
+		if (const NodePtr& n = this->getIn(false)) v.push_back(n);
+		if (const NodePtr& n = this->getOut(false)) v.push_back(n);
+		if (const NodePtr& n = this->getBody(false)) v.push_back(n);
 		return v;
 	}
 

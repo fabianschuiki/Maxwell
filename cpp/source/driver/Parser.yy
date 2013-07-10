@@ -48,9 +48,10 @@ typedef std::vector<shared_ptr<Node> > Nodes;
     int symbol;
 }
 
-%type <node> func_decl func_arg func_arg_tuple type_decl body stmt expr type_expr union_type_expr nonunion_type_expr call_arg
+%type <node> func_decl func_arg func_arg_tuple type_decl body stmt expr call_arg
 %type <node> primary_expr postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr
-%type <nodes> func_args stmts union_type_exprs call_args
+%type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg
+%type <nodes> func_args stmts union_typeexprs tuple_typeexpr_args call_args
 %type <varDefExpr> var_expr
 %type <string> prefix_op
 
@@ -178,7 +179,7 @@ func_arg  : IDENTIFIER {
               $$ = a;
               delete $1;
             }
-          | IDENTIFIER type_expr {
+          | IDENTIFIER typeexpr {
               FuncArg *a = new FuncArg;
               a->setName(*$1);
               a->setType(shared_ptr<Node>($2));
@@ -194,36 +195,6 @@ type_decl : TYPE IDENTIFIER {
               delete $2;
             }
           ;
-
-type_expr : union_type_expr
-          | nonunion_type_expr
-          ;
-
-nonunion_type_expr  : IDENTIFIER {
-                        NamedType *n = new NamedType;
-                        n->setName(*$1);
-                        $$ = n;
-                        delete $1;
-                      }
-                    ;
-
-union_type_expr : union_type_exprs {
-                    UnionType *t = new UnionType;
-                    t->setTypes(*$1);
-                    $$ = t;
-                    delete $1;
-                  }
-                ;
-
-union_type_exprs  : nonunion_type_expr PIPE nonunion_type_expr {
-                      $$ = new Nodes;
-                      $$->push_back(shared_ptr<Node>($1));
-                      $$->push_back(shared_ptr<Node>($3));
-                    }
-                  | union_type_exprs PIPE nonunion_type_expr {
-                      $1->push_back(shared_ptr<Node>($3));
-                    }
-                  ;
 
 body  : LBRACE RBRACE {
           FuncBody *b = new FuncBody;
@@ -252,6 +223,9 @@ stmt  : expr SEMICOLON {
           $$ = s;
         }
       ;
+
+
+/* EXPRESSIONS */
 
 primary_expr
   : IDENTIFIER {
@@ -393,7 +367,7 @@ expr  : relational_expr
         }
       ;
 
-var_expr  : VAR IDENTIFIER type_expr {
+var_expr  : VAR IDENTIFIER typeexpr {
               VarDefExpr *v = new VarDefExpr;
               v->setName(*$2);
               v->setType(shared_ptr<Node>($3));
@@ -408,6 +382,77 @@ var_expr  : VAR IDENTIFIER type_expr {
             }
           ;
 
+/* TYPE EXPRESSIONS */
+typeexpr
+  : nonunion_typeexpr
+  | union_typeexpr
+  ;
+
+nonunion_typeexpr
+  : IDENTIFIER {
+      NamedTypeExpr *n = new NamedTypeExpr;
+      n->setName(*$1);
+      $$ = n;
+      delete $1;
+    }
+  | tuple_typeexpr
+  ;
+
+union_typeexpr
+  : union_typeexprs {
+      UnionTypeExpr *t = new UnionTypeExpr;
+      t->setTypes(*$1);
+      $$ = t;
+      delete $1;
+    }
+  ;
+
+union_typeexprs
+  : nonunion_typeexpr PIPE nonunion_typeexpr {
+      $$ = new Nodes;
+      $$->push_back(shared_ptr<Node>($1));
+      $$->push_back(shared_ptr<Node>($3));
+    }
+  | union_typeexprs PIPE nonunion_typeexpr {
+      $1->push_back(shared_ptr<Node>($3));
+    }
+  ;
+
+
+tuple_typeexpr
+  : LPAREN tuple_typeexpr_args RPAREN {
+      TupleTypeExpr *t = new TupleTypeExpr;
+      t->setArgs(*$2);
+      $$ = t;
+      delete $2;
+    }
+  ;
+
+tuple_typeexpr_args
+  : tuple_typeexpr_arg COMMA tuple_typeexpr_arg {
+      $$ = new Nodes;
+      $$->push_back(shared_ptr<Node>($1));
+      $$->push_back(shared_ptr<Node>($3));
+    }
+  | tuple_typeexpr_args COMMA tuple_typeexpr_arg {
+      $1->push_back(shared_ptr<Node>($3));
+    }
+  ;
+
+tuple_typeexpr_arg
+  : typeexpr {
+      TupleTypeExprArg *t = new TupleTypeExprArg;
+      t->setExpr(shared_ptr<Node>($1));
+      $$ = t;
+    }
+  | IDENTIFIER COLON typeexpr {
+      TupleTypeExprArg *t = new TupleTypeExprArg;
+      t->setName(*$1);
+      t->setExpr(shared_ptr<Node>($3));
+      $$ = t;
+      delete $1;
+    }
+  ;
 
 %% /*** Additional Code ***/
 

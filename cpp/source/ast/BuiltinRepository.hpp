@@ -30,6 +30,7 @@ public:
 	typedef map<int, string> NodeNames;
 
 	const NodePtr& getNode(int id);
+	const NodePtr& getNode(const NodeId& id);
 	const Nodes& getNodes() { return nodes; }
 	const NodeNames& getNodeNames() { return nodeNames; }
 

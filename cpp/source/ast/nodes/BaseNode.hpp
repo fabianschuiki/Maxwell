@@ -7,6 +7,7 @@ namespace ast {
 class CallInterface;
 class GraphInterface;
 class TypeInterface;
+class TypeExprInterface;
 
 class BaseNode
 {
@@ -17,6 +18,8 @@ public:
 	GraphInterface* needGraph() { GraphInterface* i = asGraph(); if (i) return i; throw std::runtime_error("Node does not implement Graph interface."); }
 	virtual TypeInterface* asType() { return NULL; }
 	TypeInterface* needType() { TypeInterface* i = asType(); if (i) return i; throw std::runtime_error("Node does not implement Type interface."); }
+	virtual TypeExprInterface* asTypeExpr() { return NULL; }
+	TypeExprInterface* needTypeExpr() { TypeExprInterface* i = asTypeExpr(); if (i) return i; throw std::runtime_error("Node does not implement TypeExpr interface."); }
 };
 
 } // namespace ast

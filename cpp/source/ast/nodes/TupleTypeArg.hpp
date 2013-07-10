@@ -17,53 +17,24 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class FuncArg : public Node
+class TupleTypeArg : public Node
 {
 public:
-	FuncArg() : Node(),
-		interfaceGraph(this) {}
+	TupleTypeArg() : Node() {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kFuncArg;
+		return k == kTupleTypeArg;
 	}
 
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
-		if (i == kGraphInterface) return true;
 		return false;
 	}
 
-	virtual string getClassName() const { return "FuncArg"; }
-
-	void setGraphPrev(const NodePtr& v)
-	{
-		if (!v && graphPrev) {
-			modify();
-			graphPrev.reset();
-		}
-		if (!graphPrev || v->getId() != graphPrev.id) {
-			modify();
-			graphPrev.set(v);
-		}
-	}
-	void setGraphPrev(const NodeId& v)
-	{
-		if (v != graphPrev.id) {
-			modify();
-			graphPrev.set(v);
-		}
-	}
-	const NodePtr& getGraphPrev(bool required = true)
-	{
-		const NodePtr& v = graphPrev.get(repository);
-		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have graphPrev set to a non-null value.");
-		}
-		return v;
-	}
+	virtual string getClassName() const { return "TupleTypeArg"; }
 
 	void setName(const string& v)
 	{
@@ -83,6 +54,9 @@ public:
 
 	void setType(const NodePtr& v)
 	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'type' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
 		if (v != type) {
 			modify();
 			type = v;
@@ -99,10 +73,9 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "FuncArg{…}";
+		if (depth == 0) return "TupleTypeArg{…}";
 		stringstream str, b;
-		str << "FuncArg{";
-		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
+		str << "TupleTypeArg{";
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
 		if (this->type) b << endl << "  \033[1mtype\033[0m = " << indent(this->type->describe(depth-1));
 		string bs = b.str();
@@ -113,14 +86,12 @@ public:
 
 	virtual void encode(Encoder& e)
 	{
-		e.encode(this->graphPrev);
 		e.encode(this->name);
 		e.encode(this->type);
 	}
 
 	virtual void decode(Decoder& d)
 	{
-		d.decode(this->graphPrev);
 		d.decode(this->name);
 		d.decode(this->type);
 	}
@@ -134,25 +105,13 @@ public:
 	virtual const NodePtr& resolvePath(const string& path)
 	{
 		size_t size = path.size();
-		// .*
-		if (true) {
-			// graphPrev.*
-			if (size >= 9 && path[0] == 'g' && path[1] == 'r' && path[2] == 'a' && path[3] == 'p' && path[4] == 'h' && path[5] == 'P' && path[6] == 'r' && path[7] == 'e' && path[8] == 'v') {
-				// graphPrev
-				if (size == 9) {
-					return getGraphPrev();
-				} else if (path[9] == '.') {
-					return getGraphPrev()->resolvePath(path.substr(10));
-				}
-			}
-			// type.*
-			if (size >= 4 && path[0] == 't' && path[1] == 'y' && path[2] == 'p' && path[3] == 'e') {
-				// type
-				if (size == 4) {
-					return getType();
-				} else if (path[4] == '.') {
-					return getType()->resolvePath(path.substr(5));
-				}
+		// type.*
+		if (size >= 4 && path[0] == 't' && path[1] == 'y' && path[2] == 'p' && path[3] == 'e') {
+			// type
+			if (size == 4) {
+				return getType();
+			} else if (path[4] == '.') {
+				return getType()->resolvePath(path.substr(5));
 			}
 		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
@@ -165,16 +124,9 @@ public:
 		return v;
 	}
 
-	// Interfaces
-	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
-
 protected:
-	NodeRef graphPrev;
 	string name;
 	NodePtr type;
-
-	// Interfaces
-	GraphInterfaceImpl<FuncArg> interfaceGraph;
 };
 
 } // namespace ast

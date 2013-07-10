@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
 
 using std::cout;
 using std::endl;
@@ -17,9 +18,12 @@ using std::set;
 using std::ofstream;
 using std::vector;
 
+class Builder;
+
 class Node
 {
 public:
+	Builder* builder;
 	string name;
 	string intfName;
 	string parent;
@@ -55,50 +59,7 @@ public:
 	}
 
 private:
-	Field makeField(string name, string type, bool child)
-	{
-		Field f;
-		f.child = child;
-		if (type.size() >= 1 && type[0] == '&') {
-			type = type.substr(1);
-			f.ref = true;
-		} else {
-			f.ref = false;
-		}
-		f.name = name;
-		f.type = type;
-		f.isString = false;
-		f.isArray = false;
-		f.isNode = false;
-		f.isBool = false;
-		if (type == "string") {
-			f.isString = true;
-			f.cpp_type = "string";
-		} else if (type == "bool") {
-			f.isBool = true;
-			f.cpp_type = "bool";
-		} else if (type.size() > 2 && type[0] == '[') {
-			f.isArray = true;
-			f.cpp_type = "NodeVector";
-		} else {
-			f.isNode = true;
-			f.cpp_type = "NodePtr";
-			if (type != "any") {
-				size_t pipe = -1, offset = 0;
-				do {
-					offset = pipe + 1;
-					pipe = type.find("|", pipe + 1);
-					string subtype = type.substr(offset, pipe);
-					if (subtype.size() >= 1 && subtype[0] == '@') {
-						f.allowedInterfaces.push_back(subtype.substr(1));
-					} else {
-						f.allowedNodes.push_back(subtype);
-					}
-				} while (pipe != string::npos);
-			}
-		}
-		return f;
-	}
+	Field makeField(string name, string type, bool child);
 };
 
 class Builder
@@ -109,12 +70,14 @@ public:
 		if (nodeName.size() >= 1 && nodeName[0] == '@') {
 			nodeName = nodeName.substr(1);
 			Node &n = interfaces[nodeName];
+			n.builder = this;
 			n.name = nodeName;
 			n.intfName = nodeName + "Interface";
 			n.parent = parentName;
 			return n;
 		} else {
 			Node &n = nodes[nodeName];
+			n.builder = this;
 			n.name = nodeName;
 			n.parent = parentName;
 			return n;
@@ -123,6 +86,8 @@ public:
 	typedef map<string, Node> Nodes;
 	Nodes nodes;
 	Nodes interfaces;
+	typedef map<string, string> Groups;
+	Groups groups;
 };
 
 typedef vector<string> Headers;

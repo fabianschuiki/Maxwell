@@ -58,45 +58,70 @@ public:
 			graphPrev.set(v);
 		}
 	}
-	const NodePtr& getGraphPrev()
+	const NodePtr& getGraphPrev(bool required = true)
 	{
-		return graphPrev.get(repository);
+		const NodePtr& v = graphPrev.get(repository);
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have graphPrev set to a non-null value.");
+		}
+		return v;
 	}
 
 	void setPossibleType(const NodePtr& v)
 	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'possibleType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
 		if (v != possibleType) {
 			modify();
 			possibleType = v;
 		}
 	}
-	const NodePtr& getPossibleType()
+	const NodePtr& getPossibleType(bool required = true)
 	{
-		return possibleType;
+		const NodePtr& v = possibleType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have possibleType set to a non-null value.");
+		}
+		return v;
 	}
 
 	void setRequiredType(const NodePtr& v)
 	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'requiredType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
 		if (v != requiredType) {
 			modify();
 			requiredType = v;
 		}
 	}
-	const NodePtr& getRequiredType()
+	const NodePtr& getRequiredType(bool required = true)
 	{
-		return requiredType;
+		const NodePtr& v = requiredType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have requiredType set to a non-null value.");
+		}
+		return v;
 	}
 
 	void setActualType(const NodePtr& v)
 	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'actualType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
 		if (v != actualType) {
 			modify();
 			actualType = v;
 		}
 	}
-	const NodePtr& getActualType()
+	const NodePtr& getActualType(bool required = true)
 	{
-		return actualType;
+		const NodePtr& v = actualType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have actualType set to a non-null value.");
+		}
+		return v;
 	}
 
 	void setName(const string& v)
@@ -106,36 +131,51 @@ public:
 			name = v;
 		}
 	}
-	const string& getName()
+	const string& getName(bool required = true)
 	{
-		return name;
+		const string& v = name;
+		if (required && v.empty()) {
+			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string name set.");
+		}
+		return v;
 	}
 
 	void setType(const NodePtr& v)
 	{
+		if (v && !v->isKindOf(kNamedTypeExpr) && !v->isKindOf(kUnionTypeExpr) && !v->isKindOf(kTupleTypeExpr)) {
+			throw runtime_error("'type' needs to be of kind {NamedTypeExpr, UnionTypeExpr, TupleTypeExpr} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
 		if (v != type) {
 			modify();
 			type = v;
 		}
 	}
-	const NodePtr& getType()
+	const NodePtr& getType(bool required = true)
 	{
-		return type;
+		const NodePtr& v = type;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have type set to a non-null value.");
+		}
+		return v;
 	}
 
 	void setInitialExpr(const NodePtr& v)
 	{
 		if (v && !v->implements(kTypeInterface)) {
-			throw runtime_error("'initialExpr' needs to be of kind {} or implement interface {Type}.");
+			throw runtime_error("'initialExpr' needs to be of kind {} or implement interface {Type}, got " + v->getClassName() + " instead.");
 		}
 		if (v != initialExpr) {
 			modify();
 			initialExpr = v;
 		}
 	}
-	const NodePtr& getInitialExpr()
+	const NodePtr& getInitialExpr(bool required = true)
 	{
-		return initialExpr;
+		const NodePtr& v = initialExpr;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have initialExpr set to a non-null value.");
+		}
+		return v;
 	}
 
 	virtual string describe(int depth = -1)
@@ -254,8 +294,8 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		if (const NodePtr& n = this->getType()) v.push_back(n);
-		if (const NodePtr& n = this->getInitialExpr()) v.push_back(n);
+		if (const NodePtr& n = this->getType(false)) v.push_back(n);
+		if (const NodePtr& n = this->getInitialExpr(false)) v.push_back(n);
 		return v;
 	}
 

@@ -56,9 +56,13 @@ public:
 			graphPrev.set(v);
 		}
 	}
-	const NodePtr& getGraphPrev()
+	const NodePtr& getGraphPrev(bool required = true)
 	{
-		return graphPrev.get(repository);
+		const NodePtr& v = graphPrev.get(repository);
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have graphPrev set to a non-null value.");
+		}
+		return v;
 	}
 
 	void setName(const string& v)
@@ -68,9 +72,13 @@ public:
 			name = v;
 		}
 	}
-	const string& getName()
+	const string& getName(bool required = true)
 	{
-		return name;
+		const string& v = name;
+		if (required && v.empty()) {
+			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string name set.");
+		}
+		return v;
 	}
 
 	virtual string describe(int depth = -1)

@@ -7,6 +7,10 @@
  */
 void buildAST(Builder &node)
 {
+	// Groups
+	node.groups["type"] = "GenericType|DefinedType|UnionType|TupleType";
+	node.groups["typeExpr"] = "NamedTypeExpr|UnionTypeExpr|TupleTypeExpr";
+
 	// Interfaces
 	Node& graph = node("@Graph")
 		.attr("graphPrev", "&any");
@@ -16,9 +20,11 @@ void buildAST(Builder &node)
 		.child("callCandidates", "[CallCandidate]")
 		.attr("selectedCallCandidate", "&CallCandidate");
 	Node& type = node("@Type")
-		.attr("possibleType", "any")
-		.attr("requiredType", "any")
-		.attr("actualType", "any");
+		.attr("possibleType", "#type")
+		.attr("requiredType", "#type")
+		.attr("actualType", "#type");
+	Node& typeExpr = node("@TypeExpr")
+		.child("evaluatedType", "#type");
 
 	// Call Support.
 	node("CallArg")
@@ -60,7 +66,7 @@ void buildAST(Builder &node)
 	node("VarDefExpr")
 		.intf(graph).intf(type)
 		.attr("name", "string")
-		.child("type", "any")
+		.child("type", "#typeExpr")
 		.child("initialExpr", "@Type");
 	node("CallExpr")
 		.intf(graph).intf(call).intf(type)
@@ -87,14 +93,30 @@ void buildAST(Builder &node)
 		.attr("name", "string");
 
 	// Type Expressions
+	node("NamedTypeExpr")
+		.intf(graph).intf(typeExpr)
+		.attr("name", "string")
+		.attr("definition", "&any");
+	node("UnionTypeExpr")
+		.intf(graph).intf(typeExpr)
+		.child("types", "[#typeExpr]");
+	node("TupleTypeExpr")
+		.intf(graph).intf(typeExpr)
+		.child("args", "[TupleTypeExprArg]");
+	node("TupleTypeExprArg")
+		.intf(graph).intf(typeExpr)
+		.attr("name", "string")
+		.child("expr", "#typeExpr");
+
+	// Types
 	node("GenericType");
 	node("DefinedType")
 		.attr("definition", "&any");
-	node("NamedType")
-		.intf(graph)
-		.attr("name", "string")
-		.attr("definition", "&any");
 	node("UnionType")
-		.intf(graph)
-		.child("types", "[any]");
+		.child("types", "[#type]");
+	node("TupleType")
+		.child("args", "[TupleTypeArg]");
+	node("TupleTypeArg")
+		.attr("name", "string")
+		.child("type", "#type");
 }

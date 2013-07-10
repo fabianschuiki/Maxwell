@@ -4,10 +4,12 @@
 #include <ast/Repository.hpp>
 #include <ast/nodes/ast.hpp>
 #include <string>
+#include <set>
 
 namespace stage {
 
 using std::string;
+using std::set;
 using ast::Node;
 using ast::NodePtr;
 using ast::NodeId;
@@ -32,13 +34,18 @@ public:
 	void run(const NodePtr& node);
 	void run(const NodeId& id);
 
+	typedef set<NodeId> Dependencies;
+
 protected:
 	NodePtr currentNode;
+	Dependencies dependencies; // dependencies of the tuple (stage,currentNode)
 
 	/// Overridden by subclasses to implement stage behaviour.
 	virtual void process(const NodePtr& node) = 0;
 
-	void addDependency(const NodeId& id, string path);
+	void addDependency(const NodeId& id);
+	void addDependency(const NodeId& id, string path) { addDependency(id + path); }
+	template <typename T> void addDependency(const T& node) { addDependency(node->getId()); }
 	template <typename T> void addDependency(const T& node, string path) { addDependency(node->getId(), path); }
 };
 

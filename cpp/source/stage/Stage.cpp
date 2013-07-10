@@ -11,11 +11,12 @@ using stage::Stage;
  */
 void Stage::run(const NodePtr& node)
 {
-	// TODO: reset stage dependencies for this (stage,node) tuple, giving us a clean slate.
 	currentNode = node;
+	dependencies.clear();
 	process(node);
+	std::cout << "(" << getName() << "," << node->getId() << ") has " << dependencies.size() << " dependencies\n";
+	// TODO: commit dependencies to the repository for this (stage,node) tuple.
 	currentNode.reset();
-	// TODO: commit stage dependencies to the repository for this (stage,node) tuple.
 }
 
 /**
@@ -33,7 +34,7 @@ void Stage::run(const NodeId& id)
  * @brief Flags the currentNode as depending on the given path of the given
  * node id.
  */
-void Stage::addDependency(const NodeId& id, string path)
+void Stage::addDependency(const NodeId& id)
 {
-	//std::cout << getName() << " of " << currentNode->getId() << " depends on " << id << "." << path << "\n";
+	dependencies.insert(id);
 }

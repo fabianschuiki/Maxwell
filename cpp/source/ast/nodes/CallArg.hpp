@@ -56,6 +56,9 @@ public:
 
 	void setExpr(const NodePtr& v)
 	{
+		if (v && !v->implements(kTypeInterface)) {
+			throw runtime_error("'expr' needs to be of kind {} or implement interface {Type}, got " + v->getClassName() + " instead.");
+		}
 		if (!v && expr) {
 			modify();
 			expr.reset();

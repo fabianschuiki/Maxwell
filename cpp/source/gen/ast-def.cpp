@@ -36,7 +36,7 @@ void buildAST(Builder &node)
 	// Call Support.
 	node("CallArg")
 		.attr("name", "string")
-		.attr("expr", "&any");
+		.attr("expr", "&@Type");
 	node("CallCandidate")
 		.attr("func", "&any");
 

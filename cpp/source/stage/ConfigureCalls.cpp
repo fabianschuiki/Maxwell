@@ -1,9 +1,11 @@
 /* Copyright © 2013 Fabian Schuiki */
 #include "stages.hpp"
 #include <iostream>
+#include <boost/pointer_cast.hpp>
 
 using namespace ast;
 using stage::ConfigureCalls;
+using boost::dynamic_pointer_cast;
 
 void ConfigureCalls::process(const NodePtr& node)
 {
@@ -14,8 +16,26 @@ void ConfigureCalls::process(const NodePtr& node)
 	}
 
 	// Configure call expressions.
-	if (CallExpr *call = dynamic_cast<CallExpr*>(node.get())) {
-		
+	if (CallExpr* call = dynamic_cast<CallExpr*>(node.get())) {
+		if (call->getCallName(false).empty())
+		{
+			// Copy the call name.
+			call->setCallName(call->getName());
+
+			// Create the argument array containing references to the original argument exprs.
+			const NodeVector& argsGiven = call->getArgs();
+			NodeVector args(argsGiven.size());
+			for (int i = 0; i < argsGiven.size(); i++) {
+				const shared_ptr<CallExprArg>& argGiven = dynamic_pointer_cast<CallExprArg>(argsGiven[i]);
+				shared_ptr<CallArg> arg(new CallArg);
+				arg->setName(argGiven->getName(false));
+				arg->setExpr(argGiven->getExpr());
+				args[i] = arg;
+			}
+
+			// Store the arguments.
+			call->setCallArgs(args);
+		}
 	}
 
 	// Configure binary operators.

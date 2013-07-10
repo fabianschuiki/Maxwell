@@ -20,7 +20,8 @@ using std::runtime_error;
 class TupleTypeArg : public Node
 {
 public:
-	TupleTypeArg() : Node() {}
+	TupleTypeArg() : Node(),
+		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -31,6 +32,7 @@ public:
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
+		if (i == kNamedInterface) return true;
 		return false;
 	}
 
@@ -124,9 +126,15 @@ public:
 		return v;
 	}
 
+	// Interfaces
+	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
+
 protected:
 	string name;
 	NodePtr type;
+
+	// Interfaces
+	NamedInterfaceImpl<TupleTypeArg> interfaceNamed;
 };
 
 } // namespace ast

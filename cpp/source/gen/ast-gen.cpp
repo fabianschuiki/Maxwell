@@ -360,6 +360,38 @@ void makeBaseNodeHeader(const boost::filesystem::path& output, const Builder& bu
 	h << "} // namespace ast\n";
 }
 
+void determineImplementedInterfaces(Builder& builder)
+{
+	// Analyze every node in the builder separately.
+	for (Builder::Nodes::iterator it = builder.nodes.begin(); it != builder.nodes.end(); it++) {
+		Node& node = it->second;
+		for (Builder::Nodes::iterator is = builder.interfaces.begin(); is != builder.interfaces.end(); is++) {
+			Node& intf = is->second;
+
+			// Check whether node implements interface intf.
+			bool implemented = true;
+			for (Node::Fields::iterator ir = intf.attributes.begin(); ir != intf.attributes.end(); ir++) {
+				bool found = false;
+				for (Node::Fields::iterator iq = node.attributes.begin(); iq != node.attributes.end(); iq++) {
+					if ((*iq).name == (*ir).name && (*iq).cpp_type == (*ir).cpp_type) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					implemented = false;
+					break;
+				}
+			}
+
+			// If the node implements this interface, add it to the node's interfaces list.
+			if (implemented) {
+				node.interfaces.insert(&intf);
+			}
+		}
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	// Parse command line arguments.
@@ -376,12 +408,15 @@ int main(int argc, char *argv[])
 	Builder builder;
 	buildAST(builder);
 
+	// Determine implemented interfaces.
+	determineImplementedInterfaces(builder);
+
 	// Generate the code for the nodes.
 	Headers headerFileNames;
 	for (Builder::Nodes::iterator it = builder.nodes.begin(); it != builder.nodes.end(); it++) {
 		const string &name = it->first;
 		Node &node = it->second;
-		cout << "- Generating \033[36;1m" << name << "\033[0m" << endl;
+		//cout << "- Generating \033[36;1m" << name << "\033[0m" << endl;
 		string headerName = name + ".hpp";
 
 		// Generate the header file.

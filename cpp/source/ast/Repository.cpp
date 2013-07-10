@@ -1,7 +1,6 @@
 /* Copyright © 2013 Fabian Schuiki */
 #include "Repository.hpp"
-#include "nodes/FuncDef.hpp"
-#include "nodes/TypeDef.hpp"
+#include "nodes/interfaces.hpp"
 #include <iostream>
 #include <boost/bind.hpp>
 
@@ -10,6 +9,7 @@ using ast::SourceRepository;
 using ast::NodeRepository;
 using ast::NodePtr;
 using ast::NodeId;
+using ast::NamedInterface;
 using boost::scoped_ptr;
 
 Repository::Repository(const boost::filesystem::path& path) : path(path), builtinRepository(*this)
@@ -48,11 +48,8 @@ void Repository::flush()
 NodeId Repository::addNode(int source, const NodePtr& node)
 {
 	NodeId id = nodeRepo->addNode(source, node);
-	// this is quite a hack, we should improve this
-	if (ast::FuncDef *f = dynamic_cast<ast::FuncDef*>(node.get())) {
-		symbolRepo->addExportedSymbol(id, f->getName());
-	} else if (ast::TypeDef *t = dynamic_cast<ast::TypeDef*>(node.get())) {
-		symbolRepo->addExportedSymbol(id, t->getName());
+	if (NamedInterface *intf = node->asNamed()) {
+		symbolRepo->addExportedSymbol(id, intf->getName());
 	}
 	return id;
 }

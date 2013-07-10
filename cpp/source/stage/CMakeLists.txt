@@ -8,3 +8,4 @@ add_library(stage
 )
 
 add_dependencies(stage stage-gen)
+add_dependencies(stage ast)

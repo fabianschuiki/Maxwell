@@ -30,6 +30,9 @@ void buildAST(Builder &node)
 		.attr("name", "string")
 		.child("type", "#typeExpr");
 
+	// Anonymous interfaces.
+	node("@Named").attr("name", "string");
+
 	// Call Support.
 	node("CallArg")
 		.attr("name", "string")

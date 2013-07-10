@@ -6,6 +6,7 @@ namespace ast {
 
 class CallInterface;
 class GraphInterface;
+class NamedInterface;
 class TypeInterface;
 class TypeExprInterface;
 class VariableInterface;
@@ -17,6 +18,8 @@ public:
 	CallInterface* needCall() { CallInterface* i = asCall(); if (i) return i; throw std::runtime_error("Node does not implement Call interface."); }
 	virtual GraphInterface* asGraph() { return NULL; }
 	GraphInterface* needGraph() { GraphInterface* i = asGraph(); if (i) return i; throw std::runtime_error("Node does not implement Graph interface."); }
+	virtual NamedInterface* asNamed() { return NULL; }
+	NamedInterface* needNamed() { NamedInterface* i = asNamed(); if (i) return i; throw std::runtime_error("Node does not implement Named interface."); }
 	virtual TypeInterface* asType() { return NULL; }
 	TypeInterface* needType() { TypeInterface* i = asType(); if (i) return i; throw std::runtime_error("Node does not implement Type interface."); }
 	virtual TypeExprInterface* asTypeExpr() { return NULL; }

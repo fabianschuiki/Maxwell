@@ -51,10 +51,6 @@ public:
 	Node& attr(string name, string type, bool child = false) { attributes.push_back(makeField(name, type, child)); return *this; }
 	Node& child(string name, string type) { children.push_back(attributes.size()); return attr(name, type, true); }
 	Node& intf(const Node& interface) {
-		interfaces.insert(&interface);
-		for (Interfaces::iterator it = interface.interfaces.begin(); it != interface.interfaces.end(); it++) {
-			interfaces.insert(*it);
-		}
 		for (Node::Fields::const_iterator it = interface.attributes.begin(); it != interface.attributes.end(); it++) {
 			attributes.push_back(*it);
 		}

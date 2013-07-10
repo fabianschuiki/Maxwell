@@ -20,7 +20,8 @@ using std::runtime_error;
 class CallArg : public Node
 {
 public:
-	CallArg() : Node() {}
+	CallArg() : Node(),
+		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -31,6 +32,7 @@ public:
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
+		if (i == kNamedInterface) return true;
 		return false;
 	}
 
@@ -124,9 +126,15 @@ public:
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
 
+	// Interfaces
+	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
+
 protected:
 	string name;
 	NodeRef expr;
+
+	// Interfaces
+	NamedInterfaceImpl<CallArg> interfaceNamed;
 };
 
 } // namespace ast

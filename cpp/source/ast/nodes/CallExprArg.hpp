@@ -21,7 +21,8 @@ class CallExprArg : public Node
 {
 public:
 	CallExprArg() : Node(),
-		interfaceGraph(this) {}
+		interfaceGraph(this),
+		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -33,6 +34,7 @@ public:
 	{
 		if (Node::implements(i)) return true;
 		if (i == kGraphInterface) return true;
+		if (i == kNamedInterface) return true;
 		return false;
 	}
 
@@ -170,6 +172,7 @@ public:
 
 	// Interfaces
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
 protected:
 	NodeRef graphPrev;
@@ -178,6 +181,7 @@ protected:
 
 	// Interfaces
 	GraphInterfaceImpl<CallExprArg> interfaceGraph;
+	NamedInterfaceImpl<CallExprArg> interfaceNamed;
 };
 
 } // namespace ast

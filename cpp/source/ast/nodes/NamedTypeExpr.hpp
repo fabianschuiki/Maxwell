@@ -22,7 +22,8 @@ class NamedTypeExpr : public Node
 public:
 	NamedTypeExpr() : Node(),
 		interfaceGraph(this),
-		interfaceTypeExpr(this) {}
+		interfaceTypeExpr(this),
+		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -35,6 +36,7 @@ public:
 		if (Node::implements(i)) return true;
 		if (i == kGraphInterface) return true;
 		if (i == kTypeExprInterface) return true;
+		if (i == kNamedInterface) return true;
 		return false;
 	}
 
@@ -205,6 +207,7 @@ public:
 	// Interfaces
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual TypeExprInterface* asTypeExpr() { return &this->interfaceTypeExpr; }
+	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
 protected:
 	NodeRef graphPrev;
@@ -215,6 +218,7 @@ protected:
 	// Interfaces
 	GraphInterfaceImpl<NamedTypeExpr> interfaceGraph;
 	TypeExprInterfaceImpl<NamedTypeExpr> interfaceTypeExpr;
+	NamedInterfaceImpl<NamedTypeExpr> interfaceNamed;
 };
 
 } // namespace ast

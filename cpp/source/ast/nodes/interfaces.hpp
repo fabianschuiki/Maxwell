@@ -61,6 +61,27 @@ protected:
 	T* const node;
 };
 
+class NamedInterface
+{
+public:
+	virtual Node* getNode() = 0;
+
+	virtual void setName(const string& v) = 0;
+	virtual const string& getName(bool required = true) = 0;
+};
+template <typename T> class NamedInterfaceImpl : public NamedInterface
+{
+public:
+	Node* getNode() { return node; }
+	NamedInterfaceImpl(T* node) : node(node) {}
+
+	const string& getName(bool required = true) { return node->getName(required); }
+	void setName(const string& v) { node->setName(v); }
+
+protected:
+	T* const node;
+};
+
 class TypeInterface
 {
 public:

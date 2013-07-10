@@ -21,7 +21,8 @@ class FuncDef : public Node
 {
 public:
 	FuncDef() : Node(),
-		interfaceGraph(this) {}
+		interfaceGraph(this),
+		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -33,6 +34,7 @@ public:
 	{
 		if (Node::implements(i)) return true;
 		if (i == kGraphInterface) return true;
+		if (i == kNamedInterface) return true;
 		return false;
 	}
 
@@ -236,6 +238,7 @@ public:
 
 	// Interfaces
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
 protected:
 	NodeRef graphPrev;
@@ -246,6 +249,7 @@ protected:
 
 	// Interfaces
 	GraphInterfaceImpl<FuncDef> interfaceGraph;
+	NamedInterfaceImpl<FuncDef> interfaceNamed;
 };
 
 } // namespace ast

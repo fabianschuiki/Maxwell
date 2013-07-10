@@ -75,6 +75,8 @@ std::ostream& ast::operator<<(std::ostream& s, const NodeId& id)
 Node::Node()
 {
 	modified = false;
+	repository = NULL;
+	parent = NULL;
 }
 
 /**

@@ -38,6 +38,9 @@ public:
 
 	void setFunc(const NodePtr& v)
 	{
+		if (v && !v->isKindOf(kFuncDef)) {
+			throw runtime_error("'func' needs to be of kind {FuncDef} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
 		if (!v && func) {
 			modify();
 			func.reset();

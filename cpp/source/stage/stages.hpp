@@ -52,6 +52,15 @@ public:
 	ConfigureCalls(Repository& r) : Stage(r) {}
 };
 
+class FindCallCandidates : public Stage
+{
+protected:
+	virtual void process(const NodePtr& node);
+public:
+	string getName() const { return "FindCallCandidates"; }
+	FindCallCandidates(Repository& r) : Stage(r) {}
+};
+
 class CalcPossibleTypes : public Stage
 {
 protected:

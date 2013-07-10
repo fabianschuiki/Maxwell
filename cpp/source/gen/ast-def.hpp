@@ -52,6 +52,7 @@ public:
 	Node& child(string name, string type) { children.push_back(attributes.size()); return attr(name, type, true); }
 	Node& intf(const Node& interface) {
 		for (Node::Fields::const_iterator it = interface.attributes.begin(); it != interface.attributes.end(); it++) {
+			if ((*it).child) children.push_back(attributes.size());
 			attributes.push_back(*it);
 		}
 		return *this;

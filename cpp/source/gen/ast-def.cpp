@@ -16,7 +16,7 @@ void buildAST(Builder &node)
 		.attr("graphPrev", "&any");
 	Node& call = node("@Call")
 		.attr("callName", "string")
-		.child("callArgs", "[CallArg]")
+		.child("callArgs", "[@CallArg]")
 		.child("callCandidates", "[CallCandidate]")
 		.attr("selectedCallCandidate", "&CallCandidate");
 	Node& type = node("@Type")
@@ -29,6 +29,9 @@ void buildAST(Builder &node)
 		.intf(type)
 		.attr("name", "string")
 		.child("type", "#typeExpr");
+	Node& callArg = node("@CallArg") // everything that looks like a call argument (expr and optional name)
+		.attr("name", "string")
+		.attr("expr", "@Type");
 
 	// Anonymous interfaces.
 	node("@Named").attr("name", "string");
@@ -51,9 +54,7 @@ void buildAST(Builder &node)
 		.intf(graph)
 		.child("args", "[FuncArg]");
 	node("FuncArg")
-		.intf(graph)./*intf(type)*/intf(variable)
-		/*.attr("name", "string")
-		.child("type", "any")*/;
+		.intf(graph).intf(variable);
 	node("FuncBody")
 		.intf(graph)
 		.child("stmts", "[any]");
@@ -79,7 +80,7 @@ void buildAST(Builder &node)
 		.intf(graph).intf(call).intf(type)
 		.attr("name", "string")
 		.child("context", "any")
-		.child("args", "[CallExprArg]");
+		.child("callArgs", "[CallExprArg]");
 	node("CallExprArg")
 		.intf(graph)
 		.attr("name", "string")

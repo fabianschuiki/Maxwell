@@ -7,6 +7,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <list>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -15,6 +16,7 @@ using std::endl;
 using std::string;
 using std::map;
 using std::set;
+using std::list;
 using std::ofstream;
 using std::vector;
 
@@ -41,18 +43,29 @@ public:
 		vector<string> allowedNodes;
 		vector<string> allowedInterfaces;
 	};
-	typedef vector<Field> Fields;
-	typedef vector<int> FieldIndices;
+	typedef list<Field> Fields;
+	typedef vector<Field*> Children;
 	typedef set<const Node*> Interfaces;
 	Fields attributes;
-	FieldIndices children;
+	Children children;
 	Interfaces interfaces;
 
-	Node& attr(string name, string type, bool child = false) { attributes.push_back(makeField(name, type, child)); return *this; }
-	Node& child(string name, string type) { children.push_back(attributes.size()); return attr(name, type, true); }
-	Node& intf(const Node& interface) {
+	Node& attr(string name, string type, bool child = false)
+	{
+		Field f = makeField(name, type, child);
+		dropAttribute(f);
+		attributes.push_back(f);
+		return *this;
+	}
+	Node& child(string name, string type)
+	{
+		return attr(name, type, true);
+	}
+
+	Node& intf(const Node& interface)
+	{
 		for (Node::Fields::const_iterator it = interface.attributes.begin(); it != interface.attributes.end(); it++) {
-			if ((*it).child) children.push_back(attributes.size());
+			dropAttribute(*it);
 			attributes.push_back(*it);
 		}
 		return *this;
@@ -60,6 +73,19 @@ public:
 
 private:
 	Field makeField(string name, string type, bool child);
+	void dropAttribute(const Field& f)
+	{
+		for (Fields::iterator it = attributes.begin(); it != attributes.end();) {
+			Fields::iterator is = it;
+			it++;
+			if ((*is).name == f.name) {
+				if ((*is).cpp_type != f.cpp_type) {
+					throw std::runtime_error("Adding attribute " + f.name + " to " + name + " with different cpp_types (existing " + (*is).cpp_type + " != new " + f.cpp_type + ").");
+				}
+				attributes.erase(is);
+			}
+		}
+	}
 };
 
 class Builder

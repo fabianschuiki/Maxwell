@@ -87,19 +87,6 @@ public:
 		return v;
 	}
 
-	void setCallArgs(const NodeVector& v)
-	{
-		if (v != callArgs) {
-			modify();
-			callArgs = v;
-		}
-	}
-	const NodeVector& getCallArgs(bool required = true)
-	{
-		const NodeVector& v = callArgs;
-		return v;
-	}
-
 	void setCallCandidates(const NodeVector& v)
 	{
 		if (v != callCandidates) {
@@ -232,16 +219,16 @@ public:
 		return v;
 	}
 
-	void setArgs(const NodeVector& v)
+	void setCallArgs(const NodeVector& v)
 	{
-		if (v != args) {
+		if (v != callArgs) {
 			modify();
-			args = v;
+			callArgs = v;
 		}
 	}
-	const NodeVector& getArgs(bool required = true)
+	const NodeVector& getCallArgs(bool required = true)
 	{
-		const NodeVector& v = args;
+		const NodeVector& v = callArgs;
 		return v;
 	}
 
@@ -252,7 +239,6 @@ public:
 		str << "CallExpr{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
 		if (!this->callName.empty()) b << endl << "  \033[1mcallName\033[0m = '\033[33m" << this->callName << "\033[0m'";
-		if (!this->callArgs.empty()) b << endl << "  \033[1mcallArgs\033[0m = " << indent(describeVector(this->callArgs, depth-1)) << "";
 		if (!this->callCandidates.empty()) b << endl << "  \033[1mcallCandidates\033[0m = " << indent(describeVector(this->callCandidates, depth-1)) << "";
 		if (this->selectedCallCandidate) b << endl << "  \033[1mselectedCallCandidate\033[0m = " << "\033[36m" << this->selectedCallCandidate.id << "\033[0m";
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
@@ -260,7 +246,7 @@ public:
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
 		if (this->context) b << endl << "  \033[1mcontext\033[0m = " << indent(this->context->describe(depth-1));
-		if (!this->args.empty()) b << endl << "  \033[1margs\033[0m = " << indent(describeVector(this->args, depth-1)) << "";
+		if (!this->callArgs.empty()) b << endl << "  \033[1mcallArgs\033[0m = " << indent(describeVector(this->callArgs, depth-1)) << "";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -271,7 +257,6 @@ public:
 	{
 		e.encode(this->graphPrev);
 		e.encode(this->callName);
-		e.encode(this->callArgs);
 		e.encode(this->callCandidates);
 		e.encode(this->selectedCallCandidate);
 		e.encode(this->possibleType);
@@ -279,14 +264,13 @@ public:
 		e.encode(this->actualType);
 		e.encode(this->name);
 		e.encode(this->context);
-		e.encode(this->args);
+		e.encode(this->callArgs);
 	}
 
 	virtual void decode(Decoder& d)
 	{
 		d.decode(this->graphPrev);
 		d.decode(this->callName);
-		d.decode(this->callArgs);
 		d.decode(this->callCandidates);
 		d.decode(this->selectedCallCandidate);
 		d.decode(this->possibleType);
@@ -294,16 +278,12 @@ public:
 		d.decode(this->actualType);
 		d.decode(this->name);
 		d.decode(this->context);
-		d.decode(this->args);
+		d.decode(this->callArgs);
 	}
 
 	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
 	{
 		Node::updateHierarchy(id, repository, parent);
-		for (int i = 0; i < this->callArgs.size(); i++) {
-			char buf[32]; snprintf(buf, 31, "%i", i);
-			this->callArgs[i]->updateHierarchy((id + "callArgs") + buf, repository, this);
-		}
 		for (int i = 0; i < this->callCandidates.size(); i++) {
 			char buf[32]; snprintf(buf, 31, "%i", i);
 			this->callCandidates[i]->updateHierarchy((id + "callCandidates") + buf, repository, this);
@@ -312,9 +292,9 @@ public:
 		if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
 		if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
 		if (this->context) this->context->updateHierarchy(id + "context", repository, this);
-		for (int i = 0; i < this->args.size(); i++) {
+		for (int i = 0; i < this->callArgs.size(); i++) {
 			char buf[32]; snprintf(buf, 31, "%i", i);
-			this->args[i]->updateHierarchy((id + "args") + buf, repository, this);
+			this->callArgs[i]->updateHierarchy((id + "callArgs") + buf, repository, this);
 		}
 	}
 
@@ -323,36 +303,13 @@ public:
 		size_t size = path.size();
 		// .*
 		if (true) {
-			// a.*
-			if (size >= 1 && path[0] == 'a') {
-				// actualType.*
-				if (size >= 10 && path[1] == 'c' && path[2] == 't' && path[3] == 'u' && path[4] == 'a' && path[5] == 'l' && path[6] == 'T' && path[7] == 'y' && path[8] == 'p' && path[9] == 'e') {
-					// actualType
-					if (size == 10) {
-						return getActualType();
-					} else if (path[10] == '.') {
-						return getActualType()->resolvePath(path.substr(11));
-					}
-				}
-				// args.*
-				if (size >= 4 && path[1] == 'r' && path[2] == 'g' && path[3] == 's') {
-					// args
-					if (size == 4) {
-						throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
-					} else if (path[4] == '.') {
-						size_t dot = path.find(".", 5);
-						string idx_str = path.substr(5, dot);
-						int idx = atoi(idx_str.c_str());
-						const NodeVector& a = getArgs();
-						if (idx < 0 || idx >= a.size()) {
-							throw std::runtime_error("Index into array '" + path.substr(0, 4) + "' is out of bounds.");
-						}
-						if (dot == string::npos) {
-							return a[idx];
-						} else {
-							return a[idx]->resolvePath(path.substr(dot + 1));
-						}
-					}
+			// actualType.*
+			if (size >= 10 && path[0] == 'a' && path[1] == 'c' && path[2] == 't' && path[3] == 'u' && path[4] == 'a' && path[5] == 'l' && path[6] == 'T' && path[7] == 'y' && path[8] == 'p' && path[9] == 'e') {
+				// actualType
+				if (size == 10) {
+					return getActualType();
+				} else if (path[10] == '.') {
+					return getActualType()->resolvePath(path.substr(11));
 				}
 			}
 			// c.*
@@ -453,10 +410,9 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		v.insert(v.end(), this->callArgs.begin(), this->callArgs.end());
 		v.insert(v.end(), this->callCandidates.begin(), this->callCandidates.end());
 		if (const NodePtr& n = this->getContext(false)) v.push_back(n);
-		v.insert(v.end(), this->args.begin(), this->args.end());
+		v.insert(v.end(), this->callArgs.begin(), this->callArgs.end());
 		return v;
 	}
 
@@ -469,7 +425,6 @@ public:
 protected:
 	NodeRef graphPrev;
 	string callName;
-	NodeVector callArgs;
 	NodeVector callCandidates;
 	NodeRef selectedCallCandidate;
 	NodePtr possibleType;
@@ -477,7 +432,7 @@ protected:
 	NodePtr actualType;
 	string name;
 	NodePtr context;
-	NodeVector args;
+	NodeVector callArgs;
 
 	// Interfaces
 	GraphInterfaceImpl<CallExpr> interfaceGraph;

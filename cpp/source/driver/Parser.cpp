@@ -644,7 +644,7 @@ namespace driver
     {
       CallExpr *c = new CallExpr;
       c->setName(*(yysemantic_stack_[(6) - (3)].string));
-      c->setArgs(*(yysemantic_stack_[(6) - (5)].nodes));
+      c->setCallArgs(*(yysemantic_stack_[(6) - (5)].nodes));
       c->setContext(shared_ptr<Node>((yysemantic_stack_[(6) - (1)].node)));
       (yyval.node) = c;
       delete (yysemantic_stack_[(6) - (3)].string);
@@ -678,7 +678,7 @@ namespace driver
     {
       CallExpr *c = new CallExpr;
       c->setName(*(yysemantic_stack_[(4) - (1)].string));
-      c->setArgs(*(yysemantic_stack_[(4) - (3)].nodes));
+      c->setCallArgs(*(yysemantic_stack_[(4) - (3)].nodes));
       (yyval.node) = c;
       delete (yysemantic_stack_[(4) - (1)].string);
       delete (yysemantic_stack_[(4) - (3)].nodes);

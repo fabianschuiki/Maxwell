@@ -40,6 +40,32 @@ protected:
 	T* const node;
 };
 
+class CallArgInterface
+{
+public:
+	virtual Node* getNode() = 0;
+
+	virtual void setName(const string& v) = 0;
+	virtual const string& getName(bool required = true) = 0;
+
+	virtual void setExpr(const NodePtr& v) = 0;
+	virtual const NodePtr& getExpr(bool required = true) = 0;
+};
+template <typename T> class CallArgInterfaceImpl : public CallArgInterface
+{
+public:
+	Node* getNode() { return node; }
+	CallArgInterfaceImpl(T* node) : node(node) {}
+
+	const string& getName(bool required = true) { return node->getName(required); }
+	void setName(const string& v) { node->setName(v); }
+	const NodePtr& getExpr(bool required = true) { return node->getExpr(required); }
+	void setExpr(const NodePtr& v) { node->setExpr(v); }
+
+protected:
+	T* const node;
+};
+
 class GraphInterface
 {
 public:

@@ -17,24 +17,15 @@ void ConfigureCalls::process(const NodePtr& node)
 
 	// Configure call expressions.
 	if (CallExpr* call = dynamic_cast<CallExpr*>(node.get())) {
-		if (call->getCallName(false).empty())
-		{
-			// Copy the call name.
-			call->setCallName(call->getName());
-
-			// Create the argument array containing references to the original argument exprs.
-			const NodeVector& argsGiven = call->getArgs();
-			NodeVector args(argsGiven.size());
-			for (int i = 0; i < argsGiven.size(); i++) {
-				const shared_ptr<CallExprArg>& argGiven = dynamic_pointer_cast<CallExprArg>(argsGiven[i]);
-				shared_ptr<CallArg> arg(new CallArg);
-				arg->setName(argGiven->getName(false));
-				arg->setExpr(argGiven->getExpr());
-				args[i] = arg;
+		/* CallExpr nodes do not need any argument configuration, as they
+		 * already have their arguments configured  as callArgs attributes. This
+		 * allows call code to automatically use the actual arguments.
+		 */
+		if (call->getCallName(false).empty()) {
+			if (call->getContext(false)) {
+				throw std::runtime_error("Contextual calls (as in " + call->getId().str() + ") are not yet supported.");
 			}
-
-			// Store the arguments.
-			call->setCallArgs(args);
+			call->setCallName(call->getName());
 		}
 	}
 

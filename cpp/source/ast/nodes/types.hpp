@@ -34,6 +34,7 @@ typedef enum {
 /// Node interfaces that may be used to test whether a Node implements a given interface.
 typedef enum {
 	kCallInterface,
+	kCallArgInterface,
 	kGraphInterface,
 	kNamedInterface,
 	kTypeInterface,

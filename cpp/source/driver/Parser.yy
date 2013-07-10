@@ -257,7 +257,7 @@ postfix_expr
   | postfix_expr DOT IDENTIFIER LPAREN call_args RPAREN {
       CallExpr *c = new CallExpr;
       c->setName(*$3);
-      c->setArgs(*$5);
+      c->setCallArgs(*$5);
       c->setContext(shared_ptr<Node>($1));
       $$ = c;
       delete $3;
@@ -279,7 +279,7 @@ postfix_expr
   | IDENTIFIER LPAREN call_args RPAREN {
       CallExpr *c = new CallExpr;
       c->setName(*$1);
-      c->setArgs(*$3);
+      c->setCallArgs(*$3);
       $$ = c;
       delete $1;
       delete $3;

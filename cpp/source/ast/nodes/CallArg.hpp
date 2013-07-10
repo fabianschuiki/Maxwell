@@ -21,6 +21,7 @@ class CallArg : public Node
 {
 public:
 	CallArg() : Node(),
+		interfaceCallArg(this),
 		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
@@ -32,6 +33,7 @@ public:
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
+		if (i == kCallArgInterface) return true;
 		if (i == kNamedInterface) return true;
 		return false;
 	}
@@ -130,6 +132,7 @@ public:
 	}
 
 	// Interfaces
+	virtual CallArgInterface* asCallArg() { return &this->interfaceCallArg; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
 protected:
@@ -137,6 +140,7 @@ protected:
 	NodeRef expr;
 
 	// Interfaces
+	CallArgInterfaceImpl<CallArg> interfaceCallArg;
 	NamedInterfaceImpl<CallArg> interfaceNamed;
 };
 

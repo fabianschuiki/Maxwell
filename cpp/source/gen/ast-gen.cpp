@@ -392,6 +392,19 @@ void determineImplementedInterfaces(Builder& builder)
 	}
 }
 
+void determineChildNodes(Builder& builder)
+{
+	// Analyze every node in the builder separately.
+	for (Builder::Nodes::iterator it = builder.nodes.begin(); it != builder.nodes.end(); it++) {
+		Node& node = it->second;
+		for (Node::Fields::iterator is = node.attributes.begin(); is != node.attributes.end(); is++) {
+			if ((*is).child) {
+				node.children.push_back(&*is);
+			}
+		}
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	// Parse command line arguments.
@@ -408,8 +421,9 @@ int main(int argc, char *argv[])
 	Builder builder;
 	buildAST(builder);
 
-	// Determine implemented interfaces.
+	// Determine implemented interfaces and child nodes.
 	determineImplementedInterfaces(builder);
+	determineChildNodes(builder);
 
 	// Generate the code for the nodes.
 	Headers headerFileNames;
@@ -616,8 +630,8 @@ int main(int argc, char *argv[])
 		if (!node.children.empty()) {
 			h << "\tvirtual NodeVector getChildren()\n\t{\n";
 			h << "\t\tNodeVector v;\n";
-			for (Node::FieldIndices::iterator c = node.children.begin(); c != node.children.end(); c++) {
-				Node::Field& f = node.attributes[*c];
+			for (Node::Children::iterator c = node.children.begin(); c != node.children.end(); c++) {
+				Node::Field& f = **c;
 				if (f.isNode) {
 					string upper = (char)toupper(f.name[0]) + f.name.substr(1);
 					h << "\t\tif (const NodePtr& n = this->get" << upper << "(false)) v.push_back(n);\n";

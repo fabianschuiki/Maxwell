@@ -34,13 +34,25 @@ void FindCallCandidates::process(const NodePtr& node)
 			const NodePtr& funcNode = *it;
 			FuncDef* func = dynamic_cast<FuncDef*>(funcNode.get()); // always true due to the isKindOf(...) above
 			assert(func && "isKindOf(kFuncDef) should assure this cast works");
+			println(0, "Wrapping candidate " + funcNode->getId().str(), funcNode);
 
 			// Create the candidate object to hold the function.
 			shared_ptr<CallCandidate> candidate(new CallCandidate);
 			candidate->setFunc(funcNode);
 
 			// Wrap the input arguments into pairing nodes.
-			// TODO: actually do this...
+			const NodeVector& callArgs = intf->getCallArgs();
+			NodeVector args;
+
+			for (NodeVector::const_iterator it = callArgs.begin(); it != callArgs.end(); it++) {
+				const NodePtr& arg = *it;
+				println(1, "  argument " + arg->getId().str(), funcNode);
+				shared_ptr<CallCandidateArg> cca(new CallCandidateArg);
+				cca->setArg(arg);
+				args.push_back(cca);
+			}
+
+			candidate->setArgs(args);
 
 			// Add the candidate to the call's list of candidates.
 			candidates.push_back(candidate);
@@ -51,5 +63,6 @@ void FindCallCandidates::process(const NodePtr& node)
 		if (candidates.empty()) {
 			throw std::runtime_error("Called function '" + name + "' is not known.");
 		}
+		node->updateHierarchyOfChildren(); // since we added new children to node we need to update the node's hierarchy
 	}
 }

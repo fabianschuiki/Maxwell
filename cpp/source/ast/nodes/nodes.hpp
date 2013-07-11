@@ -5,6 +5,7 @@
 #include "BinaryOpExpr.hpp"
 #include "CallArg.hpp"
 #include "CallCandidate.hpp"
+#include "CallCandidateArg.hpp"
 #include "CallExpr.hpp"
 #include "CallExprArg.hpp"
 #include "DefinedType.hpp"
@@ -56,6 +57,11 @@ public:
 				if (size >= 13 && name[4] == 'C' && name[5] == 'a' && name[6] == 'n' && name[7] == 'd' && name[8] == 'i' && name[9] == 'd' && name[10] == 'a' && name[11] == 't' && name[12] == 'e') {
 					// CallCandidate
 					if (size == 13) return NodePtr(new CallCandidate);
+					// CallCandidateArg.*
+					if (size >= 16 && name[13] == 'A' && name[14] == 'r' && name[15] == 'g') {
+						// CallCandidateArg
+						if (size == 16) return NodePtr(new CallCandidateArg);
+					}
 				}
 				// CallExpr.*
 				if (size >= 8 && name[4] == 'E' && name[5] == 'x' && name[6] == 'p' && name[7] == 'r') {

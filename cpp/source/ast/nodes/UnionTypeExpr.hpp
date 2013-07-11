@@ -127,9 +127,8 @@ public:
 		d.decode(this->types);
 	}
 
-	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
+	virtual void updateHierarchyOfChildren()
 	{
-		Node::updateHierarchy(id, repository, parent);
 		if (this->evaluatedType) this->evaluatedType->updateHierarchy(id + "evaluatedType", repository, this);
 		for (int i = 0; i < this->types.size(); i++) {
 			char buf[32]; snprintf(buf, 31, "%i", i);

@@ -17,59 +17,26 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class MemberAccessExpr : public Node
+class CallCandidateArg : public Node
 {
 public:
-	MemberAccessExpr() : Node(),
-		interfaceGraph(this),
-		interfaceType(this),
-		interfaceCallArg(this),
-		interfaceNamed(this) {}
+	CallCandidateArg() : Node(),
+		interfaceType(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kMemberAccessExpr;
+		return k == kCallCandidateArg;
 	}
 
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
-		if (i == kGraphInterface) return true;
 		if (i == kTypeInterface) return true;
-		if (i == kCallArgInterface) return true;
-		if (i == kNamedInterface) return true;
 		return false;
 	}
 
-	virtual string getClassName() const { return "MemberAccessExpr"; }
-
-	void setGraphPrev(const NodePtr& v)
-	{
-		if (!v && graphPrev) {
-			modify();
-			graphPrev.reset();
-		}
-		if (!graphPrev || v->getId() != graphPrev.id) {
-			modify();
-			graphPrev.set(v);
-		}
-	}
-	void setGraphPrev(const NodeId& v)
-	{
-		if (v != graphPrev.id) {
-			modify();
-			graphPrev.set(v);
-		}
-	}
-	const NodePtr& getGraphPrev(bool required = true)
-	{
-		const NodePtr& v = graphPrev.get(repository);
-		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have graphPrev set to a non-null value.");
-		}
-		return v;
-	}
+	virtual string getClassName() const { return "CallCandidateArg"; }
 
 	void setPossibleType(const NodePtr& v)
 	{
@@ -128,49 +95,45 @@ public:
 		return v;
 	}
 
-	void setExpr(const NodePtr& v)
+	void setArg(const NodePtr& v)
 	{
-		if (v != expr) {
+		if (v && !v->implements(kCallArgInterface)) {
+			throw runtime_error("'arg' needs to be of kind {} or implement interface {CallArg}, got " + v->getClassName() + " instead.");
+		}
+		if (!v && arg) {
 			modify();
-			expr = v;
+			arg.reset();
+		}
+		if (!arg || v->getId() != arg.id) {
+			modify();
+			arg.set(v);
 		}
 	}
-	const NodePtr& getExpr(bool required = true)
+	void setArg(const NodeId& v)
 	{
-		const NodePtr& v = expr;
+		if (v != arg.id) {
+			modify();
+			arg.set(v);
+		}
+	}
+	const NodePtr& getArg(bool required = true)
+	{
+		const NodePtr& v = arg.get(repository);
 		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have expr set to a non-null value.");
-		}
-		return v;
-	}
-
-	void setName(const string& v)
-	{
-		if (v != name) {
-			modify();
-			name = v;
-		}
-	}
-	const string& getName(bool required = true)
-	{
-		const string& v = name;
-		if (required && v.empty()) {
-			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string name set.");
+			throw runtime_error("Node " + getId().str() + " is required to have arg set to a non-null value.");
 		}
 		return v;
 	}
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "MemberAccessExpr{…}";
+		if (depth == 0) return "CallCandidateArg{…}";
 		stringstream str, b;
-		str << "MemberAccessExpr{";
-		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
+		str << "CallCandidateArg{";
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
-		if (this->expr) b << endl << "  \033[1mexpr\033[0m = " << indent(this->expr->describe(depth-1));
-		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
+		if (this->arg) b << endl << "  \033[1marg\033[0m = " << "\033[36m" << this->arg.id << "\033[0m";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -179,22 +142,18 @@ public:
 
 	virtual void encode(Encoder& e)
 	{
-		e.encode(this->graphPrev);
 		e.encode(this->possibleType);
 		e.encode(this->requiredType);
 		e.encode(this->actualType);
-		e.encode(this->expr);
-		e.encode(this->name);
+		e.encode(this->arg);
 	}
 
 	virtual void decode(Decoder& d)
 	{
-		d.decode(this->graphPrev);
 		d.decode(this->possibleType);
 		d.decode(this->requiredType);
 		d.decode(this->actualType);
-		d.decode(this->expr);
-		d.decode(this->name);
+		d.decode(this->arg);
 	}
 
 	virtual void updateHierarchyOfChildren()
@@ -202,7 +161,6 @@ public:
 		if (this->possibleType) this->possibleType->updateHierarchy(id + "possibleType", repository, this);
 		if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
 		if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
-		if (this->expr) this->expr->updateHierarchy(id + "expr", repository, this);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -210,31 +168,25 @@ public:
 		size_t size = path.size();
 		// .*
 		if (true) {
-			// actualType.*
-			if (size >= 10 && path[0] == 'a' && path[1] == 'c' && path[2] == 't' && path[3] == 'u' && path[4] == 'a' && path[5] == 'l' && path[6] == 'T' && path[7] == 'y' && path[8] == 'p' && path[9] == 'e') {
-				// actualType
-				if (size == 10) {
-					return getActualType();
-				} else if (path[10] == '.') {
-					return getActualType()->resolvePath(path.substr(11));
+			// a.*
+			if (size >= 1 && path[0] == 'a') {
+				// actualType.*
+				if (size >= 10 && path[1] == 'c' && path[2] == 't' && path[3] == 'u' && path[4] == 'a' && path[5] == 'l' && path[6] == 'T' && path[7] == 'y' && path[8] == 'p' && path[9] == 'e') {
+					// actualType
+					if (size == 10) {
+						return getActualType();
+					} else if (path[10] == '.') {
+						return getActualType()->resolvePath(path.substr(11));
+					}
 				}
-			}
-			// expr.*
-			if (size >= 4 && path[0] == 'e' && path[1] == 'x' && path[2] == 'p' && path[3] == 'r') {
-				// expr
-				if (size == 4) {
-					return getExpr();
-				} else if (path[4] == '.') {
-					return getExpr()->resolvePath(path.substr(5));
-				}
-			}
-			// graphPrev.*
-			if (size >= 9 && path[0] == 'g' && path[1] == 'r' && path[2] == 'a' && path[3] == 'p' && path[4] == 'h' && path[5] == 'P' && path[6] == 'r' && path[7] == 'e' && path[8] == 'v') {
-				// graphPrev
-				if (size == 9) {
-					return getGraphPrev();
-				} else if (path[9] == '.') {
-					return getGraphPrev()->resolvePath(path.substr(10));
+				// arg.*
+				if (size >= 3 && path[1] == 'r' && path[2] == 'g') {
+					// arg
+					if (size == 3) {
+						return getArg();
+					} else if (path[3] == '.') {
+						return getArg()->resolvePath(path.substr(4));
+					}
 				}
 			}
 			// possibleType.*
@@ -259,32 +211,17 @@ public:
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
 
-	virtual NodeVector getChildren()
-	{
-		NodeVector v;
-		if (const NodePtr& n = this->getExpr(false)) v.push_back(n);
-		return v;
-	}
-
 	// Interfaces
-	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual TypeInterface* asType() { return &this->interfaceType; }
-	virtual CallArgInterface* asCallArg() { return &this->interfaceCallArg; }
-	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
 protected:
-	NodeRef graphPrev;
 	NodePtr possibleType;
 	NodePtr requiredType;
 	NodePtr actualType;
-	NodePtr expr;
-	string name;
+	NodeRef arg;
 
 	// Interfaces
-	GraphInterfaceImpl<MemberAccessExpr> interfaceGraph;
-	TypeInterfaceImpl<MemberAccessExpr> interfaceType;
-	CallArgInterfaceImpl<MemberAccessExpr> interfaceCallArg;
-	NamedInterfaceImpl<MemberAccessExpr> interfaceNamed;
+	TypeInterfaceImpl<CallCandidateArg> interfaceType;
 };
 
 } // namespace ast

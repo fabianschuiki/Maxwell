@@ -37,3 +37,25 @@ void Stage::addDependency(const NodeId& id)
 {
 	dependencies.insert(id);
 }
+
+/**
+ * @brief Prints the given message if the configured verbosity level is above
+ * the %verbosity passed to the function.
+ *
+ * An optional %metadata parameter may be specified which is displayed in a
+ * separate color in front of the message. The default value is the currentNode
+ * id.
+ */
+void Stage::println(int verbosity, const string& msg, string metadata)
+{
+	if (this->verbosity > verbosity)
+	{
+		// Default to the currentNode's id as metadata.
+		if (metadata.empty() && currentNode) {
+			metadata = currentNode->getId().str();
+		}
+
+		// Write the formatted output.
+		std::cout << "\033[1m" << getName() << "\033[0m \033[36m" << metadata << "\033[0m: " << msg << std::endl;
+	}
+}

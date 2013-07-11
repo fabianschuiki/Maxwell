@@ -281,9 +281,8 @@ public:
 		d.decode(this->callArgs);
 	}
 
-	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
+	virtual void updateHierarchyOfChildren()
 	{
-		Node::updateHierarchy(id, repository, parent);
 		for (int i = 0; i < this->callCandidates.size(); i++) {
 			char buf[32]; snprintf(buf, 31, "%i", i);
 			this->callCandidates[i]->updateHierarchy((id + "callCandidates") + buf, repository, this);

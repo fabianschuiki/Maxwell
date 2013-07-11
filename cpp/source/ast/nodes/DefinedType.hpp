@@ -85,9 +85,8 @@ public:
 		d.decode(this->definition);
 	}
 
-	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
+	virtual void updateHierarchyOfChildren()
 	{
-		Node::updateHierarchy(id, repository, parent);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)

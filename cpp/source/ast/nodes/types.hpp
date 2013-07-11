@@ -8,6 +8,7 @@ typedef enum {
 	kBinaryOpExpr,
 	kCallArg,
 	kCallCandidate,
+	kCallCandidateArg,
 	kCallExpr,
 	kCallExprArg,
 	kDefinedType,

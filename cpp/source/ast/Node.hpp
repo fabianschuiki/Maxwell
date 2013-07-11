@@ -98,11 +98,13 @@ public:
 	/// Returns the node's id.
 	const NodeId& getId() const { return id; }
 	/// Returns the node's parent node, or an empty pointer if this is a root node.
-	const Node* getParent() const { return parent; }
+	Node* getParent() const { return parent; }
 	/// Returns the node's repository, or an empty pointer if it is not part of one.
-	const Repository* getRepository() const { return repository; }
+	Repository* getRepository() const { return repository; }
 
 	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL);
+	/// Overridden by subclasses to propagate hierarchy changes to child nodes.
+	virtual void updateHierarchyOfChildren() {}
 
 protected:
 	bool modified;

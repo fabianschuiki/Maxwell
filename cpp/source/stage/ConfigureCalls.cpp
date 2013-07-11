@@ -48,6 +48,7 @@ void ConfigureCalls::process(const NodePtr& node)
 
 			// Store the arguments in the call interface.
 			binop->setCallArgs(args);
+			binop->updateHierarchyOfChildren();
 		}
 	}
 
@@ -72,6 +73,7 @@ void ConfigureCalls::process(const NodePtr& node)
 
 			// Store the arguments in the call interface.
 			unop->setCallArgs(args);
+			unop->updateHierarchyOfChildren();
 		}
 	}
 }

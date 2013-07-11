@@ -26,7 +26,8 @@ class Stage
 {
 public:
 	Repository& repository;
-	Stage(Repository& r) : repository(r) {}
+	int verbosity;
+	Stage(Repository& r) : repository(r), verbosity(0) {}
 
 	/// Overridden by subclasses to return the stage name.
 	virtual string getName() const = 0;
@@ -47,6 +48,9 @@ protected:
 	void addDependency(const NodeId& id, string path) { addDependency(id + path); }
 	template <typename T> void addDependency(const T& node) { addDependency(node->getId()); }
 	template <typename T> void addDependency(const T& node, string path) { addDependency(node->getId(), path); }
+
+	void println(int verbosity, const string& msg, string metadata = "");
+	template <typename T> void println(int verbosity, const string& msg, const T& ided) { println(verbosity, msg, ided->getId().str()); }
 };
 
 }

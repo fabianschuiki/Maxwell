@@ -99,6 +99,7 @@ int main(int argc, char *argv[])
 	mh << "\t{\n";
 	for (Stages::iterator it = stages.begin(); it != stages.end(); it++) {
 		mh << "\t\tstageIndices[\"" << *it << "\"] = stages.size();\n";
+		mh << "\t\tstagesByName[\"" << *it << "\"] = &stage" << *it << ";\n";
 		mh << "\t\tstages.push_back(&stage" << *it << ");\n";
 	}
 	mh << "\t}\n\n";
@@ -106,8 +107,10 @@ int main(int argc, char *argv[])
 	// Stages vector.
 	mh << "\ttypedef vector<Stage*> Stages;\n";
 	mh << "\ttypedef map<string, int> StageIndices;\n";
+	mh << "\ttypedef map<string, Stage*> StagesByName;\n";
 	mh << "\tStages stages;\n";
-	mh << "\tStageIndices stageIndices;\n\n";
+	mh << "\tStageIndices stageIndices;\n";
+	mh << "\tStagesByName stagesByName;\n\n";
 
 	mh << "protected:\n";
 	for (Stages::iterator it = stages.begin(); it != stages.end(); it++) {

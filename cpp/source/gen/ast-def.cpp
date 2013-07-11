@@ -41,7 +41,11 @@ void buildAST(Builder &node)
 		.attr("name", "string")
 		.attr("expr", "&@Type");
 	node("CallCandidate")
-		.attr("func", "&FuncDef");
+		.attr("func", "&FuncDef")
+		.child("args", "[CallCandidateArg]");
+	node("CallCandidateArg")
+		.intf(type)
+		.attr("arg", "&@CallArg");
 
 	// Nodes
 	node("FuncDef")

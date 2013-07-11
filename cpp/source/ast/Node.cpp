@@ -89,6 +89,7 @@ void Node::updateHierarchy(const NodeId& id, Repository* repository, Node* paren
 	this->id = id;
 	this->parent = parent;
 	this->repository = repository;
+	updateHierarchyOfChildren(); // gives subclasses the chance to update their child hierarchies
 }
 
 /**

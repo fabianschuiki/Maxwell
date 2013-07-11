@@ -156,9 +156,8 @@ public:
 		d.decode(this->expr);
 	}
 
-	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
+	virtual void updateHierarchyOfChildren()
 	{
-		Node::updateHierarchy(id, repository, parent);
 		if (this->evaluatedType) this->evaluatedType->updateHierarchy(id + "evaluatedType", repository, this);
 		if (this->expr) this->expr->updateHierarchy(id + "expr", repository, this);
 	}

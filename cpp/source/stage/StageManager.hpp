@@ -26,25 +26,34 @@ public:
 		stageCalcPossibleTypes(r)
 	{
 		stageIndices["BuildGraph"] = stages.size();
+		stagesByName["BuildGraph"] = &stageBuildGraph;
 		stages.push_back(&stageBuildGraph);
 		stageIndices["BindIdentifiers"] = stages.size();
+		stagesByName["BindIdentifiers"] = &stageBindIdentifiers;
 		stages.push_back(&stageBindIdentifiers);
 		stageIndices["BindNamedTypes"] = stages.size();
+		stagesByName["BindNamedTypes"] = &stageBindNamedTypes;
 		stages.push_back(&stageBindNamedTypes);
 		stageIndices["EvalTypeExprs"] = stages.size();
+		stagesByName["EvalTypeExprs"] = &stageEvalTypeExprs;
 		stages.push_back(&stageEvalTypeExprs);
 		stageIndices["ConfigureCalls"] = stages.size();
+		stagesByName["ConfigureCalls"] = &stageConfigureCalls;
 		stages.push_back(&stageConfigureCalls);
 		stageIndices["FindCallCandidates"] = stages.size();
+		stagesByName["FindCallCandidates"] = &stageFindCallCandidates;
 		stages.push_back(&stageFindCallCandidates);
 		stageIndices["CalcPossibleTypes"] = stages.size();
+		stagesByName["CalcPossibleTypes"] = &stageCalcPossibleTypes;
 		stages.push_back(&stageCalcPossibleTypes);
 	}
 
 	typedef vector<Stage*> Stages;
 	typedef map<string, int> StageIndices;
+	typedef map<string, Stage*> StagesByName;
 	Stages stages;
 	StageIndices stageIndices;
+	StagesByName stagesByName;
 
 protected:
 	BuildGraph stageBuildGraph;

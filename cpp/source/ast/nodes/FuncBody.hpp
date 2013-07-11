@@ -103,9 +103,8 @@ public:
 		d.decode(this->stmts);
 	}
 
-	virtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)
+	virtual void updateHierarchyOfChildren()
 	{
-		Node::updateHierarchy(id, repository, parent);
 		for (int i = 0; i < this->stmts.size(); i++) {
 			char buf[32]; snprintf(buf, 31, "%i", i);
 			this->stmts[i]->updateHierarchy((id + "stmts") + buf, repository, this);

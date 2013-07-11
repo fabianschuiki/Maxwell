@@ -592,8 +592,7 @@ int main(int argc, char *argv[])
 		h << "\t}\n\n";
 
 		// Generate the updateHierarchy() function.
-		h << "\tvirtual void updateHierarchy(const NodeId& id, Repository* repository = NULL, Node* parent = NULL)\n\t{\n";
-		h << "\t\t" << node.parent << "::updateHierarchy(id, repository, parent);\n";
+		h << "\tvirtual void updateHierarchyOfChildren()\n\t{\n";
 		for (Node::Fields::iterator fit = node.attributes.begin(); fit != node.attributes.end(); fit++) {
 			Node::Field& f = *fit;
 			if (f.isNode && !f.ref) {

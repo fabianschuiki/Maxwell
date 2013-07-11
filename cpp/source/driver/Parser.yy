@@ -44,6 +44,7 @@ typedef std::vector<shared_ptr<Node> > Nodes;
     std::string *string;
     Nodes *nodes;
     VarDefExpr *varDefExpr;
+    FuncDef *funcDef;
     int token;
     int symbol;
 }
@@ -53,7 +54,8 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 %type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg
 %type <nodes> func_args stmts union_typeexprs tuple_typeexpr_args call_args
 %type <varDefExpr> var_expr
-%type <string> prefix_op
+%type <string> any_operator
+%type <funcDef> func_decl_name
 
 %token <string> IDENTIFIER "identifier"
 %token <string> REAL "real number constant"
@@ -66,6 +68,7 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 %token FUNC "func keyword"
 %token VAR "var keyword"
 %token TYPE "type keyword"
+%token UNARY "unary keyword"
 
 %token LPAREN "opening paranthesis ("
 %token RPAREN "closing paranthesis )"
@@ -118,35 +121,41 @@ root_stmt : func_decl {
             }
           ;
 
-func_decl : FUNC IDENTIFIER body {
-              FuncDef* d = new FuncDef;
-              d->setName(*$2); delete $2;
-              d->setBody(shared_ptr<Node>($3));
-              $$ = d;
+func_decl : func_decl_name body {
+              $1->setBody(shared_ptr<Node>($2));
             }
-          | FUNC IDENTIFIER func_arg_tuple body {
-              FuncDef *d = new FuncDef;
-              d->setName(*$2); delete $2;
-              d->setIn(shared_ptr<Node>($3));
-              d->setBody(shared_ptr<Node>($4));
-              $$ = d;
+          | func_decl_name func_arg_tuple body {
+              $1->setIn(shared_ptr<Node>($2));
+              $1->setBody(shared_ptr<Node>($3));
             }
-          | FUNC IDENTIFIER RIGHTARROW func_arg_tuple body {
-              FuncDef *d = new FuncDef;
-              d->setName(*$2); delete $2;
-              d->setOut(shared_ptr<Node>($4));
-              d->setBody(shared_ptr<Node>($5));
-              $$ = d;
+          | func_decl_name RIGHTARROW func_arg_tuple body {
+              $1->setOut(shared_ptr<Node>($3));
+              $1->setBody(shared_ptr<Node>($4));
             }
-          | FUNC IDENTIFIER func_arg_tuple RIGHTARROW func_arg_tuple body {
-              FuncDef *d = new FuncDef;
-              d->setName(*$2); delete $2;
-              d->setIn(shared_ptr<Node>($3));
-              d->setOut(shared_ptr<Node>($5));
-              d->setBody(shared_ptr<Node>($6));
-              $$ = d;
+          | func_decl_name func_arg_tuple RIGHTARROW func_arg_tuple body {
+              $1->setIn(shared_ptr<Node>($2));
+              $1->setOut(shared_ptr<Node>($4));
+              $1->setBody(shared_ptr<Node>($5));
              }
           ;
+
+func_decl_name
+  : FUNC IDENTIFIER {
+      FuncDef* d = new FuncDef;
+      d->setName(*$2); delete $2;
+      $$ = d;
+    }
+  | FUNC any_operator {
+      FuncDef* d = new FuncDef;
+      d->setName(*$2); delete $2;
+      $$ = d;
+    }
+  | FUNC UNARY any_operator {
+      FuncDef* d = new FuncDef;
+      d->setName("_" + *$3); delete $3;
+      $$ = d;
+    }
+  ;
 
 func_arg_tuple  : LPAREN RPAREN { $$ = NULL; }
                 | func_arg {
@@ -313,7 +322,7 @@ call_arg
 
 prefix_expr
   : postfix_expr
-  | prefix_op prefix_expr {
+  | any_operator prefix_expr {
       UnaryOpExpr *u = new UnaryOpExpr;
       u->setPostfix(false);
       u->setOperatorName(*$1);
@@ -322,7 +331,7 @@ prefix_expr
       delete $1;
     }
   ;
-prefix_op: MULTIPLICATIVE_OPERATOR | ADDITIVE_OPERATOR | RELATIONAL_OPERATOR | OPERATOR;
+any_operator: MULTIPLICATIVE_OPERATOR | ADDITIVE_OPERATOR | RELATIONAL_OPERATOR | OPERATOR;
 
 multiplicative_expr
   : prefix_expr

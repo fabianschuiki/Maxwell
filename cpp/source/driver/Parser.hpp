@@ -119,11 +119,12 @@ namespace driver
     std::string *string;
     Nodes *nodes;
     VarDefExpr *varDefExpr;
+    FuncDef *funcDef;
     int token;
     int symbol;
 }
 /* Line 303 of lalr1.cc.  */
-#line 127 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.hpp"
+#line 128 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.hpp"
 	;
 #else
     typedef YYSTYPE semantic_type;
@@ -148,19 +149,20 @@ namespace driver
      FUNC = 267,
      VAR = 268,
      TYPE = 269,
-     LPAREN = 270,
-     RPAREN = 271,
-     LBRACE = 272,
-     RBRACE = 273,
-     LBRACK = 274,
-     RBRACK = 275,
-     PIPE = 276,
-     DOT = 277,
-     COMMA = 278,
-     COLON = 279,
-     SEMICOLON = 280,
-     RIGHTARROW = 281,
-     ASSIGN = 282
+     UNARY = 270,
+     LPAREN = 271,
+     RPAREN = 272,
+     LBRACE = 273,
+     RBRACE = 274,
+     LBRACK = 275,
+     RBRACK = 276,
+     PIPE = 277,
+     DOT = 278,
+     COMMA = 279,
+     COLON = 280,
+     SEMICOLON = 281,
+     RIGHTARROW = 282,
+     ASSIGN = 283
    };
 
     };
@@ -255,7 +257,7 @@ namespace driver
     static const unsigned char yytable_[];
     static const signed char yytable_ninf_;
 
-    static const signed char yycheck_[];
+    static const unsigned char yycheck_[];
 
     /// For a state, its accessing symbol.
     static const unsigned char yystos_[];

@@ -554,28 +554,34 @@ int main(int argc, char *argv[])
 		h << "\tvirtual string describe(int depth = -1)\n\t{\n";
 		h << "\t\tif (depth == 0) return \"" << name << "{…}\";\n";
 		h << "\t\tstringstream str, b;\n";
-		h << "\t\tstr << \"" << name << "{\";\n";
-		for (Node::Fields::iterator fit = node.attributes.begin(); fit != node.attributes.end(); fit++) {
-			Node::Field& f = *fit;
-			if (f.isString) {
-				h << "\t\tif (!this->"<<f.name<<".empty()) b << endl << \"  \\033[1m"<<f.name<<"\\033[0m = '\\033[33m\" << this->"<<f.name<<" << \"\\033[0m'\";\n";
-			} else if (f.isBool) {
-				h << "\t\tb << endl << \"  \\033[1m"<<f.name<<"\\033[0m = \\033[34m\" << (this->"<<f.name<<" ? \"true\" : \"false\") << \"\\033[0m\";\n";
-			} else if (f.isNode) {
-				h << "\t\tif (this->" << f.name << ")";
-				h << " b << endl << \"  \\033[1m"<<f.name<<"\\033[0m = \"";
-				if (f.ref) {
-					h << " << \"\\033[36m\" << this->" << f.name << ".id << \"\\033[0m\";\n";
-				} else {
-					h << " << indent(this->"<<f.name<<"->describe(depth-1));\n";
+		if (node.descriptionBody.empty()) {
+			h << "\t\tstr << \"" << name << "{\";\n";
+			for (Node::Fields::iterator fit = node.attributes.begin(); fit != node.attributes.end(); fit++) {
+				Node::Field& f = *fit;
+				if (f.isString) {
+					h << "\t\tif (!this->"<<f.name<<".empty()) b << endl << \"  \\033[1m"<<f.name<<"\\033[0m = '\\033[33m\" << this->"<<f.name<<" << \"\\033[0m'\";\n";
+				} else if (f.isBool) {
+					h << "\t\tb << endl << \"  \\033[1m"<<f.name<<"\\033[0m = \\033[34m\" << (this->"<<f.name<<" ? \"true\" : \"false\") << \"\\033[0m\";\n";
+				} else if (f.isNode) {
+					h << "\t\tif (this->" << f.name << ")";
+					h << " b << endl << \"  \\033[1m"<<f.name<<"\\033[0m = \"";
+					if (f.ref) {
+						h << " << \"\\033[36m\" << this->" << f.name << ".id << \"\\033[0m\";\n";
+					} else {
+						h << " << indent(this->"<<f.name<<"->describe(depth-1));\n";
+					}
+				} else if (f.isArray) {
+					h << "\t\tif (!this->"<<f.name<<".empty()) b << endl << \"  \\033[1m"<<f.name<<"\\033[0m = \" << indent(describeVector(this->"<<f.name<<", depth-1)) << \"\";\n";
 				}
-			} else if (f.isArray) {
-				h << "\t\tif (!this->"<<f.name<<".empty()) b << endl << \"  \\033[1m"<<f.name<<"\\033[0m = \" << indent(describeVector(this->"<<f.name<<", depth-1)) << \"\";\n";
 			}
+			h << "\t\tstring bs = b.str();\n";
+			h << "\t\tif (!bs.empty()) str << bs << endl;\n";
+			h << "\t\tstr << \"}\";\n";
+		} else {
+			string body(node.descriptionBody);
+			boost::algorithm::replace_all(body, "\n", "\n\t\t");
+			h << "\t\t" << body << "\n";
 		}
-		h << "\t\tstring bs = b.str();\n";
-		h << "\t\tif (!bs.empty()) str << bs << endl;\n";
-		h << "\t\tstr << \"}\";\n";
 		h << "\t\treturn str.str();\n";
 		h << "\t}\n\n";
 

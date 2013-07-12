@@ -53,11 +53,7 @@ public:
 	{
 		if (depth == 0) return "TupleType{…}";
 		stringstream str, b;
-		str << "TupleType{";
-		if (!this->args.empty()) b << endl << "  \033[1margs\033[0m = " << indent(describeVector(this->args, depth-1)) << "";
-		string bs = b.str();
-		if (!bs.empty()) str << bs << endl;
-		str << "}";
+					bool first = true;			for (NodeVector::iterator it = args.begin(); it != args.end(); it++) {				if (!first) str << ", ";				first = false;				str << (*it)->describe(depth-1);			}
 		return str.str();
 	}
 

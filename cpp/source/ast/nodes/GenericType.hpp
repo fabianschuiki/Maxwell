@@ -40,10 +40,7 @@ public:
 	{
 		if (depth == 0) return "GenericType{…}";
 		stringstream str, b;
-		str << "GenericType{";
-		string bs = b.str();
-		if (!bs.empty()) str << bs << endl;
-		str << "}";
+		str << "*";
 		return str.str();
 	}
 

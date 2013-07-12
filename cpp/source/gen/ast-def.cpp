@@ -120,15 +120,31 @@ void buildAST(Builder &node)
 		.child("expr", "#typeExpr");
 
 	// Types
-	node("GenericType");
-	node("InvalidType");
+	node("GenericType").describe("str << \"*\";");
+	node("InvalidType").describe("str << \"<invalid>\";");
 	node("DefinedType")
-		.attr("definition", "&any");
+		.attr("definition", "&any")
+		.describe("str << getDefinition()->needNamed()->getName();");
 	node("UnionType")
-		.child("types", "[#type]");
+		.child("types", "[#type]")
+		.describe("\
+			bool first = true;\
+			for (NodeVector::iterator it = types.begin(); it != types.end(); it++) {\
+				if (!first) str << \"|\";\
+				first = false;\
+				str << (*it)->describe(depth-1);\
+			}");
 	node("TupleType")
-		.child("args", "[TupleTypeArg]");
+		.child("args", "[TupleTypeArg]")
+		.describe("\
+			bool first = true;\
+			for (NodeVector::iterator it = args.begin(); it != args.end(); it++) {\
+				if (!first) str << \", \";\
+				first = false;\
+				str << (*it)->describe(depth-1);\
+			}");
 	node("TupleTypeArg")
 		.attr("name", "string")
-		.child("type", "#type");
+		.child("type", "#type")
+		.describe("if (!name.empty()) str << name << \": \"; str << type->describe(depth-1);");
 }

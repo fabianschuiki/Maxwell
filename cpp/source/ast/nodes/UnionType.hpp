@@ -53,11 +53,7 @@ public:
 	{
 		if (depth == 0) return "UnionType{…}";
 		stringstream str, b;
-		str << "UnionType{";
-		if (!this->types.empty()) b << endl << "  \033[1mtypes\033[0m = " << indent(describeVector(this->types, depth-1)) << "";
-		string bs = b.str();
-		if (!bs.empty()) str << bs << endl;
-		str << "}";
+					bool first = true;			for (NodeVector::iterator it = types.begin(); it != types.end(); it++) {				if (!first) str << "|";				first = false;				str << (*it)->describe(depth-1);			}
 		return str.str();
 	}
 

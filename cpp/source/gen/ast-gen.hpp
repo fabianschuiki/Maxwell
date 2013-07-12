@@ -29,6 +29,7 @@ public:
 	string name;
 	string intfName;
 	string parent;
+	string descriptionBody;
 
 	struct Field {
 		bool ref; // whether or not only a reference to the node should be generated
@@ -68,6 +69,12 @@ public:
 			dropAttribute(*it);
 			attributes.push_back(*it);
 		}
+		return *this;
+	}
+
+	Node& describe(const string& body)
+	{
+		descriptionBody = body;
 		return *this;
 	}
 

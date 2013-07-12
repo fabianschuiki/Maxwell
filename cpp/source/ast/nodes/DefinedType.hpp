@@ -67,11 +67,7 @@ public:
 	{
 		if (depth == 0) return "DefinedType{…}";
 		stringstream str, b;
-		str << "DefinedType{";
-		if (this->definition) b << endl << "  \033[1mdefinition\033[0m = " << "\033[36m" << this->definition.id << "\033[0m";
-		string bs = b.str();
-		if (!bs.empty()) str << bs << endl;
-		str << "}";
+		str << getDefinition()->needNamed()->getName();
 		return str.str();
 	}
 

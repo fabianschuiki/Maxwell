@@ -40,10 +40,7 @@ public:
 	{
 		if (depth == 0) return "InvalidType{…}";
 		stringstream str, b;
-		str << "InvalidType{";
-		string bs = b.str();
-		if (!bs.empty()) str << bs << endl;
-		str << "}";
+		str << "<invalid>";
 		return str.str();
 	}
 

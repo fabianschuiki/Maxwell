@@ -30,14 +30,12 @@ int main(int argc, char *argv[])
 		fdef->setName("main");
 		shared_ptr<FuncBody> fbody(new FuncBody);
 		fdef->setBody(fbody);
-		shared_ptr<FuncArgTuple> fargtup(new FuncArgTuple);
 		shared_ptr<FuncArg> farg(new FuncArg);
 		farg->setName("x");
 		//farg->setType("Integer");
 		vector<shared_ptr<Node> > args;
 		args.push_back(farg);
-		fargtup->setArgs(args);
-		fdef->setIn(fargtup);
+		fdef->setIn(args);
 		fdef->updateHierarchy(NodeId(1,1));
 
 		// Dump it to the console.

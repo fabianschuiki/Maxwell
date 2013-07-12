@@ -1,5 +1,5 @@
 /* Copyright © 2013 Fabian Schuiki */
-#include "ast-def.hpp"
+#include "ast-gen.hpp"
 
 /**
  * This function generates all AST nodes. It is called by the main function
@@ -8,7 +8,7 @@
 void buildAST(Builder &node)
 {
 	// Groups
-	node.groups["type"] = "GenericType|DefinedType|UnionType|TupleType";
+	node.groups["type"] = "GenericType|InvalidType|DefinedType|UnionType|TupleType";
 	node.groups["typeExpr"] = "NamedTypeExpr|UnionTypeExpr|TupleTypeExpr";
 
 	// Interfaces
@@ -41,6 +41,7 @@ void buildAST(Builder &node)
 		.attr("name", "string")
 		.attr("expr", "&@Type");
 	node("CallCandidate")
+		.intf(type)
 		.attr("func", "&FuncDef")
 		.child("args", "[CallCandidateArg]");
 	node("CallCandidateArg")
@@ -51,12 +52,9 @@ void buildAST(Builder &node)
 	node("FuncDef")
 		.intf(graph)
 		.attr("name", "string")
-		.child("in", "FuncArgTuple")
-		.child("out", "FuncArgTuple")
+		.child("in", "[FuncArg]")
+		.child("out", "[FuncArg]")
 		.child("body", "FuncBody");
-	node("FuncArgTuple")
-		.intf(graph)
-		.child("args", "[FuncArg]");
 	node("FuncArg")
 		.intf(graph).intf(variable);
 	node("FuncBody")
@@ -76,29 +74,30 @@ void buildAST(Builder &node)
 		.attr("name", "string")
 		.attr("bindingTarget", "&any");
 	node("VarDefExpr")
-		.intf(graph)./*intf(type).*/intf(variable)
-		/*.attr("name", "string")
-		.child("type", "#typeExpr")*/
+		.intf(graph).intf(variable)
 		.child("initialExpr", "@Type");
 	node("CallExpr")
-		.intf(graph).intf(call).intf(type)
+		.intf(graph)
 		.attr("name", "string")
 		.child("context", "any")
-		.child("callArgs", "[CallExprArg]");
+		.child("callArgs", "[CallExprArg]")
+		.intf(call).intf(type);
 	node("CallExprArg")
 		.intf(graph)
 		.attr("name", "string")
 		.child("expr", "@Type");
 	node("BinaryOpExpr")
-		.intf(graph).intf(call).intf(type)
+		.intf(graph)
 		.attr("operatorName", "string") // 'operator' would be a keyword
 		.child("lhs", "any")
-		.child("rhs", "any");
+		.child("rhs", "any")
+		.intf(call).intf(type);
 	node("UnaryOpExpr")
-		.intf(graph).intf(call).intf(type)
+		.intf(graph)
 		.attr("operatorName", "string")
 		.attr("postfix", "bool")
-		.child("expr", "any");
+		.child("expr", "any")
+		.intf(call).intf(type);
 	node("MemberAccessExpr")
 		.intf(graph).intf(type)
 		.child("expr", "any")
@@ -122,6 +121,7 @@ void buildAST(Builder &node)
 
 	// Types
 	node("GenericType");
+	node("InvalidType");
 	node("DefinedType")
 		.attr("definition", "&any");
 	node("UnionType")

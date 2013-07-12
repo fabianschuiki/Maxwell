@@ -49,10 +49,10 @@ typedef std::vector<shared_ptr<Node> > Nodes;
     int symbol;
 }
 
-%type <node> func_decl func_arg func_arg_tuple type_decl body stmt expr call_arg
+%type <node> func_decl func_arg type_decl body stmt expr call_arg
 %type <node> primary_expr postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr
 %type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg
-%type <nodes> func_args stmts union_typeexprs tuple_typeexpr_args call_args
+%type <nodes> func_args_tuple func_args stmts union_typeexprs tuple_typeexpr_args call_args
 %type <varDefExpr> var_expr
 %type <string> any_operator
 %type <funcDef> func_decl_name
@@ -124,18 +124,22 @@ root_stmt : func_decl {
 func_decl : func_decl_name body {
               $1->setBody(shared_ptr<Node>($2));
             }
-          | func_decl_name func_arg_tuple body {
-              $1->setIn(shared_ptr<Node>($2));
+          | func_decl_name func_args_tuple body {
+              $1->setIn(*$2);
               $1->setBody(shared_ptr<Node>($3));
+              delete $2;
             }
-          | func_decl_name RIGHTARROW func_arg_tuple body {
-              $1->setOut(shared_ptr<Node>($3));
+          | func_decl_name RIGHTARROW func_args_tuple body {
+              $1->setOut(*$3);
               $1->setBody(shared_ptr<Node>($4));
+              delete $3;
             }
-          | func_decl_name func_arg_tuple RIGHTARROW func_arg_tuple body {
-              $1->setIn(shared_ptr<Node>($2));
-              $1->setOut(shared_ptr<Node>($4));
+          | func_decl_name func_args_tuple RIGHTARROW func_args_tuple body {
+              $1->setIn(*$2);
+              $1->setOut(*$4);
               $1->setBody(shared_ptr<Node>($5));
+              delete $2;
+              delete $4;
              }
           ;
 
@@ -157,45 +161,42 @@ func_decl_name
     }
   ;
 
-func_arg_tuple  : LPAREN RPAREN { $$ = NULL; }
-                | func_arg {
-                    FuncArgTuple *t = new FuncArgTuple;
-                    Nodes args(1);
-                    args[0] = shared_ptr<Node>($1);
-                    t->setArgs(args);
-                    $$ = t;
-                  }
-                | LPAREN func_args RPAREN {
-                    FuncArgTuple *t = new FuncArgTuple;
-                    t->setArgs(*$2);
-                    $$ = t;
-                    delete $2;
-                  }
-                ;
+func_args_tuple
+  : LPAREN RPAREN { $$ = new Nodes; }
+  | func_arg {
+      $$ = new Nodes;
+      $$->push_back(shared_ptr<Node>($1));
+    }
+  | LPAREN func_args RPAREN {
+      $$ = $2;
+    }
+  ;
 
-func_args : func_arg {
-              $$ = new Nodes;
-              $$->push_back(shared_ptr<Node>($1));
-            }
-          | func_args COMMA func_arg {
-              $1->push_back(shared_ptr<Node>($3));
-            }
-          ;
+func_args
+  : func_arg {
+      $$ = new Nodes;
+      $$->push_back(shared_ptr<Node>($1));
+    }
+  | func_args COMMA func_arg {
+      $1->push_back(shared_ptr<Node>($3));
+    }
+  ;
 
-func_arg  : IDENTIFIER {
-              FuncArg *a = new FuncArg;
-              a->setName(*$1);
-              $$ = a;
-              delete $1;
-            }
-          | IDENTIFIER typeexpr {
-              FuncArg *a = new FuncArg;
-              a->setName(*$1);
-              a->setType(shared_ptr<Node>($2));
-              $$ = a;
-              delete $1;
-            }
-          ;
+func_arg
+  : IDENTIFIER {
+      FuncArg *a = new FuncArg;
+      a->setName(*$1);
+      $$ = a;
+      delete $1;
+    }
+  | IDENTIFIER typeexpr {
+      FuncArg *a = new FuncArg;
+      a->setName(*$1);
+      a->setType(shared_ptr<Node>($2));
+      $$ = a;
+      delete $1;
+    }
+  ;
 
 type_decl : TYPE IDENTIFIER {
               TypeDef *t = new TypeDef;

@@ -11,11 +11,11 @@
 #include "DefinedType.hpp"
 #include "ExprStmt.hpp"
 #include "FuncArg.hpp"
-#include "FuncArgTuple.hpp"
 #include "FuncBody.hpp"
 #include "FuncDef.hpp"
 #include "GenericType.hpp"
 #include "IdentifierExpr.hpp"
+#include "InvalidType.hpp"
 #include "MemberAccessExpr.hpp"
 #include "NamedTypeExpr.hpp"
 #include "TupleType.hpp"
@@ -90,11 +90,6 @@ public:
 				if (size >= 7 && name[4] == 'A' && name[5] == 'r' && name[6] == 'g') {
 					// FuncArg
 					if (size == 7) return NodePtr(new FuncArg);
-					// FuncArgTuple.*
-					if (size >= 12 && name[7] == 'T' && name[8] == 'u' && name[9] == 'p' && name[10] == 'l' && name[11] == 'e') {
-						// FuncArgTuple
-						if (size == 12) return NodePtr(new FuncArgTuple);
-					}
 				}
 				// FuncBody.*
 				if (size >= 8 && name[4] == 'B' && name[5] == 'o' && name[6] == 'd' && name[7] == 'y') {
@@ -112,10 +107,18 @@ public:
 				// GenericType
 				if (size == 11) return NodePtr(new GenericType);
 			}
-			// IdentifierExpr.*
-			if (size >= 14 && name[0] == 'I' && name[1] == 'd' && name[2] == 'e' && name[3] == 'n' && name[4] == 't' && name[5] == 'i' && name[6] == 'f' && name[7] == 'i' && name[8] == 'e' && name[9] == 'r' && name[10] == 'E' && name[11] == 'x' && name[12] == 'p' && name[13] == 'r') {
-				// IdentifierExpr
-				if (size == 14) return NodePtr(new IdentifierExpr);
+			// I.*
+			if (size >= 1 && name[0] == 'I') {
+				// IdentifierExpr.*
+				if (size >= 14 && name[1] == 'd' && name[2] == 'e' && name[3] == 'n' && name[4] == 't' && name[5] == 'i' && name[6] == 'f' && name[7] == 'i' && name[8] == 'e' && name[9] == 'r' && name[10] == 'E' && name[11] == 'x' && name[12] == 'p' && name[13] == 'r') {
+					// IdentifierExpr
+					if (size == 14) return NodePtr(new IdentifierExpr);
+				}
+				// InvalidType.*
+				if (size >= 11 && name[1] == 'n' && name[2] == 'v' && name[3] == 'a' && name[4] == 'l' && name[5] == 'i' && name[6] == 'd' && name[7] == 'T' && name[8] == 'y' && name[9] == 'p' && name[10] == 'e') {
+					// InvalidType
+					if (size == 11) return NodePtr(new InvalidType);
+				}
 			}
 			// MemberAccessExpr.*
 			if (size >= 16 && name[0] == 'M' && name[1] == 'e' && name[2] == 'm' && name[3] == 'b' && name[4] == 'e' && name[5] == 'r' && name[6] == 'A' && name[7] == 'c' && name[8] == 'c' && name[9] == 'e' && name[10] == 's' && name[11] == 's' && name[12] == 'E' && name[13] == 'x' && name[14] == 'p' && name[15] == 'r') {

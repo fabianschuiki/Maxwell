@@ -56,8 +56,8 @@ public:
 
 	void setType(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
-			throw runtime_error("'type' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'type' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (v != type) {
 			modify();

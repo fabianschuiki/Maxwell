@@ -71,8 +71,8 @@ public:
 
 	void setPossibleType(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
-			throw runtime_error("'possibleType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'possibleType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (v != possibleType) {
 			modify();
@@ -90,8 +90,8 @@ public:
 
 	void setRequiredType(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
-			throw runtime_error("'requiredType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'requiredType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (v != requiredType) {
 			modify();
@@ -109,8 +109,8 @@ public:
 
 	void setActualType(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
-			throw runtime_error("'actualType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'actualType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (v != actualType) {
 			modify();

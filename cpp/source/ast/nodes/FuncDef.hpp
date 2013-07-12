@@ -83,41 +83,29 @@ public:
 		return v;
 	}
 
-	void setIn(const NodePtr& v)
+	void setIn(const NodeVector& v)
 	{
-		if (v && !v->isKindOf(kFuncArgTuple)) {
-			throw runtime_error("'in' needs to be of kind {FuncArgTuple} or implement interface {}, got " + v->getClassName() + " instead.");
-		}
 		if (v != in) {
 			modify();
 			in = v;
 		}
 	}
-	const NodePtr& getIn(bool required = true)
+	const NodeVector& getIn(bool required = true)
 	{
-		const NodePtr& v = in;
-		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have in set to a non-null value.");
-		}
+		const NodeVector& v = in;
 		return v;
 	}
 
-	void setOut(const NodePtr& v)
+	void setOut(const NodeVector& v)
 	{
-		if (v && !v->isKindOf(kFuncArgTuple)) {
-			throw runtime_error("'out' needs to be of kind {FuncArgTuple} or implement interface {}, got " + v->getClassName() + " instead.");
-		}
 		if (v != out) {
 			modify();
 			out = v;
 		}
 	}
-	const NodePtr& getOut(bool required = true)
+	const NodeVector& getOut(bool required = true)
 	{
-		const NodePtr& v = out;
-		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have out set to a non-null value.");
-		}
+		const NodeVector& v = out;
 		return v;
 	}
 
@@ -147,8 +135,8 @@ public:
 		str << "FuncDef{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
-		if (this->in) b << endl << "  \033[1min\033[0m = " << indent(this->in->describe(depth-1));
-		if (this->out) b << endl << "  \033[1mout\033[0m = " << indent(this->out->describe(depth-1));
+		if (!this->in.empty()) b << endl << "  \033[1min\033[0m = " << indent(describeVector(this->in, depth-1)) << "";
+		if (!this->out.empty()) b << endl << "  \033[1mout\033[0m = " << indent(describeVector(this->out, depth-1)) << "";
 		if (this->body) b << endl << "  \033[1mbody\033[0m = " << indent(this->body->describe(depth-1));
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
@@ -176,8 +164,14 @@ public:
 
 	virtual void updateHierarchyOfChildren()
 	{
-		if (this->in) this->in->updateHierarchy(id + "in", repository, this);
-		if (this->out) this->out->updateHierarchy(id + "out", repository, this);
+		for (int i = 0; i < this->in.size(); i++) {
+			char buf[32]; snprintf(buf, 31, "%i", i);
+			this->in[i]->updateHierarchy((id + "in") + buf, repository, this);
+		}
+		for (int i = 0; i < this->out.size(); i++) {
+			char buf[32]; snprintf(buf, 31, "%i", i);
+			this->out[i]->updateHierarchy((id + "out") + buf, repository, this);
+		}
 		if (this->body) this->body->updateHierarchy(id + "body", repository, this);
 	}
 
@@ -208,18 +202,40 @@ public:
 			if (size >= 2 && path[0] == 'i' && path[1] == 'n') {
 				// in
 				if (size == 2) {
-					return getIn();
+					throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
 				} else if (path[2] == '.') {
-					return getIn()->resolvePath(path.substr(3));
+					size_t dot = path.find(".", 3);
+					string idx_str = path.substr(3, dot);
+					int idx = atoi(idx_str.c_str());
+					const NodeVector& a = getIn();
+					if (idx < 0 || idx >= a.size()) {
+						throw std::runtime_error("Index into array '" + path.substr(0, 2) + "' is out of bounds.");
+					}
+					if (dot == string::npos) {
+						return a[idx];
+					} else {
+						return a[idx]->resolvePath(path.substr(dot + 1));
+					}
 				}
 			}
 			// out.*
 			if (size >= 3 && path[0] == 'o' && path[1] == 'u' && path[2] == 't') {
 				// out
 				if (size == 3) {
-					return getOut();
+					throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
 				} else if (path[3] == '.') {
-					return getOut()->resolvePath(path.substr(4));
+					size_t dot = path.find(".", 4);
+					string idx_str = path.substr(4, dot);
+					int idx = atoi(idx_str.c_str());
+					const NodeVector& a = getOut();
+					if (idx < 0 || idx >= a.size()) {
+						throw std::runtime_error("Index into array '" + path.substr(0, 3) + "' is out of bounds.");
+					}
+					if (dot == string::npos) {
+						return a[idx];
+					} else {
+						return a[idx]->resolvePath(path.substr(dot + 1));
+					}
 				}
 			}
 		}
@@ -229,8 +245,8 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		if (const NodePtr& n = this->getIn(false)) v.push_back(n);
-		if (const NodePtr& n = this->getOut(false)) v.push_back(n);
+		v.insert(v.end(), this->in.begin(), this->in.end());
+		v.insert(v.end(), this->out.begin(), this->out.end());
 		if (const NodePtr& n = this->getBody(false)) v.push_back(n);
 		return v;
 	}
@@ -242,8 +258,8 @@ public:
 protected:
 	NodeRef graphPrev;
 	string name;
-	NodePtr in;
-	NodePtr out;
+	NodeVector in;
+	NodeVector out;
 	NodePtr body;
 
 	// Interfaces

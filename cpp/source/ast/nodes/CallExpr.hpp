@@ -71,6 +71,38 @@ public:
 		return v;
 	}
 
+	void setName(const string& v)
+	{
+		if (v != name) {
+			modify();
+			name = v;
+		}
+	}
+	const string& getName(bool required = true)
+	{
+		const string& v = name;
+		if (required && v.empty()) {
+			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string name set.");
+		}
+		return v;
+	}
+
+	void setContext(const NodePtr& v)
+	{
+		if (v != context) {
+			modify();
+			context = v;
+		}
+	}
+	const NodePtr& getContext(bool required = true)
+	{
+		const NodePtr& v = context;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have context set to a non-null value.");
+		}
+		return v;
+	}
+
 	void setCallName(const string& v)
 	{
 		if (v != callName) {
@@ -84,6 +116,19 @@ public:
 		if (required && v.empty()) {
 			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string callName set.");
 		}
+		return v;
+	}
+
+	void setCallArgs(const NodeVector& v)
+	{
+		if (v != callArgs) {
+			modify();
+			callArgs = v;
+		}
+	}
+	const NodeVector& getCallArgs(bool required = true)
+	{
+		const NodeVector& v = callArgs;
 		return v;
 	}
 
@@ -132,8 +177,8 @@ public:
 
 	void setPossibleType(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
-			throw runtime_error("'possibleType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'possibleType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (v != possibleType) {
 			modify();
@@ -151,8 +196,8 @@ public:
 
 	void setRequiredType(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
-			throw runtime_error("'requiredType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'requiredType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (v != requiredType) {
 			modify();
@@ -170,8 +215,8 @@ public:
 
 	void setActualType(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
-			throw runtime_error("'actualType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'actualType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (v != actualType) {
 			modify();
@@ -187,66 +232,21 @@ public:
 		return v;
 	}
 
-	void setName(const string& v)
-	{
-		if (v != name) {
-			modify();
-			name = v;
-		}
-	}
-	const string& getName(bool required = true)
-	{
-		const string& v = name;
-		if (required && v.empty()) {
-			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string name set.");
-		}
-		return v;
-	}
-
-	void setContext(const NodePtr& v)
-	{
-		if (v != context) {
-			modify();
-			context = v;
-		}
-	}
-	const NodePtr& getContext(bool required = true)
-	{
-		const NodePtr& v = context;
-		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have context set to a non-null value.");
-		}
-		return v;
-	}
-
-	void setCallArgs(const NodeVector& v)
-	{
-		if (v != callArgs) {
-			modify();
-			callArgs = v;
-		}
-	}
-	const NodeVector& getCallArgs(bool required = true)
-	{
-		const NodeVector& v = callArgs;
-		return v;
-	}
-
 	virtual string describe(int depth = -1)
 	{
 		if (depth == 0) return "CallExpr{…}";
 		stringstream str, b;
 		str << "CallExpr{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
+		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
+		if (this->context) b << endl << "  \033[1mcontext\033[0m = " << indent(this->context->describe(depth-1));
 		if (!this->callName.empty()) b << endl << "  \033[1mcallName\033[0m = '\033[33m" << this->callName << "\033[0m'";
+		if (!this->callArgs.empty()) b << endl << "  \033[1mcallArgs\033[0m = " << indent(describeVector(this->callArgs, depth-1)) << "";
 		if (!this->callCandidates.empty()) b << endl << "  \033[1mcallCandidates\033[0m = " << indent(describeVector(this->callCandidates, depth-1)) << "";
 		if (this->selectedCallCandidate) b << endl << "  \033[1mselectedCallCandidate\033[0m = " << "\033[36m" << this->selectedCallCandidate.id << "\033[0m";
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
-		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
-		if (this->context) b << endl << "  \033[1mcontext\033[0m = " << indent(this->context->describe(depth-1));
-		if (!this->callArgs.empty()) b << endl << "  \033[1mcallArgs\033[0m = " << indent(describeVector(this->callArgs, depth-1)) << "";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -256,33 +256,38 @@ public:
 	virtual void encode(Encoder& e)
 	{
 		e.encode(this->graphPrev);
+		e.encode(this->name);
+		e.encode(this->context);
 		e.encode(this->callName);
+		e.encode(this->callArgs);
 		e.encode(this->callCandidates);
 		e.encode(this->selectedCallCandidate);
 		e.encode(this->possibleType);
 		e.encode(this->requiredType);
 		e.encode(this->actualType);
-		e.encode(this->name);
-		e.encode(this->context);
-		e.encode(this->callArgs);
 	}
 
 	virtual void decode(Decoder& d)
 	{
 		d.decode(this->graphPrev);
+		d.decode(this->name);
+		d.decode(this->context);
 		d.decode(this->callName);
+		d.decode(this->callArgs);
 		d.decode(this->callCandidates);
 		d.decode(this->selectedCallCandidate);
 		d.decode(this->possibleType);
 		d.decode(this->requiredType);
 		d.decode(this->actualType);
-		d.decode(this->name);
-		d.decode(this->context);
-		d.decode(this->callArgs);
 	}
 
 	virtual void updateHierarchyOfChildren()
 	{
+		if (this->context) this->context->updateHierarchy(id + "context", repository, this);
+		for (int i = 0; i < this->callArgs.size(); i++) {
+			char buf[32]; snprintf(buf, 31, "%i", i);
+			this->callArgs[i]->updateHierarchy((id + "callArgs") + buf, repository, this);
+		}
 		for (int i = 0; i < this->callCandidates.size(); i++) {
 			char buf[32]; snprintf(buf, 31, "%i", i);
 			this->callCandidates[i]->updateHierarchy((id + "callCandidates") + buf, repository, this);
@@ -290,11 +295,6 @@ public:
 		if (this->possibleType) this->possibleType->updateHierarchy(id + "possibleType", repository, this);
 		if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
 		if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
-		if (this->context) this->context->updateHierarchy(id + "context", repository, this);
-		for (int i = 0; i < this->callArgs.size(); i++) {
-			char buf[32]; snprintf(buf, 31, "%i", i);
-			this->callArgs[i]->updateHierarchy((id + "callArgs") + buf, repository, this);
-		}
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -409,9 +409,9 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		v.insert(v.end(), this->callCandidates.begin(), this->callCandidates.end());
 		if (const NodePtr& n = this->getContext(false)) v.push_back(n);
 		v.insert(v.end(), this->callArgs.begin(), this->callArgs.end());
+		v.insert(v.end(), this->callCandidates.begin(), this->callCandidates.end());
 		return v;
 	}
 
@@ -423,15 +423,15 @@ public:
 
 protected:
 	NodeRef graphPrev;
+	string name;
+	NodePtr context;
 	string callName;
+	NodeVector callArgs;
 	NodeVector callCandidates;
 	NodeRef selectedCallCandidate;
 	NodePtr possibleType;
 	NodePtr requiredType;
 	NodePtr actualType;
-	string name;
-	NodePtr context;
-	NodeVector callArgs;
 
 	// Interfaces
 	GraphInterfaceImpl<CallExpr> interfaceGraph;

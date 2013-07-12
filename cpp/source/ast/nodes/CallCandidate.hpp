@@ -20,7 +20,8 @@ using std::runtime_error;
 class CallCandidate : public Node
 {
 public:
-	CallCandidate() : Node() {}
+	CallCandidate() : Node(),
+		interfaceType(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -31,10 +32,68 @@ public:
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
+		if (i == kTypeInterface) return true;
 		return false;
 	}
 
 	virtual string getClassName() const { return "CallCandidate"; }
+
+	void setPossibleType(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'possibleType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
+		if (v != possibleType) {
+			modify();
+			possibleType = v;
+		}
+	}
+	const NodePtr& getPossibleType(bool required = true)
+	{
+		const NodePtr& v = possibleType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have possibleType set to a non-null value.");
+		}
+		return v;
+	}
+
+	void setRequiredType(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'requiredType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
+		if (v != requiredType) {
+			modify();
+			requiredType = v;
+		}
+	}
+	const NodePtr& getRequiredType(bool required = true)
+	{
+		const NodePtr& v = requiredType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have requiredType set to a non-null value.");
+		}
+		return v;
+	}
+
+	void setActualType(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'actualType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
+		if (v != actualType) {
+			modify();
+			actualType = v;
+		}
+	}
+	const NodePtr& getActualType(bool required = true)
+	{
+		const NodePtr& v = actualType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have actualType set to a non-null value.");
+		}
+		return v;
+	}
 
 	void setFunc(const NodePtr& v)
 	{
@@ -84,6 +143,9 @@ public:
 		if (depth == 0) return "CallCandidate{…}";
 		stringstream str, b;
 		str << "CallCandidate{";
+		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
+		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
+		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
 		if (this->func) b << endl << "  \033[1mfunc\033[0m = " << "\033[36m" << this->func.id << "\033[0m";
 		if (!this->args.empty()) b << endl << "  \033[1margs\033[0m = " << indent(describeVector(this->args, depth-1)) << "";
 		string bs = b.str();
@@ -94,18 +156,27 @@ public:
 
 	virtual void encode(Encoder& e)
 	{
+		e.encode(this->possibleType);
+		e.encode(this->requiredType);
+		e.encode(this->actualType);
 		e.encode(this->func);
 		e.encode(this->args);
 	}
 
 	virtual void decode(Decoder& d)
 	{
+		d.decode(this->possibleType);
+		d.decode(this->requiredType);
+		d.decode(this->actualType);
 		d.decode(this->func);
 		d.decode(this->args);
 	}
 
 	virtual void updateHierarchyOfChildren()
 	{
+		if (this->possibleType) this->possibleType->updateHierarchy(id + "possibleType", repository, this);
+		if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
+		if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
 		for (int i = 0; i < this->args.size(); i++) {
 			char buf[32]; snprintf(buf, 31, "%i", i);
 			this->args[i]->updateHierarchy((id + "args") + buf, repository, this);
@@ -117,23 +188,35 @@ public:
 		size_t size = path.size();
 		// .*
 		if (true) {
-			// args.*
-			if (size >= 4 && path[0] == 'a' && path[1] == 'r' && path[2] == 'g' && path[3] == 's') {
-				// args
-				if (size == 4) {
-					throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
-				} else if (path[4] == '.') {
-					size_t dot = path.find(".", 5);
-					string idx_str = path.substr(5, dot);
-					int idx = atoi(idx_str.c_str());
-					const NodeVector& a = getArgs();
-					if (idx < 0 || idx >= a.size()) {
-						throw std::runtime_error("Index into array '" + path.substr(0, 4) + "' is out of bounds.");
+			// a.*
+			if (size >= 1 && path[0] == 'a') {
+				// actualType.*
+				if (size >= 10 && path[1] == 'c' && path[2] == 't' && path[3] == 'u' && path[4] == 'a' && path[5] == 'l' && path[6] == 'T' && path[7] == 'y' && path[8] == 'p' && path[9] == 'e') {
+					// actualType
+					if (size == 10) {
+						return getActualType();
+					} else if (path[10] == '.') {
+						return getActualType()->resolvePath(path.substr(11));
 					}
-					if (dot == string::npos) {
-						return a[idx];
-					} else {
-						return a[idx]->resolvePath(path.substr(dot + 1));
+				}
+				// args.*
+				if (size >= 4 && path[1] == 'r' && path[2] == 'g' && path[3] == 's') {
+					// args
+					if (size == 4) {
+						throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
+					} else if (path[4] == '.') {
+						size_t dot = path.find(".", 5);
+						string idx_str = path.substr(5, dot);
+						int idx = atoi(idx_str.c_str());
+						const NodeVector& a = getArgs();
+						if (idx < 0 || idx >= a.size()) {
+							throw std::runtime_error("Index into array '" + path.substr(0, 4) + "' is out of bounds.");
+						}
+						if (dot == string::npos) {
+							return a[idx];
+						} else {
+							return a[idx]->resolvePath(path.substr(dot + 1));
+						}
 					}
 				}
 			}
@@ -144,6 +227,24 @@ public:
 					return getFunc();
 				} else if (path[4] == '.') {
 					return getFunc()->resolvePath(path.substr(5));
+				}
+			}
+			// possibleType.*
+			if (size >= 12 && path[0] == 'p' && path[1] == 'o' && path[2] == 's' && path[3] == 's' && path[4] == 'i' && path[5] == 'b' && path[6] == 'l' && path[7] == 'e' && path[8] == 'T' && path[9] == 'y' && path[10] == 'p' && path[11] == 'e') {
+				// possibleType
+				if (size == 12) {
+					return getPossibleType();
+				} else if (path[12] == '.') {
+					return getPossibleType()->resolvePath(path.substr(13));
+				}
+			}
+			// requiredType.*
+			if (size >= 12 && path[0] == 'r' && path[1] == 'e' && path[2] == 'q' && path[3] == 'u' && path[4] == 'i' && path[5] == 'r' && path[6] == 'e' && path[7] == 'd' && path[8] == 'T' && path[9] == 'y' && path[10] == 'p' && path[11] == 'e') {
+				// requiredType
+				if (size == 12) {
+					return getRequiredType();
+				} else if (path[12] == '.') {
+					return getRequiredType()->resolvePath(path.substr(13));
 				}
 			}
 		}
@@ -157,9 +258,18 @@ public:
 		return v;
 	}
 
+	// Interfaces
+	virtual TypeInterface* asType() { return &this->interfaceType; }
+
 protected:
+	NodePtr possibleType;
+	NodePtr requiredType;
+	NodePtr actualType;
 	NodeRef func;
 	NodeVector args;
+
+	// Interfaces
+	TypeInterfaceImpl<CallCandidate> interfaceType;
 };
 
 } // namespace ast

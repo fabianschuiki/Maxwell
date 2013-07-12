@@ -4,6 +4,7 @@
 
 using namespace ast;
 using stage::CalcPossibleTypes;
+using boost::dynamic_pointer_cast;
 
 void CalcPossibleTypes::process(const NodePtr& node)
 {
@@ -22,6 +23,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 	for (NodeVector::const_iterator it = children.begin(); it != children.end(); it++) {
 		process(*it);
 	}
+	println(1, "processing " + node->getId().str());
 
 	// Variable-like nodes.
 	if (VariableInterface *var = node->asVariable()) {
@@ -45,11 +47,48 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		}
 	}
 
+
+	/*
+	 * Call-related stuff.
+	 */
+
 	// Call expressions.
 	if (CallExpr *call = dynamic_cast<CallExpr*>(node.get())) {
 		// TODO: this is just a dummy, actually take the possible return types of the call into account!
 		call->setPossibleType(NodePtr(new GenericType));
 	}
+
+	// For nodes that implement the CallInterface, iterate through all call
+	// candidates and find the union set of the return types.
+	if (CallInterface *intf = node->asCall()) {
+
+	}
+
+	// Call candidates simply copy the function's return type.
+	if (CallCandidate* candidate = dynamic_cast<CallCandidate*>(node.get())) {
+		const shared_ptr<FuncDef>& func = dynamic_pointer_cast<FuncDef>(candidate->getFunc());
+		// For now enforce single return values.
+		if (func->getOut().size() > 1) {
+			throw std::runtime_error("Only calls to functions with zero or one output argument are supported at the moment. Function " + func->getId().str() + " called by " + node->getParent()->getId().str() + " violates this constraint.");
+		}
+		addDependency(func, "out.0.actualType");
+		if (func->getOut().size() == 1) {
+			candidate->setPossibleType(func->getOut()[0]->needVariable()->getActualType());
+		} else {
+			candidate->setPossibleType(NodePtr(new InvalidType));
+		}
+	}
+
+	// Call candidate arguments simply copy the function's argument type.
+	if (CallCandidateArg* arg = dynamic_cast<CallCandidateArg*>(node.get())) {
+		addDependency(arg, "arg.possibleType");
+		arg->setPossibleType(arg->getArg()->needCallArg()->getExpr()->needType()->getPossibleType());
+	}
+
+
+	/*
+	 * Wrapping up.
+	 */
 
 	// In case no actualy type has been set yet, simply copy the possible type over.
 	if (TypeInterface *intf = node->asType()) {

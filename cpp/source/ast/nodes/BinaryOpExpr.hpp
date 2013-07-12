@@ -69,6 +69,54 @@ public:
 		return v;
 	}
 
+	void setOperatorName(const string& v)
+	{
+		if (v != operatorName) {
+			modify();
+			operatorName = v;
+		}
+	}
+	const string& getOperatorName(bool required = true)
+	{
+		const string& v = operatorName;
+		if (required && v.empty()) {
+			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string operatorName set.");
+		}
+		return v;
+	}
+
+	void setLhs(const NodePtr& v)
+	{
+		if (v != lhs) {
+			modify();
+			lhs = v;
+		}
+	}
+	const NodePtr& getLhs(bool required = true)
+	{
+		const NodePtr& v = lhs;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have lhs set to a non-null value.");
+		}
+		return v;
+	}
+
+	void setRhs(const NodePtr& v)
+	{
+		if (v != rhs) {
+			modify();
+			rhs = v;
+		}
+	}
+	const NodePtr& getRhs(bool required = true)
+	{
+		const NodePtr& v = rhs;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have rhs set to a non-null value.");
+		}
+		return v;
+	}
+
 	void setCallName(const string& v)
 	{
 		if (v != callName) {
@@ -143,8 +191,8 @@ public:
 
 	void setPossibleType(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
-			throw runtime_error("'possibleType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'possibleType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (v != possibleType) {
 			modify();
@@ -162,8 +210,8 @@ public:
 
 	void setRequiredType(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
-			throw runtime_error("'requiredType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'requiredType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (v != requiredType) {
 			modify();
@@ -181,8 +229,8 @@ public:
 
 	void setActualType(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
-			throw runtime_error("'actualType' needs to be of kind {GenericType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType)) {
+			throw runtime_error("'actualType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (v != actualType) {
 			modify();
@@ -198,60 +246,15 @@ public:
 		return v;
 	}
 
-	void setOperatorName(const string& v)
-	{
-		if (v != operatorName) {
-			modify();
-			operatorName = v;
-		}
-	}
-	const string& getOperatorName(bool required = true)
-	{
-		const string& v = operatorName;
-		if (required && v.empty()) {
-			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string operatorName set.");
-		}
-		return v;
-	}
-
-	void setLhs(const NodePtr& v)
-	{
-		if (v != lhs) {
-			modify();
-			lhs = v;
-		}
-	}
-	const NodePtr& getLhs(bool required = true)
-	{
-		const NodePtr& v = lhs;
-		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have lhs set to a non-null value.");
-		}
-		return v;
-	}
-
-	void setRhs(const NodePtr& v)
-	{
-		if (v != rhs) {
-			modify();
-			rhs = v;
-		}
-	}
-	const NodePtr& getRhs(bool required = true)
-	{
-		const NodePtr& v = rhs;
-		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have rhs set to a non-null value.");
-		}
-		return v;
-	}
-
 	virtual string describe(int depth = -1)
 	{
 		if (depth == 0) return "BinaryOpExpr{…}";
 		stringstream str, b;
 		str << "BinaryOpExpr{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
+		if (!this->operatorName.empty()) b << endl << "  \033[1moperatorName\033[0m = '\033[33m" << this->operatorName << "\033[0m'";
+		if (this->lhs) b << endl << "  \033[1mlhs\033[0m = " << indent(this->lhs->describe(depth-1));
+		if (this->rhs) b << endl << "  \033[1mrhs\033[0m = " << indent(this->rhs->describe(depth-1));
 		if (!this->callName.empty()) b << endl << "  \033[1mcallName\033[0m = '\033[33m" << this->callName << "\033[0m'";
 		if (!this->callArgs.empty()) b << endl << "  \033[1mcallArgs\033[0m = " << indent(describeVector(this->callArgs, depth-1)) << "";
 		if (!this->callCandidates.empty()) b << endl << "  \033[1mcallCandidates\033[0m = " << indent(describeVector(this->callCandidates, depth-1)) << "";
@@ -259,9 +262,6 @@ public:
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
-		if (!this->operatorName.empty()) b << endl << "  \033[1moperatorName\033[0m = '\033[33m" << this->operatorName << "\033[0m'";
-		if (this->lhs) b << endl << "  \033[1mlhs\033[0m = " << indent(this->lhs->describe(depth-1));
-		if (this->rhs) b << endl << "  \033[1mrhs\033[0m = " << indent(this->rhs->describe(depth-1));
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -271,6 +271,9 @@ public:
 	virtual void encode(Encoder& e)
 	{
 		e.encode(this->graphPrev);
+		e.encode(this->operatorName);
+		e.encode(this->lhs);
+		e.encode(this->rhs);
 		e.encode(this->callName);
 		e.encode(this->callArgs);
 		e.encode(this->callCandidates);
@@ -278,14 +281,14 @@ public:
 		e.encode(this->possibleType);
 		e.encode(this->requiredType);
 		e.encode(this->actualType);
-		e.encode(this->operatorName);
-		e.encode(this->lhs);
-		e.encode(this->rhs);
 	}
 
 	virtual void decode(Decoder& d)
 	{
 		d.decode(this->graphPrev);
+		d.decode(this->operatorName);
+		d.decode(this->lhs);
+		d.decode(this->rhs);
 		d.decode(this->callName);
 		d.decode(this->callArgs);
 		d.decode(this->callCandidates);
@@ -293,13 +296,12 @@ public:
 		d.decode(this->possibleType);
 		d.decode(this->requiredType);
 		d.decode(this->actualType);
-		d.decode(this->operatorName);
-		d.decode(this->lhs);
-		d.decode(this->rhs);
 	}
 
 	virtual void updateHierarchyOfChildren()
 	{
+		if (this->lhs) this->lhs->updateHierarchy(id + "lhs", repository, this);
+		if (this->rhs) this->rhs->updateHierarchy(id + "rhs", repository, this);
 		for (int i = 0; i < this->callArgs.size(); i++) {
 			char buf[32]; snprintf(buf, 31, "%i", i);
 			this->callArgs[i]->updateHierarchy((id + "callArgs") + buf, repository, this);
@@ -311,8 +313,6 @@ public:
 		if (this->possibleType) this->possibleType->updateHierarchy(id + "possibleType", repository, this);
 		if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
 		if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
-		if (this->lhs) this->lhs->updateHierarchy(id + "lhs", repository, this);
-		if (this->rhs) this->rhs->updateHierarchy(id + "rhs", repository, this);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -436,10 +436,10 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		v.insert(v.end(), this->callArgs.begin(), this->callArgs.end());
-		v.insert(v.end(), this->callCandidates.begin(), this->callCandidates.end());
 		if (const NodePtr& n = this->getLhs(false)) v.push_back(n);
 		if (const NodePtr& n = this->getRhs(false)) v.push_back(n);
+		v.insert(v.end(), this->callArgs.begin(), this->callArgs.end());
+		v.insert(v.end(), this->callCandidates.begin(), this->callCandidates.end());
 		return v;
 	}
 
@@ -450,6 +450,9 @@ public:
 
 protected:
 	NodeRef graphPrev;
+	string operatorName;
+	NodePtr lhs;
+	NodePtr rhs;
 	string callName;
 	NodeVector callArgs;
 	NodeVector callCandidates;
@@ -457,9 +460,6 @@ protected:
 	NodePtr possibleType;
 	NodePtr requiredType;
 	NodePtr actualType;
-	string operatorName;
-	NodePtr lhs;
-	NodePtr rhs;
 
 	// Interfaces
 	GraphInterfaceImpl<BinaryOpExpr> interfaceGraph;

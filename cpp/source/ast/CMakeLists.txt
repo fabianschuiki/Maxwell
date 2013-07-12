@@ -1,5 +1,6 @@
 add_library(ast
 	Node.cpp
+	NodeId.cpp
 	Repository.cpp
 	SourceRepository.cpp
 	NodeRepository.cpp

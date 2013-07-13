@@ -5,6 +5,7 @@
 #include "Node.hpp"
 #include "BuiltinRepository.hpp"
 #include "SymbolRepository.hpp"
+#include "DependencyRepository.hpp"
 #include <boost/smart_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/filesystem.hpp>
@@ -35,6 +36,9 @@ public:
 	int unregisterSource(const string& s);
 	void unregisterSource(int i);
 
+	// Dependency store.
+	void setDependenciesOfStage(const NodeId& id, const string& stage, const set<NodeId>& ids);
+
 	void markModified(const NodeId& id);
 
 	typedef map<NodeId, string> ExternalNames;
@@ -47,6 +51,8 @@ protected:
 	scoped_ptr<NodeRepository> nodeRepo;
 	/// Repository maintaining the imported/exported symbol names per source file.
 	scoped_ptr<SymbolRepository> symbolRepo;
+	/// Repository maintaining the dependencies of nodes.
+	scoped_ptr<DependencyRepository> dependencyRepo;
 
 	void nodeLoaded(const NodeId& id, const NodePtr& node);
 

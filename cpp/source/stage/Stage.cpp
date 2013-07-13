@@ -14,7 +14,7 @@ void Stage::run(const NodePtr& node)
 	currentNode = node;
 	dependencies.clear();
 	process(node);
-	// TODO: commit dependencies to the repository for this (stage,node) tuple.
+	repository.setDependenciesOfStage(node->getId(), getName(), dependencies);
 	currentNode.reset();
 }
 

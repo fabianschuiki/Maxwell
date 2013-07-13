@@ -16,9 +16,11 @@ Repository::Repository(const boost::filesystem::path& path) : path(path), builti
 {
 	boost::filesystem::path psrc = path; psrc /= "sources";
 	boost::filesystem::path psym = path; psym /= "symbols";
+	boost::filesystem::path pdep = path; pdep /= "dependencies";
 	sourceRepo.reset(new SourceRepository(psrc));
 	nodeRepo.reset(new NodeRepository(path));
 	symbolRepo.reset(new SymbolRepository(psym));
+	dependencyRepo.reset(new DependencyRepository(pdep));
 
 	// Configure the required callbacks.
 	nodeRepo->onNodeLoaded = boost::bind(&Repository::nodeLoaded, this, _1, _2);
@@ -38,6 +40,8 @@ void Repository::flush()
 {
 	sourceRepo->flush();
 	nodeRepo->flush();
+	symbolRepo->flush();
+	dependencyRepo->flush();
 }
 
 /**
@@ -105,6 +109,7 @@ int Repository::unregisterSource(const string& s)
 	if (id) {
 		nodeRepo->removeNode(id);
 		symbolRepo->removeExportedSymbol(id);
+		dependencyRepo->removeNode(id);
 	}
 	return id;
 }
@@ -119,6 +124,7 @@ void Repository::unregisterSource(int i)
 	sourceRepo->unregisterSource(i);
 	nodeRepo->removeNode(i);
 	symbolRepo->removeExportedSymbol(i);
+	dependencyRepo->removeNode(i);
 }
 
 /**
@@ -150,4 +156,12 @@ Repository::ExternalNames Repository::getExternalNamesForNodeId(const NodeId& id
 	const SymbolRepository::Symbols& local = symbolRepo->getExportedSymbols(id.source);
 	nodes.insert(local.begin(), local.end());
 	return nodes;
+}
+
+/**
+ * @brief Marks the given stage and node id as dependant on the given %ids.
+ */
+void Repository::setDependenciesOfStage(const NodeId& id, const string& stage, const set<NodeId>& ids)
+{
+	dependencyRepo->setDependenciesOfStage(id, stage, ids);
 }

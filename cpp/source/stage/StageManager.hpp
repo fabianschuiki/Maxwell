@@ -24,7 +24,8 @@ public:
 		stageInitRootTypes(r),
 		stageConfigureCalls(r),
 		stageFindCallCandidates(r),
-		stageCalcPossibleTypes(r)
+		stageCalcPossibleTypes(r),
+		stageCalcRequiredTypes(r)
 	{
 		stageIndices["BuildGraph"] = stages.size();
 		stagesByName["BuildGraph"] = &stageBuildGraph;
@@ -50,6 +51,9 @@ public:
 		stageIndices["CalcPossibleTypes"] = stages.size();
 		stagesByName["CalcPossibleTypes"] = &stageCalcPossibleTypes;
 		stages.push_back(&stageCalcPossibleTypes);
+		stageIndices["CalcRequiredTypes"] = stages.size();
+		stagesByName["CalcRequiredTypes"] = &stageCalcRequiredTypes;
+		stages.push_back(&stageCalcRequiredTypes);
 	}
 
 	typedef vector<Stage*> Stages;
@@ -68,6 +72,7 @@ protected:
 	ConfigureCalls stageConfigureCalls;
 	FindCallCandidates stageFindCallCandidates;
 	CalcPossibleTypes stageCalcPossibleTypes;
+	CalcRequiredTypes stageCalcRequiredTypes;
 };
 
 } // namespace stage

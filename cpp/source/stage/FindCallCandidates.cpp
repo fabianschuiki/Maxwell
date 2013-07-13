@@ -25,6 +25,7 @@ void FindCallCandidates::process(const NodePtr& node)
 			if (it->second != name) continue; // discard other names
 			const NodePtr& n = repository.getNode(it->first);
 			if (!n->isKindOf(kFuncDef)) continue; // discard anything but FuncDef nodes
+			// if (dynamic_cast<FuncDef*>(n.get())->getIn().size() != intf->getCallArgs().size()) continue; // discard functions with different number of inputs
 			nodes.push_back(n);
 		}
 

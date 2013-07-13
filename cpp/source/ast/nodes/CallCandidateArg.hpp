@@ -38,6 +38,36 @@ public:
 
 	virtual string getClassName() const { return "CallCandidateArg"; }
 
+	void setArg(const NodePtr& v)
+	{
+		if (v && !v->implements(kCallArgInterface)) {
+			throw runtime_error("'arg' needs to be of kind {} or implement interface {CallArg}, got " + v->getClassName() + " instead.");
+		}
+		if (!v && arg) {
+			modify();
+			arg.reset();
+		}
+		if (!arg || v->getId() != arg.id) {
+			modify();
+			arg.set(v);
+		}
+	}
+	void setArg(const NodeId& v)
+	{
+		if (v != arg.id) {
+			modify();
+			arg.set(v);
+		}
+	}
+	const NodePtr& getArg(bool required = true)
+	{
+		const NodePtr& v = arg.get(repository);
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have arg set to a non-null value.");
+		}
+		return v;
+	}
+
 	void setPossibleType(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet)) {
@@ -95,45 +125,15 @@ public:
 		return v;
 	}
 
-	void setArg(const NodePtr& v)
-	{
-		if (v && !v->implements(kCallArgInterface)) {
-			throw runtime_error("'arg' needs to be of kind {} or implement interface {CallArg}, got " + v->getClassName() + " instead.");
-		}
-		if (!v && arg) {
-			modify();
-			arg.reset();
-		}
-		if (!arg || v->getId() != arg.id) {
-			modify();
-			arg.set(v);
-		}
-	}
-	void setArg(const NodeId& v)
-	{
-		if (v != arg.id) {
-			modify();
-			arg.set(v);
-		}
-	}
-	const NodePtr& getArg(bool required = true)
-	{
-		const NodePtr& v = arg.get(repository);
-		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have arg set to a non-null value.");
-		}
-		return v;
-	}
-
 	virtual string describe(int depth = -1)
 	{
 		if (depth == 0) return "CallCandidateArg{…}";
 		stringstream str, b;
 		str << "CallCandidateArg{";
+		if (this->arg) b << endl << "  \033[1marg\033[0m = " << "\033[36m" << this->arg.id << "\033[0m";
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
-		if (this->arg) b << endl << "  \033[1marg\033[0m = " << "\033[36m" << this->arg.id << "\033[0m";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -142,18 +142,18 @@ public:
 
 	virtual void encode(Encoder& e)
 	{
+		e.encode(this->arg);
 		e.encode(this->possibleType);
 		e.encode(this->requiredType);
 		e.encode(this->actualType);
-		e.encode(this->arg);
 	}
 
 	virtual void decode(Decoder& d)
 	{
+		d.decode(this->arg);
 		d.decode(this->possibleType);
 		d.decode(this->requiredType);
 		d.decode(this->actualType);
-		d.decode(this->arg);
 	}
 
 	virtual void updateHierarchyOfChildren()
@@ -215,10 +215,10 @@ public:
 	virtual TypeInterface* asType() { return &this->interfaceType; }
 
 protected:
+	NodeRef arg;
 	NodePtr possibleType;
 	NodePtr requiredType;
 	NodePtr actualType;
-	NodeRef arg;
 
 	// Interfaces
 	TypeInterfaceImpl<CallCandidateArg> interfaceType;

@@ -17,67 +17,85 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class CallCandidate : public Node
+class AssignmentExpr : public Node
 {
 public:
-	CallCandidate() : Node(),
+	AssignmentExpr() : Node(),
+		interfaceGraph(this),
 		interfaceType(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kCallCandidate;
+		return k == kAssignmentExpr;
 	}
 
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
+		if (i == kGraphInterface) return true;
 		if (i == kTypeInterface) return true;
 		return false;
 	}
 
-	virtual string getClassName() const { return "CallCandidate"; }
+	virtual string getClassName() const { return "AssignmentExpr"; }
 
-	void setFunc(const NodePtr& v)
+	void setLhs(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kFuncDef)) {
-			throw runtime_error("'func' needs to be of kind {FuncDef} or implement interface {}, got " + v->getClassName() + " instead.");
-		}
-		if (!v && func) {
+		if (v != lhs) {
 			modify();
-			func.reset();
-		}
-		if (!func || v->getId() != func.id) {
-			modify();
-			func.set(v);
+			lhs = v;
 		}
 	}
-	void setFunc(const NodeId& v)
+	const NodePtr& getLhs(bool required = true)
 	{
-		if (v != func.id) {
-			modify();
-			func.set(v);
-		}
-	}
-	const NodePtr& getFunc(bool required = true)
-	{
-		const NodePtr& v = func.get(repository);
+		const NodePtr& v = lhs;
 		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have func set to a non-null value.");
+			throw runtime_error("Node " + getId().str() + " is required to have lhs set to a non-null value.");
 		}
 		return v;
 	}
 
-	void setArgs(const NodeVector& v)
+	void setRhs(const NodePtr& v)
 	{
-		if (v != args) {
+		if (v != rhs) {
 			modify();
-			args = v;
+			rhs = v;
 		}
 	}
-	const NodeVector& getArgs(bool required = true)
+	const NodePtr& getRhs(bool required = true)
 	{
-		const NodeVector& v = args;
+		const NodePtr& v = rhs;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have rhs set to a non-null value.");
+		}
+		return v;
+	}
+
+	void setGraphPrev(const NodePtr& v)
+	{
+		if (!v && graphPrev) {
+			modify();
+			graphPrev.reset();
+		}
+		if (!graphPrev || v->getId() != graphPrev.id) {
+			modify();
+			graphPrev.set(v);
+		}
+	}
+	void setGraphPrev(const NodeId& v)
+	{
+		if (v != graphPrev.id) {
+			modify();
+			graphPrev.set(v);
+		}
+	}
+	const NodePtr& getGraphPrev(bool required = true)
+	{
+		const NodePtr& v = graphPrev.get(repository);
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have graphPrev set to a non-null value.");
+		}
 		return v;
 	}
 
@@ -140,11 +158,12 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "CallCandidate{…}";
+		if (depth == 0) return "AssignmentExpr{…}";
 		stringstream str, b;
-		str << "CallCandidate{";
-		if (this->func) b << endl << "  \033[1mfunc\033[0m = " << "\033[36m" << this->func.id << "\033[0m";
-		if (!this->args.empty()) b << endl << "  \033[1margs\033[0m = " << indent(describeVector(this->args, depth-1)) << "";
+		str << "AssignmentExpr{";
+		if (this->lhs) b << endl << "  \033[1mlhs\033[0m = " << indent(this->lhs->describe(depth-1));
+		if (this->rhs) b << endl << "  \033[1mrhs\033[0m = " << indent(this->rhs->describe(depth-1));
+		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
@@ -156,8 +175,9 @@ public:
 
 	virtual void encode(Encoder& e)
 	{
-		e.encode(this->func);
-		e.encode(this->args);
+		e.encode(this->lhs);
+		e.encode(this->rhs);
+		e.encode(this->graphPrev);
 		e.encode(this->possibleType);
 		e.encode(this->requiredType);
 		e.encode(this->actualType);
@@ -165,8 +185,9 @@ public:
 
 	virtual void decode(Decoder& d)
 	{
-		d.decode(this->func);
-		d.decode(this->args);
+		d.decode(this->lhs);
+		d.decode(this->rhs);
+		d.decode(this->graphPrev);
 		d.decode(this->possibleType);
 		d.decode(this->requiredType);
 		d.decode(this->actualType);
@@ -174,10 +195,8 @@ public:
 
 	virtual void updateHierarchyOfChildren()
 	{
-		for (int i = 0; i < this->args.size(); i++) {
-			char buf[32]; snprintf(buf, 31, "%i", i);
-			this->args[i]->updateHierarchy((id + "args") + buf, repository, this);
-		}
+		if (this->lhs) this->lhs->updateHierarchy(id + "lhs", repository, this);
+		if (this->rhs) this->rhs->updateHierarchy(id + "rhs", repository, this);
 		if (this->possibleType) this->possibleType->updateHierarchy(id + "possibleType", repository, this);
 		if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
 		if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
@@ -188,45 +207,31 @@ public:
 		size_t size = path.size();
 		// .*
 		if (true) {
-			// a.*
-			if (size >= 1 && path[0] == 'a') {
-				// actualType.*
-				if (size >= 10 && path[1] == 'c' && path[2] == 't' && path[3] == 'u' && path[4] == 'a' && path[5] == 'l' && path[6] == 'T' && path[7] == 'y' && path[8] == 'p' && path[9] == 'e') {
-					// actualType
-					if (size == 10) {
-						return getActualType();
-					} else if (path[10] == '.') {
-						return getActualType()->resolvePath(path.substr(11));
-					}
-				}
-				// args.*
-				if (size >= 4 && path[1] == 'r' && path[2] == 'g' && path[3] == 's') {
-					// args
-					if (size == 4) {
-						throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
-					} else if (path[4] == '.') {
-						size_t dot = path.find(".", 5);
-						string idx_str = path.substr(5, dot);
-						int idx = atoi(idx_str.c_str());
-						const NodeVector& a = getArgs();
-						if (idx < 0 || idx >= a.size()) {
-							throw std::runtime_error("Index into array '" + path.substr(0, 4) + "' is out of bounds.");
-						}
-						if (dot == string::npos) {
-							return a[idx];
-						} else {
-							return a[idx]->resolvePath(path.substr(dot + 1));
-						}
-					}
+			// actualType.*
+			if (size >= 10 && path[0] == 'a' && path[1] == 'c' && path[2] == 't' && path[3] == 'u' && path[4] == 'a' && path[5] == 'l' && path[6] == 'T' && path[7] == 'y' && path[8] == 'p' && path[9] == 'e') {
+				// actualType
+				if (size == 10) {
+					return getActualType();
+				} else if (path[10] == '.') {
+					return getActualType()->resolvePath(path.substr(11));
 				}
 			}
-			// func.*
-			if (size >= 4 && path[0] == 'f' && path[1] == 'u' && path[2] == 'n' && path[3] == 'c') {
-				// func
-				if (size == 4) {
-					return getFunc();
-				} else if (path[4] == '.') {
-					return getFunc()->resolvePath(path.substr(5));
+			// graphPrev.*
+			if (size >= 9 && path[0] == 'g' && path[1] == 'r' && path[2] == 'a' && path[3] == 'p' && path[4] == 'h' && path[5] == 'P' && path[6] == 'r' && path[7] == 'e' && path[8] == 'v') {
+				// graphPrev
+				if (size == 9) {
+					return getGraphPrev();
+				} else if (path[9] == '.') {
+					return getGraphPrev()->resolvePath(path.substr(10));
+				}
+			}
+			// lhs.*
+			if (size >= 3 && path[0] == 'l' && path[1] == 'h' && path[2] == 's') {
+				// lhs
+				if (size == 3) {
+					return getLhs();
+				} else if (path[3] == '.') {
+					return getLhs()->resolvePath(path.substr(4));
 				}
 			}
 			// possibleType.*
@@ -238,13 +243,25 @@ public:
 					return getPossibleType()->resolvePath(path.substr(13));
 				}
 			}
-			// requiredType.*
-			if (size >= 12 && path[0] == 'r' && path[1] == 'e' && path[2] == 'q' && path[3] == 'u' && path[4] == 'i' && path[5] == 'r' && path[6] == 'e' && path[7] == 'd' && path[8] == 'T' && path[9] == 'y' && path[10] == 'p' && path[11] == 'e') {
-				// requiredType
-				if (size == 12) {
-					return getRequiredType();
-				} else if (path[12] == '.') {
-					return getRequiredType()->resolvePath(path.substr(13));
+			// r.*
+			if (size >= 1 && path[0] == 'r') {
+				// requiredType.*
+				if (size >= 12 && path[1] == 'e' && path[2] == 'q' && path[3] == 'u' && path[4] == 'i' && path[5] == 'r' && path[6] == 'e' && path[7] == 'd' && path[8] == 'T' && path[9] == 'y' && path[10] == 'p' && path[11] == 'e') {
+					// requiredType
+					if (size == 12) {
+						return getRequiredType();
+					} else if (path[12] == '.') {
+						return getRequiredType()->resolvePath(path.substr(13));
+					}
+				}
+				// rhs.*
+				if (size >= 3 && path[1] == 'h' && path[2] == 's') {
+					// rhs
+					if (size == 3) {
+						return getRhs();
+					} else if (path[3] == '.') {
+						return getRhs()->resolvePath(path.substr(4));
+					}
 				}
 			}
 		}
@@ -254,22 +271,26 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		v.insert(v.end(), this->args.begin(), this->args.end());
+		if (const NodePtr& n = this->getLhs(false)) v.push_back(n);
+		if (const NodePtr& n = this->getRhs(false)) v.push_back(n);
 		return v;
 	}
 
 	// Interfaces
+	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual TypeInterface* asType() { return &this->interfaceType; }
 
 protected:
-	NodeRef func;
-	NodeVector args;
+	NodePtr lhs;
+	NodePtr rhs;
+	NodeRef graphPrev;
 	NodePtr possibleType;
 	NodePtr requiredType;
 	NodePtr actualType;
 
 	// Interfaces
-	TypeInterfaceImpl<CallCandidate> interfaceType;
+	GraphInterfaceImpl<AssignmentExpr> interfaceGraph;
+	TypeInterfaceImpl<AssignmentExpr> interfaceType;
 };
 
 } // namespace ast

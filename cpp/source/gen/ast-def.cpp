@@ -43,10 +43,10 @@ void buildAST(Builder &node)
 	node("CallCandidate")
 		.attr("func", "&FuncDef")
 		.child("args", "[CallCandidateArg]")
-		.child("type", "#type");
+		.intf(type);
 	node("CallCandidateArg")
-		.intf(type)
-		.attr("arg", "&@CallArg");
+		.attr("arg", "&@CallArg")
+		.intf(type);
 
 	// Nodes
 	node("FuncDef")
@@ -103,6 +103,10 @@ void buildAST(Builder &node)
 		.intf(graph).intf(type)
 		.child("expr", "any")
 		.attr("name", "string");
+	node("AssignmentExpr")
+		.child("lhs", "any")
+		.child("rhs", "any")
+		.intf(graph).intf(type);
 
 	// Type Expressions
 	node("NamedTypeExpr")

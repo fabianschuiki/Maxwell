@@ -50,7 +50,7 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 }
 
 %type <node> func_decl func_arg type_decl body stmt expr call_arg
-%type <node> primary_expr postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr
+%type <node> primary_expr postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr assignment_expr
 %type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg
 %type <nodes> func_args_tuple func_args stmts union_typeexprs tuple_typeexpr_args call_args
 %type <varDefExpr> var_expr
@@ -370,9 +370,19 @@ relational_expr
     }
   ;
 
-expr  : relational_expr
+assignment_expr
+  : relational_expr
+  | assignment_expr ASSIGN relational_expr {
+      AssignmentExpr *e = new AssignmentExpr;
+      e->setLhs(shared_ptr<Node>($1));
+      e->setRhs(shared_ptr<Node>($3));
+      $$ = e;
+    }
+  ;
+
+expr  : assignment_expr
       | var_expr { $$ = $<node>1; }
-      | var_expr ASSIGN relational_expr {
+      | var_expr ASSIGN assignment_expr {
           $1->setInitialExpr(shared_ptr<Node>($3));
         }
       ;

@@ -27,8 +27,7 @@ int main(int argc, char *argv[])
 	try {
 		Repository repo("mwcrepo");
 		StageManager mgr(repo);
-		mgr.stagesByName["FindCallCandidates"]->verbosity = 99;
-		mgr.stagesByName["CalcPossibleTypes"]->verbosity = 1;
+		mgr.stagesByName["CalcRequiredTypes"]->verbosity = 99;
 
 		// Read the ids from the input.
 		vector<NodeId> ids;
@@ -43,7 +42,7 @@ int main(int argc, char *argv[])
 			for (int n = 0; n < ids.size(); n++) {
 				const NodeId& id = ids[n];
 				try {
-					cout << "Performing \033[36;1m" << st.getName() << "\033[0m on " << id << "\n";
+					//cout << "Performing \033[36;1m" << st.getName() << "\033[0m on " << id << "\n";
 					st.run(id);
 				} catch (std::exception &e) {
 					cerr << "*** \033[31;1munclassified error:\033[0m " << st.getName() << " " << id << ": " << e.what() << "\n";

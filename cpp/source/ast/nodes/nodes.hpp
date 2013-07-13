@@ -2,6 +2,7 @@
 #pragma once
 #include <string>
 
+#include "AssignmentExpr.hpp"
 #include "BinaryOpExpr.hpp"
 #include "CallArg.hpp"
 #include "CallCandidate.hpp"
@@ -43,6 +44,11 @@ public:
 		size_t size = name.size();
 		// .*
 		if (true) {
+			// AssignmentExpr.*
+			if (size >= 14 && name[0] == 'A' && name[1] == 's' && name[2] == 's' && name[3] == 'i' && name[4] == 'g' && name[5] == 'n' && name[6] == 'm' && name[7] == 'e' && name[8] == 'n' && name[9] == 't' && name[10] == 'E' && name[11] == 'x' && name[12] == 'p' && name[13] == 'r') {
+				// AssignmentExpr
+				if (size == 14) return NodePtr(new AssignmentExpr);
+			}
 			// BinaryOpExpr.*
 			if (size >= 12 && name[0] == 'B' && name[1] == 'i' && name[2] == 'n' && name[3] == 'a' && name[4] == 'r' && name[5] == 'y' && name[6] == 'O' && name[7] == 'p' && name[8] == 'E' && name[9] == 'x' && name[10] == 'p' && name[11] == 'r') {
 				// BinaryOpExpr

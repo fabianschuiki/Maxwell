@@ -89,4 +89,13 @@ public:
 	void processChildren(const NodePtr& node);
 };
 
+class CalcRequiredTypes : public Stage
+{
+protected:
+	virtual void process(const NodePtr& node);
+public:
+	string getName() const { return "CalcRequiredTypes"; }
+	CalcRequiredTypes(Repository& r) : Stage(r) {}
+};
+
 } // namespace stage

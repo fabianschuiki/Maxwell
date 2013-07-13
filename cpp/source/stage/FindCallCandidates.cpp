@@ -39,6 +39,8 @@ void FindCallCandidates::process(const NodePtr& node)
 			// Create the candidate object to hold the function.
 			shared_ptr<CallCandidate> candidate(new CallCandidate);
 			candidate->setFunc(funcNode);
+			candidate->setFeasible(true);
+			candidate->setCost(0);
 
 			// Wrap the input arguments into pairing nodes.
 			const NodeVector& callArgs = intf->getCallArgs();

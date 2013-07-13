@@ -27,7 +27,6 @@ void SelectCallCandidate::process(const NodePtr& node)
 	// Calculate the lowest possible cost of all call candidates.
 	int lowestCost = INT_MAX;
 	const NodeVector& candidates = callIntf->getCallCandidates();
-	addDependency(node, "callCandidates");
 
 	for (NodeVector::const_iterator it = candidates.begin(); it != candidates.end(); it++) {
 		const CallCandidate::Ptr& candidate = CallCandidate::needFrom(*it);

@@ -61,8 +61,11 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 			NodeVector outTypes;
 			const NodeVector& candidates = intf->getCallCandidates();
 			for (NodeVector::const_iterator it = candidates.begin(); it != candidates.end(); it++) {
-				const shared_ptr<CallCandidate>& candidate = dynamic_pointer_cast<CallCandidate>(*it);
-				outTypes.push_back(candidate->getActualType());
+				const CallCandidate::Ptr& candidate = CallCandidate::needFrom(*it);
+					if (candidate->getFeasible()) {
+					outTypes.push_back(candidate->getActualType());
+				}
+				addDependency(candidate, "feasible");
 				addDependency(candidate, "actualType");
 			}
 

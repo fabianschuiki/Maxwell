@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 		bool failed = false;
 		int sentinel = 0;
 		while (!failed) {
-			if (sentinel++ > 50)
+			if (sentinel++ > 50 * ids.size()) // abort if >50 stage iterations were performed PER NODE
 				throw std::runtime_error("Excessive amount of stage iterations. Aborting.");
 
 			// Find the next stage to be processed.

@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	try {
 		Repository repo("mwcrepo");
 		StageManager mgr(repo);
-		mgr.stagesByName["CalcRequiredTypes"]->verbosity = 99;
+		mgr.stagesByName["CalcActualTypes"]->verbosity = 99;
 
 		// Read the ids from the input.
 		vector<NodeId> ids;

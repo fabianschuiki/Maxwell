@@ -55,6 +55,44 @@ bool equal(const DefinedType::Ptr& a, const DefinedType::Ptr& b)
 
 
 /**
+ * Returns the intersection between the TypeSet and the other node. The other
+ * node may also be a type set, in which case this function is called
+ * recursively to resolve the intersect.
+ */
+NodePtr intersect(const TypeSet::Ptr& typeSet, const NodePtr& other)
+{
+	// Intersect all types in the type set with the other type.
+	NodeVector newTypes;
+	const NodeVector& types = typeSet->getTypes();
+	for (NodeVector::const_iterator it = types.begin(); it != types.end(); it++) {
+		NodePtr type = intersect(*it, other);
+		if (type->isKindOf(kInvalidType)) continue; // skip if the intersect was impossible
+		bool exists = false;
+		for (NodeVector::iterator is = newTypes.begin(); is != newTypes.end(); is++) {
+			if (equal(type, *is)) {
+				exists = true;
+				break;
+			}
+		}
+		if (!exists) newTypes.push_back(type);
+	}
+
+	// Return the new type set if it contains multiple types, a single type if
+	// there's only one left after the intersect, or InvalidType if the
+	// intersect yielded no types in the set.
+	if (newTypes.empty()) {
+		return NodePtr(new InvalidType);
+	} else if (newTypes.size() == 1) {
+		return newTypes.front();
+	} else {
+		TypeSet::Ptr ts(new TypeSet);
+		ts->setTypes(newTypes);
+		return ts;
+	}
+}
+
+
+/**
  * @brief Tries to simplify the %input type by removing obsolete and redundant
  * information.
  */
@@ -74,6 +112,29 @@ bool equal(const NodePtr& a, const NodePtr& b)
 	if (defTypeA && defTypeB)
 		return equal(defTypeA, defTypeB);
 	return false;
+}
+
+/**
+ * @brief Tries to find the largest common type between types %a and %b.
+ *
+ * Returns an InvalidType if the intersect is impossible.
+ */
+NodePtr intersect(const NodePtr& a, const NodePtr& b)
+{
+	// Shortcut if both types are equal.
+	if (equal(a,b)) return a;
+
+	// Intersection between TypeSets or a TypeSet and other type.
+	TypeSet::Ptr typeSetA = TypeSet::from(a), typeSetB = TypeSet::from(b);
+	if (typeSetA && typeSetB) {
+		return intersect(typeSetA, typeSetB);
+	} else if (typeSetA && !typeSetB) {
+		return intersect(typeSetA, b);
+	} else if (!typeSetA && typeSetB) {
+		return intersect(typeSetB, a);
+	}
+
+	return NodePtr(new InvalidType);
 }
 
 } // namespace type

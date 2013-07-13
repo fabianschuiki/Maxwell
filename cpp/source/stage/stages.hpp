@@ -98,4 +98,16 @@ public:
 	CalcRequiredTypes(Repository& r) : Stage(r) {}
 };
 
+class CalcActualTypes : public Stage
+{
+protected:
+	virtual void process(const NodePtr& node);
+public:
+	string getName() const { return "CalcActualTypes"; }
+	CalcActualTypes(Repository& r) : Stage(r) {}
+
+	/* Copyright © 2013 Fabian Schuiki */
+	NodePtr match(const NodePtr& possible, const NodePtr& required, const NodePtr& node);
+};
+
 } // namespace stage

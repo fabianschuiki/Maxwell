@@ -9,6 +9,7 @@ add_library(stage
 	FindCallCandidates.cpp
 	CalcPossibleTypes.cpp
 	CalcRequiredTypes.cpp
+	CalcActualTypes.cpp
 
 	algorithm/type.cpp
 )

@@ -40,8 +40,8 @@ public:
 
 	void setName(const string& v)
 	{
-		if (v != name) {
-			modify();
+		if (!equal(v, name)) {
+			modify("name");
 			name = v;
 		}
 	}
@@ -59,8 +59,8 @@ public:
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet)) {
 			throw runtime_error("'type' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (v != type) {
-			modify();
+		if (!equal(v, type)) {
+			modify("type");
 			type = v;
 		}
 	}
@@ -118,6 +118,15 @@ public:
 		NodeVector v;
 		if (const NodePtr& n = this->getType(false)) v.push_back(n);
 		return v;
+	}
+
+	virtual bool equalTo(const NodePtr& o)
+	{
+		const shared_ptr<TupleTypeArg>& other = boost::dynamic_pointer_cast<TupleTypeArg>(o);
+		if (!other) return false;
+		if (!equal(this->name, other->name)) return false;
+		if (!equal(this->type, other->type)) return false;
+		return true;
 	}
 
 	// Interfaces

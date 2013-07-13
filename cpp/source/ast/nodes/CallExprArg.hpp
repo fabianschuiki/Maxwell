@@ -45,18 +45,18 @@ public:
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {
-			modify();
+			modify("graphPrev");
 			graphPrev.reset();
 		}
 		if (!graphPrev || v->getId() != graphPrev.id) {
-			modify();
+			modify("graphPrev");
 			graphPrev.set(v);
 		}
 	}
 	void setGraphPrev(const NodeId& v)
 	{
 		if (v != graphPrev.id) {
-			modify();
+			modify("graphPrev");
 			graphPrev.set(v);
 		}
 	}
@@ -71,8 +71,8 @@ public:
 
 	void setName(const string& v)
 	{
-		if (v != name) {
-			modify();
+		if (!equal(v, name)) {
+			modify("name");
 			name = v;
 		}
 	}
@@ -90,8 +90,8 @@ public:
 		if (v && !v->implements(kTypeInterface)) {
 			throw runtime_error("'expr' needs to be of kind {} or implement interface {Type}, got " + v->getClassName() + " instead.");
 		}
-		if (v != expr) {
-			modify();
+		if (!equal(v, expr)) {
+			modify("expr");
 			expr = v;
 		}
 	}
@@ -169,6 +169,16 @@ public:
 		NodeVector v;
 		if (const NodePtr& n = this->getExpr(false)) v.push_back(n);
 		return v;
+	}
+
+	virtual bool equalTo(const NodePtr& o)
+	{
+		const shared_ptr<CallExprArg>& other = boost::dynamic_pointer_cast<CallExprArg>(o);
+		if (!other) return false;
+		if (!equal(this->graphPrev, other->graphPrev)) return false;
+		if (!equal(this->name, other->name)) return false;
+		if (!equal(this->expr, other->expr)) return false;
+		return true;
 	}
 
 	// Interfaces

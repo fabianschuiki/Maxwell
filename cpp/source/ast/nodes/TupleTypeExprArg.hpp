@@ -47,18 +47,18 @@ public:
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {
-			modify();
+			modify("graphPrev");
 			graphPrev.reset();
 		}
 		if (!graphPrev || v->getId() != graphPrev.id) {
-			modify();
+			modify("graphPrev");
 			graphPrev.set(v);
 		}
 	}
 	void setGraphPrev(const NodeId& v)
 	{
 		if (v != graphPrev.id) {
-			modify();
+			modify("graphPrev");
 			graphPrev.set(v);
 		}
 	}
@@ -76,8 +76,8 @@ public:
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet)) {
 			throw runtime_error("'evaluatedType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (v != evaluatedType) {
-			modify();
+		if (!equal(v, evaluatedType)) {
+			modify("evaluatedType");
 			evaluatedType = v;
 		}
 	}
@@ -92,8 +92,8 @@ public:
 
 	void setName(const string& v)
 	{
-		if (v != name) {
-			modify();
+		if (!equal(v, name)) {
+			modify("name");
 			name = v;
 		}
 	}
@@ -111,8 +111,8 @@ public:
 		if (v && !v->isKindOf(kNamedTypeExpr) && !v->isKindOf(kUnionTypeExpr) && !v->isKindOf(kTupleTypeExpr)) {
 			throw runtime_error("'expr' needs to be of kind {NamedTypeExpr, UnionTypeExpr, TupleTypeExpr} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (v != expr) {
-			modify();
+		if (!equal(v, expr)) {
+			modify("expr");
 			expr = v;
 		}
 	}
@@ -207,6 +207,17 @@ public:
 		if (const NodePtr& n = this->getEvaluatedType(false)) v.push_back(n);
 		if (const NodePtr& n = this->getExpr(false)) v.push_back(n);
 		return v;
+	}
+
+	virtual bool equalTo(const NodePtr& o)
+	{
+		const shared_ptr<TupleTypeExprArg>& other = boost::dynamic_pointer_cast<TupleTypeExprArg>(o);
+		if (!other) return false;
+		if (!equal(this->graphPrev, other->graphPrev)) return false;
+		if (!equal(this->evaluatedType, other->evaluatedType)) return false;
+		if (!equal(this->name, other->name)) return false;
+		if (!equal(this->expr, other->expr)) return false;
+		return true;
 	}
 
 	// Interfaces

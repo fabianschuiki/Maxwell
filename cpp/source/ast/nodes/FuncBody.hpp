@@ -41,18 +41,18 @@ public:
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {
-			modify();
+			modify("graphPrev");
 			graphPrev.reset();
 		}
 		if (!graphPrev || v->getId() != graphPrev.id) {
-			modify();
+			modify("graphPrev");
 			graphPrev.set(v);
 		}
 	}
 	void setGraphPrev(const NodeId& v)
 	{
 		if (v != graphPrev.id) {
-			modify();
+			modify("graphPrev");
 			graphPrev.set(v);
 		}
 	}
@@ -67,8 +67,8 @@ public:
 
 	void setStmts(const NodeVector& v)
 	{
-		if (v != stmts) {
-			modify();
+		if (!equal(v, stmts)) {
+			modify("stmts");
 			stmts = v;
 		}
 	}
@@ -154,6 +154,15 @@ public:
 		NodeVector v;
 		v.insert(v.end(), this->stmts.begin(), this->stmts.end());
 		return v;
+	}
+
+	virtual bool equalTo(const NodePtr& o)
+	{
+		const shared_ptr<FuncBody>& other = boost::dynamic_pointer_cast<FuncBody>(o);
+		if (!other) return false;
+		if (!equal(this->graphPrev, other->graphPrev)) return false;
+		if (!equal(this->stmts, other->stmts)) return false;
+		return true;
 	}
 
 	// Interfaces

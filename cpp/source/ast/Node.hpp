@@ -19,6 +19,10 @@ class Encoder;
 class Decoder;
 class Repository;
 
+class Node;
+typedef shared_ptr<Node> NodePtr;
+typedef vector<NodePtr> NodeVector;
+
 /**
  * @brief Base class for all nodes in the abstract syntax tree.
  */
@@ -52,6 +56,9 @@ public:
 	/// Overridden by subclasses to descend into the tree to lookup a node.
 	virtual const shared_ptr<Node>& resolvePath(const string& path) = 0;
 
+	/// Overridden by subclasses to indicate whether %this is equal to %other.
+	virtual bool equalTo(const NodePtr& other) = 0;
+
 	/// Returns the node's id.
 	const NodeId& getId() const { return id; }
 	/// Returns the node's parent node, or an empty pointer if this is a root node.
@@ -69,14 +76,17 @@ protected:
 	Node* parent;
 	Repository* repository;
 
-	void modify();
-	string indent(string in);
+	void modify(const string& attribute);
+	string indent(const string& in);
 
 	string describeVector(const vector<shared_ptr<Node> >& nodes, int depth = -1);
-};
 
-typedef shared_ptr<Node> NodePtr;
-typedef vector<NodePtr> NodeVector;
+	static bool equal(const string& a, const string& b) { return a == b; }
+	static bool equal(const bool& a, const bool& b) { return a == b; }
+	static bool equal(const int& a, const int& b) { return a == b; }
+	static bool equal(const NodePtr& a, const NodePtr& b);
+	static bool equal(const NodeVector& a, const NodeVector& b);
+};
 
 /**
  * @brief Reference to another node in the repository.

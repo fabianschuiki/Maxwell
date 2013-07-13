@@ -45,18 +45,18 @@ public:
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {
-			modify();
+			modify("graphPrev");
 			graphPrev.reset();
 		}
 		if (!graphPrev || v->getId() != graphPrev.id) {
-			modify();
+			modify("graphPrev");
 			graphPrev.set(v);
 		}
 	}
 	void setGraphPrev(const NodeId& v)
 	{
 		if (v != graphPrev.id) {
-			modify();
+			modify("graphPrev");
 			graphPrev.set(v);
 		}
 	}
@@ -71,8 +71,8 @@ public:
 
 	void setOperatorName(const string& v)
 	{
-		if (v != operatorName) {
-			modify();
+		if (!equal(v, operatorName)) {
+			modify("operatorName");
 			operatorName = v;
 		}
 	}
@@ -87,8 +87,8 @@ public:
 
 	void setPostfix(const bool& v)
 	{
-		if (v != postfix) {
-			modify();
+		if (!equal(v, postfix)) {
+			modify("postfix");
 			postfix = v;
 		}
 	}
@@ -100,8 +100,8 @@ public:
 
 	void setExpr(const NodePtr& v)
 	{
-		if (v != expr) {
-			modify();
+		if (!equal(v, expr)) {
+			modify("expr");
 			expr = v;
 		}
 	}
@@ -116,8 +116,8 @@ public:
 
 	void setCallName(const string& v)
 	{
-		if (v != callName) {
-			modify();
+		if (!equal(v, callName)) {
+			modify("callName");
 			callName = v;
 		}
 	}
@@ -132,8 +132,8 @@ public:
 
 	void setCallArgs(const NodeVector& v)
 	{
-		if (v != callArgs) {
-			modify();
+		if (!equal(v, callArgs)) {
+			modify("callArgs");
 			callArgs = v;
 		}
 	}
@@ -145,8 +145,8 @@ public:
 
 	void setCallCandidates(const NodeVector& v)
 	{
-		if (v != callCandidates) {
-			modify();
+		if (!equal(v, callCandidates)) {
+			modify("callCandidates");
 			callCandidates = v;
 		}
 	}
@@ -162,18 +162,18 @@ public:
 			throw runtime_error("'selectedCallCandidate' needs to be of kind {CallCandidate} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (!v && selectedCallCandidate) {
-			modify();
+			modify("selectedCallCandidate");
 			selectedCallCandidate.reset();
 		}
 		if (!selectedCallCandidate || v->getId() != selectedCallCandidate.id) {
-			modify();
+			modify("selectedCallCandidate");
 			selectedCallCandidate.set(v);
 		}
 	}
 	void setSelectedCallCandidate(const NodeId& v)
 	{
 		if (v != selectedCallCandidate.id) {
-			modify();
+			modify("selectedCallCandidate");
 			selectedCallCandidate.set(v);
 		}
 	}
@@ -191,8 +191,8 @@ public:
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet)) {
 			throw runtime_error("'possibleType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (v != possibleType) {
-			modify();
+		if (!equal(v, possibleType)) {
+			modify("possibleType");
 			possibleType = v;
 		}
 	}
@@ -210,8 +210,8 @@ public:
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet)) {
 			throw runtime_error("'requiredType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (v != requiredType) {
-			modify();
+		if (!equal(v, requiredType)) {
+			modify("requiredType");
 			requiredType = v;
 		}
 	}
@@ -229,8 +229,8 @@ public:
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet)) {
 			throw runtime_error("'actualType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (v != actualType) {
-			modify();
+		if (!equal(v, actualType)) {
+			modify("actualType");
 			actualType = v;
 		}
 	}
@@ -424,6 +424,24 @@ public:
 		v.insert(v.end(), this->callArgs.begin(), this->callArgs.end());
 		v.insert(v.end(), this->callCandidates.begin(), this->callCandidates.end());
 		return v;
+	}
+
+	virtual bool equalTo(const NodePtr& o)
+	{
+		const shared_ptr<UnaryOpExpr>& other = boost::dynamic_pointer_cast<UnaryOpExpr>(o);
+		if (!other) return false;
+		if (!equal(this->graphPrev, other->graphPrev)) return false;
+		if (!equal(this->operatorName, other->operatorName)) return false;
+		if (!equal(this->postfix, other->postfix)) return false;
+		if (!equal(this->expr, other->expr)) return false;
+		if (!equal(this->callName, other->callName)) return false;
+		if (!equal(this->callArgs, other->callArgs)) return false;
+		if (!equal(this->callCandidates, other->callCandidates)) return false;
+		if (!equal(this->selectedCallCandidate, other->selectedCallCandidate)) return false;
+		if (!equal(this->possibleType, other->possibleType)) return false;
+		if (!equal(this->requiredType, other->requiredType)) return false;
+		if (!equal(this->actualType, other->actualType)) return false;
+		return true;
 	}
 
 	// Interfaces

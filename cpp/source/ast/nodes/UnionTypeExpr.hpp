@@ -43,18 +43,18 @@ public:
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {
-			modify();
+			modify("graphPrev");
 			graphPrev.reset();
 		}
 		if (!graphPrev || v->getId() != graphPrev.id) {
-			modify();
+			modify("graphPrev");
 			graphPrev.set(v);
 		}
 	}
 	void setGraphPrev(const NodeId& v)
 	{
 		if (v != graphPrev.id) {
-			modify();
+			modify("graphPrev");
 			graphPrev.set(v);
 		}
 	}
@@ -72,8 +72,8 @@ public:
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet)) {
 			throw runtime_error("'evaluatedType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (v != evaluatedType) {
-			modify();
+		if (!equal(v, evaluatedType)) {
+			modify("evaluatedType");
 			evaluatedType = v;
 		}
 	}
@@ -88,8 +88,8 @@ public:
 
 	void setTypes(const NodeVector& v)
 	{
-		if (v != types) {
-			modify();
+		if (!equal(v, types)) {
+			modify("types");
 			types = v;
 		}
 	}
@@ -189,6 +189,16 @@ public:
 		if (const NodePtr& n = this->getEvaluatedType(false)) v.push_back(n);
 		v.insert(v.end(), this->types.begin(), this->types.end());
 		return v;
+	}
+
+	virtual bool equalTo(const NodePtr& o)
+	{
+		const shared_ptr<UnionTypeExpr>& other = boost::dynamic_pointer_cast<UnionTypeExpr>(o);
+		if (!other) return false;
+		if (!equal(this->graphPrev, other->graphPrev)) return false;
+		if (!equal(this->evaluatedType, other->evaluatedType)) return false;
+		if (!equal(this->types, other->types)) return false;
+		return true;
 	}
 
 	// Interfaces

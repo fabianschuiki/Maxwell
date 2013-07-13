@@ -38,15 +38,23 @@ void Node::updateHierarchy(const NodeId& id, Repository* repository, Node* paren
  *
  * The modification is propagated to the parent nodes.
  */
-void Node::modify()
+void Node::modify(const string& attribute)
 {
+	// Propagate the modification upwards to cause the NodeRepository to persist the node again.
 	if (!modified && repository) {
-		modified = true;
-		if (parent) {
-			parent->modify();
-		} else {
-			repository->markModified(id);
+		Node* node = this;
+		while (node) {
+			node->modified = true;
+			if (!node->parent) {
+				repository->markModified(node->id);
+			}
+			node = node->parent;
 		}
+	}
+
+	// Notify the repository about the modification.
+	if (repository) {
+		repository->notifyNodeChanged(id + attribute);
 	}
 }
 
@@ -55,10 +63,10 @@ void Node::modify()
  *
  * This function basically puts two spaces after each newline character.
  */
-string Node::indent(string in)
+string Node::indent(const string& in)
 {
 	string out;
-	for (string::iterator it = in.begin(); it != in.end(); it++) {
+	for (string::const_iterator it = in.begin(); it != in.end(); it++) {
 		out += *it;
 		if (*it == '\n')
 			out += "  ";
@@ -84,6 +92,28 @@ string Node::describeVector(const NodeVector& nodes, int depth)
 	out << "]";
 	return out.str();
 }
+
+bool Node::equal(const NodePtr& a, const NodePtr& b)
+{
+	if (a && b)
+		return a->equalTo(b);
+	if (!a && !b)
+		return true;
+	return false;
+}
+
+bool Node::equal(const NodeVector& a, const NodeVector& b)
+{
+	if (a.empty() != b.empty()) return false;
+	if (a.size() != b.size()) return false;
+	for (int i = 0; i < a.size(); i++) {
+		if (!a[i]->equalTo(b[i]))
+			return false;
+	}
+	return true;
+}
+
+
 
 /**
  * @brief Returns the referenced node, resolving it if necessary.
@@ -130,5 +160,6 @@ void NodeRef::set(const NodeId& id)
  */
 void NodeRef::reset()
 {
-
+	id.clear();
+	resolved.reset();
 }

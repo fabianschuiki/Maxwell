@@ -41,8 +41,8 @@ public:
 		if (v && !v->isKindOf(kTupleType)) {
 			throw runtime_error("'in' needs to be of kind {TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (v != in) {
-			modify();
+		if (!equal(v, in)) {
+			modify("in");
 			in = v;
 		}
 	}
@@ -60,8 +60,8 @@ public:
 		if (v && !v->isKindOf(kTupleType)) {
 			throw runtime_error("'out' needs to be of kind {TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (v != out) {
-			modify();
+		if (!equal(v, out)) {
+			modify("out");
 			out = v;
 		}
 	}
@@ -133,6 +133,15 @@ public:
 		if (const NodePtr& n = this->getIn(false)) v.push_back(n);
 		if (const NodePtr& n = this->getOut(false)) v.push_back(n);
 		return v;
+	}
+
+	virtual bool equalTo(const NodePtr& o)
+	{
+		const shared_ptr<FuncType>& other = boost::dynamic_pointer_cast<FuncType>(o);
+		if (!other) return false;
+		if (!equal(this->in, other->in)) return false;
+		if (!equal(this->out, other->out)) return false;
+		return true;
 	}
 
 	typedef boost::shared_ptr<FuncType> Ptr;

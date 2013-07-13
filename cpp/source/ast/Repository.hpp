@@ -40,6 +40,7 @@ public:
 	void setDependenciesOfStage(const NodeId& id, const string& stage, const set<NodeId>& ids);
 
 	void markModified(const NodeId& id);
+	void notifyNodeChanged(const NodeId& id);
 
 	typedef map<NodeId, string> ExternalNames;
 	ExternalNames getExternalNamesForNodeId(const NodeId& id);

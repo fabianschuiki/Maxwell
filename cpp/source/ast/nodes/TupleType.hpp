@@ -38,8 +38,8 @@ public:
 
 	void setArgs(const NodeVector& v)
 	{
-		if (v != args) {
-			modify();
+		if (!equal(v, args)) {
+			modify("args");
 			args = v;
 		}
 	}
@@ -106,6 +106,14 @@ public:
 		NodeVector v;
 		v.insert(v.end(), this->args.begin(), this->args.end());
 		return v;
+	}
+
+	virtual bool equalTo(const NodePtr& o)
+	{
+		const shared_ptr<TupleType>& other = boost::dynamic_pointer_cast<TupleType>(o);
+		if (!other) return false;
+		if (!equal(this->args, other->args)) return false;
+		return true;
 	}
 
 	typedef boost::shared_ptr<TupleType> Ptr;

@@ -45,18 +45,18 @@ public:
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {
-			modify();
+			modify("graphPrev");
 			graphPrev.reset();
 		}
 		if (!graphPrev || v->getId() != graphPrev.id) {
-			modify();
+			modify("graphPrev");
 			graphPrev.set(v);
 		}
 	}
 	void setGraphPrev(const NodeId& v)
 	{
 		if (v != graphPrev.id) {
-			modify();
+			modify("graphPrev");
 			graphPrev.set(v);
 		}
 	}
@@ -74,8 +74,8 @@ public:
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet)) {
 			throw runtime_error("'evaluatedType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (v != evaluatedType) {
-			modify();
+		if (!equal(v, evaluatedType)) {
+			modify("evaluatedType");
 			evaluatedType = v;
 		}
 	}
@@ -90,8 +90,8 @@ public:
 
 	void setName(const string& v)
 	{
-		if (v != name) {
-			modify();
+		if (!equal(v, name)) {
+			modify("name");
 			name = v;
 		}
 	}
@@ -107,18 +107,18 @@ public:
 	void setDefinition(const NodePtr& v)
 	{
 		if (!v && definition) {
-			modify();
+			modify("definition");
 			definition.reset();
 		}
 		if (!definition || v->getId() != definition.id) {
-			modify();
+			modify("definition");
 			definition.set(v);
 		}
 	}
 	void setDefinition(const NodeId& v)
 	{
 		if (v != definition.id) {
-			modify();
+			modify("definition");
 			definition.set(v);
 		}
 	}
@@ -208,6 +208,17 @@ public:
 		NodeVector v;
 		if (const NodePtr& n = this->getEvaluatedType(false)) v.push_back(n);
 		return v;
+	}
+
+	virtual bool equalTo(const NodePtr& o)
+	{
+		const shared_ptr<NamedTypeExpr>& other = boost::dynamic_pointer_cast<NamedTypeExpr>(o);
+		if (!other) return false;
+		if (!equal(this->graphPrev, other->graphPrev)) return false;
+		if (!equal(this->evaluatedType, other->evaluatedType)) return false;
+		if (!equal(this->name, other->name)) return false;
+		if (!equal(this->definition, other->definition)) return false;
+		return true;
 	}
 
 	// Interfaces

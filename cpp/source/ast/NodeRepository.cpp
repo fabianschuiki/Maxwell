@@ -54,7 +54,7 @@ void NodeRepository::flush()
 void NodeRepository::markModified(const NodeId& id)
 {
 	if (!nodes.count(id)) {
-		throw std::runtime_error("Marking node modified which is not part of the repository.");
+		throw std::runtime_error("Marking node " + id.str() + " as modified which is not part of the repository.");
 	}
 	modified.insert(id);
 }

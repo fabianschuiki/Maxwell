@@ -2,6 +2,7 @@
 #include "NodeId.hpp"
 #include <stdexcept>
 #include <sstream>
+#include <boost/algorithm/string/predicate.hpp>
 
 using ast::NodeId;
 using std::string;
@@ -63,4 +64,16 @@ std::ostream& ast::operator<<(std::ostream& s, const NodeId& id)
 {
 	s << id.str();
 	return s;
+}
+
+bool NodeId::isSuperIdOf(const NodeId& other) const
+{
+	if (source != other.source || root != other.root)
+		return false;
+	return boost::starts_with(other.id, id);
+}
+
+bool NodeId::isSubIdOf(const NodeId& other) const
+{
+	return other.isSuperIdOf(*this);
 }

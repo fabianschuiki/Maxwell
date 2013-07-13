@@ -44,18 +44,18 @@ public:
 			throw runtime_error("'func' needs to be of kind {FuncDef} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (!v && func) {
-			modify();
+			modify("func");
 			func.reset();
 		}
 		if (!func || v->getId() != func.id) {
-			modify();
+			modify("func");
 			func.set(v);
 		}
 	}
 	void setFunc(const NodeId& v)
 	{
 		if (v != func.id) {
-			modify();
+			modify("func");
 			func.set(v);
 		}
 	}
@@ -70,8 +70,8 @@ public:
 
 	void setArgs(const NodeVector& v)
 	{
-		if (v != args) {
-			modify();
+		if (!equal(v, args)) {
+			modify("args");
 			args = v;
 		}
 	}
@@ -83,8 +83,8 @@ public:
 
 	void setFeasible(const bool& v)
 	{
-		if (v != feasible) {
-			modify();
+		if (!equal(v, feasible)) {
+			modify("feasible");
 			feasible = v;
 		}
 	}
@@ -96,8 +96,8 @@ public:
 
 	void setCost(const int& v)
 	{
-		if (v != cost) {
-			modify();
+		if (!equal(v, cost)) {
+			modify("cost");
 			cost = v;
 		}
 	}
@@ -112,8 +112,8 @@ public:
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet)) {
 			throw runtime_error("'possibleType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (v != possibleType) {
-			modify();
+		if (!equal(v, possibleType)) {
+			modify("possibleType");
 			possibleType = v;
 		}
 	}
@@ -131,8 +131,8 @@ public:
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet)) {
 			throw runtime_error("'requiredType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (v != requiredType) {
-			modify();
+		if (!equal(v, requiredType)) {
+			modify("requiredType");
 			requiredType = v;
 		}
 	}
@@ -150,8 +150,8 @@ public:
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet)) {
 			throw runtime_error("'actualType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (v != actualType) {
-			modify();
+		if (!equal(v, actualType)) {
+			modify("actualType");
 			actualType = v;
 		}
 	}
@@ -288,6 +288,20 @@ public:
 		NodeVector v;
 		v.insert(v.end(), this->args.begin(), this->args.end());
 		return v;
+	}
+
+	virtual bool equalTo(const NodePtr& o)
+	{
+		const shared_ptr<CallCandidate>& other = boost::dynamic_pointer_cast<CallCandidate>(o);
+		if (!other) return false;
+		if (!equal(this->func, other->func)) return false;
+		if (!equal(this->args, other->args)) return false;
+		if (!equal(this->feasible, other->feasible)) return false;
+		if (!equal(this->cost, other->cost)) return false;
+		if (!equal(this->possibleType, other->possibleType)) return false;
+		if (!equal(this->requiredType, other->requiredType)) return false;
+		if (!equal(this->actualType, other->actualType)) return false;
+		return true;
 	}
 
 	// Interfaces

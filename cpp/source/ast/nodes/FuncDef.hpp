@@ -43,18 +43,18 @@ public:
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {
-			modify();
+			modify("graphPrev");
 			graphPrev.reset();
 		}
 		if (!graphPrev || v->getId() != graphPrev.id) {
-			modify();
+			modify("graphPrev");
 			graphPrev.set(v);
 		}
 	}
 	void setGraphPrev(const NodeId& v)
 	{
 		if (v != graphPrev.id) {
-			modify();
+			modify("graphPrev");
 			graphPrev.set(v);
 		}
 	}
@@ -69,8 +69,8 @@ public:
 
 	void setName(const string& v)
 	{
-		if (v != name) {
-			modify();
+		if (!equal(v, name)) {
+			modify("name");
 			name = v;
 		}
 	}
@@ -85,8 +85,8 @@ public:
 
 	void setIn(const NodeVector& v)
 	{
-		if (v != in) {
-			modify();
+		if (!equal(v, in)) {
+			modify("in");
 			in = v;
 		}
 	}
@@ -98,8 +98,8 @@ public:
 
 	void setOut(const NodeVector& v)
 	{
-		if (v != out) {
-			modify();
+		if (!equal(v, out)) {
+			modify("out");
 			out = v;
 		}
 	}
@@ -114,8 +114,8 @@ public:
 		if (v && !v->isKindOf(kFuncBody)) {
 			throw runtime_error("'body' needs to be of kind {FuncBody} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (v != body) {
-			modify();
+		if (!equal(v, body)) {
+			modify("body");
 			body = v;
 		}
 	}
@@ -133,8 +133,8 @@ public:
 		if (v && !v->isKindOf(kFuncType)) {
 			throw runtime_error("'type' needs to be of kind {FuncType} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (v != type) {
-			modify();
+		if (!equal(v, type)) {
+			modify("type");
 			type = v;
 		}
 	}
@@ -282,6 +282,19 @@ public:
 		if (const NodePtr& n = this->getBody(false)) v.push_back(n);
 		if (const NodePtr& n = this->getType(false)) v.push_back(n);
 		return v;
+	}
+
+	virtual bool equalTo(const NodePtr& o)
+	{
+		const shared_ptr<FuncDef>& other = boost::dynamic_pointer_cast<FuncDef>(o);
+		if (!other) return false;
+		if (!equal(this->graphPrev, other->graphPrev)) return false;
+		if (!equal(this->name, other->name)) return false;
+		if (!equal(this->in, other->in)) return false;
+		if (!equal(this->out, other->out)) return false;
+		if (!equal(this->body, other->body)) return false;
+		if (!equal(this->type, other->type)) return false;
+		return true;
 	}
 
 	// Interfaces

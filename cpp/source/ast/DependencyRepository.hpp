@@ -25,7 +25,7 @@ public:
 	typedef set<NodeId> Ids;
 	typedef map<string, Ids> IdsByStage;
 	typedef map<NodeId, IdsByStage> StagesById;
-	const IdsByStage& getDependantIds(const NodeId& id);
+	IdsByStage getDependantIds(const NodeId& id);
 
 	void setDependenciesOfStage(const NodeId& id, const string& stage, const Ids& dependingIds);
 	void removeNode(const NodeId& id);

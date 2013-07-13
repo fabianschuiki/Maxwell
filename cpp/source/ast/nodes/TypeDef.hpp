@@ -43,18 +43,18 @@ public:
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {
-			modify();
+			modify("graphPrev");
 			graphPrev.reset();
 		}
 		if (!graphPrev || v->getId() != graphPrev.id) {
-			modify();
+			modify("graphPrev");
 			graphPrev.set(v);
 		}
 	}
 	void setGraphPrev(const NodeId& v)
 	{
 		if (v != graphPrev.id) {
-			modify();
+			modify("graphPrev");
 			graphPrev.set(v);
 		}
 	}
@@ -69,8 +69,8 @@ public:
 
 	void setName(const string& v)
 	{
-		if (v != name) {
-			modify();
+		if (!equal(v, name)) {
+			modify("name");
 			name = v;
 		}
 	}
@@ -125,6 +125,15 @@ public:
 			}
 		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
+	}
+
+	virtual bool equalTo(const NodePtr& o)
+	{
+		const shared_ptr<TypeDef>& other = boost::dynamic_pointer_cast<TypeDef>(o);
+		if (!other) return false;
+		if (!equal(this->graphPrev, other->graphPrev)) return false;
+		if (!equal(this->name, other->name)) return false;
+		return true;
 	}
 
 	// Interfaces

@@ -509,14 +509,14 @@ int main(int argc, char *argv[])
 
 			if (f.ref) {
 				h << "\t\tif (!v && " << f.name << ") {\n";
-				h << "\t\t\tmodify();\n";
+				h << "\t\t\tmodify(\"" << f.name << "\");\n";
 				h << "\t\t\t" << f.name << ".reset();\n";
 				h << "\t\t}\n";
 				h << "\t\tif (!" << f.name << " || v->getId() != " << f.name << ".id) {\n";
 			} else {
-				h << "\t\tif (v != " << f.name << ") {\n";
+				h << "\t\tif (!equal(v, " << f.name << ")) {\n";
 			}
-			h << "\t\t\tmodify();\n";
+			h << "\t\t\tmodify(\"" << f.name << "\");\n";
 			if (f.ref) {
 				h << "\t\t\t" << f.name << ".set(v);\n";
 			} else {
@@ -528,7 +528,7 @@ int main(int argc, char *argv[])
 			if (f.ref) {
 				h << "\tvoid set" << upper << "(const NodeId& v)\n\t{\n";
 				h << "\t\tif (v != " << f.name << ".id) {\n";
-				h << "\t\t\tmodify();\n";
+				h << "\t\t\tmodify(\"" << f.name << "\");\n";
 				h << "\t\t\t" << f.name << ".set(v);\n";
 				h << "\t\t}\n";
 				h << "\t}\n";
@@ -660,6 +660,17 @@ int main(int argc, char *argv[])
 			h << "\t\treturn v;\n";
 			h << "\t}\n\n";
 		}
+
+		// Generate the equalTo() function.
+		h << "\tvirtual bool equalTo(const NodePtr& o)\n\t{\n";
+		h << "\t\tconst shared_ptr<" << node.name << ">& other = boost::dynamic_pointer_cast<" << node.name << ">(o);\n";
+		h << "\t\tif (!other) return false;\n";
+		for (Node::Fields::iterator fit = node.attributes.begin(); fit != node.attributes.end(); fit++) {
+			Node::Field& f = *fit;
+			h << "\t\tif (!equal(this->" << f.name << ", other->" << f.name << ")) return false;\n";
+		}
+		h << "\t\treturn true;\n";
+		h << "\t}\n\n";
 
 		// Generate the interface accessors.
 		if (!node.interfaces.empty()) {

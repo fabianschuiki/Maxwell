@@ -38,8 +38,8 @@ public:
 
 	void setTypes(const NodeVector& v)
 	{
-		if (v != types) {
-			modify();
+		if (!equal(v, types)) {
+			modify("types");
 			types = v;
 		}
 	}
@@ -106,6 +106,14 @@ public:
 		NodeVector v;
 		v.insert(v.end(), this->types.begin(), this->types.end());
 		return v;
+	}
+
+	virtual bool equalTo(const NodePtr& o)
+	{
+		const shared_ptr<TypeSet>& other = boost::dynamic_pointer_cast<TypeSet>(o);
+		if (!other) return false;
+		if (!equal(this->types, other->types)) return false;
+		return true;
 	}
 
 	typedef boost::shared_ptr<TypeSet> Ptr;

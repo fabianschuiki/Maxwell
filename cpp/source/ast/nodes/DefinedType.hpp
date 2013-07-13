@@ -39,18 +39,18 @@ public:
 	void setDefinition(const NodePtr& v)
 	{
 		if (!v && definition) {
-			modify();
+			modify("definition");
 			definition.reset();
 		}
 		if (!definition || v->getId() != definition.id) {
-			modify();
+			modify("definition");
 			definition.set(v);
 		}
 	}
 	void setDefinition(const NodeId& v)
 	{
 		if (v != definition.id) {
-			modify();
+			modify("definition");
 			definition.set(v);
 		}
 	}
@@ -98,6 +98,14 @@ public:
 			}
 		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
+	}
+
+	virtual bool equalTo(const NodePtr& o)
+	{
+		const shared_ptr<DefinedType>& other = boost::dynamic_pointer_cast<DefinedType>(o);
+		if (!other) return false;
+		if (!equal(this->definition, other->definition)) return false;
+		return true;
 	}
 
 	typedef boost::shared_ptr<DefinedType> Ptr;

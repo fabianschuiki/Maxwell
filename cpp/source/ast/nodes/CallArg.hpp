@@ -42,8 +42,8 @@ public:
 
 	void setName(const string& v)
 	{
-		if (v != name) {
-			modify();
+		if (!equal(v, name)) {
+			modify("name");
 			name = v;
 		}
 	}
@@ -62,18 +62,18 @@ public:
 			throw runtime_error("'expr' needs to be of kind {} or implement interface {Type}, got " + v->getClassName() + " instead.");
 		}
 		if (!v && expr) {
-			modify();
+			modify("expr");
 			expr.reset();
 		}
 		if (!expr || v->getId() != expr.id) {
-			modify();
+			modify("expr");
 			expr.set(v);
 		}
 	}
 	void setExpr(const NodeId& v)
 	{
 		if (v != expr.id) {
-			modify();
+			modify("expr");
 			expr.set(v);
 		}
 	}
@@ -128,6 +128,15 @@ public:
 			}
 		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
+	}
+
+	virtual bool equalTo(const NodePtr& o)
+	{
+		const shared_ptr<CallArg>& other = boost::dynamic_pointer_cast<CallArg>(o);
+		if (!other) return false;
+		if (!equal(this->name, other->name)) return false;
+		if (!equal(this->expr, other->expr)) return false;
+		return true;
 	}
 
 	// Interfaces

@@ -47,6 +47,11 @@ public:
 
 	NodeId operator+(string s) const { return NodeId(source, root, id.empty() ? s : id + '.' + s); }
 	NodeId operator+(const char* s) const { return *this + string(s); }
+
+	/// Returns whether this id is a superset of the given %other id.
+	bool isSuperIdOf(const NodeId& other) const;
+	/// Returns whether this id is a subset of the given %other id.
+	bool isSubIdOf(const NodeId& other) const;
 };
 
 std::ostream& operator<<(std::ostream& s, const NodeId& id);

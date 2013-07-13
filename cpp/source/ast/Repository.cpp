@@ -147,6 +147,26 @@ void Repository::markModified(const NodeId& id)
 }
 
 /**
+ * @brief Called by individual nodes upon modification of an attribute.
+ *
+ * Causes the repository to invalidate all nodes that depend on the node %id.
+ */
+void Repository::notifyNodeChanged(const NodeId& id)
+{
+	// Fetch a list of dependencies for this id.
+	const DependencyRepository::IdsByStage& deps = dependencyRepo->getDependantIds(id);
+
+	// Show stuff.
+	for (DependencyRepository::IdsByStage::const_iterator it = deps.begin(); it != deps.end(); it++) {
+		std::cout << "Invalidating " << it->first << " of";
+		for (DependencyRepository::Ids::const_iterator is = it->second.begin(); is != it->second.end(); is++) {
+			std::cout << " " << *is;
+		}
+		std::cout << " (due to changed " << id << ")\n";
+	}
+}
+
+/**
  * @brief Returns a map of external nodes known to the node given by id.
  */
 Repository::ExternalNames Repository::getExternalNamesForNodeId(const NodeId& id)

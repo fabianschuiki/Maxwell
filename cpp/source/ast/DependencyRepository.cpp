@@ -32,17 +32,19 @@ void DependencyRepository::flush()
 
 /**
  * @brief Returns a map of stages and ids that depend on the given node.
- *
- * Throws an exception if the node is not part of the dependency repository.
  */
-const DependencyRepository::IdsByStage& DependencyRepository::getDependantIds(const NodeId& id)
+DependencyRepository::IdsByStage DependencyRepository::getDependantIds(const NodeId& id)
 {
 	if (!loaded) load();
-	StagesById::iterator it = dependencies.find(id);
-	if (it == dependencies.end()) {
-		throw std::runtime_error("Looking for ids depending on " + id.str() + " which is not part of the dependency repository.");
+	IdsByStage result;
+	for (StagesById::iterator it = dependencies.begin(); it != dependencies.end(); it++) {
+		if (id.isSuperIdOf(it->first)) {
+			for (IdsByStage::iterator is = it->second.begin(); is != it->second.end(); is++) {
+				result[is->first].insert(is->second.begin(), is->second.end());
+			}
+		}
 	}
-	return it->second;
+	return result;
 }
 
 /**
@@ -118,6 +120,7 @@ void DependencyRepository::removeNode(int source)
 		// If this id is part of the given source, remove the entire record.
 		if (id.source == source) {
 			dependencies.erase(it_saved);
+			modified = true;
 		} else {
 			// Iterate through all dependencies and remove the ones referring this source.
 			for (IdsByStage::iterator is = stages.begin(); is != stages.end();) {

@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
 	stages.push_back("CalcRequiredTypes");
 	stages.push_back("CalcActualTypes");
 	stages.push_back("NarrowCallCandidates");
+	stages.push_back("SelectCallCandidate");
 
 	// Generate the stages header file.
 	boost::filesystem::path hpath = output;

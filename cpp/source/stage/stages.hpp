@@ -119,4 +119,13 @@ public:
 	NarrowCallCandidates(Repository& r) : Stage(r) {}
 };
 
+class SelectCallCandidate : public Stage
+{
+protected:
+	virtual void process(const NodePtr& node);
+public:
+	string getName() const { return "SelectCallCandidate"; }
+	SelectCallCandidate(Repository& r) : Stage(r) {}
+};
+
 } // namespace stage

@@ -29,7 +29,7 @@ void CalcActualTypes::process(const NodePtr& node)
 	if (possible->isKindOf(kInvalidType) || required->isKindOf(kGenericType)) {
 		actual = possible;
 	} else if (required->isKindOf(kInvalidType)) {
-		throw std::runtime_error("Required type of " + node->getId().str() + " is invalid.");
+		actual = required;
 	} else {
 		actual = match(possible, required, node);
 	}

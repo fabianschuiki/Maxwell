@@ -39,21 +39,26 @@ void CalcRequiredTypes::process(const NodePtr& node)
 		vector<NodeVector> inputTypes(call->getCallArgs().size());
 
 		for (NodeVector::const_iterator it = candidates.begin(); it != candidates.end(); it++) {
-			const shared_ptr<CallCandidate>& candidate = dynamic_pointer_cast<CallCandidate>(*it);
-			const shared_ptr<FuncDef>& func = dynamic_pointer_cast<FuncDef>(candidate->getFunc());
-			const shared_ptr<FuncType>& funcType = dynamic_pointer_cast<FuncType>(func->getType());
+			const CallCandidate::Ptr& candidate = CallCandidate::needFrom(*it);
+			const FuncDef::Ptr& func = FuncDef::needFrom(candidate->getFunc());
+			const FuncType::Ptr& funcType = FuncType::needFrom(func->getType());
 
 			// Calculate the required types for each argument.
-			const shared_ptr<TupleType>& funcTypeIn = dynamic_pointer_cast<TupleType>(funcType->getIn());
+			const TupleType::Ptr& funcTypeIn = TupleType::needFrom(funcType->getIn());
 			const NodeVector& funcTypeArgs = funcTypeIn->getArgs();
 			const NodeVector& args = candidate->getArgs();
 			addDependency(func, "type.in.types");
 
 			for (int i = 0; i < args.size(); i++) {
-				const shared_ptr<TupleTypeArg>& funcTypeArg = dynamic_pointer_cast<TupleTypeArg>(funcTypeArgs[i]);
-				const NodePtr& type = funcTypeArg->getType();
+				NodePtr type;
+				if (i < funcTypeArgs.size()) {
+					const TupleTypeArg::Ptr& funcTypeArg = TupleTypeArg::needFrom(funcTypeArgs[i]);
+					type = funcTypeArg->getType();
+					inputTypes[i].push_back(type);
+				} else {
+					type = NodePtr(new InvalidType);
+				}
 				args[i]->needType()->setRequiredType(type);
-				inputTypes[i].push_back(type);
 			}
 
 			// Calculate the output type of this candidate.
@@ -68,7 +73,7 @@ void CalcRequiredTypes::process(const NodePtr& node)
 			CallArgInterface* arg = args[i]->needCallArg();
 			NodePtr type;
 			if (i < inputTypes.size()) {
-				shared_ptr<TypeSet> typeSet(new TypeSet);
+				TypeSet::Ptr typeSet(new TypeSet);
 				typeSet->setTypes(inputTypes[i]);
 				type = algorithm::type::simplify(typeSet);
 			} else {

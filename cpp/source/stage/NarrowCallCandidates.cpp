@@ -31,6 +31,7 @@ void NarrowCallCandidates::process(const NodePtr& node)
 			if (type->isKindOf(kInvalidType)) {
 				feasible = false;
 			}
+			addDependency(*it, "actualType");
 		}
 
 		// Check feasibility and cost of the candidate's output.
@@ -43,6 +44,7 @@ void NarrowCallCandidates::process(const NodePtr& node)
 				feasible = false;
 			}
 		}
+		addDependency(candidate, "actualType");
 
 		// Store the gathered cost and feasibility information in the candidate node.
 		candidate->setCost(cost);

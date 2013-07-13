@@ -69,7 +69,8 @@ void buildAST(Builder &node)
 
 	node("TypeDef")
 		.intf(graph)
-		.attr("name", "string");
+		.attr("name", "string")
+		.child("exprs", "[#typeExpr]");
 
 	// Expressions
 	node("IdentifierExpr")
@@ -125,6 +126,17 @@ void buildAST(Builder &node)
 		.intf(graph).intf(typeExpr)
 		.attr("name", "string")
 		.child("expr", "#typeExpr");
+	node("StructTypeExpr")
+		.intf(graph).intf(typeExpr)
+		.attr("mode", "string")
+		.child("stmts", "[any]");
+	node("MemberStructStmt")
+		.intf(graph)
+		.attr("name", "string")
+		.child("type", "#typeExpr");
+	node("InheritStructStmt")
+		.intf(graph)
+		.attr("name", "string");
 
 	// Types
 	node("GenericType").describe("str << \"*\";");

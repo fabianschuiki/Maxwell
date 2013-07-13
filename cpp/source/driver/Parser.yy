@@ -51,8 +51,8 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 
 %type <node> func_decl func_arg type_decl body stmt expr call_arg
 %type <node> primary_expr postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr assignment_expr
-%type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg
-%type <nodes> func_args_tuple func_args stmts union_typeexprs tuple_typeexpr_args call_args
+%type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg struct_typeexpr struct_typeexpr_stmt
+%type <nodes> func_args_tuple func_args type_decl_exprs stmts union_typeexprs tuple_typeexpr_args call_args struct_typeexpr_stmts
 %type <varDefExpr> var_expr
 %type <string> any_operator
 %type <funcDef> func_decl_name
@@ -69,6 +69,8 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 %token VAR "var keyword"
 %token TYPE "type keyword"
 %token UNARY "unary keyword"
+%token VALUE "value keyword"
+%token OBJECT "object keyword"
 
 %token LPAREN "opening paranthesis ("
 %token RPAREN "closing paranthesis )"
@@ -198,13 +200,32 @@ func_arg
     }
   ;
 
-type_decl : TYPE IDENTIFIER {
-              TypeDef *t = new TypeDef;
-              t->setName(*$2);
-              $$ = t;
-              delete $2;
-            }
-          ;
+type_decl
+  : TYPE IDENTIFIER {
+      TypeDef *t = new TypeDef;
+      t->setName(*$2);
+      $$ = t;
+      delete $2;
+    }
+  | TYPE IDENTIFIER type_decl_exprs {
+      TypeDef *t = new TypeDef;
+      t->setName(*$2);
+      t->setExprs(*$3);
+      $$ = t;
+      delete $2;
+      delete $3;
+    }
+  ;
+
+type_decl_exprs
+  : typeexpr {
+      $$ = new Nodes;
+      $$->push_back(NodePtr($1));
+    }
+  | type_decl_exprs typeexpr {
+      $1->push_back(NodePtr($2));
+    }
+  ;
 
 body  : LBRACE RBRACE {
           FuncBody *b = new FuncBody;
@@ -416,6 +437,7 @@ nonunion_typeexpr
       delete $1;
     }
   | tuple_typeexpr
+  | struct_typeexpr
   ;
 
 union_typeexpr
@@ -470,6 +492,49 @@ tuple_typeexpr_arg
       t->setName(*$1);
       t->setExpr(shared_ptr<Node>($3));
       $$ = t;
+      delete $1;
+    }
+  ;
+
+struct_typeexpr
+  : VALUE LBRACE struct_typeexpr_stmts RBRACE {
+      StructTypeExpr *s = new StructTypeExpr;
+      s->setMode("value");
+      s->setStmts(*$3);
+      $$ = s;
+      delete $3;
+    }
+  | OBJECT LBRACE struct_typeexpr_stmts RBRACE {
+      StructTypeExpr *s = new StructTypeExpr;
+      s->setMode("object");
+      s->setStmts(*$3);
+      $$ = s;
+      delete $3;
+    }
+  ;
+
+struct_typeexpr_stmts
+  : struct_typeexpr_stmt {
+      $$ = new Nodes;
+      $$->push_back(NodePtr($1));
+    }
+  | struct_typeexpr_stmts struct_typeexpr_stmt {
+      $1->push_back(NodePtr($2));
+    }
+  ;
+
+struct_typeexpr_stmt
+  : IDENTIFIER typeexpr SEMICOLON {
+      MemberStructStmt *s = new MemberStructStmt;
+      s->setName(*$1);
+      s->setType(NodePtr($2));
+      $$ = s;
+      delete $1;
+    }
+  | IDENTIFIER SEMICOLON {
+      InheritStructStmt *s = new InheritStructStmt;
+      s->setName(*$1);
+      $$ = s;
       delete $1;
     }
   ;

@@ -17,17 +17,17 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class TypeDef : public Node
+class InheritStructStmt : public Node
 {
 public:
-	TypeDef() : Node(),
+	InheritStructStmt() : Node(),
 		interfaceGraph(this),
 		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kTypeDef;
+		return k == kInheritStructStmt;
 	}
 
 	virtual bool implements(Interface i)
@@ -38,7 +38,7 @@ public:
 		return false;
 	}
 
-	virtual string getClassName() const { return "TypeDef"; }
+	virtual string getClassName() const { return "InheritStructStmt"; }
 
 	void setGraphPrev(const NodePtr& v)
 	{
@@ -83,27 +83,13 @@ public:
 		return v;
 	}
 
-	void setExprs(const NodeVector& v)
-	{
-		if (!equal(v, exprs)) {
-			modify("exprs");
-			exprs = v;
-		}
-	}
-	const NodeVector& getExprs(bool required = true)
-	{
-		const NodeVector& v = exprs;
-		return v;
-	}
-
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "TypeDef{…}";
+		if (depth == 0) return "InheritStructStmt{…}";
 		stringstream str, b;
-		str << "TypeDef{";
+		str << "InheritStructStmt{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
-		if (!this->exprs.empty()) b << endl << "  \033[1mexprs\033[0m = " << indent(describeVector(this->exprs, depth-1));
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -114,76 +100,39 @@ public:
 	{
 		e.encode(this->graphPrev);
 		e.encode(this->name);
-		e.encode(this->exprs);
 	}
 
 	virtual void decode(Decoder& d)
 	{
 		d.decode(this->graphPrev);
 		d.decode(this->name);
-		d.decode(this->exprs);
 	}
 
 	virtual void updateHierarchyOfChildren()
 	{
-		for (int i = 0; i < this->exprs.size(); i++) {
-			char buf[32]; snprintf(buf, 31, "%i", i);
-			this->exprs[i]->updateHierarchy((id + "exprs") + buf, repository, this);
-		}
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
 	{
 		size_t size = path.size();
-		// .*
-		if (true) {
-			// exprs.*
-			if (size >= 5 && path[0] == 'e' && path[1] == 'x' && path[2] == 'p' && path[3] == 'r' && path[4] == 's') {
-				// exprs
-				if (size == 5) {
-					throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
-				} else if (path[5] == '.') {
-					size_t dot = path.find(".", 6);
-					string idx_str = path.substr(6, dot);
-					int idx = atoi(idx_str.c_str());
-					const NodeVector& a = getExprs();
-					if (idx < 0 || idx >= a.size()) {
-						throw std::runtime_error("Index into array '" + path.substr(0, 5) + "' is out of bounds.");
-					}
-					if (dot == string::npos) {
-						return a[idx];
-					} else {
-						return a[idx]->resolvePath(path.substr(dot + 1));
-					}
-				}
-			}
-			// graphPrev.*
-			if (size >= 9 && path[0] == 'g' && path[1] == 'r' && path[2] == 'a' && path[3] == 'p' && path[4] == 'h' && path[5] == 'P' && path[6] == 'r' && path[7] == 'e' && path[8] == 'v') {
-				// graphPrev
-				if (size == 9) {
-					return getGraphPrev();
-				} else if (path[9] == '.') {
-					return getGraphPrev()->resolvePath(path.substr(10));
-				}
+		// graphPrev.*
+		if (size >= 9 && path[0] == 'g' && path[1] == 'r' && path[2] == 'a' && path[3] == 'p' && path[4] == 'h' && path[5] == 'P' && path[6] == 'r' && path[7] == 'e' && path[8] == 'v') {
+			// graphPrev
+			if (size == 9) {
+				return getGraphPrev();
+			} else if (path[9] == '.') {
+				return getGraphPrev()->resolvePath(path.substr(10));
 			}
 		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
 
-	virtual NodeVector getChildren()
-	{
-		NodeVector v;
-		v.insert(v.end(), this->exprs.begin(), this->exprs.end());
-		return v;
-	}
-
 	virtual bool equalTo(const NodePtr& o)
 	{
-		const shared_ptr<TypeDef>& other = boost::dynamic_pointer_cast<TypeDef>(o);
+		const shared_ptr<InheritStructStmt>& other = boost::dynamic_pointer_cast<InheritStructStmt>(o);
 		if (!other) return false;
 		if (!equal(this->graphPrev, other->graphPrev)) return false;
 		if (!equal(this->name, other->name)) return false;
-		if (!equal(this->exprs, other->exprs)) return false;
 		return true;
 	}
 
@@ -191,17 +140,16 @@ public:
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
-	typedef boost::shared_ptr<TypeDef> Ptr;
-	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<TypeDef>(n); }
-	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<TypeDef>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to TypeDef."); return r; }
+	typedef boost::shared_ptr<InheritStructStmt> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<InheritStructStmt>(n); }
+	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<InheritStructStmt>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to InheritStructStmt."); return r; }
 protected:
 	NodeRef graphPrev;
 	string name;
-	NodeVector exprs;
 
 	// Interfaces
-	GraphInterfaceImpl<TypeDef> interfaceGraph;
-	NamedInterfaceImpl<TypeDef> interfaceNamed;
+	GraphInterfaceImpl<InheritStructStmt> interfaceGraph;
+	NamedInterfaceImpl<InheritStructStmt> interfaceNamed;
 };
 
 } // namespace ast

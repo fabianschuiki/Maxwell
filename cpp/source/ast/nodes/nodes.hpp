@@ -17,9 +17,12 @@
 #include "FuncType.hpp"
 #include "GenericType.hpp"
 #include "IdentifierExpr.hpp"
+#include "InheritStructStmt.hpp"
 #include "InvalidType.hpp"
 #include "MemberAccessExpr.hpp"
+#include "MemberStructStmt.hpp"
 #include "NamedTypeExpr.hpp"
+#include "StructTypeExpr.hpp"
 #include "TupleType.hpp"
 #include "TupleTypeArg.hpp"
 #include "TupleTypeExpr.hpp"
@@ -127,21 +130,42 @@ public:
 					// IdentifierExpr
 					if (size == 14) return NodePtr(new IdentifierExpr);
 				}
-				// InvalidType.*
-				if (size >= 11 && name[1] == 'n' && name[2] == 'v' && name[3] == 'a' && name[4] == 'l' && name[5] == 'i' && name[6] == 'd' && name[7] == 'T' && name[8] == 'y' && name[9] == 'p' && name[10] == 'e') {
-					// InvalidType
-					if (size == 11) return NodePtr(new InvalidType);
+				// In.*
+				if (size >= 2 && name[1] == 'n') {
+					// InheritStructStmt.*
+					if (size >= 17 && name[2] == 'h' && name[3] == 'e' && name[4] == 'r' && name[5] == 'i' && name[6] == 't' && name[7] == 'S' && name[8] == 't' && name[9] == 'r' && name[10] == 'u' && name[11] == 'c' && name[12] == 't' && name[13] == 'S' && name[14] == 't' && name[15] == 'm' && name[16] == 't') {
+						// InheritStructStmt
+						if (size == 17) return NodePtr(new InheritStructStmt);
+					}
+					// InvalidType.*
+					if (size >= 11 && name[2] == 'v' && name[3] == 'a' && name[4] == 'l' && name[5] == 'i' && name[6] == 'd' && name[7] == 'T' && name[8] == 'y' && name[9] == 'p' && name[10] == 'e') {
+						// InvalidType
+						if (size == 11) return NodePtr(new InvalidType);
+					}
 				}
 			}
-			// MemberAccessExpr.*
-			if (size >= 16 && name[0] == 'M' && name[1] == 'e' && name[2] == 'm' && name[3] == 'b' && name[4] == 'e' && name[5] == 'r' && name[6] == 'A' && name[7] == 'c' && name[8] == 'c' && name[9] == 'e' && name[10] == 's' && name[11] == 's' && name[12] == 'E' && name[13] == 'x' && name[14] == 'p' && name[15] == 'r') {
-				// MemberAccessExpr
-				if (size == 16) return NodePtr(new MemberAccessExpr);
+			// Member.*
+			if (size >= 6 && name[0] == 'M' && name[1] == 'e' && name[2] == 'm' && name[3] == 'b' && name[4] == 'e' && name[5] == 'r') {
+				// MemberAccessExpr.*
+				if (size >= 16 && name[6] == 'A' && name[7] == 'c' && name[8] == 'c' && name[9] == 'e' && name[10] == 's' && name[11] == 's' && name[12] == 'E' && name[13] == 'x' && name[14] == 'p' && name[15] == 'r') {
+					// MemberAccessExpr
+					if (size == 16) return NodePtr(new MemberAccessExpr);
+				}
+				// MemberStructStmt.*
+				if (size >= 16 && name[6] == 'S' && name[7] == 't' && name[8] == 'r' && name[9] == 'u' && name[10] == 'c' && name[11] == 't' && name[12] == 'S' && name[13] == 't' && name[14] == 'm' && name[15] == 't') {
+					// MemberStructStmt
+					if (size == 16) return NodePtr(new MemberStructStmt);
+				}
 			}
 			// NamedTypeExpr.*
 			if (size >= 13 && name[0] == 'N' && name[1] == 'a' && name[2] == 'm' && name[3] == 'e' && name[4] == 'd' && name[5] == 'T' && name[6] == 'y' && name[7] == 'p' && name[8] == 'e' && name[9] == 'E' && name[10] == 'x' && name[11] == 'p' && name[12] == 'r') {
 				// NamedTypeExpr
 				if (size == 13) return NodePtr(new NamedTypeExpr);
+			}
+			// StructTypeExpr.*
+			if (size >= 14 && name[0] == 'S' && name[1] == 't' && name[2] == 'r' && name[3] == 'u' && name[4] == 'c' && name[5] == 't' && name[6] == 'T' && name[7] == 'y' && name[8] == 'p' && name[9] == 'e' && name[10] == 'E' && name[11] == 'x' && name[12] == 'p' && name[13] == 'r') {
+				// StructTypeExpr
+				if (size == 14) return NodePtr(new StructTypeExpr);
 			}
 			// T.*
 			if (size >= 1 && name[0] == 'T') {

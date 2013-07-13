@@ -150,19 +150,21 @@ namespace driver
      VAR = 268,
      TYPE = 269,
      UNARY = 270,
-     LPAREN = 271,
-     RPAREN = 272,
-     LBRACE = 273,
-     RBRACE = 274,
-     LBRACK = 275,
-     RBRACK = 276,
-     PIPE = 277,
-     DOT = 278,
-     COMMA = 279,
-     COLON = 280,
-     SEMICOLON = 281,
-     RIGHTARROW = 282,
-     ASSIGN = 283
+     VALUE = 271,
+     OBJECT = 272,
+     LPAREN = 273,
+     RPAREN = 274,
+     LBRACE = 275,
+     RBRACE = 276,
+     LBRACK = 277,
+     RBRACK = 278,
+     PIPE = 279,
+     DOT = 280,
+     COMMA = 281,
+     COLON = 282,
+     SEMICOLON = 283,
+     RIGHTARROW = 284,
+     ASSIGN = 285
    };
 
     };
@@ -238,7 +240,7 @@ namespace driver
     typedef unsigned char token_number_type;
     /* Tables.  */
     /// For a state, the index in \a yytable_ of its portion.
-    static const signed char yypact_[];
+    static const short int yypact_[];
     static const signed char yypact_ninf_;
 
     /// For a state, default rule to reduce.

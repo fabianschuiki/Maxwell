@@ -75,10 +75,12 @@ symbol              {additive_op}|{multiplicative_op}|{relational_op}|[\.:~&''^]
 "\""(\\.|[^\\"\""])*"\""  storeToken; return token::STRING_LITERAL;
 
  /* Keywords */
-"func"  return token::FUNC;
-"var"   return token::VAR;
-"type"  return token::TYPE;
-"unary" return token::UNARY;
+"func"    return token::FUNC;
+"var"     return token::VAR;
+"type"    return token::TYPE;
+"unary"   return token::UNARY;
+"value"   return token::VALUE;
+"object"  return token::OBJECT;
 
 [a-zA-Z_][a-zA-Z0-9_]*    storeToken; return token::IDENTIFIER;
 [0-9]+"."[0-9]*           storeToken; return token::REAL;

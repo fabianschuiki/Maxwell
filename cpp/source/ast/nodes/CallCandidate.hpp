@@ -81,6 +81,32 @@ public:
 		return v;
 	}
 
+	void setFeasible(const bool& v)
+	{
+		if (v != feasible) {
+			modify();
+			feasible = v;
+		}
+	}
+	const bool& getFeasible(bool required = true)
+	{
+		const bool& v = feasible;
+		return v;
+	}
+
+	void setCost(const int& v)
+	{
+		if (v != cost) {
+			modify();
+			cost = v;
+		}
+	}
+	const int& getCost(bool required = true)
+	{
+		const int& v = cost;
+		return v;
+	}
+
 	void setPossibleType(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet)) {
@@ -143,8 +169,10 @@ public:
 		if (depth == 0) return "CallCandidate{…}";
 		stringstream str, b;
 		str << "CallCandidate{";
-		if (this->func) b << endl << "  \033[1mfunc\033[0m = " << "\033[36m" << this->func.id << "\033[0m";
-		if (!this->args.empty()) b << endl << "  \033[1margs\033[0m = " << indent(describeVector(this->args, depth-1)) << "";
+		if (this->func) b << endl << "  \033[1mfunc\033[0m = \033[36m" << this->func.id << "\033[0m";
+		if (!this->args.empty()) b << endl << "  \033[1margs\033[0m = " << indent(describeVector(this->args, depth-1));
+		b << endl << "  \033[1mfeasible\033[0m = \033[34m" << (this->feasible ? "true" : "false") << "\033[0m";
+		b << endl << "  \033[1mcost\033[0m = \033[35m" << this->cost << "\033[0m";
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
@@ -158,6 +186,8 @@ public:
 	{
 		e.encode(this->func);
 		e.encode(this->args);
+		e.encode(this->feasible);
+		e.encode(this->cost);
 		e.encode(this->possibleType);
 		e.encode(this->requiredType);
 		e.encode(this->actualType);
@@ -167,6 +197,8 @@ public:
 	{
 		d.decode(this->func);
 		d.decode(this->args);
+		d.decode(this->feasible);
+		d.decode(this->cost);
 		d.decode(this->possibleType);
 		d.decode(this->requiredType);
 		d.decode(this->actualType);
@@ -263,9 +295,12 @@ public:
 
 	typedef boost::shared_ptr<CallCandidate> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<CallCandidate>(n); }
+	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<CallCandidate>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to CallCandidate."); return r; }
 protected:
 	NodeRef func;
 	NodeVector args;
+	bool feasible;
+	int cost;
 	NodePtr possibleType;
 	NodePtr requiredType;
 	NodePtr actualType;

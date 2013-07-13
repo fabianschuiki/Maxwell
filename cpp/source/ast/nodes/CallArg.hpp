@@ -91,8 +91,8 @@ public:
 		if (depth == 0) return "CallArg{…}";
 		stringstream str, b;
 		str << "CallArg{";
-		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
-		if (this->expr) b << endl << "  \033[1mexpr\033[0m = " << "\033[36m" << this->expr.id << "\033[0m";
+		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
+		if (this->expr) b << endl << "  \033[1mexpr\033[0m = \033[36m" << this->expr.id << "\033[0m";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -136,6 +136,7 @@ public:
 
 	typedef boost::shared_ptr<CallArg> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<CallArg>(n); }
+	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<CallArg>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to CallArg."); return r; }
 protected:
 	string name;
 	NodeRef expr;

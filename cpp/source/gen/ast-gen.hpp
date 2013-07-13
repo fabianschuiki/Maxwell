@@ -41,6 +41,7 @@ public:
 		bool isArray;
 		bool isNode;
 		bool isBool;
+		bool isInt;
 		vector<string> allowedNodes;
 		vector<string> allowedInterfaces;
 	};

@@ -110,6 +110,7 @@ public:
 
 	typedef boost::shared_ptr<TupleType> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<TupleType>(n); }
+	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<TupleType>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to TupleType."); return r; }
 protected:
 	NodeVector args;
 };

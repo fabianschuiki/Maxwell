@@ -10,6 +10,7 @@ add_library(stage
 	CalcPossibleTypes.cpp
 	CalcRequiredTypes.cpp
 	CalcActualTypes.cpp
+	NarrowCallCandidates.cpp
 
 	algorithm/type.cpp
 )

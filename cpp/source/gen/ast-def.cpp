@@ -43,6 +43,8 @@ void buildAST(Builder &node)
 	node("CallCandidate")
 		.attr("func", "&FuncDef")
 		.child("args", "[CallCandidateArg]")
+		.attr("feasible", "bool")
+		.attr("cost", "int")
 		.intf(type);
 	node("CallCandidateArg")
 		.attr("arg", "&@CallArg")

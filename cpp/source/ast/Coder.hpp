@@ -19,6 +19,7 @@ public:
 	virtual void encode(const NodeRef& node) = 0;
 	virtual void encode(const string& str) = 0;
 	virtual void encode(const bool& b) = 0;
+	virtual void encode(const int& i) = 0;
 	virtual void encode(const NodeVector& nodes) = 0;
 };
 
@@ -30,6 +31,7 @@ public:
 	virtual void decode(NodeRef& node) = 0;
 	virtual void decode(string& str) = 0;
 	virtual void decode(bool& b) = 0;
+	virtual void decode(int& i) = 0;
 	virtual void decode(NodeVector& nodes) = 0;
 };
 

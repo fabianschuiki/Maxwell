@@ -130,7 +130,7 @@ public:
 		if (depth == 0) return "CallCandidateArg{…}";
 		stringstream str, b;
 		str << "CallCandidateArg{";
-		if (this->arg) b << endl << "  \033[1marg\033[0m = " << "\033[36m" << this->arg.id << "\033[0m";
+		if (this->arg) b << endl << "  \033[1marg\033[0m = \033[36m" << this->arg.id << "\033[0m";
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
@@ -216,6 +216,7 @@ public:
 
 	typedef boost::shared_ptr<CallCandidateArg> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<CallCandidateArg>(n); }
+	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<CallCandidateArg>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to CallCandidateArg."); return r; }
 protected:
 	NodeRef arg;
 	NodePtr possibleType;

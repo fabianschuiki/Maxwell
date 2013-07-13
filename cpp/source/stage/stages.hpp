@@ -110,4 +110,13 @@ public:
 	NodePtr match(const NodePtr& possible, const NodePtr& required, const NodePtr& node);
 };
 
+class NarrowCallCandidates : public Stage
+{
+protected:
+	virtual void process(const NodePtr& node);
+public:
+	string getName() const { return "NarrowCallCandidates"; }
+	NarrowCallCandidates(Repository& r) : Stage(r) {}
+};
+
 } // namespace stage

@@ -26,12 +26,16 @@ Node::Field Node::makeField(string name, string type, bool child)
 	f.isArray = false;
 	f.isNode = false;
 	f.isBool = false;
+	f.isInt = false;
 	if (type == "string") {
 		f.isString = true;
 		f.cpp_type = "string";
 	} else if (type == "bool") {
 		f.isBool = true;
 		f.cpp_type = "bool";
+	} else if (type == "int") {
+		f.isInt = true;
+		f.cpp_type = "int";
 	} else if (type.size() > 2 && type[0] == '[') {
 		f.isArray = true;
 		f.cpp_type = "NodeVector";
@@ -558,21 +562,28 @@ int main(int argc, char *argv[])
 			h << "\t\tstr << \"" << name << "{\";\n";
 			for (Node::Fields::iterator fit = node.attributes.begin(); fit != node.attributes.end(); fit++) {
 				Node::Field& f = *fit;
-				if (f.isString) {
-					h << "\t\tif (!this->"<<f.name<<".empty()) b << endl << \"  \\033[1m"<<f.name<<"\\033[0m = '\\033[33m\" << this->"<<f.name<<" << \"\\033[0m'\";\n";
-				} else if (f.isBool) {
-					h << "\t\tb << endl << \"  \\033[1m"<<f.name<<"\\033[0m = \\033[34m\" << (this->"<<f.name<<" ? \"true\" : \"false\") << \"\\033[0m\";\n";
-				} else if (f.isNode) {
-					h << "\t\tif (this->" << f.name << ")";
-					h << " b << endl << \"  \\033[1m"<<f.name<<"\\033[0m = \"";
+
+				// Don't print empty strings and arrays.
+				h << "\t\t";
+				if (f.isString || f.isArray) h << "if (!this->" <<f.name<< ".empty()) ";
+				if (f.isNode) h << "if (this->" << f.name << ") ";
+
+				// Print the field name.
+				h << "b << endl << \"  \\033[1m" << f.name << "\\033[0m = ";
+
+				// Print the actual data.
+				if (f.isString) h << "\\033[33m\\\"\" << this->" << f.name << " << \"\\\"\\033[0m\";";
+				if (f.isBool) h << "\\033[34m\" << (this->" << f.name << " ? \"true\" : \"false\") << \"\\033[0m\";";
+				if (f.isInt) h << "\\033[35m\" << this->" << f.name << " << \"\\033[0m\";";
+				if (f.isNode) {
 					if (f.ref) {
-						h << " << \"\\033[36m\" << this->" << f.name << ".id << \"\\033[0m\";\n";
+						h << "\\033[36m\" << this->" << f.name << ".id << \"\\033[0m\";";
 					} else {
-						h << " << indent(this->"<<f.name<<"->describe(depth-1));\n";
+						h << "\" << indent(this->" << f.name << "->describe(depth-1));";
 					}
-				} else if (f.isArray) {
-					h << "\t\tif (!this->"<<f.name<<".empty()) b << endl << \"  \\033[1m"<<f.name<<"\\033[0m = \" << indent(describeVector(this->"<<f.name<<", depth-1)) << \"\";\n";
 				}
+				if (f.isArray) h << "\" << indent(describeVector(this->" << f.name << ", depth-1));";
+				h << "\n";
 			}
 			h << "\t\tstring bs = b.str();\n";
 			h << "\t\tif (!bs.empty()) str << bs << endl;\n";
@@ -663,6 +674,7 @@ int main(int argc, char *argv[])
 		// Generate boost::shared_ptr convenience typedef.
 		h << "\ttypedef boost::shared_ptr<" << node.name << "> Ptr;\n";
 		h << "\ttemplate<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<" << node.name << ">(n); }\n";
+		h << "\ttemplate<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<" << node.name << ">(n); if (!r) throw std::runtime_error(\"Node \" + n->getId().str() + \" cannot be dynamically casted to " << node.name << ".\"); return r; }\n";
 
 		h << "protected:\n";
 		for (Node::Fields::iterator f = node.attributes.begin(); f != node.attributes.end(); f++) {

@@ -102,6 +102,7 @@ public:
 
 	typedef boost::shared_ptr<DefinedType> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<DefinedType>(n); }
+	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<DefinedType>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to DefinedType."); return r; }
 protected:
 	NodeRef definition;
 };

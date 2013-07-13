@@ -65,6 +65,11 @@ public:
 		out << (b ? "1 " : "0 ");
 	}
 
+	virtual void encode(const int& i)
+	{
+		out << i << ' ';
+	}
+
 	virtual void encode(const NodeVector& nodes)
 	{
 		if (nodes.empty()) {
@@ -151,6 +156,11 @@ public:
 		} else {
 			throw std::runtime_error("Boolean value must either be 1 or 0, got '" + rd + "' instead.");
 		}
+	}
+
+	virtual void decode(int& i)
+	{
+		in >> i;
 	}
 
 	virtual void decode(NodeVector& nodes)

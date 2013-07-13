@@ -237,13 +237,13 @@ public:
 		if (depth == 0) return "CallExpr{…}";
 		stringstream str, b;
 		str << "CallExpr{";
-		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = " << "\033[36m" << this->graphPrev.id << "\033[0m";
-		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = '\033[33m" << this->name << "\033[0m'";
+		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
+		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
 		if (this->context) b << endl << "  \033[1mcontext\033[0m = " << indent(this->context->describe(depth-1));
-		if (!this->callName.empty()) b << endl << "  \033[1mcallName\033[0m = '\033[33m" << this->callName << "\033[0m'";
-		if (!this->callArgs.empty()) b << endl << "  \033[1mcallArgs\033[0m = " << indent(describeVector(this->callArgs, depth-1)) << "";
-		if (!this->callCandidates.empty()) b << endl << "  \033[1mcallCandidates\033[0m = " << indent(describeVector(this->callCandidates, depth-1)) << "";
-		if (this->selectedCallCandidate) b << endl << "  \033[1mselectedCallCandidate\033[0m = " << "\033[36m" << this->selectedCallCandidate.id << "\033[0m";
+		if (!this->callName.empty()) b << endl << "  \033[1mcallName\033[0m = \033[33m\"" << this->callName << "\"\033[0m";
+		if (!this->callArgs.empty()) b << endl << "  \033[1mcallArgs\033[0m = " << indent(describeVector(this->callArgs, depth-1));
+		if (!this->callCandidates.empty()) b << endl << "  \033[1mcallCandidates\033[0m = " << indent(describeVector(this->callCandidates, depth-1));
+		if (this->selectedCallCandidate) b << endl << "  \033[1mselectedCallCandidate\033[0m = \033[36m" << this->selectedCallCandidate.id << "\033[0m";
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
@@ -423,6 +423,7 @@ public:
 
 	typedef boost::shared_ptr<CallExpr> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<CallExpr>(n); }
+	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<CallExpr>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to CallExpr."); return r; }
 protected:
 	NodeRef graphPrev;
 	string name;

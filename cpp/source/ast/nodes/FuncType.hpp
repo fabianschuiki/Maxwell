@@ -135,6 +135,8 @@ public:
 		return v;
 	}
 
+	typedef boost::shared_ptr<FuncType> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<FuncType>(n); }
 protected:
 	NodePtr in;
 	NodePtr out;

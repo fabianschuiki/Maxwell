@@ -215,6 +215,8 @@ public:
 	virtual TypeExprInterface* asTypeExpr() { return &this->interfaceTypeExpr; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
+	typedef boost::shared_ptr<NamedTypeExpr> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<NamedTypeExpr>(n); }
 protected:
 	NodeRef graphPrev;
 	NodePtr evaluatedType;

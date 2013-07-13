@@ -288,6 +288,8 @@ public:
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
+	typedef boost::shared_ptr<FuncDef> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<FuncDef>(n); }
 protected:
 	NodeRef graphPrev;
 	string name;

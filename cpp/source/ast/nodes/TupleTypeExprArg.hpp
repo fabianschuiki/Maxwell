@@ -215,6 +215,8 @@ public:
 	virtual CallArgInterface* asCallArg() { return &this->interfaceCallArg; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
+	typedef boost::shared_ptr<TupleTypeExprArg> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<TupleTypeExprArg>(n); }
 protected:
 	NodeRef graphPrev;
 	NodePtr evaluatedType;

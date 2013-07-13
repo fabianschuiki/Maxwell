@@ -9,6 +9,8 @@ add_library(stage
 	FindCallCandidates.cpp
 	CalcPossibleTypes.cpp
 	CalcRequiredTypes.cpp
+
+	algorithm/type.cpp
 )
 
 add_dependencies(stage stage-gen)

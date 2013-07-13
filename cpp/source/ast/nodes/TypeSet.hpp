@@ -108,6 +108,8 @@ public:
 		return v;
 	}
 
+	typedef boost::shared_ptr<TypeSet> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<TypeSet>(n); }
 protected:
 	NodeVector types;
 };

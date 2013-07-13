@@ -214,6 +214,8 @@ public:
 	// Interfaces
 	virtual TypeInterface* asType() { return &this->interfaceType; }
 
+	typedef boost::shared_ptr<CallCandidateArg> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<CallCandidateArg>(n); }
 protected:
 	NodeRef arg;
 	NodePtr possibleType;

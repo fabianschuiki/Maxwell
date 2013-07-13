@@ -660,6 +660,10 @@ int main(int argc, char *argv[])
 			h << "\n";
 		}
 
+		// Generate boost::shared_ptr convenience typedef.
+		h << "\ttypedef boost::shared_ptr<" << node.name << "> Ptr;\n";
+		h << "\ttemplate<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<" << node.name << ">(n); }\n";
+
 		h << "protected:\n";
 		for (Node::Fields::iterator f = node.attributes.begin(); f != node.attributes.end(); f++) {
 			if ((*f).ref) {

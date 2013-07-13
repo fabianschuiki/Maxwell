@@ -195,6 +195,8 @@ public:
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual TypeExprInterface* asTypeExpr() { return &this->interfaceTypeExpr; }
 
+	typedef boost::shared_ptr<TupleTypeExpr> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<TupleTypeExpr>(n); }
 protected:
 	NodeRef graphPrev;
 	NodePtr evaluatedType;

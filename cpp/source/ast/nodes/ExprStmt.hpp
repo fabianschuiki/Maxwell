@@ -148,6 +148,8 @@ public:
 	// Interfaces
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 
+	typedef boost::shared_ptr<ExprStmt> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<ExprStmt>(n); }
 protected:
 	NodeRef graphPrev;
 	NodePtr expr;

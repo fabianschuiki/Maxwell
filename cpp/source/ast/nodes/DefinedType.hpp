@@ -100,6 +100,8 @@ public:
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
 
+	typedef boost::shared_ptr<DefinedType> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<DefinedType>(n); }
 protected:
 	NodeRef definition;
 };

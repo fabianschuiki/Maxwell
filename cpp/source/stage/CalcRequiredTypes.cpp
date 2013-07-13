@@ -1,5 +1,6 @@
 /* Copyright © 2013 Fabian Schuiki */
 #include "stages.hpp"
+#include "algorithm/type.hpp"
 #include <iostream>
 
 using namespace ast;
@@ -67,9 +68,9 @@ void CalcRequiredTypes::process(const NodePtr& node)
 			CallArgInterface* arg = args[i]->needCallArg();
 			NodePtr type;
 			if (i < inputTypes.size()) {
-				shared_ptr<TypeSet> types(new TypeSet);
-				types->setTypes(inputTypes[i]);
-				type = types;
+				shared_ptr<TypeSet> typeSet(new TypeSet);
+				typeSet->setTypes(inputTypes[i]);
+				type = algorithm::type::simplify(typeSet);
 			} else {
 				type = NodePtr(new InvalidType);
 			}

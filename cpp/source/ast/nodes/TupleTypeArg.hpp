@@ -123,6 +123,8 @@ public:
 	// Interfaces
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
+	typedef boost::shared_ptr<TupleTypeArg> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<TupleTypeArg>(n); }
 protected:
 	string name;
 	NodePtr type;

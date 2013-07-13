@@ -1,5 +1,6 @@
 /* Copyright © 2013 Fabian Schuiki */
 #include "stages.hpp"
+#include "algorithm/type.hpp"
 #include <iostream>
 
 using namespace ast;
@@ -67,11 +68,11 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 
 			// Wrap the output types into a TypeSet which may be further processed
 			// through type modification functions.
-			shared_ptr<TypeSet> types(new TypeSet);
-			types->setTypes(outTypes);
+			shared_ptr<TypeSet> typeSet(new TypeSet);
+			typeSet->setTypes(outTypes);
 
 			// Assign this type set as the call's possible type.
-			typeIntf->setPossibleType(types);
+			typeIntf->setPossibleType(algorithm::type::simplify(typeSet));
 		}
 	}
 

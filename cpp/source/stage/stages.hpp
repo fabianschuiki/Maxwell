@@ -4,6 +4,10 @@
 
 namespace stage {
 
+using ast::NodePtr;
+using ast::NodeVector;
+using ast::Repository;
+
 class BuildGraph : public Stage
 {
 protected:
@@ -41,6 +45,18 @@ protected:
 public:
 	string getName() const { return "EvalTypeExprs"; }
 	EvalTypeExprs(Repository& r) : Stage(r) {}
+};
+
+class InitRootTypes : public Stage
+{
+protected:
+	virtual void process(const NodePtr& node);
+public:
+	string getName() const { return "InitRootTypes"; }
+	InitRootTypes(Repository& r) : Stage(r) {}
+
+	/* Copyright © 2013 Fabian Schuiki */
+	void wrapFuncArgs(NodeVector& args, const NodeVector& funcArgs);
 };
 
 class ConfigureCalls : public Stage

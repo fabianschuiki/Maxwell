@@ -21,6 +21,7 @@ public:
 		stageBindIdentifiers(r),
 		stageBindNamedTypes(r),
 		stageEvalTypeExprs(r),
+		stageInitRootTypes(r),
 		stageConfigureCalls(r),
 		stageFindCallCandidates(r),
 		stageCalcPossibleTypes(r)
@@ -37,6 +38,9 @@ public:
 		stageIndices["EvalTypeExprs"] = stages.size();
 		stagesByName["EvalTypeExprs"] = &stageEvalTypeExprs;
 		stages.push_back(&stageEvalTypeExprs);
+		stageIndices["InitRootTypes"] = stages.size();
+		stagesByName["InitRootTypes"] = &stageInitRootTypes;
+		stages.push_back(&stageInitRootTypes);
 		stageIndices["ConfigureCalls"] = stages.size();
 		stagesByName["ConfigureCalls"] = &stageConfigureCalls;
 		stages.push_back(&stageConfigureCalls);
@@ -60,6 +64,7 @@ protected:
 	BindIdentifiers stageBindIdentifiers;
 	BindNamedTypes stageBindNamedTypes;
 	EvalTypeExprs stageEvalTypeExprs;
+	InitRootTypes stageInitRootTypes;
 	ConfigureCalls stageConfigureCalls;
 	FindCallCandidates stageFindCallCandidates;
 	CalcPossibleTypes stageCalcPossibleTypes;

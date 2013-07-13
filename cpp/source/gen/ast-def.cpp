@@ -8,7 +8,7 @@
 void buildAST(Builder &node)
 {
 	// Groups
-	node.groups["type"] = "GenericType|InvalidType|DefinedType|UnionType|TupleType";
+	node.groups["type"] = "GenericType|InvalidType|DefinedType|UnionType|TupleType|FuncType|TypeSet";
 	node.groups["typeExpr"] = "NamedTypeExpr|UnionTypeExpr|TupleTypeExpr";
 
 	// Interfaces
@@ -41,9 +41,9 @@ void buildAST(Builder &node)
 		.attr("name", "string")
 		.attr("expr", "&@Type");
 	node("CallCandidate")
-		.intf(type)
 		.attr("func", "&FuncDef")
-		.child("args", "[CallCandidateArg]");
+		.child("args", "[CallCandidateArg]")
+		.child("type", "#type");
 	node("CallCandidateArg")
 		.intf(type)
 		.attr("arg", "&@CallArg");
@@ -54,7 +54,8 @@ void buildAST(Builder &node)
 		.attr("name", "string")
 		.child("in", "[FuncArg]")
 		.child("out", "[FuncArg]")
-		.child("body", "FuncBody");
+		.child("body", "FuncBody")
+		.child("type", "FuncType");
 	node("FuncArg")
 		.intf(graph).intf(variable);
 	node("FuncBody")
@@ -147,4 +148,19 @@ void buildAST(Builder &node)
 		.attr("name", "string")
 		.child("type", "#type")
 		.describe("if (!name.empty()) str << name << \": \"; str << type->describe(depth-1);");
+	node("FuncType")
+		.child("in", "TupleType")
+		.child("out", "TupleType")
+		.describe("str << in->describe(depth-1) << \"->\" << out->describe(depth-1);");
+	node("TypeSet")
+		.child("types", "[#type]")
+		.describe("\
+			str << \"{\";\
+			bool first = true;\
+			for (NodeVector::iterator it = types.begin(); it != types.end(); it++) {\
+				if (!first) str << \", \";\
+				first = false;\
+				str << (*it)->describe(depth-1);\
+			}\
+			str << \"}\";");
 }

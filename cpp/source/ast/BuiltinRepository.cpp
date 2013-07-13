@@ -41,4 +41,6 @@ BuiltinRepository::NumericTypePtr BuiltinRepository::numericType(string name)
 void BuiltinRepository::build()
 {
 	numericType("Int");
+	numericType("Real");
+	numericType("Complex");
 }

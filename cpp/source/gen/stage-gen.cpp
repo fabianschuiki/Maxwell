@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
 	stages.push_back("BindIdentifiers");
 	stages.push_back("BindNamedTypes");
 	stages.push_back("EvalTypeExprs");
+	stages.push_back("InitRootTypes");
 	stages.push_back("ConfigureCalls");
 	stages.push_back("FindCallCandidates");
 	stages.push_back("CalcPossibleTypes");
@@ -49,6 +50,9 @@ int main(int argc, char *argv[])
 	h << "#pragma once\n";
 	h << "#include \"Stage.hpp\"\n\n";
 	h << "namespace stage {\n\n";
+	h << "using ast::NodePtr;\n";
+	h << "using ast::NodeVector;\n";
+	h << "using ast::Repository;\n\n";
 	for (Stages::iterator it = stages.begin(); it != stages.end(); it++) {
 		h << "class " << *it << " : public Stage\n";
 		h << "{\n";

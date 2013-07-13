@@ -13,6 +13,7 @@
 #include "FuncArg.hpp"
 #include "FuncBody.hpp"
 #include "FuncDef.hpp"
+#include "FuncType.hpp"
 #include "GenericType.hpp"
 #include "IdentifierExpr.hpp"
 #include "InvalidType.hpp"
@@ -23,6 +24,7 @@
 #include "TupleTypeExpr.hpp"
 #include "TupleTypeExprArg.hpp"
 #include "TypeDef.hpp"
+#include "TypeSet.hpp"
 #include "UnaryOpExpr.hpp"
 #include "UnionType.hpp"
 #include "UnionTypeExpr.hpp"
@@ -101,6 +103,11 @@ public:
 					// FuncDef
 					if (size == 7) return NodePtr(new FuncDef);
 				}
+				// FuncType.*
+				if (size >= 8 && name[4] == 'T' && name[5] == 'y' && name[6] == 'p' && name[7] == 'e') {
+					// FuncType
+					if (size == 8) return NodePtr(new FuncType);
+				}
 			}
 			// GenericType.*
 			if (size >= 11 && name[0] == 'G' && name[1] == 'e' && name[2] == 'n' && name[3] == 'e' && name[4] == 'r' && name[5] == 'i' && name[6] == 'c' && name[7] == 'T' && name[8] == 'y' && name[9] == 'p' && name[10] == 'e') {
@@ -152,10 +159,18 @@ public:
 						}
 					}
 				}
-				// TypeDef.*
-				if (size >= 7 && name[1] == 'y' && name[2] == 'p' && name[3] == 'e' && name[4] == 'D' && name[5] == 'e' && name[6] == 'f') {
-					// TypeDef
-					if (size == 7) return NodePtr(new TypeDef);
+				// Type.*
+				if (size >= 4 && name[1] == 'y' && name[2] == 'p' && name[3] == 'e') {
+					// TypeDef.*
+					if (size >= 7 && name[4] == 'D' && name[5] == 'e' && name[6] == 'f') {
+						// TypeDef
+						if (size == 7) return NodePtr(new TypeDef);
+					}
+					// TypeSet.*
+					if (size >= 7 && name[4] == 'S' && name[5] == 'e' && name[6] == 't') {
+						// TypeSet
+						if (size == 7) return NodePtr(new TypeSet);
+					}
 				}
 			}
 			// Un.*

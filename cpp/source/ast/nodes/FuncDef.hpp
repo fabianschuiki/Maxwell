@@ -128,6 +128,25 @@ public:
 		return v;
 	}
 
+	void setType(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kFuncType)) {
+			throw runtime_error("'type' needs to be of kind {FuncType} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
+		if (v != type) {
+			modify();
+			type = v;
+		}
+	}
+	const NodePtr& getType(bool required = true)
+	{
+		const NodePtr& v = type;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have type set to a non-null value.");
+		}
+		return v;
+	}
+
 	virtual string describe(int depth = -1)
 	{
 		if (depth == 0) return "FuncDef{…}";
@@ -138,6 +157,7 @@ public:
 		if (!this->in.empty()) b << endl << "  \033[1min\033[0m = " << indent(describeVector(this->in, depth-1)) << "";
 		if (!this->out.empty()) b << endl << "  \033[1mout\033[0m = " << indent(describeVector(this->out, depth-1)) << "";
 		if (this->body) b << endl << "  \033[1mbody\033[0m = " << indent(this->body->describe(depth-1));
+		if (this->type) b << endl << "  \033[1mtype\033[0m = " << indent(this->type->describe(depth-1));
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -151,6 +171,7 @@ public:
 		e.encode(this->in);
 		e.encode(this->out);
 		e.encode(this->body);
+		e.encode(this->type);
 	}
 
 	virtual void decode(Decoder& d)
@@ -160,6 +181,7 @@ public:
 		d.decode(this->in);
 		d.decode(this->out);
 		d.decode(this->body);
+		d.decode(this->type);
 	}
 
 	virtual void updateHierarchyOfChildren()
@@ -173,6 +195,7 @@ public:
 			this->out[i]->updateHierarchy((id + "out") + buf, repository, this);
 		}
 		if (this->body) this->body->updateHierarchy(id + "body", repository, this);
+		if (this->type) this->type->updateHierarchy(id + "type", repository, this);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -238,6 +261,15 @@ public:
 					}
 				}
 			}
+			// type.*
+			if (size >= 4 && path[0] == 't' && path[1] == 'y' && path[2] == 'p' && path[3] == 'e') {
+				// type
+				if (size == 4) {
+					return getType();
+				} else if (path[4] == '.') {
+					return getType()->resolvePath(path.substr(5));
+				}
+			}
 		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
@@ -248,6 +280,7 @@ public:
 		v.insert(v.end(), this->in.begin(), this->in.end());
 		v.insert(v.end(), this->out.begin(), this->out.end());
 		if (const NodePtr& n = this->getBody(false)) v.push_back(n);
+		if (const NodePtr& n = this->getType(false)) v.push_back(n);
 		return v;
 	}
 
@@ -261,6 +294,7 @@ protected:
 	NodeVector in;
 	NodeVector out;
 	NodePtr body;
+	NodePtr type;
 
 	// Interfaces
 	GraphInterfaceImpl<FuncDef> interfaceGraph;

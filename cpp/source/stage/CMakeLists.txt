@@ -4,6 +4,7 @@ add_library(stage
 	BindIdentifiers.cpp
 	BindNamedTypes.cpp
 	EvalTypeExprs.cpp
+	InitRootTypes.cpp
 	ConfigureCalls.cpp
 	FindCallCandidates.cpp
 	CalcPossibleTypes.cpp

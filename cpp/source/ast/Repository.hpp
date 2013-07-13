@@ -6,6 +6,7 @@
 #include "BuiltinRepository.hpp"
 #include "SymbolRepository.hpp"
 #include "DependencyRepository.hpp"
+#include "NodeFlagsRepository.hpp"
 #include <boost/smart_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/filesystem.hpp>
@@ -39,6 +40,11 @@ public:
 	// Dependency store.
 	void setDependenciesOfStage(const NodeId& id, const string& stage, const set<NodeId>& ids);
 
+	// Flags store.
+	void addFlag(const NodeId& id, int flag);
+	void removeFlag(const NodeId& id, int flag);
+	bool isFlagSet(const NodeId& id, int flag);
+
 	void markModified(const NodeId& id);
 	void notifyNodeChanged(const NodeId& id);
 
@@ -54,6 +60,8 @@ protected:
 	scoped_ptr<SymbolRepository> symbolRepo;
 	/// Repository maintaining the dependencies of nodes.
 	scoped_ptr<DependencyRepository> dependencyRepo;
+	/// Repository maintaining a set of flags per node.
+	scoped_ptr<NodeFlagsRepository> nodeFlagsRepo;
 
 	void nodeLoaded(const NodeId& id, const NodePtr& node);
 

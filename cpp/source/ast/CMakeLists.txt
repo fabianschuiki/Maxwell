@@ -8,6 +8,7 @@ add_library(ast
 	BuiltinRepository.cpp
 	SymbolRepository.cpp
 	DependencyRepository.cpp
+	NodeFlagsRepository.cpp
 )
 
 add_dependencies(ast ast-gen)

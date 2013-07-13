@@ -57,7 +57,8 @@ int main(int argc, char *argv[])
 	h << "using ast::NodePtr;\n";
 	h << "using ast::NodeVector;\n";
 	h << "using ast::Repository;\n\n";
-	for (Stages::iterator it = stages.begin(); it != stages.end(); it++) {
+	int id = 1;
+	for (Stages::iterator it = stages.begin(); it != stages.end(); it++, id++) {
 		h << "class " << *it << " : public Stage\n";
 		h << "{\n";
 		
@@ -66,6 +67,7 @@ int main(int argc, char *argv[])
 
 		h << "public:\n";
 		h << "\tstring getName() const { return \"" << *it << "\"; }\n";
+		h << "\tint getId() const { return " << id << "; }\n";
 		h << "\t" << *it << "(Repository& r) : Stage(r) {}\n";
 
 		// Custom header fields.
@@ -119,6 +121,15 @@ int main(int argc, char *argv[])
 	mh << "\tStages stages;\n";
 	mh << "\tStageIndices stageIndices;\n";
 	mh << "\tStagesByName stagesByName;\n\n";
+
+	// Stage ids.
+	mh << "\tstatic int getIdOfStage(const string& name)\n\t{\n";
+	id = 1;
+	for (Stages::iterator it = stages.begin(); it != stages.end(); it++, id++) {
+		mh << "\t\tif (name == \"" << *it << "\") return " << id << ";\n";
+	}
+	mh << "\t\tthrow std::runtime_error(\"Stage \" + name + \" does not exist.\");\n";
+	mh << "\t}\n";
 
 	mh << "protected:\n";
 	for (Stages::iterator it = stages.begin(); it != stages.end(); it++) {

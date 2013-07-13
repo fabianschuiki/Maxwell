@@ -14,6 +14,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "BuildGraph"; }
+	int getId() const { return 1; }
 	BuildGraph(Repository& r) : Stage(r) {}
 
 	/* Copyright © 2013 Fabian Schuiki */
@@ -26,6 +27,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "BindIdentifiers"; }
+	int getId() const { return 2; }
 	BindIdentifiers(Repository& r) : Stage(r) {}
 };
 
@@ -35,6 +37,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "BindNamedTypes"; }
+	int getId() const { return 3; }
 	BindNamedTypes(Repository& r) : Stage(r) {}
 };
 
@@ -44,6 +47,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "EvalTypeExprs"; }
+	int getId() const { return 4; }
 	EvalTypeExprs(Repository& r) : Stage(r) {}
 };
 
@@ -53,6 +57,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "InitRootTypes"; }
+	int getId() const { return 5; }
 	InitRootTypes(Repository& r) : Stage(r) {}
 
 	/* Copyright © 2013 Fabian Schuiki */
@@ -65,6 +70,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "ConfigureCalls"; }
+	int getId() const { return 6; }
 	ConfigureCalls(Repository& r) : Stage(r) {}
 };
 
@@ -74,6 +80,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "FindCallCandidates"; }
+	int getId() const { return 7; }
 	FindCallCandidates(Repository& r) : Stage(r) {}
 };
 
@@ -83,6 +90,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "CalcPossibleTypes"; }
+	int getId() const { return 8; }
 	CalcPossibleTypes(Repository& r) : Stage(r) {}
 
 	/* Copyright © 2013 Fabian Schuiki */
@@ -95,6 +103,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "CalcRequiredTypes"; }
+	int getId() const { return 9; }
 	CalcRequiredTypes(Repository& r) : Stage(r) {}
 };
 
@@ -104,6 +113,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "CalcActualTypes"; }
+	int getId() const { return 10; }
 	CalcActualTypes(Repository& r) : Stage(r) {}
 
 	/* Copyright © 2013 Fabian Schuiki */
@@ -116,6 +126,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "NarrowCallCandidates"; }
+	int getId() const { return 11; }
 	NarrowCallCandidates(Repository& r) : Stage(r) {}
 };
 
@@ -125,6 +136,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "SelectCallCandidate"; }
+	int getId() const { return 12; }
 	SelectCallCandidate(Repository& r) : Stage(r) {}
 };
 

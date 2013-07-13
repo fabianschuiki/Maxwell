@@ -1,8 +1,10 @@
 /* Copyright © 2013 Fabian Schuiki */
 #include "Repository.hpp"
 #include "nodes/interfaces.hpp"
+#include <stage/StageManager.hpp>
 #include <iostream>
 #include <boost/bind.hpp>
+#include <boost/lexical_cast.hpp>
 
 using ast::Repository;
 using ast::SourceRepository;
@@ -11,16 +13,19 @@ using ast::NodePtr;
 using ast::NodeId;
 using ast::NamedInterface;
 using boost::scoped_ptr;
+using boost::lexical_cast;
 
 Repository::Repository(const boost::filesystem::path& path) : path(path), builtinRepository(*this)
 {
 	boost::filesystem::path psrc = path; psrc /= "sources";
 	boost::filesystem::path psym = path; psym /= "symbols";
 	boost::filesystem::path pdep = path; pdep /= "dependencies";
+	boost::filesystem::path pflg = path; pflg /= "flags";
 	sourceRepo.reset(new SourceRepository(psrc));
 	nodeRepo.reset(new NodeRepository(path));
 	symbolRepo.reset(new SymbolRepository(psym));
 	dependencyRepo.reset(new DependencyRepository(pdep));
+	nodeFlagsRepo.reset(new NodeFlagsRepository(pflg));
 
 	// Configure the required callbacks.
 	nodeRepo->onNodeLoaded = boost::bind(&Repository::nodeLoaded, this, _1, _2);
@@ -42,6 +47,7 @@ void Repository::flush()
 	nodeRepo->flush();
 	symbolRepo->flush();
 	dependencyRepo->flush();
+	nodeFlagsRepo->flush();
 }
 
 /**
@@ -110,6 +116,7 @@ int Repository::unregisterSource(const string& s)
 		nodeRepo->removeNode(id);
 		symbolRepo->removeExportedSymbol(id);
 		dependencyRepo->removeNode(id);
+		nodeFlagsRepo->removeFlags(id);
 	}
 	return id;
 }
@@ -125,6 +132,7 @@ void Repository::unregisterSource(int i)
 	nodeRepo->removeNode(i);
 	symbolRepo->removeExportedSymbol(i);
 	dependencyRepo->removeNode(i);
+	nodeFlagsRepo->removeFlags(i);
 }
 
 /**
@@ -153,16 +161,11 @@ void Repository::markModified(const NodeId& id)
  */
 void Repository::notifyNodeChanged(const NodeId& id)
 {
-	// Fetch a list of dependencies for this id.
 	const DependencyRepository::IdsByStage& deps = dependencyRepo->getDependantIds(id);
-
-	// Show stuff.
 	for (DependencyRepository::IdsByStage::const_iterator it = deps.begin(); it != deps.end(); it++) {
-		std::cout << "Invalidating " << it->first << " of";
 		for (DependencyRepository::Ids::const_iterator is = it->second.begin(); is != it->second.end(); is++) {
-			std::cout << " " << *is;
+			nodeFlagsRepo->removeFlag(*is, stage::StageManager::getIdOfStage(it->first));
 		}
-		std::cout << " (due to changed " << id << ")\n";
 	}
 }
 
@@ -183,5 +186,42 @@ Repository::ExternalNames Repository::getExternalNamesForNodeId(const NodeId& id
  */
 void Repository::setDependenciesOfStage(const NodeId& id, const string& stage, const set<NodeId>& ids)
 {
+	if (!nodeRepo->hasNode(id)) {
+		throw std::runtime_error("Setting dependencies of stage " + stage + " for node id " + id.str() + " which is not part of the repository.");
+	}
 	dependencyRepo->setDependenciesOfStage(id, stage, ids);
+}
+
+
+/**
+ * @brief Adds the given flag for the given node id.
+ */
+void Repository::addFlag(const NodeId& id, int flag)
+{
+	if (!nodeRepo->hasNode(id)) {
+		throw std::runtime_error("Adding flag " + lexical_cast<string>(flag) + " to node id " + id.str() + " which is not part of the repository.");
+	}
+	nodeFlagsRepo->addFlag(id, flag);
+}
+
+/**
+ * @brief Removes the given flag from the given ndoe id.
+ */
+void Repository::removeFlag(const NodeId& id, int flag)
+{
+	if (!nodeRepo->hasNode(id)) {
+		throw std::runtime_error("Removing flag " + lexical_cast<string>(flag) + " from node id " + id.str() + " which is not part of the repository.");
+	}
+	nodeFlagsRepo->removeFlag(id, flag);
+}
+
+/**
+ * @brief Returns true if the given flag is set for the given node id.
+ */
+bool Repository::isFlagSet(const NodeId& id, int flag)
+{
+	if (!nodeRepo->hasNode(id)) {
+		throw std::runtime_error("Querying flag " + lexical_cast<string>(flag) + " of node id " + id.str() + " which is not part of the repository.");
+	}
+	return nodeFlagsRepo->isFlagSet(id, flag);
 }

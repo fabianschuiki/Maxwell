@@ -75,6 +75,22 @@ public:
 	StageIndices stageIndices;
 	StagesByName stagesByName;
 
+	static int getIdOfStage(const string& name)
+	{
+		if (name == "BuildGraph") return 1;
+		if (name == "BindIdentifiers") return 2;
+		if (name == "BindNamedTypes") return 3;
+		if (name == "EvalTypeExprs") return 4;
+		if (name == "InitRootTypes") return 5;
+		if (name == "ConfigureCalls") return 6;
+		if (name == "FindCallCandidates") return 7;
+		if (name == "CalcPossibleTypes") return 8;
+		if (name == "CalcRequiredTypes") return 9;
+		if (name == "CalcActualTypes") return 10;
+		if (name == "NarrowCallCandidates") return 11;
+		if (name == "SelectCallCandidate") return 12;
+		throw std::runtime_error("Stage " + name + " does not exist.");
+	}
 protected:
 	BuildGraph stageBuildGraph;
 	BindIdentifiers stageBindIdentifiers;

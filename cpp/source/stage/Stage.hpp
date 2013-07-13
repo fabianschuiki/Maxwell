@@ -31,6 +31,8 @@ public:
 
 	/// Overridden by subclasses to return the stage name.
 	virtual string getName() const = 0;
+	/// Overridden by subclasses to return the stage identifier.
+	virtual int getId() const = 0;
 
 	void run(const NodePtr& node);
 	void run(const NodeId& id);

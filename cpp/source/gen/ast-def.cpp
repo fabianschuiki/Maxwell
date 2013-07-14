@@ -9,7 +9,8 @@ void buildAST(Builder &node)
 {
 	// Groups
 	node.groups["type"] = "GenericType|InvalidType|DefinedType|UnionType|TupleType|FuncType|TypeSet";
-	node.groups["typeExpr"] = "NamedTypeExpr|UnionTypeExpr|TupleTypeExpr";
+	node.groups["typeExpr"] = "NamedTypeExpr|UnionTypeExpr|TupleTypeExpr|QualifiedTypeExpr";
+	node.groups["qualifier"] = "StructureQualifier|InterfaceQualifier|NativeQualifier|RangeQualifier";
 
 	// Interfaces
 	Node& graph = node("@Graph")
@@ -70,7 +71,7 @@ void buildAST(Builder &node)
 	node("TypeDef")
 		.intf(graph)
 		.attr("name", "string")
-		.child("exprs", "[#typeExpr]");
+		.child("type", "#typeExpr");
 
 	// Expressions
 	node("IdentifierExpr")
@@ -126,17 +127,30 @@ void buildAST(Builder &node)
 		.intf(graph).intf(typeExpr)
 		.attr("name", "string")
 		.child("expr", "#typeExpr");
-	node("StructTypeExpr")
+	node("QualifiedTypeExpr")
 		.intf(graph).intf(typeExpr)
+		.child("exprs", "[#qualifier]");
+
+	// Type Qualifiers
+	node("StructureQualifier")
+		.intf(graph)
 		.attr("mode", "string")
-		.child("stmts", "[any]");
-	node("MemberStructStmt")
+		.child("stmts", "[StructureQualifierMember]");
+	node("StructureQualifierMember")
 		.intf(graph)
 		.attr("name", "string")
 		.child("type", "#typeExpr");
-	node("InheritStructStmt")
+	node("InterfaceQualifier")
+		.intf(graph)
+		.child("stmts", "[any]");
+	node("NativeQualifier")
 		.intf(graph)
 		.attr("name", "string");
+	node("RangeQualifier")
+		.intf(graph)
+		.attr("name", "string")
+		.attr("min", "string")
+		.attr("max", "string");
 
 	// Types
 	node("GenericType").describe("str << \"*\";");

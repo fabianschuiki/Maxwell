@@ -45,21 +45,30 @@ typedef std::vector<shared_ptr<Node> > Nodes;
     Nodes *nodes;
     VarDefExpr *varDefExpr;
     FuncDef *funcDef;
+    TypeDef *typeDef;
+    StructureQualifier *structureQualifier;
+    RangeQualifier *rangeQualifier;
     int token;
     int symbol;
 }
 
 %type <node> func_decl func_arg type_decl body stmt expr call_arg
 %type <node> primary_expr postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr assignment_expr
-%type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg struct_typeexpr struct_typeexpr_stmt
-%type <nodes> func_args_tuple func_args type_decl_exprs stmts union_typeexprs tuple_typeexpr_args call_args struct_typeexpr_stmts
+%type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg qualified_typeexpr qualified_typeexpr_qualifier
+%type <nodes> func_args_tuple func_args stmts union_typeexprs tuple_typeexpr_args call_args qualified_typeexpr_qualifiers
+
+%type <node> structure_qualifier structure_qualifier_stmt interface_qualifier interface_qualifier_stmt native_qualifier range_qualifier
+%type <nodes> structure_qualifier_stmts interface_qualifier_stmts
+
 %type <varDefExpr> var_expr
 %type <string> any_operator
 %type <funcDef> func_decl_name
+%type <typeDef> type_decl_name
+%type <structureQualifier> structure_qualifier_decl
+%type <rangeQualifier> range_qualifier_decl
 
 %token <string> IDENTIFIER "identifier"
-%token <string> REAL "real number constant"
-%token <string> INTEGER "integer number constant"
+%token <string> NUMBER "number constant"
 %token <string> STRING_LITERAL "string constant"
 %token <string> MULTIPLICATIVE_OPERATOR ADDITIVE_OPERATOR RELATIONAL_OPERATOR OPERATOR
 %token <symbol> SYMBOL "symbol"
@@ -71,6 +80,9 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 %token UNARY "unary keyword"
 %token VALUE "value keyword"
 %token OBJECT "object keyword"
+%token INTERFACE "interface keyword"
+%token NATIVE "native keyword"
+%token RANGE "range keyword"
 
 %token LPAREN "opening paranthesis ("
 %token RPAREN "closing paranthesis )"
@@ -86,7 +98,7 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 %token RIGHTARROW "right arrow ->"
 %token ASSIGN "assignment operator ="
 
-%destructor { delete $$; } IDENTIFIER REAL INTEGER STRING_LITERAL OPERATOR
+%destructor { delete $$; } IDENTIFIER NUMBER STRING_LITERAL MULTIPLICATIVE_OPERATOR ADDITIVE_OPERATOR RELATIONAL_OPERATOR OPERATOR
 
 %start root
 
@@ -123,6 +135,7 @@ root_stmt : func_decl {
             }
           ;
 
+/* Function Declaration*/
 func_decl : func_decl_name body {
               $1->setBody(shared_ptr<Node>($2));
             }
@@ -200,30 +213,22 @@ func_arg
     }
   ;
 
+/* Type Declaration */
 type_decl
+  : type_decl_name { $$ = $1; }
+  | type_decl_name typeexpr {
+      $1->setType(NodePtr($2));
+    }
+  ;
+
+type_decl_name
+  /*: TYPE { $$ = new TypeDef; }
+  | TYPE IDENTIFIER {*/
   : TYPE IDENTIFIER {
       TypeDef *t = new TypeDef;
       t->setName(*$2);
       $$ = t;
       delete $2;
-    }
-  | TYPE IDENTIFIER type_decl_exprs {
-      TypeDef *t = new TypeDef;
-      t->setName(*$2);
-      t->setExprs(*$3);
-      $$ = t;
-      delete $2;
-      delete $3;
-    }
-  ;
-
-type_decl_exprs
-  : typeexpr {
-      $$ = new Nodes;
-      $$->push_back(NodePtr($1));
-    }
-  | type_decl_exprs typeexpr {
-      $1->push_back(NodePtr($2));
     }
   ;
 
@@ -423,7 +428,15 @@ var_expr  : VAR IDENTIFIER typeexpr {
             }
           ;
 
-/* TYPE EXPRESSIONS */
+
+/*
+ * ----------------------------------------------------------------------------
+ *
+ *    TYPE EXPRESSIONS
+ *
+ * ----------------------------------------------------------------------------
+ */
+
 typeexpr
   : nonunion_typeexpr
   | union_typeexpr
@@ -437,9 +450,10 @@ nonunion_typeexpr
       delete $1;
     }
   | tuple_typeexpr
-  | struct_typeexpr
+  | qualified_typeexpr
   ;
 
+/* Union Type Expression */
 union_typeexpr
   : union_typeexprs {
       UnionTypeExpr *t = new UnionTypeExpr;
@@ -460,7 +474,7 @@ union_typeexprs
     }
   ;
 
-
+/* Tuple Type Expression */
 tuple_typeexpr
   : LPAREN tuple_typeexpr_args RPAREN {
       TupleTypeExpr *t = new TupleTypeExpr;
@@ -496,46 +510,129 @@ tuple_typeexpr_arg
     }
   ;
 
-struct_typeexpr
-  : VALUE LBRACE struct_typeexpr_stmts RBRACE {
-      StructTypeExpr *s = new StructTypeExpr;
-      s->setMode("value");
-      s->setStmts(*$3);
-      $$ = s;
-      delete $3;
-    }
-  | OBJECT LBRACE struct_typeexpr_stmts RBRACE {
-      StructTypeExpr *s = new StructTypeExpr;
-      s->setMode("object");
-      s->setStmts(*$3);
-      $$ = s;
-      delete $3;
+/* Qualified Type Expr */
+qualified_typeexpr
+  : qualified_typeexpr_qualifiers {
+      QualifiedTypeExpr *q = new QualifiedTypeExpr;
+      q->setExprs(*$1);
+      $$ = q;
+      delete $1;
     }
   ;
 
-struct_typeexpr_stmts
-  : struct_typeexpr_stmt {
+qualified_typeexpr_qualifiers
+  : qualified_typeexpr_qualifier {
       $$ = new Nodes;
       $$->push_back(NodePtr($1));
     }
-  | struct_typeexpr_stmts struct_typeexpr_stmt {
+  | qualified_typeexpr_qualifiers qualified_typeexpr_qualifier {
       $1->push_back(NodePtr($2));
     }
   ;
 
-struct_typeexpr_stmt
-  : IDENTIFIER typeexpr SEMICOLON {
-      MemberStructStmt *s = new MemberStructStmt;
+
+/* TYPE QUALIFIERS */
+
+qualified_typeexpr_qualifier
+  : structure_qualifier
+  | interface_qualifier
+  | native_qualifier
+  | range_qualifier
+  ;
+
+/* Structure */
+structure_qualifier
+  : structure_qualifier_decl LBRACE RBRACE { $$ = $1; }
+  | structure_qualifier_decl LBRACE structure_qualifier_stmts RBRACE {
+      $1->setStmts(*$3);
+      delete $3;
+    }
+  ;
+
+structure_qualifier_decl
+  : VALUE {
+      StructureQualifier *s = new StructureQualifier;
+      s->setMode("value");
+      $$ = s;
+    }
+  | OBJECT {
+      StructureQualifier *s = new StructureQualifier;
+      s->setMode("object");
+      $$ = s;
+    }
+  ;
+
+structure_qualifier_stmts
+  : structure_qualifier_stmt { $$ = new Nodes; $$->push_back(NodePtr($1)); }
+  | structure_qualifier_stmts structure_qualifier_stmt { $1->push_back(NodePtr($2)); }
+  ;
+
+structure_qualifier_stmt
+  : IDENTIFIER SEMICOLON {
+      StructureQualifierMember *s = new StructureQualifierMember;
+      s->setName(*$1);
+      $$ = s;
+      delete $1;
+    }
+  | IDENTIFIER typeexpr SEMICOLON {
+      StructureQualifierMember *s = new StructureQualifierMember;
       s->setName(*$1);
       s->setType(NodePtr($2));
       $$ = s;
       delete $1;
     }
-  | IDENTIFIER SEMICOLON {
-      InheritStructStmt *s = new InheritStructStmt;
-      s->setName(*$1);
-      $$ = s;
-      delete $1;
+  ;
+
+/* Interface */
+interface_qualifier
+  : INTERFACE LBRACE RBRACE {
+      InterfaceQualifier *i = new InterfaceQualifier;
+      $$ = i;
+    }
+  | INTERFACE LBRACE interface_qualifier_stmts RBRACE {
+      InterfaceQualifier *i = new InterfaceQualifier;
+      i->setStmts(*$3);
+      $$ = i;
+      delete $3;
+    }
+  ;
+
+interface_qualifier_stmts
+  : interface_qualifier_stmt { $$ = new Nodes; $$->push_back(NodePtr($1)); }
+  | interface_qualifier_stmts interface_qualifier_stmt { $1->push_back(NodePtr($2)); }
+  ;
+
+interface_qualifier_stmt
+  : IDENTIFIER { $$ = new InvalidType; delete $1; /* dummy */ }
+  ;
+
+/* Native */
+native_qualifier
+  : NATIVE IDENTIFIER {
+      NativeQualifier *n = new NativeQualifier;
+      n->setName(*$2);
+      $$ = n;
+      delete $2;
+    }
+  ;
+
+/* Range */
+range_qualifier
+  : range_qualifier_decl { $$ = $1; }
+  | range_qualifier_decl LPAREN NUMBER COMMA NUMBER RPAREN {
+      $1->setMin(*$3);
+      $1->setMax(*$5);
+      delete $3;
+      delete $5;
+    }
+  ;
+
+range_qualifier_decl
+  : RANGE IDENTIFIER {
+      RangeQualifier *r = new RangeQualifier;
+      r->setName(*$2);
+      $$ = r;
+      delete $2;
     }
   ;
 

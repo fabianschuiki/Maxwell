@@ -17,17 +17,17 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class TypeDef : public Node
+class StructureQualifierMember : public Node
 {
 public:
-	TypeDef() : Node(),
+	StructureQualifierMember() : Node(),
 		interfaceGraph(this),
 		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kTypeDef;
+		return k == kStructureQualifierMember;
 	}
 
 	virtual bool implements(Interface i)
@@ -38,7 +38,7 @@ public:
 		return false;
 	}
 
-	virtual string getClassName() const { return "TypeDef"; }
+	virtual string getClassName() const { return "StructureQualifierMember"; }
 
 	void setGraphPrev(const NodePtr& v)
 	{
@@ -104,9 +104,9 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "TypeDef{…}";
+		if (depth == 0) return "StructureQualifierMember{…}";
 		stringstream str, b;
-		str << "TypeDef{";
+		str << "StructureQualifierMember{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
 		if (this->type) b << endl << "  \033[1mtype\033[0m = " << indent(this->type->describe(depth-1));
@@ -171,7 +171,7 @@ public:
 
 	virtual bool equalTo(const NodePtr& o)
 	{
-		const shared_ptr<TypeDef>& other = boost::dynamic_pointer_cast<TypeDef>(o);
+		const shared_ptr<StructureQualifierMember>& other = boost::dynamic_pointer_cast<StructureQualifierMember>(o);
 		if (!other) return false;
 		if (!equal(this->graphPrev, other->graphPrev)) return false;
 		if (!equal(this->name, other->name)) return false;
@@ -183,17 +183,17 @@ public:
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
-	typedef boost::shared_ptr<TypeDef> Ptr;
-	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<TypeDef>(n); }
-	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<TypeDef>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to TypeDef."); return r; }
+	typedef boost::shared_ptr<StructureQualifierMember> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<StructureQualifierMember>(n); }
+	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<StructureQualifierMember>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to StructureQualifierMember."); return r; }
 protected:
 	NodeRef graphPrev;
 	string name;
 	NodePtr type;
 
 	// Interfaces
-	GraphInterfaceImpl<TypeDef> interfaceGraph;
-	NamedInterfaceImpl<TypeDef> interfaceNamed;
+	GraphInterfaceImpl<StructureQualifierMember> interfaceGraph;
+	NamedInterfaceImpl<StructureQualifierMember> interfaceNamed;
 };
 
 } // namespace ast

@@ -17,28 +17,26 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class TypeDef : public Node
+class StructureQualifier : public Node
 {
 public:
-	TypeDef() : Node(),
-		interfaceGraph(this),
-		interfaceNamed(this) {}
+	StructureQualifier() : Node(),
+		interfaceGraph(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kTypeDef;
+		return k == kStructureQualifier;
 	}
 
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
 		if (i == kGraphInterface) return true;
-		if (i == kNamedInterface) return true;
 		return false;
 	}
 
-	virtual string getClassName() const { return "TypeDef"; }
+	virtual string getClassName() const { return "StructureQualifier"; }
 
 	void setGraphPrev(const NodePtr& v)
 	{
@@ -67,49 +65,43 @@ public:
 		return v;
 	}
 
-	void setName(const string& v)
+	void setMode(const string& v)
 	{
-		if (!equal(v, name)) {
-			modify("name");
-			name = v;
+		if (!equal(v, mode)) {
+			modify("mode");
+			mode = v;
 		}
 	}
-	const string& getName(bool required = true)
+	const string& getMode(bool required = true)
 	{
-		const string& v = name;
+		const string& v = mode;
 		if (required && v.empty()) {
-			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string name set.");
+			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string mode set.");
 		}
 		return v;
 	}
 
-	void setType(const NodePtr& v)
+	void setStmts(const NodeVector& v)
 	{
-		if (v && !v->isKindOf(kNamedTypeExpr) && !v->isKindOf(kUnionTypeExpr) && !v->isKindOf(kTupleTypeExpr) && !v->isKindOf(kQualifiedTypeExpr)) {
-			throw runtime_error("'type' needs to be of kind {NamedTypeExpr, UnionTypeExpr, TupleTypeExpr, QualifiedTypeExpr} or implement interface {}, got " + v->getClassName() + " instead.");
-		}
-		if (!equal(v, type)) {
-			modify("type");
-			type = v;
+		if (!equal(v, stmts)) {
+			modify("stmts");
+			stmts = v;
 		}
 	}
-	const NodePtr& getType(bool required = true)
+	const NodeVector& getStmts(bool required = true)
 	{
-		const NodePtr& v = type;
-		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have type set to a non-null value.");
-		}
+		const NodeVector& v = stmts;
 		return v;
 	}
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "TypeDef{…}";
+		if (depth == 0) return "StructureQualifier{…}";
 		stringstream str, b;
-		str << "TypeDef{";
+		str << "StructureQualifier{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
-		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
-		if (this->type) b << endl << "  \033[1mtype\033[0m = " << indent(this->type->describe(depth-1));
+		if (!this->mode.empty()) b << endl << "  \033[1mmode\033[0m = \033[33m\"" << this->mode << "\"\033[0m";
+		if (!this->stmts.empty()) b << endl << "  \033[1mstmts\033[0m = " << indent(describeVector(this->stmts, depth-1));
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -119,20 +111,23 @@ public:
 	virtual void encode(Encoder& e)
 	{
 		e.encode(this->graphPrev);
-		e.encode(this->name);
-		e.encode(this->type);
+		e.encode(this->mode);
+		e.encode(this->stmts);
 	}
 
 	virtual void decode(Decoder& d)
 	{
 		d.decode(this->graphPrev);
-		d.decode(this->name);
-		d.decode(this->type);
+		d.decode(this->mode);
+		d.decode(this->stmts);
 	}
 
 	virtual void updateHierarchyOfChildren()
 	{
-		if (this->type) this->type->updateHierarchy(id + "type", repository, this);
+		for (int i = 0; i < this->stmts.size(); i++) {
+			char buf[32]; snprintf(buf, 31, "%i", i);
+			this->stmts[i]->updateHierarchy((id + "stmts") + buf, repository, this);
+		}
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -149,13 +144,24 @@ public:
 					return getGraphPrev()->resolvePath(path.substr(10));
 				}
 			}
-			// type.*
-			if (size >= 4 && path[0] == 't' && path[1] == 'y' && path[2] == 'p' && path[3] == 'e') {
-				// type
-				if (size == 4) {
-					return getType();
-				} else if (path[4] == '.') {
-					return getType()->resolvePath(path.substr(5));
+			// stmts.*
+			if (size >= 5 && path[0] == 's' && path[1] == 't' && path[2] == 'm' && path[3] == 't' && path[4] == 's') {
+				// stmts
+				if (size == 5) {
+					throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
+				} else if (path[5] == '.') {
+					size_t dot = path.find(".", 6);
+					string idx_str = path.substr(6, dot);
+					int idx = atoi(idx_str.c_str());
+					const NodeVector& a = getStmts();
+					if (idx < 0 || idx >= a.size()) {
+						throw std::runtime_error("Index into array '" + path.substr(0, 5) + "' is out of bounds.");
+					}
+					if (dot == string::npos) {
+						return a[idx];
+					} else {
+						return a[idx]->resolvePath(path.substr(dot + 1));
+					}
 				}
 			}
 		}
@@ -165,35 +171,33 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		if (const NodePtr& n = this->getType(false)) v.push_back(n);
+		v.insert(v.end(), this->stmts.begin(), this->stmts.end());
 		return v;
 	}
 
 	virtual bool equalTo(const NodePtr& o)
 	{
-		const shared_ptr<TypeDef>& other = boost::dynamic_pointer_cast<TypeDef>(o);
+		const shared_ptr<StructureQualifier>& other = boost::dynamic_pointer_cast<StructureQualifier>(o);
 		if (!other) return false;
 		if (!equal(this->graphPrev, other->graphPrev)) return false;
-		if (!equal(this->name, other->name)) return false;
-		if (!equal(this->type, other->type)) return false;
+		if (!equal(this->mode, other->mode)) return false;
+		if (!equal(this->stmts, other->stmts)) return false;
 		return true;
 	}
 
 	// Interfaces
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
-	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
-	typedef boost::shared_ptr<TypeDef> Ptr;
-	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<TypeDef>(n); }
-	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<TypeDef>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to TypeDef."); return r; }
+	typedef boost::shared_ptr<StructureQualifier> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<StructureQualifier>(n); }
+	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<StructureQualifier>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to StructureQualifier."); return r; }
 protected:
 	NodeRef graphPrev;
-	string name;
-	NodePtr type;
+	string mode;
+	NodeVector stmts;
 
 	// Interfaces
-	GraphInterfaceImpl<TypeDef> interfaceGraph;
-	NamedInterfaceImpl<TypeDef> interfaceNamed;
+	GraphInterfaceImpl<StructureQualifier> interfaceGraph;
 };
 
 } // namespace ast

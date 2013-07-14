@@ -120,11 +120,14 @@ namespace driver
     Nodes *nodes;
     VarDefExpr *varDefExpr;
     FuncDef *funcDef;
+    TypeDef *typeDef;
+    StructureQualifier *structureQualifier;
+    RangeQualifier *rangeQualifier;
     int token;
     int symbol;
 }
 /* Line 303 of lalr1.cc.  */
-#line 128 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.hpp"
+#line 131 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.hpp"
 	;
 #else
     typedef YYSTYPE semantic_type;
@@ -138,33 +141,35 @@ namespace driver
    enum yytokentype {
      END = 0,
      IDENTIFIER = 258,
-     REAL = 259,
-     INTEGER = 260,
-     STRING_LITERAL = 261,
-     MULTIPLICATIVE_OPERATOR = 262,
-     ADDITIVE_OPERATOR = 263,
-     RELATIONAL_OPERATOR = 264,
-     OPERATOR = 265,
-     SYMBOL = 266,
-     FUNC = 267,
-     VAR = 268,
-     TYPE = 269,
-     UNARY = 270,
-     VALUE = 271,
-     OBJECT = 272,
-     LPAREN = 273,
-     RPAREN = 274,
-     LBRACE = 275,
-     RBRACE = 276,
-     LBRACK = 277,
-     RBRACK = 278,
-     PIPE = 279,
-     DOT = 280,
-     COMMA = 281,
-     COLON = 282,
-     SEMICOLON = 283,
-     RIGHTARROW = 284,
-     ASSIGN = 285
+     NUMBER = 259,
+     STRING_LITERAL = 260,
+     MULTIPLICATIVE_OPERATOR = 261,
+     ADDITIVE_OPERATOR = 262,
+     RELATIONAL_OPERATOR = 263,
+     OPERATOR = 264,
+     SYMBOL = 265,
+     FUNC = 266,
+     VAR = 267,
+     TYPE = 268,
+     UNARY = 269,
+     VALUE = 270,
+     OBJECT = 271,
+     INTERFACE = 272,
+     NATIVE = 273,
+     RANGE = 274,
+     LPAREN = 275,
+     RPAREN = 276,
+     LBRACE = 277,
+     RBRACE = 278,
+     LBRACK = 279,
+     RBRACK = 280,
+     PIPE = 281,
+     DOT = 282,
+     COMMA = 283,
+     COLON = 284,
+     SEMICOLON = 285,
+     RIGHTARROW = 286,
+     ASSIGN = 287
    };
 
     };
@@ -259,7 +264,7 @@ namespace driver
     static const unsigned char yytable_[];
     static const signed char yytable_ninf_;
 
-    static const signed char yycheck_[];
+    static const short int yycheck_[];
 
     /// For a state, its accessing symbol.
     static const unsigned char yystos_[];
@@ -285,7 +290,7 @@ namespace driver
     /// A `-1'-separated list of the rules' RHS.
     static const rhs_number_type yyrhs_[];
     /// For each rule, the index of the first RHS symbol in \a yyrhs_.
-    static const unsigned char yyprhs_[];
+    static const unsigned short int yyprhs_[];
     /// For each rule, its source line number.
     static const unsigned short int yyrline_[];
     /// For each scanner token number, its symbol number.

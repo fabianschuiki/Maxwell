@@ -17,12 +17,15 @@
 #include "FuncType.hpp"
 #include "GenericType.hpp"
 #include "IdentifierExpr.hpp"
-#include "InheritStructStmt.hpp"
+#include "InterfaceQualifier.hpp"
 #include "InvalidType.hpp"
 #include "MemberAccessExpr.hpp"
-#include "MemberStructStmt.hpp"
 #include "NamedTypeExpr.hpp"
-#include "StructTypeExpr.hpp"
+#include "NativeQualifier.hpp"
+#include "QualifiedTypeExpr.hpp"
+#include "RangeQualifier.hpp"
+#include "StructureQualifier.hpp"
+#include "StructureQualifierMember.hpp"
 #include "TupleType.hpp"
 #include "TupleTypeArg.hpp"
 #include "TupleTypeExpr.hpp"
@@ -132,10 +135,10 @@ public:
 				}
 				// In.*
 				if (size >= 2 && name[1] == 'n') {
-					// InheritStructStmt.*
-					if (size >= 17 && name[2] == 'h' && name[3] == 'e' && name[4] == 'r' && name[5] == 'i' && name[6] == 't' && name[7] == 'S' && name[8] == 't' && name[9] == 'r' && name[10] == 'u' && name[11] == 'c' && name[12] == 't' && name[13] == 'S' && name[14] == 't' && name[15] == 'm' && name[16] == 't') {
-						// InheritStructStmt
-						if (size == 17) return NodePtr(new InheritStructStmt);
+					// InterfaceQualifier.*
+					if (size >= 18 && name[2] == 't' && name[3] == 'e' && name[4] == 'r' && name[5] == 'f' && name[6] == 'a' && name[7] == 'c' && name[8] == 'e' && name[9] == 'Q' && name[10] == 'u' && name[11] == 'a' && name[12] == 'l' && name[13] == 'i' && name[14] == 'f' && name[15] == 'i' && name[16] == 'e' && name[17] == 'r') {
+						// InterfaceQualifier
+						if (size == 18) return NodePtr(new InterfaceQualifier);
 					}
 					// InvalidType.*
 					if (size >= 11 && name[2] == 'v' && name[3] == 'a' && name[4] == 'l' && name[5] == 'i' && name[6] == 'd' && name[7] == 'T' && name[8] == 'y' && name[9] == 'p' && name[10] == 'e') {
@@ -144,28 +147,43 @@ public:
 					}
 				}
 			}
-			// Member.*
-			if (size >= 6 && name[0] == 'M' && name[1] == 'e' && name[2] == 'm' && name[3] == 'b' && name[4] == 'e' && name[5] == 'r') {
-				// MemberAccessExpr.*
-				if (size >= 16 && name[6] == 'A' && name[7] == 'c' && name[8] == 'c' && name[9] == 'e' && name[10] == 's' && name[11] == 's' && name[12] == 'E' && name[13] == 'x' && name[14] == 'p' && name[15] == 'r') {
-					// MemberAccessExpr
-					if (size == 16) return NodePtr(new MemberAccessExpr);
+			// MemberAccessExpr.*
+			if (size >= 16 && name[0] == 'M' && name[1] == 'e' && name[2] == 'm' && name[3] == 'b' && name[4] == 'e' && name[5] == 'r' && name[6] == 'A' && name[7] == 'c' && name[8] == 'c' && name[9] == 'e' && name[10] == 's' && name[11] == 's' && name[12] == 'E' && name[13] == 'x' && name[14] == 'p' && name[15] == 'r') {
+				// MemberAccessExpr
+				if (size == 16) return NodePtr(new MemberAccessExpr);
+			}
+			// Na.*
+			if (size >= 2 && name[0] == 'N' && name[1] == 'a') {
+				// NamedTypeExpr.*
+				if (size >= 13 && name[2] == 'm' && name[3] == 'e' && name[4] == 'd' && name[5] == 'T' && name[6] == 'y' && name[7] == 'p' && name[8] == 'e' && name[9] == 'E' && name[10] == 'x' && name[11] == 'p' && name[12] == 'r') {
+					// NamedTypeExpr
+					if (size == 13) return NodePtr(new NamedTypeExpr);
 				}
-				// MemberStructStmt.*
-				if (size >= 16 && name[6] == 'S' && name[7] == 't' && name[8] == 'r' && name[9] == 'u' && name[10] == 'c' && name[11] == 't' && name[12] == 'S' && name[13] == 't' && name[14] == 'm' && name[15] == 't') {
-					// MemberStructStmt
-					if (size == 16) return NodePtr(new MemberStructStmt);
+				// NativeQualifier.*
+				if (size >= 15 && name[2] == 't' && name[3] == 'i' && name[4] == 'v' && name[5] == 'e' && name[6] == 'Q' && name[7] == 'u' && name[8] == 'a' && name[9] == 'l' && name[10] == 'i' && name[11] == 'f' && name[12] == 'i' && name[13] == 'e' && name[14] == 'r') {
+					// NativeQualifier
+					if (size == 15) return NodePtr(new NativeQualifier);
 				}
 			}
-			// NamedTypeExpr.*
-			if (size >= 13 && name[0] == 'N' && name[1] == 'a' && name[2] == 'm' && name[3] == 'e' && name[4] == 'd' && name[5] == 'T' && name[6] == 'y' && name[7] == 'p' && name[8] == 'e' && name[9] == 'E' && name[10] == 'x' && name[11] == 'p' && name[12] == 'r') {
-				// NamedTypeExpr
-				if (size == 13) return NodePtr(new NamedTypeExpr);
+			// QualifiedTypeExpr.*
+			if (size >= 17 && name[0] == 'Q' && name[1] == 'u' && name[2] == 'a' && name[3] == 'l' && name[4] == 'i' && name[5] == 'f' && name[6] == 'i' && name[7] == 'e' && name[8] == 'd' && name[9] == 'T' && name[10] == 'y' && name[11] == 'p' && name[12] == 'e' && name[13] == 'E' && name[14] == 'x' && name[15] == 'p' && name[16] == 'r') {
+				// QualifiedTypeExpr
+				if (size == 17) return NodePtr(new QualifiedTypeExpr);
 			}
-			// StructTypeExpr.*
-			if (size >= 14 && name[0] == 'S' && name[1] == 't' && name[2] == 'r' && name[3] == 'u' && name[4] == 'c' && name[5] == 't' && name[6] == 'T' && name[7] == 'y' && name[8] == 'p' && name[9] == 'e' && name[10] == 'E' && name[11] == 'x' && name[12] == 'p' && name[13] == 'r') {
-				// StructTypeExpr
-				if (size == 14) return NodePtr(new StructTypeExpr);
+			// RangeQualifier.*
+			if (size >= 14 && name[0] == 'R' && name[1] == 'a' && name[2] == 'n' && name[3] == 'g' && name[4] == 'e' && name[5] == 'Q' && name[6] == 'u' && name[7] == 'a' && name[8] == 'l' && name[9] == 'i' && name[10] == 'f' && name[11] == 'i' && name[12] == 'e' && name[13] == 'r') {
+				// RangeQualifier
+				if (size == 14) return NodePtr(new RangeQualifier);
+			}
+			// StructureQualifier.*
+			if (size >= 18 && name[0] == 'S' && name[1] == 't' && name[2] == 'r' && name[3] == 'u' && name[4] == 'c' && name[5] == 't' && name[6] == 'u' && name[7] == 'r' && name[8] == 'e' && name[9] == 'Q' && name[10] == 'u' && name[11] == 'a' && name[12] == 'l' && name[13] == 'i' && name[14] == 'f' && name[15] == 'i' && name[16] == 'e' && name[17] == 'r') {
+				// StructureQualifier
+				if (size == 18) return NodePtr(new StructureQualifier);
+				// StructureQualifierMember.*
+				if (size >= 24 && name[18] == 'M' && name[19] == 'e' && name[20] == 'm' && name[21] == 'b' && name[22] == 'e' && name[23] == 'r') {
+					// StructureQualifierMember
+					if (size == 24) return NodePtr(new StructureQualifierMember);
+				}
 			}
 			// T.*
 			if (size >= 1 && name[0] == 'T') {

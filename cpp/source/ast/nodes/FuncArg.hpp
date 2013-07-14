@@ -146,8 +146,8 @@ public:
 
 	void setType(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kNamedTypeExpr) && !v->isKindOf(kUnionTypeExpr) && !v->isKindOf(kTupleTypeExpr)) {
-			throw runtime_error("'type' needs to be of kind {NamedTypeExpr, UnionTypeExpr, TupleTypeExpr} or implement interface {}, got " + v->getClassName() + " instead.");
+		if (v && !v->isKindOf(kNamedTypeExpr) && !v->isKindOf(kUnionTypeExpr) && !v->isKindOf(kTupleTypeExpr) && !v->isKindOf(kQualifiedTypeExpr)) {
+			throw runtime_error("'type' needs to be of kind {NamedTypeExpr, UnionTypeExpr, TupleTypeExpr, QualifiedTypeExpr} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
 		if (!equal(v, type)) {
 			modify("type");

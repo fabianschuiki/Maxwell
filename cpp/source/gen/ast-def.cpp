@@ -74,6 +74,12 @@ void buildAST(Builder &node)
 		.child("type", "#typeExpr");
 
 	// Expressions
+	node("NumberConstExpr")
+		.intf(graph).intf(type)
+		.attr("value", "string");
+	node("StringConstExpr")
+		.intf(graph).intf(type)
+		.attr("value", "string");
 	node("IdentifierExpr")
 		.intf(graph).intf(type)
 		.attr("name", "string")

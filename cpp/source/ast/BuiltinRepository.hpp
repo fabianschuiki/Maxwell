@@ -31,6 +31,7 @@ public:
 
 	const NodePtr& getNode(int id);
 	const NodePtr& getNode(const NodeId& id);
+	const NodePtr& getNode(const string& name);
 	const Nodes& getNodes() { return nodes; }
 	const NodeNames& getNodeNames() { return nodeNames; }
 
@@ -38,6 +39,8 @@ protected:
 	int index;
 	Nodes nodes;
 	NodeNames nodeNames;
+	typedef map<string, NodePtr> NodesByName;
+	NodesByName nodesByName;
 
 	typedef shared_ptr<builtin::NumericType> NumericTypePtr;
 

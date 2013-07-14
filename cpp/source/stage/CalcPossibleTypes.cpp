@@ -48,6 +48,24 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		}
 	}
 
+	// Constants.
+	if (const NumberConstExpr::Ptr& num = NumberConstExpr::from(node)) {
+		DefinedType::Ptr typeInt(new DefinedType), typeReal(new DefinedType);
+		typeInt->setDefinition(repository.getBuiltinType("Int"));
+		typeReal->setDefinition(repository.getBuiltinType("Real"));
+		NodeVector types(2);
+		types[0] = typeInt;
+		types[1] = typeReal;
+		TypeSet::Ptr typeSet(new TypeSet);
+		typeSet->setTypes(types);
+		num->setPossibleType(typeSet);
+	}
+	if (const StringConstExpr::Ptr& str = StringConstExpr::from(node)) {
+		DefinedType::Ptr type(new DefinedType);
+		type->setDefinition(repository.getBuiltinType("String"));
+		str->setPossibleType(type);
+	}
+
 
 	/*
 	 * Call-related stuff.
@@ -108,7 +126,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 	// In case no actualy type has been set yet, simply copy the possible type over.
 	if (TypeInterface *intf = node->asType()) {
 		if (!intf->getPossibleType(false)) {
-			throw std::runtime_error("No possibleType calculated for node " + node->getId().str() + ".");
+			throw std::runtime_error("No possibleType calculated for node " + node->getId().str() + " (a " + node->getClassName() + ").");
 		}
 		if (!intf->getActualType(false)) {
 			intf->setActualType(intf->getPossibleType());

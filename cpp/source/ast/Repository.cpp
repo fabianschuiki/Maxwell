@@ -225,3 +225,13 @@ bool Repository::isFlagSet(const NodeId& id, int flag)
 	}
 	return nodeFlagsRepo->isFlagSet(id, flag);
 }
+
+/**
+ * @brief Returns the builtin type with the given name.
+ *
+ * Throws an exception if the type does not exist.
+ */
+const NodePtr& Repository::getBuiltinType(const string& name)
+{
+	return builtinRepository.getNode(name);
+}

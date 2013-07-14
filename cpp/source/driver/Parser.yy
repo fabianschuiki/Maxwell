@@ -261,7 +261,13 @@ stmt  : expr SEMICOLON {
       ;
 
 
-/* EXPRESSIONS */
+/*
+ * ----------------------------------------------------------------------------
+ *
+ *    EXPRESSIONS
+ *
+ * ----------------------------------------------------------------------------
+ */
 
 primary_expr
   : IDENTIFIER {
@@ -271,6 +277,18 @@ primary_expr
       delete $1;
     }
   | LPAREN expr RPAREN { $$ = $2; }
+  | NUMBER {
+     NumberConstExpr *n = new NumberConstExpr;
+     n->setValue(*$1);
+     $$ = n;
+     delete $1;
+    }
+  | STRING_LITERAL {
+      StringConstExpr *s = new StringConstExpr;
+      s->setValue(*$1);
+      $$ = s;
+      delete $1;
+    }
   ;
 
 postfix_expr

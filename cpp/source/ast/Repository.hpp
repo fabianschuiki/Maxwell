@@ -51,6 +51,9 @@ public:
 	typedef map<NodeId, string> ExternalNames;
 	ExternalNames getExternalNamesForNodeId(const NodeId& id);
 
+	// Access to builtin nodes.
+	const NodePtr& getBuiltinType(const string& name);
+
 protected:
 	/// Repository maintaining the source file ids.
 	scoped_ptr<SourceRepository> sourceRepo;

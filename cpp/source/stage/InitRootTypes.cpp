@@ -15,8 +15,8 @@ void InitRootTypes::process(const NodePtr& node)
 	}
 
 	// Assign types to function arguments.
-	if (FuncArg* arg = dynamic_cast<FuncArg*>(node.get())) {
-		const NodePtr& evt = arg->getType()->needTypeExpr()->getEvaluatedType();
+	if (const FuncArg::Ptr& arg = FuncArg::from(node)) { 
+		const NodePtr& evt = arg->getTypeExpr()->needTypeExpr()->getEvaluatedType();
 		arg->setPossibleType(evt);
 		arg->setActualType(evt);
 	}

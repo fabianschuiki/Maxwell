@@ -45,6 +45,9 @@ public:
 	void removeFlag(const NodeId& id, int flag);
 	bool isFlagSet(const NodeId& id, int flag);
 
+	// Symbols.
+	void addExportedSymbol(const NodeId& id, const string& name);
+
 	void markModified(const NodeId& id);
 	void notifyNodeChanged(const NodeId& id);
 

@@ -17,17 +17,19 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class StringConstExpr : public Node
+class ImplAccessorArg : public Node
 {
 public:
-	StringConstExpr() : Node(),
+	ImplAccessorArg() : Node(),
 		interfaceGraph(this),
-		interfaceType(this) {}
+		interfaceType(this),
+		interfaceCallableArg(this),
+		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kStringConstExpr;
+		return k == kImplAccessorArg;
 	}
 
 	virtual bool implements(Interface i)
@@ -35,10 +37,12 @@ public:
 		if (Node::implements(i)) return true;
 		if (i == kGraphInterface) return true;
 		if (i == kTypeInterface) return true;
+		if (i == kCallableArgInterface) return true;
+		if (i == kNamedInterface) return true;
 		return false;
 	}
 
-	virtual string getClassName() const { return "StringConstExpr"; }
+	virtual string getClassName() const { return "ImplAccessorArg"; }
 
 	void setGraphPrev(const NodePtr& v)
 	{
@@ -124,32 +128,32 @@ public:
 		return v;
 	}
 
-	void setValue(const string& v)
+	void setName(const string& v)
 	{
-		if (!equal(v, value)) {
-			modify("value");
-			value = v;
+		if (!equal(v, name)) {
+			modify("name");
+			name = v;
 		}
 	}
-	const string& getValue(bool required = true)
+	const string& getName(bool required = true)
 	{
-		const string& v = value;
+		const string& v = name;
 		if (required && v.empty()) {
-			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string value set.");
+			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string name set.");
 		}
 		return v;
 	}
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "StringConstExpr{…}";
+		if (depth == 0) return "ImplAccessorArg{…}";
 		stringstream str, b;
-		str << "StringConstExpr{";
+		str << "ImplAccessorArg{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
-		if (!this->value.empty()) b << endl << "  \033[1mvalue\033[0m = \033[33m\"" << this->value << "\"\033[0m";
+		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -162,7 +166,7 @@ public:
 		e.encode(this->possibleType);
 		e.encode(this->requiredType);
 		e.encode(this->actualType);
-		e.encode(this->value);
+		e.encode(this->name);
 	}
 
 	virtual void decode(Decoder& d)
@@ -171,7 +175,7 @@ public:
 		d.decode(this->possibleType);
 		d.decode(this->requiredType);
 		d.decode(this->actualType);
-		d.decode(this->value);
+		d.decode(this->name);
 	}
 
 	virtual void updateHierarchyOfChildren()
@@ -228,33 +232,37 @@ public:
 
 	virtual bool equalTo(const NodePtr& o)
 	{
-		const shared_ptr<StringConstExpr>& other = boost::dynamic_pointer_cast<StringConstExpr>(o);
+		const shared_ptr<ImplAccessorArg>& other = boost::dynamic_pointer_cast<ImplAccessorArg>(o);
 		if (!other) return false;
 		if (!equal(this->graphPrev, other->graphPrev)) return false;
 		if (!equal(this->possibleType, other->possibleType)) return false;
 		if (!equal(this->requiredType, other->requiredType)) return false;
 		if (!equal(this->actualType, other->actualType)) return false;
-		if (!equal(this->value, other->value)) return false;
+		if (!equal(this->name, other->name)) return false;
 		return true;
 	}
 
 	// Interfaces
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual TypeInterface* asType() { return &this->interfaceType; }
+	virtual CallableArgInterface* asCallableArg() { return &this->interfaceCallableArg; }
+	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
-	typedef boost::shared_ptr<StringConstExpr> Ptr;
-	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<StringConstExpr>(n); }
-	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<StringConstExpr>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to StringConstExpr."); return r; }
+	typedef boost::shared_ptr<ImplAccessorArg> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<ImplAccessorArg>(n); }
+	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<ImplAccessorArg>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to ImplAccessorArg."); return r; }
 protected:
 	NodeRef graphPrev;
 	NodePtr possibleType;
 	NodePtr requiredType;
 	NodePtr actualType;
-	string value;
+	string name;
 
 	// Interfaces
-	GraphInterfaceImpl<StringConstExpr> interfaceGraph;
-	TypeInterfaceImpl<StringConstExpr> interfaceType;
+	GraphInterfaceImpl<ImplAccessorArg> interfaceGraph;
+	TypeInterfaceImpl<ImplAccessorArg> interfaceType;
+	CallableArgInterfaceImpl<ImplAccessorArg> interfaceCallableArg;
+	NamedInterfaceImpl<ImplAccessorArg> interfaceNamed;
 };
 
 } // namespace ast

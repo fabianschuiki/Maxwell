@@ -88,7 +88,7 @@ public:
 	void setExpr(const NodePtr& v)
 	{
 		if (v && !v->implements(kTypeInterface)) {
-			throw runtime_error("'expr' needs to be of kind {} or implement interface {Type}, got " + v->getClassName() + " instead.");
+			throw runtime_error("'expr' of " + id.str() + " needs to be of kind {} or implement interface {Type}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!equal(v, expr)) {
 			modify("expr");

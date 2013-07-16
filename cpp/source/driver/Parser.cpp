@@ -566,7 +566,7 @@ namespace driver
     {
       FuncArg *a = new FuncArg;
       a->setName(*(yysemantic_stack_[(2) - (1)].string));
-      a->setType(shared_ptr<Node>((yysemantic_stack_[(2) - (2)].node)));
+      a->setTypeExpr(shared_ptr<Node>((yysemantic_stack_[(2) - (2)].node)));
       (yyval.node) = a;
       delete (yysemantic_stack_[(2) - (1)].string);
     ;}
@@ -850,7 +850,7 @@ namespace driver
     {
               VarDefExpr *v = new VarDefExpr;
               v->setName(*(yysemantic_stack_[(3) - (2)].string));
-              v->setType(shared_ptr<Node>((yysemantic_stack_[(3) - (3)].node)));
+              v->setTypeExpr(shared_ptr<Node>((yysemantic_stack_[(3) - (3)].node)));
               (yyval.varDefExpr) = v;
               delete (yysemantic_stack_[(3) - (2)].string);
             ;}

@@ -28,11 +28,11 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 
 	// Variable-like nodes.
 	if (VariableInterface *var = node->asVariable()) {
-		if (const NodePtr& type = var->getType(false)) {
-			addDependency(node, "type.evaluatedType");
-			var->setPossibleType(type->asTypeExpr()->getEvaluatedType());
+		if (const NodePtr& typeExpr = var->getTypeExpr(false)) {
+			addDependency(node, "typeExpr.evaluatedType");
+			var->setPossibleType(typeExpr->asTypeExpr()->getEvaluatedType());
 		} else {
-			addDependency(node, "type");
+			addDependency(node, "typeExpr");
 			var->setPossibleType(NodePtr(new GenericType));
 		}
 	}
@@ -104,15 +104,19 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 	}
 
 	// Call candidates simply copy the function's return type.
-	if (CallCandidate* candidate = dynamic_cast<CallCandidate*>(node.get())) {
-		const shared_ptr<FuncDef>& func = dynamic_pointer_cast<FuncDef>(candidate->getFunc());
+	if (const CallCandidate::Ptr& candidate = CallCandidate::from(node)) {
+		const NodePtr& funcNode = candidate->getFunc();
+		CallableInterface* func = funcNode->needCallable();
 		// For now enforce single return values.
 		if (func->getOut().size() > 1) {
-			throw std::runtime_error("Only calls to functions with zero or one output argument are supported at the moment. Function " + func->getId().str() + " called by " + node->getParent()->getId().str() + " violates this constraint.");
+			throw std::runtime_error("Only calls to functions with zero or one output argument are supported at the moment. Function " + funcNode->getId().str() + " called by " + node->getParent()->getId().str() + " violates this constraint.");
 		}
-		addDependency(func, "out.0.actualType");
+		addDependency(funcNode, "out.0.actualType");
 		if (func->getOut().size() == 1) {
-			candidate->setPossibleType(func->getOut()[0]->needVariable()->getActualType());
+			const NodePtr& funcOut0 = func->getOut()[0];
+			// println(-1, "func->getOut()[0] = " + funcOut0->getId().str(), candidate);
+			// println(-1, "func->getOut()[0]->needType()->getActualType() = " + funcOut0->needType()->getActualType()->getId().str(), candidate);
+			candidate->setPossibleType(funcOut0->needType()->getActualType());
 		} else {
 			candidate->setPossibleType(NodePtr(new InvalidType));
 		}

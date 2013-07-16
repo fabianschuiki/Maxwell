@@ -27,6 +27,7 @@ void EvalTypeExprs::process(const NodePtr& node)
 			DefinedType::Ptr t(new DefinedType);
 			t->setDefinition(def);
 			intf->setEvaluatedType(t);
+			node->updateHierarchyOfChildren();
 		}
 
 		if (const UnionTypeExpr::Ptr& expr = UnionTypeExpr::from(node)) {
@@ -38,6 +39,7 @@ void EvalTypeExprs::process(const NodePtr& node)
 			UnionType::Ptr t(new UnionType);
 			t->setTypes(types);
 			intf->setEvaluatedType(t);
+			node->updateHierarchyOfChildren();
 		}
 
 		if (const QualifiedTypeExpr::Ptr& expr = QualifiedTypeExpr::from(node))
@@ -81,6 +83,7 @@ void EvalTypeExprs::process(const NodePtr& node)
 
 			// Store this qualified type in the type expression.
 			intf->setEvaluatedType(qt);
+			node->updateHierarchyOfChildren();
 		}
 
 		// Throw an error if we were unable to assign an evaluated type.

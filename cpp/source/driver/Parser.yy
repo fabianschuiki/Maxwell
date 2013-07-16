@@ -207,7 +207,7 @@ func_arg
   | IDENTIFIER typeexpr {
       FuncArg *a = new FuncArg;
       a->setName(*$1);
-      a->setType(shared_ptr<Node>($2));
+      a->setTypeExpr(shared_ptr<Node>($2));
       $$ = a;
       delete $1;
     }
@@ -434,7 +434,7 @@ expr  : assignment_expr
 var_expr  : VAR IDENTIFIER typeexpr {
               VarDefExpr *v = new VarDefExpr;
               v->setName(*$2);
-              v->setType(shared_ptr<Node>($3));
+              v->setTypeExpr(shared_ptr<Node>($3));
               $$ = v;
               delete $2;
             }

@@ -17,6 +17,8 @@
 #include "FuncType.hpp"
 #include "GenericType.hpp"
 #include "IdentifierExpr.hpp"
+#include "ImplAccessor.hpp"
+#include "ImplAccessorArg.hpp"
 #include "InterfaceQualifier.hpp"
 #include "InvalidType.hpp"
 #include "MemberAccessExpr.hpp"
@@ -136,6 +138,16 @@ public:
 				if (size >= 14 && name[1] == 'd' && name[2] == 'e' && name[3] == 'n' && name[4] == 't' && name[5] == 'i' && name[6] == 'f' && name[7] == 'i' && name[8] == 'e' && name[9] == 'r' && name[10] == 'E' && name[11] == 'x' && name[12] == 'p' && name[13] == 'r') {
 					// IdentifierExpr
 					if (size == 14) return NodePtr(new IdentifierExpr);
+				}
+				// ImplAccessor.*
+				if (size >= 12 && name[1] == 'm' && name[2] == 'p' && name[3] == 'l' && name[4] == 'A' && name[5] == 'c' && name[6] == 'c' && name[7] == 'e' && name[8] == 's' && name[9] == 's' && name[10] == 'o' && name[11] == 'r') {
+					// ImplAccessor
+					if (size == 12) return NodePtr(new ImplAccessor);
+					// ImplAccessorArg.*
+					if (size >= 15 && name[12] == 'A' && name[13] == 'r' && name[14] == 'g') {
+						// ImplAccessorArg
+						if (size == 15) return NodePtr(new ImplAccessorArg);
+					}
 				}
 				// In.*
 				if (size >= 2 && name[1] == 'n') {

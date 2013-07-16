@@ -20,6 +20,8 @@ typedef enum {
 	kFuncType,
 	kGenericType,
 	kIdentifierExpr,
+	kImplAccessor,
+	kImplAccessorArg,
 	kInterfaceQualifier,
 	kInvalidType,
 	kMemberAccessExpr,
@@ -49,6 +51,8 @@ typedef enum {
 typedef enum {
 	kCallInterface,
 	kCallArgInterface,
+	kCallableInterface,
+	kCallableArgInterface,
 	kGraphInterface,
 	kNamedInterface,
 	kTypeInterface,

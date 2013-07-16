@@ -86,7 +86,7 @@ public:
 	void setType(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kNamedTypeExpr) && !v->isKindOf(kUnionTypeExpr) && !v->isKindOf(kTupleTypeExpr) && !v->isKindOf(kQualifiedTypeExpr)) {
-			throw runtime_error("'type' needs to be of kind {NamedTypeExpr, UnionTypeExpr, TupleTypeExpr, QualifiedTypeExpr} or implement interface {}, got " + v->getClassName() + " instead.");
+			throw runtime_error("'type' of " + id.str() + " needs to be of kind {NamedTypeExpr, UnionTypeExpr, TupleTypeExpr, QualifiedTypeExpr} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!equal(v, type)) {
 			modify("type");
@@ -102,6 +102,44 @@ public:
 		return v;
 	}
 
+	void setImplSetter(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kImplAccessor)) {
+			throw runtime_error("'implSetter' of " + id.str() + " needs to be of kind {ImplAccessor} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
+		}
+		if (!equal(v, implSetter)) {
+			modify("implSetter");
+			implSetter = v;
+		}
+	}
+	const NodePtr& getImplSetter(bool required = true)
+	{
+		const NodePtr& v = implSetter;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have implSetter set to a non-null value.");
+		}
+		return v;
+	}
+
+	void setImplGetter(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kImplAccessor)) {
+			throw runtime_error("'implGetter' of " + id.str() + " needs to be of kind {ImplAccessor} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
+		}
+		if (!equal(v, implGetter)) {
+			modify("implGetter");
+			implGetter = v;
+		}
+	}
+	const NodePtr& getImplGetter(bool required = true)
+	{
+		const NodePtr& v = implGetter;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have implGetter set to a non-null value.");
+		}
+		return v;
+	}
+
 	virtual string describe(int depth = -1)
 	{
 		if (depth == 0) return "StructureQualifierMember{…}";
@@ -110,6 +148,8 @@ public:
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
 		if (this->type) b << endl << "  \033[1mtype\033[0m = " << indent(this->type->describe(depth-1));
+		if (this->implSetter) b << endl << "  \033[1mimplSetter\033[0m = " << indent(this->implSetter->describe(depth-1));
+		if (this->implGetter) b << endl << "  \033[1mimplGetter\033[0m = " << indent(this->implGetter->describe(depth-1));
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -121,6 +161,8 @@ public:
 		e.encode(this->graphPrev);
 		e.encode(this->name);
 		e.encode(this->type);
+		e.encode(this->implSetter);
+		e.encode(this->implGetter);
 	}
 
 	virtual void decode(Decoder& d)
@@ -128,11 +170,15 @@ public:
 		d.decode(this->graphPrev);
 		d.decode(this->name);
 		d.decode(this->type);
+		d.decode(this->implSetter);
+		d.decode(this->implGetter);
 	}
 
 	virtual void updateHierarchyOfChildren()
 	{
 		if (this->type) this->type->updateHierarchy(id + "type", repository, this);
+		if (this->implSetter) this->implSetter->updateHierarchy(id + "implSetter", repository, this);
+		if (this->implGetter) this->implGetter->updateHierarchy(id + "implGetter", repository, this);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -147,6 +193,27 @@ public:
 					return getGraphPrev();
 				} else if (path[9] == '.') {
 					return getGraphPrev()->resolvePath(path.substr(10));
+				}
+			}
+			// impl.*
+			if (size >= 4 && path[0] == 'i' && path[1] == 'm' && path[2] == 'p' && path[3] == 'l') {
+				// implGetter.*
+				if (size >= 10 && path[4] == 'G' && path[5] == 'e' && path[6] == 't' && path[7] == 't' && path[8] == 'e' && path[9] == 'r') {
+					// implGetter
+					if (size == 10) {
+						return getImplGetter();
+					} else if (path[10] == '.') {
+						return getImplGetter()->resolvePath(path.substr(11));
+					}
+				}
+				// implSetter.*
+				if (size >= 10 && path[4] == 'S' && path[5] == 'e' && path[6] == 't' && path[7] == 't' && path[8] == 'e' && path[9] == 'r') {
+					// implSetter
+					if (size == 10) {
+						return getImplSetter();
+					} else if (path[10] == '.') {
+						return getImplSetter()->resolvePath(path.substr(11));
+					}
 				}
 			}
 			// type.*
@@ -166,6 +233,8 @@ public:
 	{
 		NodeVector v;
 		if (const NodePtr& n = this->getType(false)) v.push_back(n);
+		if (const NodePtr& n = this->getImplSetter(false)) v.push_back(n);
+		if (const NodePtr& n = this->getImplGetter(false)) v.push_back(n);
 		return v;
 	}
 
@@ -176,6 +245,8 @@ public:
 		if (!equal(this->graphPrev, other->graphPrev)) return false;
 		if (!equal(this->name, other->name)) return false;
 		if (!equal(this->type, other->type)) return false;
+		if (!equal(this->implSetter, other->implSetter)) return false;
+		if (!equal(this->implGetter, other->implGetter)) return false;
 		return true;
 	}
 
@@ -190,6 +261,8 @@ protected:
 	NodeRef graphPrev;
 	string name;
 	NodePtr type;
+	NodePtr implSetter;
+	NodePtr implGetter;
 
 	// Interfaces
 	GraphInterfaceImpl<StructureQualifierMember> interfaceGraph;

@@ -28,14 +28,14 @@ void CalcRequiredTypes::process(const NodePtr& node)
 	}
 
 	// Variables require the initial expression to match the variable type.
-	if (VarDefExpr* var = dynamic_cast<VarDefExpr*>(node.get())) {
+	if (const VarDefExpr::Ptr& var = VarDefExpr::from(node)) {
 		const NodePtr& init = var->getInitialExpr(false);
 		if (init) {
-			const NodePtr& type = var->getType(false);
-			if (type) {
-				init->needType()->setRequiredType(type->needTypeExpr()->getEvaluatedType());
+			const NodePtr& typeExpr = var->getTypeExpr(false);
+			if (typeExpr) {
+				init->needType()->setRequiredType(typeExpr->needTypeExpr()->getEvaluatedType());
 			}
-			addDependency(node, "type.evaluatedType");
+			addDependency(node, "typeExpr.evaluatedType");
 		}
 	}
 
@@ -50,21 +50,23 @@ void CalcRequiredTypes::process(const NodePtr& node)
 
 		for (NodeVector::const_iterator it = candidates.begin(); it != candidates.end(); it++) {
 			const CallCandidate::Ptr& candidate = CallCandidate::needFrom(*it);
-			const FuncDef::Ptr& func = FuncDef::needFrom(candidate->getFunc());
-			const FuncType::Ptr& funcType = FuncType::needFrom(func->getType());
+			const NodePtr& funcNode = candidate->getFunc();
+			CallableInterface* func = funcNode->needCallable();
+			//const FuncType::Ptr& funcType = FuncType::needFrom(func->getType());
 
 			// Calculate the required types for each argument.
-			const TupleType::Ptr& funcTypeIn = TupleType::needFrom(funcType->getIn());
-			const NodeVector& funcTypeArgs = funcTypeIn->getArgs();
+			const NodeVector& funcArgs = func->getIn();
 			const NodeVector& args = candidate->getArgs();
-			addDependency(func, "type.in.types");
+			addDependency(funcNode, "in");
 
 			for (int i = 0; i < args.size(); i++) {
 				NodePtr type;
-				if (i < funcTypeArgs.size()) {
-					const TupleTypeArg::Ptr& funcTypeArg = TupleTypeArg::needFrom(funcTypeArgs[i]);
-					type = funcTypeArg->getType();
+				if (i < funcArgs.size()) {
+					const NodePtr& funcArgNode = funcArgs[i];
+					CallableArgInterface* funcArg = funcArgNode->needCallableArg();
+					type = funcArg->getActualType();
 					inputTypes[i].push_back(type);
+					addDependency(funcArgNode, "actualType");
 				} else {
 					type = NodePtr(new InvalidType);
 				}

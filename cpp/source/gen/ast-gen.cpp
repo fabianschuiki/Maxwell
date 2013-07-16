@@ -503,7 +503,7 @@ int main(int argc, char *argv[])
 					h << " && " << ifcomponents[i];
 				}
 				h << ") {\n";
-				h << "\t\t\tthrow runtime_error(\"'" << f.name << "' needs to be of kind {" << allowedNodes << "} or implement interface {" << allowedInterfaces << "}, got \" + v->getClassName() + \" instead.\");\n";
+				h << "\t\t\tthrow runtime_error(\"'" << f.name << "' of \" + id.str() + \" needs to be of kind {" << allowedNodes << "} or implement interface {" << allowedInterfaces << "}, got \" + v->getClassName() + \" (\" + v->getId().str() + \") instead.\");\n";
 				h << "\t\t}\n";
 			}
 

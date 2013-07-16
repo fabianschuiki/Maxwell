@@ -24,8 +24,9 @@ void FindCallCandidates::process(const NodePtr& node)
 		for (Repository::ExternalNames::const_iterator it = externals.begin(); it != externals.end(); it++) {
 			if (it->second != name) continue; // discard other names
 			const NodePtr& n = repository.getNode(it->first);
-			if (!n->isKindOf(kFuncDef)) continue; // discard anything but FuncDef nodes
-			if (FuncDef::needFrom(n)->getIn().size() != intf->getCallArgs().size()) continue; // discard functions with incorrect number of arguments
+			CallableInterface *callable = n->asCallable();
+			if (!callable) continue; // discard anything but Callable nodes
+			if (callable->getIn().size() != intf->getCallArgs().size()) continue; // discard functions with incorrect number of arguments
 			nodes.push_back(n);
 		}
 
@@ -33,8 +34,7 @@ void FindCallCandidates::process(const NodePtr& node)
 		NodeVector candidates;
 		for (NodeVector::iterator it = nodes.begin(); it != nodes.end(); it++) {
 			const NodePtr& funcNode = *it;
-			FuncDef* func = dynamic_cast<FuncDef*>(funcNode.get()); // always true due to the isKindOf(...) above
-			assert(func && "isKindOf(kFuncDef) should assure this cast works");
+			CallableInterface* func = funcNode->asCallable(); // always true due to the isKindOf(...) above
 			println(0, "Wrapping candidate " + funcNode->getId().str(), funcNode);
 
 			// Create the candidate object to hold the function.

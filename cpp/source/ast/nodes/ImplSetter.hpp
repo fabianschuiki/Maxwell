@@ -17,10 +17,10 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class FuncDef : public Node
+class ImplSetter : public Node
 {
 public:
-	FuncDef() : Node(),
+	ImplSetter() : Node(),
 		interfaceGraph(this),
 		interfaceCallable(this),
 		interfaceNamed(this) {}
@@ -28,7 +28,7 @@ public:
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kFuncDef;
+		return k == kImplSetter;
 	}
 
 	virtual bool implements(Interface i)
@@ -40,7 +40,7 @@ public:
 		return false;
 	}
 
-	virtual string getClassName() const { return "FuncDef"; }
+	virtual string getClassName() const { return "ImplSetter"; }
 
 	void setGraphPrev(const NodePtr& v)
 	{
@@ -111,55 +111,75 @@ public:
 		return v;
 	}
 
-	void setBody(const NodePtr& v)
+	void setRefArg(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kFuncBody)) {
-			throw runtime_error("'body' of " + id.str() + " needs to be of kind {FuncBody} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
+		if (v && !v->isKindOf(kImplAccessorArg)) {
+			throw runtime_error("'refArg' needs to be of kind {ImplAccessorArg} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (!equal(v, body)) {
-			modify("body");
-			body = v;
+		if (!equal(v, refArg)) {
+			modify("refArg");
+			refArg = v;
 		}
 	}
-	const NodePtr& getBody(bool required = true)
+	const NodePtr& getRefArg(bool required = true)
 	{
-		const NodePtr& v = body;
+		const NodePtr& v = refArg;
 		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have body set to a non-null value.");
+			throw runtime_error("Node " + getId().str() + " is required to have refArg set to a non-null value.");
 		}
 		return v;
 	}
 
-	void setType(const NodePtr& v)
+	void setValueArg(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kFuncType)) {
-			throw runtime_error("'type' of " + id.str() + " needs to be of kind {FuncType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
+		if (v && !v->isKindOf(kImplAccessorArg)) {
+			throw runtime_error("'valueArg' needs to be of kind {ImplAccessorArg} or implement interface {}, got " + v->getClassName() + " instead.");
 		}
-		if (!equal(v, type)) {
-			modify("type");
-			type = v;
+		if (!equal(v, valueArg)) {
+			modify("valueArg");
+			valueArg = v;
 		}
 	}
-	const NodePtr& getType(bool required = true)
+	const NodePtr& getValueArg(bool required = true)
 	{
-		const NodePtr& v = type;
+		const NodePtr& v = valueArg;
 		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have type set to a non-null value.");
+			throw runtime_error("Node " + getId().str() + " is required to have valueArg set to a non-null value.");
+		}
+		return v;
+	}
+
+	void setRetArg(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kImplAccessorArg)) {
+			throw runtime_error("'retArg' needs to be of kind {ImplAccessorArg} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
+		if (!equal(v, retArg)) {
+			modify("retArg");
+			retArg = v;
+		}
+	}
+	const NodePtr& getRetArg(bool required = true)
+	{
+		const NodePtr& v = retArg;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have retArg set to a non-null value.");
 		}
 		return v;
 	}
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "FuncDef{…}";
+		if (depth == 0) return "ImplSetter{…}";
 		stringstream str, b;
-		str << "FuncDef{";
+		str << "ImplSetter{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
 		if (!this->in.empty()) b << endl << "  \033[1min\033[0m = " << indent(describeVector(this->in, depth-1));
 		if (!this->out.empty()) b << endl << "  \033[1mout\033[0m = " << indent(describeVector(this->out, depth-1));
-		if (this->body) b << endl << "  \033[1mbody\033[0m = " << indent(this->body->describe(depth-1));
-		if (this->type) b << endl << "  \033[1mtype\033[0m = " << indent(this->type->describe(depth-1));
+		if (this->refArg) b << endl << "  \033[1mrefArg\033[0m = " << indent(this->refArg->describe(depth-1));
+		if (this->valueArg) b << endl << "  \033[1mvalueArg\033[0m = " << indent(this->valueArg->describe(depth-1));
+		if (this->retArg) b << endl << "  \033[1mretArg\033[0m = " << indent(this->retArg->describe(depth-1));
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -172,8 +192,9 @@ public:
 		e.encode(this->name);
 		e.encode(this->in);
 		e.encode(this->out);
-		e.encode(this->body);
-		e.encode(this->type);
+		e.encode(this->refArg);
+		e.encode(this->valueArg);
+		e.encode(this->retArg);
 	}
 
 	virtual void decode(Decoder& d)
@@ -182,8 +203,9 @@ public:
 		d.decode(this->name);
 		d.decode(this->in);
 		d.decode(this->out);
-		d.decode(this->body);
-		d.decode(this->type);
+		d.decode(this->refArg);
+		d.decode(this->valueArg);
+		d.decode(this->retArg);
 	}
 
 	virtual void updateHierarchyOfChildren()
@@ -196,8 +218,9 @@ public:
 			char buf[32]; snprintf(buf, 31, "%i", i);
 			this->out[i]->updateHierarchy((id + "out") + buf, repository, this);
 		}
-		if (this->body) this->body->updateHierarchy(id + "body", repository, this);
-		if (this->type) this->type->updateHierarchy(id + "type", repository, this);
+		if (this->refArg) this->refArg->updateHierarchy(id + "refArg", repository, this);
+		if (this->valueArg) this->valueArg->updateHierarchy(id + "valueArg", repository, this);
+		if (this->retArg) this->retArg->updateHierarchy(id + "retArg", repository, this);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -205,15 +228,6 @@ public:
 		size_t size = path.size();
 		// .*
 		if (true) {
-			// body.*
-			if (size >= 4 && path[0] == 'b' && path[1] == 'o' && path[2] == 'd' && path[3] == 'y') {
-				// body
-				if (size == 4) {
-					return getBody();
-				} else if (path[4] == '.') {
-					return getBody()->resolvePath(path.substr(5));
-				}
-			}
 			// graphPrev.*
 			if (size >= 9 && path[0] == 'g' && path[1] == 'r' && path[2] == 'a' && path[3] == 'p' && path[4] == 'h' && path[5] == 'P' && path[6] == 'r' && path[7] == 'e' && path[8] == 'v') {
 				// graphPrev
@@ -263,13 +277,34 @@ public:
 					}
 				}
 			}
-			// type.*
-			if (size >= 4 && path[0] == 't' && path[1] == 'y' && path[2] == 'p' && path[3] == 'e') {
-				// type
-				if (size == 4) {
-					return getType();
-				} else if (path[4] == '.') {
-					return getType()->resolvePath(path.substr(5));
+			// re.*
+			if (size >= 2 && path[0] == 'r' && path[1] == 'e') {
+				// refArg.*
+				if (size >= 6 && path[2] == 'f' && path[3] == 'A' && path[4] == 'r' && path[5] == 'g') {
+					// refArg
+					if (size == 6) {
+						return getRefArg();
+					} else if (path[6] == '.') {
+						return getRefArg()->resolvePath(path.substr(7));
+					}
+				}
+				// retArg.*
+				if (size >= 6 && path[2] == 't' && path[3] == 'A' && path[4] == 'r' && path[5] == 'g') {
+					// retArg
+					if (size == 6) {
+						return getRetArg();
+					} else if (path[6] == '.') {
+						return getRetArg()->resolvePath(path.substr(7));
+					}
+				}
+			}
+			// valueArg.*
+			if (size >= 8 && path[0] == 'v' && path[1] == 'a' && path[2] == 'l' && path[3] == 'u' && path[4] == 'e' && path[5] == 'A' && path[6] == 'r' && path[7] == 'g') {
+				// valueArg
+				if (size == 8) {
+					return getValueArg();
+				} else if (path[8] == '.') {
+					return getValueArg()->resolvePath(path.substr(9));
 				}
 			}
 		}
@@ -279,23 +314,23 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		v.insert(v.end(), this->in.begin(), this->in.end());
-		v.insert(v.end(), this->out.begin(), this->out.end());
-		if (const NodePtr& n = this->getBody(false)) v.push_back(n);
-		if (const NodePtr& n = this->getType(false)) v.push_back(n);
+		if (const NodePtr& n = this->getRefArg(false)) v.push_back(n);
+		if (const NodePtr& n = this->getValueArg(false)) v.push_back(n);
+		if (const NodePtr& n = this->getRetArg(false)) v.push_back(n);
 		return v;
 	}
 
 	virtual bool equalTo(const NodePtr& o)
 	{
-		const shared_ptr<FuncDef>& other = boost::dynamic_pointer_cast<FuncDef>(o);
+		const shared_ptr<ImplSetter>& other = boost::dynamic_pointer_cast<ImplSetter>(o);
 		if (!other) return false;
 		if (!equal(this->graphPrev, other->graphPrev)) return false;
 		if (!equal(this->name, other->name)) return false;
 		if (!equal(this->in, other->in)) return false;
 		if (!equal(this->out, other->out)) return false;
-		if (!equal(this->body, other->body)) return false;
-		if (!equal(this->type, other->type)) return false;
+		if (!equal(this->refArg, other->refArg)) return false;
+		if (!equal(this->valueArg, other->valueArg)) return false;
+		if (!equal(this->retArg, other->retArg)) return false;
 		return true;
 	}
 
@@ -304,21 +339,22 @@ public:
 	virtual CallableInterface* asCallable() { return &this->interfaceCallable; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
-	typedef boost::shared_ptr<FuncDef> Ptr;
-	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<FuncDef>(n); }
-	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<FuncDef>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to FuncDef."); return r; }
+	typedef boost::shared_ptr<ImplSetter> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<ImplSetter>(n); }
+	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<ImplSetter>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to ImplSetter."); return r; }
 protected:
 	NodeRef graphPrev;
 	string name;
 	NodeVector in;
 	NodeVector out;
-	NodePtr body;
-	NodePtr type;
+	NodePtr refArg;
+	NodePtr valueArg;
+	NodePtr retArg;
 
 	// Interfaces
-	GraphInterfaceImpl<FuncDef> interfaceGraph;
-	CallableInterfaceImpl<FuncDef> interfaceCallable;
-	NamedInterfaceImpl<FuncDef> interfaceNamed;
+	GraphInterfaceImpl<ImplSetter> interfaceGraph;
+	CallableInterfaceImpl<ImplSetter> interfaceCallable;
+	NamedInterfaceImpl<ImplSetter> interfaceNamed;
 };
 
 } // namespace ast

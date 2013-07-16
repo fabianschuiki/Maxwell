@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	try {
 		Repository repo("mwcrepo");
 		StageManager mgr(repo);
-		mgr.stagesByName["ConfigureCalls"]->verbosity = 99;
+		mgr.stagesByName["GenImplicitAccessors"]->verbosity = 99;
 
 		// Read the ids from the input.
 		vector<NodeId> ids;

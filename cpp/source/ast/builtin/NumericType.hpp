@@ -24,6 +24,12 @@ public:
 		if (!nt) return false;
 		return (name == nt->name);
 	}
+	virtual bool implements(Interface i)
+	{
+		if (BuiltinNode::implements(i)) return true;
+		if (i == kNamedInterface) return true;
+		return false;
+	}
 
 	// Interfaces
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }

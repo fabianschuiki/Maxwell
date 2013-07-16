@@ -24,6 +24,7 @@ public:
 		interfaceGraph(this),
 		interfaceType(this),
 		interfaceVariable(this),
+		interfaceCallableArg(this),
 		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
@@ -38,6 +39,7 @@ public:
 		if (i == kGraphInterface) return true;
 		if (i == kTypeInterface) return true;
 		if (i == kVariableInterface) return true;
+		if (i == kCallableArgInterface) return true;
 		if (i == kNamedInterface) return true;
 		return false;
 	}
@@ -74,7 +76,7 @@ public:
 	void setPossibleType(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet) && !v->isKindOf(kQualifiedType)) {
-			throw runtime_error("'possibleType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " instead.");
+			throw runtime_error("'possibleType' of " + id.str() + " needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!equal(v, possibleType)) {
 			modify("possibleType");
@@ -93,7 +95,7 @@ public:
 	void setRequiredType(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet) && !v->isKindOf(kQualifiedType)) {
-			throw runtime_error("'requiredType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " instead.");
+			throw runtime_error("'requiredType' of " + id.str() + " needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!equal(v, requiredType)) {
 			modify("requiredType");
@@ -112,7 +114,7 @@ public:
 	void setActualType(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet) && !v->isKindOf(kQualifiedType)) {
-			throw runtime_error("'actualType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " instead.");
+			throw runtime_error("'actualType' of " + id.str() + " needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!equal(v, actualType)) {
 			modify("actualType");
@@ -144,21 +146,21 @@ public:
 		return v;
 	}
 
-	void setType(const NodePtr& v)
+	void setTypeExpr(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kNamedTypeExpr) && !v->isKindOf(kUnionTypeExpr) && !v->isKindOf(kTupleTypeExpr) && !v->isKindOf(kQualifiedTypeExpr)) {
-			throw runtime_error("'type' needs to be of kind {NamedTypeExpr, UnionTypeExpr, TupleTypeExpr, QualifiedTypeExpr} or implement interface {}, got " + v->getClassName() + " instead.");
+			throw runtime_error("'typeExpr' of " + id.str() + " needs to be of kind {NamedTypeExpr, UnionTypeExpr, TupleTypeExpr, QualifiedTypeExpr} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
-		if (!equal(v, type)) {
-			modify("type");
-			type = v;
+		if (!equal(v, typeExpr)) {
+			modify("typeExpr");
+			typeExpr = v;
 		}
 	}
-	const NodePtr& getType(bool required = true)
+	const NodePtr& getTypeExpr(bool required = true)
 	{
-		const NodePtr& v = type;
+		const NodePtr& v = typeExpr;
 		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have type set to a non-null value.");
+			throw runtime_error("Node " + getId().str() + " is required to have typeExpr set to a non-null value.");
 		}
 		return v;
 	}
@@ -166,7 +168,7 @@ public:
 	void setInitialExpr(const NodePtr& v)
 	{
 		if (v && !v->implements(kTypeInterface)) {
-			throw runtime_error("'initialExpr' needs to be of kind {} or implement interface {Type}, got " + v->getClassName() + " instead.");
+			throw runtime_error("'initialExpr' of " + id.str() + " needs to be of kind {} or implement interface {Type}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!equal(v, initialExpr)) {
 			modify("initialExpr");
@@ -192,7 +194,7 @@ public:
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
-		if (this->type) b << endl << "  \033[1mtype\033[0m = " << indent(this->type->describe(depth-1));
+		if (this->typeExpr) b << endl << "  \033[1mtypeExpr\033[0m = " << indent(this->typeExpr->describe(depth-1));
 		if (this->initialExpr) b << endl << "  \033[1minitialExpr\033[0m = " << indent(this->initialExpr->describe(depth-1));
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
@@ -207,7 +209,7 @@ public:
 		e.encode(this->requiredType);
 		e.encode(this->actualType);
 		e.encode(this->name);
-		e.encode(this->type);
+		e.encode(this->typeExpr);
 		e.encode(this->initialExpr);
 	}
 
@@ -218,7 +220,7 @@ public:
 		d.decode(this->requiredType);
 		d.decode(this->actualType);
 		d.decode(this->name);
-		d.decode(this->type);
+		d.decode(this->typeExpr);
 		d.decode(this->initialExpr);
 	}
 
@@ -227,7 +229,7 @@ public:
 		if (this->possibleType) this->possibleType->updateHierarchy(id + "possibleType", repository, this);
 		if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
 		if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
-		if (this->type) this->type->updateHierarchy(id + "type", repository, this);
+		if (this->typeExpr) this->typeExpr->updateHierarchy(id + "typeExpr", repository, this);
 		if (this->initialExpr) this->initialExpr->updateHierarchy(id + "initialExpr", repository, this);
 	}
 
@@ -281,13 +283,13 @@ public:
 					return getRequiredType()->resolvePath(path.substr(13));
 				}
 			}
-			// type.*
-			if (size >= 4 && path[0] == 't' && path[1] == 'y' && path[2] == 'p' && path[3] == 'e') {
-				// type
-				if (size == 4) {
-					return getType();
-				} else if (path[4] == '.') {
-					return getType()->resolvePath(path.substr(5));
+			// typeExpr.*
+			if (size >= 8 && path[0] == 't' && path[1] == 'y' && path[2] == 'p' && path[3] == 'e' && path[4] == 'E' && path[5] == 'x' && path[6] == 'p' && path[7] == 'r') {
+				// typeExpr
+				if (size == 8) {
+					return getTypeExpr();
+				} else if (path[8] == '.') {
+					return getTypeExpr()->resolvePath(path.substr(9));
 				}
 			}
 		}
@@ -297,7 +299,7 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		if (const NodePtr& n = this->getType(false)) v.push_back(n);
+		if (const NodePtr& n = this->getTypeExpr(false)) v.push_back(n);
 		if (const NodePtr& n = this->getInitialExpr(false)) v.push_back(n);
 		return v;
 	}
@@ -311,7 +313,7 @@ public:
 		if (!equal(this->requiredType, other->requiredType)) return false;
 		if (!equal(this->actualType, other->actualType)) return false;
 		if (!equal(this->name, other->name)) return false;
-		if (!equal(this->type, other->type)) return false;
+		if (!equal(this->typeExpr, other->typeExpr)) return false;
 		if (!equal(this->initialExpr, other->initialExpr)) return false;
 		return true;
 	}
@@ -320,6 +322,7 @@ public:
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual TypeInterface* asType() { return &this->interfaceType; }
 	virtual VariableInterface* asVariable() { return &this->interfaceVariable; }
+	virtual CallableArgInterface* asCallableArg() { return &this->interfaceCallableArg; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
 	typedef boost::shared_ptr<VarDefExpr> Ptr;
@@ -331,13 +334,14 @@ protected:
 	NodePtr requiredType;
 	NodePtr actualType;
 	string name;
-	NodePtr type;
+	NodePtr typeExpr;
 	NodePtr initialExpr;
 
 	// Interfaces
 	GraphInterfaceImpl<VarDefExpr> interfaceGraph;
 	TypeInterfaceImpl<VarDefExpr> interfaceType;
 	VariableInterfaceImpl<VarDefExpr> interfaceVariable;
+	CallableArgInterfaceImpl<VarDefExpr> interfaceCallableArg;
 	NamedInterfaceImpl<VarDefExpr> interfaceNamed;
 };
 

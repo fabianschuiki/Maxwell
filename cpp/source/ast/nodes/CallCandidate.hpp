@@ -40,8 +40,8 @@ public:
 
 	void setFunc(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kFuncDef)) {
-			throw runtime_error("'func' needs to be of kind {FuncDef} or implement interface {}, got " + v->getClassName() + " instead.");
+		if (v && !v->implements(kCallableInterface)) {
+			throw runtime_error("'func' of " + id.str() + " needs to be of kind {} or implement interface {Callable}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!v && func) {
 			modify("func");
@@ -110,7 +110,7 @@ public:
 	void setPossibleType(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet) && !v->isKindOf(kQualifiedType)) {
-			throw runtime_error("'possibleType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " instead.");
+			throw runtime_error("'possibleType' of " + id.str() + " needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!equal(v, possibleType)) {
 			modify("possibleType");
@@ -129,7 +129,7 @@ public:
 	void setRequiredType(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet) && !v->isKindOf(kQualifiedType)) {
-			throw runtime_error("'requiredType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " instead.");
+			throw runtime_error("'requiredType' of " + id.str() + " needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!equal(v, requiredType)) {
 			modify("requiredType");
@@ -148,7 +148,7 @@ public:
 	void setActualType(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet) && !v->isKindOf(kQualifiedType)) {
-			throw runtime_error("'actualType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " instead.");
+			throw runtime_error("'actualType' of " + id.str() + " needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!equal(v, actualType)) {
 			modify("actualType");

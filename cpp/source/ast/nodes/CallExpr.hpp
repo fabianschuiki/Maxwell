@@ -24,6 +24,7 @@ public:
 		interfaceGraph(this),
 		interfaceCall(this),
 		interfaceType(this),
+		interfaceCallableArg(this),
 		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
@@ -38,6 +39,7 @@ public:
 		if (i == kGraphInterface) return true;
 		if (i == kCallInterface) return true;
 		if (i == kTypeInterface) return true;
+		if (i == kCallableArgInterface) return true;
 		if (i == kNamedInterface) return true;
 		return false;
 	}
@@ -161,7 +163,7 @@ public:
 	void setSelectedCallCandidate(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kCallCandidate)) {
-			throw runtime_error("'selectedCallCandidate' needs to be of kind {CallCandidate} or implement interface {}, got " + v->getClassName() + " instead.");
+			throw runtime_error("'selectedCallCandidate' of " + id.str() + " needs to be of kind {CallCandidate} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!v && selectedCallCandidate) {
 			modify("selectedCallCandidate");
@@ -191,7 +193,7 @@ public:
 	void setPossibleType(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet) && !v->isKindOf(kQualifiedType)) {
-			throw runtime_error("'possibleType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " instead.");
+			throw runtime_error("'possibleType' of " + id.str() + " needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!equal(v, possibleType)) {
 			modify("possibleType");
@@ -210,7 +212,7 @@ public:
 	void setRequiredType(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet) && !v->isKindOf(kQualifiedType)) {
-			throw runtime_error("'requiredType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " instead.");
+			throw runtime_error("'requiredType' of " + id.str() + " needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!equal(v, requiredType)) {
 			modify("requiredType");
@@ -229,7 +231,7 @@ public:
 	void setActualType(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet) && !v->isKindOf(kQualifiedType)) {
-			throw runtime_error("'actualType' needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " instead.");
+			throw runtime_error("'actualType' of " + id.str() + " needs to be of kind {GenericType, InvalidType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!equal(v, actualType)) {
 			modify("actualType");
@@ -481,6 +483,7 @@ public:
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual CallInterface* asCall() { return &this->interfaceCall; }
 	virtual TypeInterface* asType() { return &this->interfaceType; }
+	virtual CallableArgInterface* asCallableArg() { return &this->interfaceCallableArg; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
 	typedef boost::shared_ptr<CallExpr> Ptr;
@@ -503,6 +506,7 @@ protected:
 	GraphInterfaceImpl<CallExpr> interfaceGraph;
 	CallInterfaceImpl<CallExpr> interfaceCall;
 	TypeInterfaceImpl<CallExpr> interfaceType;
+	CallableArgInterfaceImpl<CallExpr> interfaceCallableArg;
 	NamedInterfaceImpl<CallExpr> interfaceNamed;
 };
 

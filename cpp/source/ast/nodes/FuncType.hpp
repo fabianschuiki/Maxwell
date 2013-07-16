@@ -39,7 +39,7 @@ public:
 	void setIn(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kTupleType)) {
-			throw runtime_error("'in' needs to be of kind {TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+			throw runtime_error("'in' of " + id.str() + " needs to be of kind {TupleType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!equal(v, in)) {
 			modify("in");
@@ -58,7 +58,7 @@ public:
 	void setOut(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kTupleType)) {
-			throw runtime_error("'out' needs to be of kind {TupleType} or implement interface {}, got " + v->getClassName() + " instead.");
+			throw runtime_error("'out' of " + id.str() + " needs to be of kind {TupleType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!equal(v, out)) {
 			modify("out");

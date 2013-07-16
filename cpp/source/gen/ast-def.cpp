@@ -29,10 +29,17 @@ void buildAST(Builder &node)
 	Node& variable = node("@Variable") // everything that looks like a variable (var, val, func arg, ...)
 		.intf(type)
 		.attr("name", "string")
-		.child("type", "#typeExpr");
+		.child("typeExpr", "#typeExpr");
 	Node& callArg = node("@CallArg") // everything that looks like a call argument (expr and optional name)
 		.attr("name", "string")
 		.attr("expr", "@Type");
+	Node& callable = node("@Callable") // everything that looks like a function that can be called
+		.attr("name", "string")
+		.attr("in", "[@CallableArg]")
+		.attr("out", "[@CallableArg]");
+	Node& callableArg = node("@CallableArg")
+		.intf(type)
+		.attr("name", "string");
 
 	// Anonymous interfaces.
 	node("@Named").attr("name", "string");
@@ -42,7 +49,7 @@ void buildAST(Builder &node)
 		.attr("name", "string")
 		.attr("expr", "&@Type");
 	node("CallCandidate")
-		.attr("func", "&FuncDef")
+		.attr("func", "&@Callable")
 		.child("args", "[CallCandidateArg]")
 		.attr("feasible", "bool")
 		.attr("cost", "int")
@@ -53,14 +60,14 @@ void buildAST(Builder &node)
 
 	// Nodes
 	node("FuncDef")
-		.intf(graph)
+		.intf(graph).intf(callable)
 		.attr("name", "string")
 		.child("in", "[FuncArg]")
 		.child("out", "[FuncArg]")
 		.child("body", "FuncBody")
 		.child("type", "FuncType");
 	node("FuncArg")
-		.intf(graph).intf(variable);
+		.intf(graph).intf(variable).intf(callableArg);
 	node("FuncBody")
 		.intf(graph)
 		.child("stmts", "[any]");
@@ -146,7 +153,15 @@ void buildAST(Builder &node)
 	node("StructureQualifierMember")
 		.intf(graph)
 		.attr("name", "string")
-		.child("type", "#typeExpr");
+		.child("type", "#typeExpr")
+		.child("implSetter", "ImplAccessor")
+		.child("implGetter", "ImplAccessor");
+	node("ImplAccessor")
+		.intf(graph).intf(callable)
+		.child("in", "[ImplAccessorArg]")
+		.child("out", "[ImplAccessorArg]");
+	node("ImplAccessorArg")
+		.intf(graph).intf(callableArg);
 	node("InterfaceQualifier")
 		.intf(graph)
 		.child("stmts", "[any]");
@@ -164,7 +179,7 @@ void buildAST(Builder &node)
 	node("InvalidType").describe("str << \"<invalid>\";");
 	node("DefinedType")
 		.attr("definition", "&any")
-		.describe("str << getDefinition()->needNamed()->getName();");
+		.describe("str << (getDefinition()->implements(kNamedInterface) ? getDefinition()->needNamed()->getName() : getDefinition()->getId().str());");
 	node("UnionType")
 		.child("types", "[#type]")
 		.describe("\

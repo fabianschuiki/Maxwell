@@ -22,6 +22,7 @@ public:
 		stageBindNamedTypes(r),
 		stageEvalTypeExprs(r),
 		stageInitRootTypes(r),
+		stageGenImplicitAccessors(r),
 		stageConfigureCalls(r),
 		stageFindCallCandidates(r),
 		stageCalcPossibleTypes(r),
@@ -45,6 +46,9 @@ public:
 		stageIndices["InitRootTypes"] = stages.size();
 		stagesByName["InitRootTypes"] = &stageInitRootTypes;
 		stages.push_back(&stageInitRootTypes);
+		stageIndices["GenImplicitAccessors"] = stages.size();
+		stagesByName["GenImplicitAccessors"] = &stageGenImplicitAccessors;
+		stages.push_back(&stageGenImplicitAccessors);
 		stageIndices["ConfigureCalls"] = stages.size();
 		stagesByName["ConfigureCalls"] = &stageConfigureCalls;
 		stages.push_back(&stageConfigureCalls);
@@ -82,13 +86,14 @@ public:
 		if (name == "BindNamedTypes") return 3;
 		if (name == "EvalTypeExprs") return 4;
 		if (name == "InitRootTypes") return 5;
-		if (name == "ConfigureCalls") return 6;
-		if (name == "FindCallCandidates") return 7;
-		if (name == "CalcPossibleTypes") return 8;
-		if (name == "CalcRequiredTypes") return 9;
-		if (name == "CalcActualTypes") return 10;
-		if (name == "NarrowCallCandidates") return 11;
-		if (name == "SelectCallCandidate") return 12;
+		if (name == "GenImplicitAccessors") return 6;
+		if (name == "ConfigureCalls") return 7;
+		if (name == "FindCallCandidates") return 8;
+		if (name == "CalcPossibleTypes") return 9;
+		if (name == "CalcRequiredTypes") return 10;
+		if (name == "CalcActualTypes") return 11;
+		if (name == "NarrowCallCandidates") return 12;
+		if (name == "SelectCallCandidate") return 13;
 		throw std::runtime_error("Stage " + name + " does not exist.");
 	}
 protected:
@@ -97,6 +102,7 @@ protected:
 	BindNamedTypes stageBindNamedTypes;
 	EvalTypeExprs stageEvalTypeExprs;
 	InitRootTypes stageInitRootTypes;
+	GenImplicitAccessors stageGenImplicitAccessors;
 	ConfigureCalls stageConfigureCalls;
 	FindCallCandidates stageFindCallCandidates;
 	CalcPossibleTypes stageCalcPossibleTypes;

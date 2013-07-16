@@ -64,13 +64,27 @@ public:
 	void wrapFuncArgs(NodeVector& args, const NodeVector& funcArgs);
 };
 
+class GenImplicitAccessors : public Stage
+{
+protected:
+	virtual void process(const NodePtr& node);
+public:
+	string getName() const { return "GenImplicitAccessors"; }
+	int getId() const { return 6; }
+	GenImplicitAccessors(Repository& r) : Stage(r) {}
+
+	/* Copyright © 2013 Fabian Schuiki */
+	void processChildren(const NodePtr& node);
+	void gatherImplAccessors(const NodePtr& node, NodeVector& into);
+};
+
 class ConfigureCalls : public Stage
 {
 protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "ConfigureCalls"; }
-	int getId() const { return 6; }
+	int getId() const { return 7; }
 	ConfigureCalls(Repository& r) : Stage(r) {}
 };
 
@@ -80,7 +94,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "FindCallCandidates"; }
-	int getId() const { return 7; }
+	int getId() const { return 8; }
 	FindCallCandidates(Repository& r) : Stage(r) {}
 };
 
@@ -90,7 +104,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "CalcPossibleTypes"; }
-	int getId() const { return 8; }
+	int getId() const { return 9; }
 	CalcPossibleTypes(Repository& r) : Stage(r) {}
 
 	/* Copyright © 2013 Fabian Schuiki */
@@ -103,7 +117,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "CalcRequiredTypes"; }
-	int getId() const { return 9; }
+	int getId() const { return 10; }
 	CalcRequiredTypes(Repository& r) : Stage(r) {}
 };
 
@@ -113,7 +127,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "CalcActualTypes"; }
-	int getId() const { return 10; }
+	int getId() const { return 11; }
 	CalcActualTypes(Repository& r) : Stage(r) {}
 
 	/* Copyright © 2013 Fabian Schuiki */
@@ -126,7 +140,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "NarrowCallCandidates"; }
-	int getId() const { return 11; }
+	int getId() const { return 12; }
 	NarrowCallCandidates(Repository& r) : Stage(r) {}
 };
 
@@ -136,7 +150,7 @@ protected:
 	virtual void process(const NodePtr& node);
 public:
 	string getName() const { return "SelectCallCandidate"; }
-	int getId() const { return 12; }
+	int getId() const { return 13; }
 	SelectCallCandidate(Repository& r) : Stage(r) {}
 };
 

@@ -5,6 +5,7 @@ add_library(stage
 	BindNamedTypes.cpp
 	EvalTypeExprs.cpp
 	InitRootTypes.cpp
+	GenImplicitAccessors.cpp
 	ConfigureCalls.cpp
 	FindCallCandidates.cpp
 	CalcPossibleTypes.cpp

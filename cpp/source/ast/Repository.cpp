@@ -235,3 +235,12 @@ const NodePtr& Repository::getBuiltinType(const string& name)
 {
 	return builtinRepository.getNode(name);
 }
+
+/**
+ * @brief Adds the given node to the list of visible symbols. Other root nodes
+ * may then import the node.
+ */
+void Repository::addExportedSymbol(const NodeId& id, const string& name)
+{
+	symbolRepo->addExportedSymbol(id, name);
+}

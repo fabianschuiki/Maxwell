@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
 	stages.push_back("BindNamedTypes");
 	stages.push_back("EvalTypeExprs");
 	stages.push_back("InitRootTypes");
+	stages.push_back("GenImplicitAccessors");
 	stages.push_back("ConfigureCalls");
 	stages.push_back("FindCallCandidates");
 	stages.push_back("CalcPossibleTypes");

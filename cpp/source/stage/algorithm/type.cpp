@@ -53,6 +53,27 @@ bool equal(const DefinedType::Ptr& a, const DefinedType::Ptr& b)
 	return a->getDefinition()->getId() == b->getDefinition()->getId();
 }
 
+bool equal(const QualifiedType::Ptr& a, const QualifiedType::Ptr& b)
+{
+	// Treat the trivial cases where the number of fields does not match.
+	const NodeVector& membersA = a->getMembers(), membersB = b->getMembers();
+	if (membersA.size() != membersB.size()) return false;
+	const NodeVector& funcsA = a->getFuncs(), funcsB = b->getFuncs();
+	if (funcsA.size() != funcsB.size()) return false;
+
+	// Check each member separately.
+	for (NodeVector::const_iterator ia = membersA.begin(), ib = membersB.begin(); ia != membersA.end() && ib != membersB.end(); ia++, ib++) {
+		const QualifiedTypeMember::Ptr& memberA = QualifiedTypeMember::needFrom(*ia), memberB = QualifiedTypeMember::needFrom(*ib);
+		if (memberA->getName() != memberB->getName())
+			return false;
+		if (!equal(memberA->getType(), memberB->getType()))
+			return false;
+	}
+
+	// TODO: do the same for interface stuff.
+	return true;
+}
+
 
 /**
  * Returns the intersection between the TypeSet and the other node. The other
@@ -108,9 +129,29 @@ NodePtr simplify(const NodePtr& input)
  */
 bool equal(const NodePtr& a, const NodePtr& b)
 {
+	// Treat combinations of defined types.
 	DefinedType::Ptr defTypeA = DefinedType::from(a), defTypeB = DefinedType::from(b);
 	if (defTypeA && defTypeB)
 		return equal(defTypeA, defTypeB);
+	if (defTypeA && !defTypeB)
+		return equal(defTypeA->getDefinition(), b);
+	if (!defTypeA && defTypeB)
+		return equal(defTypeB->getDefinition(), a);
+
+	// Resolve type defs.
+	TypeDef::Ptr typedefA = TypeDef::from(a), typedefB = TypeDef::from(b);
+	if (typedefA && typedefB)
+		return equal(typedefA->getType()->needTypeExpr()->getEvaluatedType(), typedefB->getType()->needTypeExpr()->getEvaluatedType());
+	if (typedefA && !typedefB)
+		return equal(typedefA->getType()->needTypeExpr()->getEvaluatedType(), b);
+	if (!typedefA && typedefB)
+		return equal(a, typedefB->getType()->needTypeExpr()->getEvaluatedType());
+
+	// Treat qualified types.
+	QualifiedType::Ptr qualiTypeA = QualifiedType::from(a), qualiTypeB = QualifiedType::from(b);
+	if (qualiTypeA && qualiTypeB)
+		return equal(qualiTypeA, qualiTypeB);
+
 	return false;
 }
 

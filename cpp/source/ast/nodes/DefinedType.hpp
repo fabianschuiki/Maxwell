@@ -67,7 +67,7 @@ public:
 	{
 		if (depth == 0) return "DefinedType{…}";
 		stringstream str, b;
-		str << getDefinition()->needNamed()->getName();
+		str << (getDefinition()->implements(kNamedInterface) ? getDefinition()->needNamed()->getName() : getDefinition()->getId().str());
 		return str.str();
 	}
 

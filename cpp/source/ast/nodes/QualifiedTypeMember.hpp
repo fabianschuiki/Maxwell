@@ -17,16 +17,16 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class TupleTypeArg : public Node
+class QualifiedTypeMember : public Node
 {
 public:
-	TupleTypeArg() : Node(),
+	QualifiedTypeMember() : Node(),
 		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kTupleTypeArg;
+		return k == kQualifiedTypeMember;
 	}
 
 	virtual bool implements(Interface i)
@@ -36,7 +36,7 @@ public:
 		return false;
 	}
 
-	virtual string getClassName() const { return "TupleTypeArg"; }
+	virtual string getClassName() const { return "QualifiedTypeMember"; }
 
 	void setName(const string& v)
 	{
@@ -75,9 +75,14 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "TupleTypeArg{…}";
+		if (depth == 0) return "QualifiedTypeMember{…}";
 		stringstream str, b;
-		if (!name.empty()) str << name << ": "; str << type->describe(depth-1);
+		str << "QualifiedTypeMember{";
+		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
+		if (this->type) b << endl << "  \033[1mtype\033[0m = " << indent(this->type->describe(depth-1));
+		string bs = b.str();
+		if (!bs.empty()) str << bs << endl;
+		str << "}";
 		return str.str();
 	}
 
@@ -122,7 +127,7 @@ public:
 
 	virtual bool equalTo(const NodePtr& o)
 	{
-		const shared_ptr<TupleTypeArg>& other = boost::dynamic_pointer_cast<TupleTypeArg>(o);
+		const shared_ptr<QualifiedTypeMember>& other = boost::dynamic_pointer_cast<QualifiedTypeMember>(o);
 		if (!other) return false;
 		if (!equal(this->name, other->name)) return false;
 		if (!equal(this->type, other->type)) return false;
@@ -132,15 +137,15 @@ public:
 	// Interfaces
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
-	typedef boost::shared_ptr<TupleTypeArg> Ptr;
-	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<TupleTypeArg>(n); }
-	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<TupleTypeArg>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to TupleTypeArg."); return r; }
+	typedef boost::shared_ptr<QualifiedTypeMember> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<QualifiedTypeMember>(n); }
+	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<QualifiedTypeMember>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to QualifiedTypeMember."); return r; }
 protected:
 	string name;
 	NodePtr type;
 
 	// Interfaces
-	NamedInterfaceImpl<TupleTypeArg> interfaceNamed;
+	NamedInterfaceImpl<QualifiedTypeMember> interfaceNamed;
 };
 
 } // namespace ast

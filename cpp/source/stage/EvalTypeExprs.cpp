@@ -21,23 +21,66 @@ void EvalTypeExprs::process(const NodePtr& node)
 			return;
 
 		// Otherwise operate on all known expressions.
-		if (NamedTypeExpr *expr = dynamic_cast<NamedTypeExpr*>(node.get())) {
+		if (const NamedTypeExpr::Ptr& expr = NamedTypeExpr::from(node)) {
 			const NodePtr& def = expr->getDefinition();
 			assert(def && "NamedTypeExpr without a resolved definition.");
-			shared_ptr<DefinedType> t(new DefinedType);
+			DefinedType::Ptr t(new DefinedType);
 			t->setDefinition(def);
 			intf->setEvaluatedType(t);
 		}
 
-		if (UnionTypeExpr *expr = dynamic_cast<UnionTypeExpr*>(node.get())) {
+		if (const UnionTypeExpr::Ptr& expr = UnionTypeExpr::from(node)) {
 			const NodeVector& typeExprs = expr->getTypes();
 			NodeVector types(typeExprs.size());
 			for (int i = 0; i < typeExprs.size(); i++) {
 				types[i] = typeExprs[i]->asTypeExpr()->getEvaluatedType();
 			}
-			shared_ptr<UnionType> t(new UnionType);
+			UnionType::Ptr t(new UnionType);
 			t->setTypes(types);
 			intf->setEvaluatedType(t);
+		}
+
+		if (const QualifiedTypeExpr::Ptr& expr = QualifiedTypeExpr::from(node))
+		{
+			// Compile a list of qualifiers of this type.
+			NodeVector typeMembers, typeFuncs, typeNatives, typeRanges;
+			const NodeVector& exprs = expr->getExprs();
+			for (NodeVector::const_iterator it = exprs.begin(); it != exprs.end(); it++)
+			{
+				// Iterate through the statements of structure qualifiers to extract the members.
+				if (const StructureQualifier::Ptr& quali = StructureQualifier::from(*it)) {
+					const NodeVector& stmts = quali->getStmts();
+
+					for (NodeVector::const_iterator is = stmts.begin(); is != stmts.end(); is++) {
+						const StructureQualifierMember::Ptr& member = StructureQualifierMember::needFrom(*is);
+
+						QualifiedTypeMember::Ptr qtm(new QualifiedTypeMember);
+						qtm->setName(member->getName());
+						const NodePtr& type = member->getType(false);
+						if (type) qtm->setType(type->needTypeExpr()->getEvaluatedType());
+						typeMembers.push_back(qtm);
+					}
+				}
+				else if (const InterfaceQualifier::Ptr& quali = InterfaceQualifier::from(*it)) {
+					// TODO: Ignored for now...
+				}
+				else if (const NativeQualifier::Ptr& quali = NativeQualifier::from(*it)) {
+					// TODO: Ignored for now...
+				}
+				else if (const RangeQualifier::Ptr& quali = RangeQualifier::from(*it)) {
+					// TODO: Ignored for now...
+				}
+			}
+
+			// Merge the list of qualifiers into a new instance of QualifiedType.
+			QualifiedType::Ptr qt(new QualifiedType);
+			qt->setMembers(typeMembers);
+			qt->setFuncs(typeFuncs);
+			qt->setNatives(typeNatives);
+			qt->setRanges(typeRanges);
+
+			// Store this qualified type in the type expression.
+			intf->setEvaluatedType(qt);
 		}
 
 		// Throw an error if we were unable to assign an evaluated type.

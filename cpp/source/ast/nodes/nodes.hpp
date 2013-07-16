@@ -23,7 +23,9 @@
 #include "NamedTypeExpr.hpp"
 #include "NativeQualifier.hpp"
 #include "NumberConstExpr.hpp"
+#include "QualifiedType.hpp"
 #include "QualifiedTypeExpr.hpp"
+#include "QualifiedTypeMember.hpp"
 #include "RangeQualifier.hpp"
 #include "StringConstExpr.hpp"
 #include "StructureQualifier.hpp"
@@ -175,10 +177,20 @@ public:
 					if (size == 15) return NodePtr(new NumberConstExpr);
 				}
 			}
-			// QualifiedTypeExpr.*
-			if (size >= 17 && name[0] == 'Q' && name[1] == 'u' && name[2] == 'a' && name[3] == 'l' && name[4] == 'i' && name[5] == 'f' && name[6] == 'i' && name[7] == 'e' && name[8] == 'd' && name[9] == 'T' && name[10] == 'y' && name[11] == 'p' && name[12] == 'e' && name[13] == 'E' && name[14] == 'x' && name[15] == 'p' && name[16] == 'r') {
-				// QualifiedTypeExpr
-				if (size == 17) return NodePtr(new QualifiedTypeExpr);
+			// QualifiedType.*
+			if (size >= 13 && name[0] == 'Q' && name[1] == 'u' && name[2] == 'a' && name[3] == 'l' && name[4] == 'i' && name[5] == 'f' && name[6] == 'i' && name[7] == 'e' && name[8] == 'd' && name[9] == 'T' && name[10] == 'y' && name[11] == 'p' && name[12] == 'e') {
+				// QualifiedType
+				if (size == 13) return NodePtr(new QualifiedType);
+				// QualifiedTypeExpr.*
+				if (size >= 17 && name[13] == 'E' && name[14] == 'x' && name[15] == 'p' && name[16] == 'r') {
+					// QualifiedTypeExpr
+					if (size == 17) return NodePtr(new QualifiedTypeExpr);
+				}
+				// QualifiedTypeMember.*
+				if (size >= 19 && name[13] == 'M' && name[14] == 'e' && name[15] == 'm' && name[16] == 'b' && name[17] == 'e' && name[18] == 'r') {
+					// QualifiedTypeMember
+					if (size == 19) return NodePtr(new QualifiedTypeMember);
+				}
 			}
 			// RangeQualifier.*
 			if (size >= 14 && name[0] == 'R' && name[1] == 'a' && name[2] == 'n' && name[3] == 'g' && name[4] == 'e' && name[5] == 'Q' && name[6] == 'u' && name[7] == 'a' && name[8] == 'l' && name[9] == 'i' && name[10] == 'f' && name[11] == 'i' && name[12] == 'e' && name[13] == 'r') {

@@ -91,7 +91,7 @@ void buildAST(Builder &node)
 		.intf(graph)
 		.attr("name", "string")
 		.child("context", "any")
-		.child("callArgs", "[CallExprArg]")
+		.child("args", "[CallExprArg]")
 		.intf(call).intf(type);
 	node("CallExprArg")
 		.intf(graph)
@@ -110,12 +110,13 @@ void buildAST(Builder &node)
 		.child("expr", "any")
 		.intf(call).intf(type);
 	node("MemberAccessExpr")
-		.intf(graph).intf(type)
+		.intf(graph)
 		.child("expr", "any")
-		.attr("name", "string");
+		.attr("name", "string")
+		.intf(type).intf(call);
 	node("AssignmentExpr")
+		.child("rhs", "any") // having the rhs first allows for easier handling of implicit setter calls
 		.child("lhs", "any")
-		.child("rhs", "any")
 		.intf(graph).intf(type);
 
 	// Type Expressions

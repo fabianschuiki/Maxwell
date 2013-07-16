@@ -44,9 +44,9 @@ void SelectCallCandidate::process(const NodePtr& node)
 	// Throw an error if we got none or multiple feasible candidates, or select
 	// the one candidate in the list.
 	if (finalCandidates.empty()) {
-		throw std::runtime_error("No feasible function out of " + lexical_cast<string>(candidates.size()) + " candidates for call " + node->getId().str() + ".");
+		throw std::runtime_error("No feasible function out of " + lexical_cast<string>(candidates.size()) + " candidates for call " + callIntf->getCallName() + " (" + node->getId().str() + ").");
 	} else if (finalCandidates.size() > 1) {
-		throw std::runtime_error("Ambiguous call " + node->getId().str() + " has " + lexical_cast<string>(finalCandidates.size()) + " feasible functions out of " + lexical_cast<string>(candidates.size()) + " candidates.");
+		throw std::runtime_error("Ambiguous call " + callIntf->getCallName() + " (" + node->getId().str() + ") has " + lexical_cast<string>(finalCandidates.size()) + " feasible functions out of " + lexical_cast<string>(candidates.size()) + " candidates.");
 	} else {
 		const CallCandidate::Ptr& finalCandidate = CallCandidate::needFrom(finalCandidates.front());
 		callIntf->setSelectedCallCandidate(finalCandidate);

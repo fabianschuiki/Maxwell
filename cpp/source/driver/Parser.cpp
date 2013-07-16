@@ -677,7 +677,7 @@ namespace driver
       UnaryOpExpr *u = new UnaryOpExpr;
       u->setPostfix(true);
       u->setOperatorName(*(yysemantic_stack_[(2) - (2)].string));
-      u->setExpr(shared_ptr<Node>((yysemantic_stack_[(2) - (1)].node)));
+      u->setExpr(NodePtr((yysemantic_stack_[(2) - (1)].node)));
       (yyval.node) = u;
       delete (yysemantic_stack_[(2) - (2)].string);
     ;}
@@ -688,7 +688,7 @@ namespace driver
     {
       CallExpr *c = new CallExpr;
       c->setName(*(yysemantic_stack_[(5) - (3)].string));
-      c->setContext(shared_ptr<Node>((yysemantic_stack_[(5) - (1)].node)));
+      c->setContext(NodePtr((yysemantic_stack_[(5) - (1)].node)));
       (yyval.node) = c;
       delete (yysemantic_stack_[(5) - (3)].string);
     ;}
@@ -699,8 +699,8 @@ namespace driver
     {
       CallExpr *c = new CallExpr;
       c->setName(*(yysemantic_stack_[(6) - (3)].string));
-      c->setCallArgs(*(yysemantic_stack_[(6) - (5)].nodes));
-      c->setContext(shared_ptr<Node>((yysemantic_stack_[(6) - (1)].node)));
+      c->setArgs(*(yysemantic_stack_[(6) - (5)].nodes));
+      c->setContext(NodePtr((yysemantic_stack_[(6) - (1)].node)));
       (yyval.node) = c;
       delete (yysemantic_stack_[(6) - (3)].string);
       delete (yysemantic_stack_[(6) - (5)].nodes);
@@ -710,10 +710,10 @@ namespace driver
   case 37:
 #line 320 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
-      MemberAccessExpr *m = new MemberAccessExpr;
-      m->setExpr(shared_ptr<Node>((yysemantic_stack_[(3) - (1)].node)));
-      m->setName(*(yysemantic_stack_[(3) - (3)].string));
-      (yyval.node) = m;
+      CallExpr *c = new CallExpr;
+      c->setName(*(yysemantic_stack_[(3) - (3)].string));
+      c->setContext(NodePtr((yysemantic_stack_[(3) - (1)].node)));
+      (yyval.node) = c;
       delete (yysemantic_stack_[(3) - (3)].string);
     ;}
     break;
@@ -733,7 +733,7 @@ namespace driver
     {
       CallExpr *c = new CallExpr;
       c->setName(*(yysemantic_stack_[(4) - (1)].string));
-      c->setCallArgs(*(yysemantic_stack_[(4) - (3)].nodes));
+      c->setArgs(*(yysemantic_stack_[(4) - (3)].nodes));
       (yyval.node) = c;
       delete (yysemantic_stack_[(4) - (1)].string);
       delete (yysemantic_stack_[(4) - (3)].nodes);

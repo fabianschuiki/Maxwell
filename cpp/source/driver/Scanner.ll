@@ -84,7 +84,7 @@ symbol              {additive_op}|{multiplicative_op}|{relational_op}|[\.:~&''^]
 "native"     return token::NATIVE;
 "range"      return token::RANGE;
 
-[a-zA-Z_][a-zA-Z0-9_]*    storeToken; return token::IDENTIFIER;
+[a-zA-Z_][a-zA-Z0-9_!?=]*    storeToken; return token::IDENTIFIER;
 [0-9]+("."[0-9]*)?        storeToken; return token::NUMBER;
 
 "("  return token::LPAREN;

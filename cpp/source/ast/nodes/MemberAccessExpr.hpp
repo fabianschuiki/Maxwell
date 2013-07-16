@@ -22,6 +22,7 @@ class MemberAccessExpr : public Node
 public:
 	MemberAccessExpr() : Node(),
 		interfaceGraph(this),
+		interfaceCall(this),
 		interfaceType(this),
 		interfaceCallArg(this),
 		interfaceNamed(this) {}
@@ -36,6 +37,7 @@ public:
 	{
 		if (Node::implements(i)) return true;
 		if (i == kGraphInterface) return true;
+		if (i == kCallInterface) return true;
 		if (i == kTypeInterface) return true;
 		if (i == kCallArgInterface) return true;
 		if (i == kNamedInterface) return true;
@@ -67,6 +69,38 @@ public:
 		const NodePtr& v = graphPrev.get(repository);
 		if (required && !v) {
 			throw runtime_error("Node " + getId().str() + " is required to have graphPrev set to a non-null value.");
+		}
+		return v;
+	}
+
+	void setExpr(const NodePtr& v)
+	{
+		if (!equal(v, expr)) {
+			modify("expr");
+			expr = v;
+		}
+	}
+	const NodePtr& getExpr(bool required = true)
+	{
+		const NodePtr& v = expr;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have expr set to a non-null value.");
+		}
+		return v;
+	}
+
+	void setName(const string& v)
+	{
+		if (!equal(v, name)) {
+			modify("name");
+			name = v;
+		}
+	}
+	const string& getName(bool required = true)
+	{
+		const string& v = name;
+		if (required && v.empty()) {
+			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string name set.");
 		}
 		return v;
 	}
@@ -128,34 +162,74 @@ public:
 		return v;
 	}
 
-	void setExpr(const NodePtr& v)
+	void setCallName(const string& v)
 	{
-		if (!equal(v, expr)) {
-			modify("expr");
-			expr = v;
+		if (!equal(v, callName)) {
+			modify("callName");
+			callName = v;
 		}
 	}
-	const NodePtr& getExpr(bool required = true)
+	const string& getCallName(bool required = true)
 	{
-		const NodePtr& v = expr;
-		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have expr set to a non-null value.");
+		const string& v = callName;
+		if (required && v.empty()) {
+			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string callName set.");
 		}
 		return v;
 	}
 
-	void setName(const string& v)
+	void setCallArgs(const NodeVector& v)
 	{
-		if (!equal(v, name)) {
-			modify("name");
-			name = v;
+		if (!equal(v, callArgs)) {
+			modify("callArgs");
+			callArgs = v;
 		}
 	}
-	const string& getName(bool required = true)
+	const NodeVector& getCallArgs(bool required = true)
 	{
-		const string& v = name;
-		if (required && v.empty()) {
-			throw runtime_error("Node " + getId().str() + " is required to have a non-empty string name set.");
+		const NodeVector& v = callArgs;
+		return v;
+	}
+
+	void setCallCandidates(const NodeVector& v)
+	{
+		if (!equal(v, callCandidates)) {
+			modify("callCandidates");
+			callCandidates = v;
+		}
+	}
+	const NodeVector& getCallCandidates(bool required = true)
+	{
+		const NodeVector& v = callCandidates;
+		return v;
+	}
+
+	void setSelectedCallCandidate(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kCallCandidate)) {
+			throw runtime_error("'selectedCallCandidate' needs to be of kind {CallCandidate} or implement interface {}, got " + v->getClassName() + " instead.");
+		}
+		if (!v && selectedCallCandidate) {
+			modify("selectedCallCandidate");
+			selectedCallCandidate.reset();
+		}
+		if (!selectedCallCandidate || v->getId() != selectedCallCandidate.id) {
+			modify("selectedCallCandidate");
+			selectedCallCandidate.set(v);
+		}
+	}
+	void setSelectedCallCandidate(const NodeId& v)
+	{
+		if (v != selectedCallCandidate.id) {
+			modify("selectedCallCandidate");
+			selectedCallCandidate.set(v);
+		}
+	}
+	const NodePtr& getSelectedCallCandidate(bool required = true)
+	{
+		const NodePtr& v = selectedCallCandidate.get(repository);
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have selectedCallCandidate set to a non-null value.");
 		}
 		return v;
 	}
@@ -166,11 +240,15 @@ public:
 		stringstream str, b;
 		str << "MemberAccessExpr{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
+		if (this->expr) b << endl << "  \033[1mexpr\033[0m = " << indent(this->expr->describe(depth-1));
+		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
-		if (this->expr) b << endl << "  \033[1mexpr\033[0m = " << indent(this->expr->describe(depth-1));
-		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
+		if (!this->callName.empty()) b << endl << "  \033[1mcallName\033[0m = \033[33m\"" << this->callName << "\"\033[0m";
+		if (!this->callArgs.empty()) b << endl << "  \033[1mcallArgs\033[0m = " << indent(describeVector(this->callArgs, depth-1));
+		if (!this->callCandidates.empty()) b << endl << "  \033[1mcallCandidates\033[0m = " << indent(describeVector(this->callCandidates, depth-1));
+		if (this->selectedCallCandidate) b << endl << "  \033[1mselectedCallCandidate\033[0m = \033[36m" << this->selectedCallCandidate.id << "\033[0m";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -180,29 +258,45 @@ public:
 	virtual void encode(Encoder& e)
 	{
 		e.encode(this->graphPrev);
+		e.encode(this->expr);
+		e.encode(this->name);
 		e.encode(this->possibleType);
 		e.encode(this->requiredType);
 		e.encode(this->actualType);
-		e.encode(this->expr);
-		e.encode(this->name);
+		e.encode(this->callName);
+		e.encode(this->callArgs);
+		e.encode(this->callCandidates);
+		e.encode(this->selectedCallCandidate);
 	}
 
 	virtual void decode(Decoder& d)
 	{
 		d.decode(this->graphPrev);
+		d.decode(this->expr);
+		d.decode(this->name);
 		d.decode(this->possibleType);
 		d.decode(this->requiredType);
 		d.decode(this->actualType);
-		d.decode(this->expr);
-		d.decode(this->name);
+		d.decode(this->callName);
+		d.decode(this->callArgs);
+		d.decode(this->callCandidates);
+		d.decode(this->selectedCallCandidate);
 	}
 
 	virtual void updateHierarchyOfChildren()
 	{
+		if (this->expr) this->expr->updateHierarchy(id + "expr", repository, this);
 		if (this->possibleType) this->possibleType->updateHierarchy(id + "possibleType", repository, this);
 		if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
 		if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
-		if (this->expr) this->expr->updateHierarchy(id + "expr", repository, this);
+		for (int i = 0; i < this->callArgs.size(); i++) {
+			char buf[32]; snprintf(buf, 31, "%i", i);
+			this->callArgs[i]->updateHierarchy((id + "callArgs") + buf, repository, this);
+		}
+		for (int i = 0; i < this->callCandidates.size(); i++) {
+			char buf[32]; snprintf(buf, 31, "%i", i);
+			this->callCandidates[i]->updateHierarchy((id + "callCandidates") + buf, repository, this);
+		}
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -217,6 +311,49 @@ public:
 					return getActualType();
 				} else if (path[10] == '.') {
 					return getActualType()->resolvePath(path.substr(11));
+				}
+			}
+			// call.*
+			if (size >= 4 && path[0] == 'c' && path[1] == 'a' && path[2] == 'l' && path[3] == 'l') {
+				// callArgs.*
+				if (size >= 8 && path[4] == 'A' && path[5] == 'r' && path[6] == 'g' && path[7] == 's') {
+					// callArgs
+					if (size == 8) {
+						throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
+					} else if (path[8] == '.') {
+						size_t dot = path.find(".", 9);
+						string idx_str = path.substr(9, dot);
+						int idx = atoi(idx_str.c_str());
+						const NodeVector& a = getCallArgs();
+						if (idx < 0 || idx >= a.size()) {
+							throw std::runtime_error("Index into array '" + path.substr(0, 8) + "' is out of bounds.");
+						}
+						if (dot == string::npos) {
+							return a[idx];
+						} else {
+							return a[idx]->resolvePath(path.substr(dot + 1));
+						}
+					}
+				}
+				// callCandidates.*
+				if (size >= 14 && path[4] == 'C' && path[5] == 'a' && path[6] == 'n' && path[7] == 'd' && path[8] == 'i' && path[9] == 'd' && path[10] == 'a' && path[11] == 't' && path[12] == 'e' && path[13] == 's') {
+					// callCandidates
+					if (size == 14) {
+						throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
+					} else if (path[14] == '.') {
+						size_t dot = path.find(".", 15);
+						string idx_str = path.substr(15, dot);
+						int idx = atoi(idx_str.c_str());
+						const NodeVector& a = getCallCandidates();
+						if (idx < 0 || idx >= a.size()) {
+							throw std::runtime_error("Index into array '" + path.substr(0, 14) + "' is out of bounds.");
+						}
+						if (dot == string::npos) {
+							return a[idx];
+						} else {
+							return a[idx]->resolvePath(path.substr(dot + 1));
+						}
+					}
 				}
 			}
 			// expr.*
@@ -255,6 +392,15 @@ public:
 					return getRequiredType()->resolvePath(path.substr(13));
 				}
 			}
+			// selectedCallCandidate.*
+			if (size >= 21 && path[0] == 's' && path[1] == 'e' && path[2] == 'l' && path[3] == 'e' && path[4] == 'c' && path[5] == 't' && path[6] == 'e' && path[7] == 'd' && path[8] == 'C' && path[9] == 'a' && path[10] == 'l' && path[11] == 'l' && path[12] == 'C' && path[13] == 'a' && path[14] == 'n' && path[15] == 'd' && path[16] == 'i' && path[17] == 'd' && path[18] == 'a' && path[19] == 't' && path[20] == 'e') {
+				// selectedCallCandidate
+				if (size == 21) {
+					return getSelectedCallCandidate();
+				} else if (path[21] == '.') {
+					return getSelectedCallCandidate()->resolvePath(path.substr(22));
+				}
+			}
 		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
@@ -263,6 +409,8 @@ public:
 	{
 		NodeVector v;
 		if (const NodePtr& n = this->getExpr(false)) v.push_back(n);
+		v.insert(v.end(), this->callArgs.begin(), this->callArgs.end());
+		v.insert(v.end(), this->callCandidates.begin(), this->callCandidates.end());
 		return v;
 	}
 
@@ -271,16 +419,21 @@ public:
 		const shared_ptr<MemberAccessExpr>& other = boost::dynamic_pointer_cast<MemberAccessExpr>(o);
 		if (!other) return false;
 		if (!equal(this->graphPrev, other->graphPrev)) return false;
+		if (!equal(this->expr, other->expr)) return false;
+		if (!equal(this->name, other->name)) return false;
 		if (!equal(this->possibleType, other->possibleType)) return false;
 		if (!equal(this->requiredType, other->requiredType)) return false;
 		if (!equal(this->actualType, other->actualType)) return false;
-		if (!equal(this->expr, other->expr)) return false;
-		if (!equal(this->name, other->name)) return false;
+		if (!equal(this->callName, other->callName)) return false;
+		if (!equal(this->callArgs, other->callArgs)) return false;
+		if (!equal(this->callCandidates, other->callCandidates)) return false;
+		if (!equal(this->selectedCallCandidate, other->selectedCallCandidate)) return false;
 		return true;
 	}
 
 	// Interfaces
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+	virtual CallInterface* asCall() { return &this->interfaceCall; }
 	virtual TypeInterface* asType() { return &this->interfaceType; }
 	virtual CallArgInterface* asCallArg() { return &this->interfaceCallArg; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
@@ -290,14 +443,19 @@ public:
 	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<MemberAccessExpr>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to MemberAccessExpr."); return r; }
 protected:
 	NodeRef graphPrev;
+	NodePtr expr;
+	string name;
 	NodePtr possibleType;
 	NodePtr requiredType;
 	NodePtr actualType;
-	NodePtr expr;
-	string name;
+	string callName;
+	NodeVector callArgs;
+	NodeVector callCandidates;
+	NodeRef selectedCallCandidate;
 
 	// Interfaces
 	GraphInterfaceImpl<MemberAccessExpr> interfaceGraph;
+	CallInterfaceImpl<MemberAccessExpr> interfaceCall;
 	TypeInterfaceImpl<MemberAccessExpr> interfaceType;
 	CallArgInterfaceImpl<MemberAccessExpr> interfaceCallArg;
 	NamedInterfaceImpl<MemberAccessExpr> interfaceNamed;

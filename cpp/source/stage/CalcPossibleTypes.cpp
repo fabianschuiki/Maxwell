@@ -48,6 +48,12 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		}
 	}
 
+	// Assignment expressions return their assignment type.
+	if (const AssignmentExpr::Ptr& assign = AssignmentExpr::from(node)) {
+		addDependency(assign, "lhs.actualType");
+		assign->setPossibleType(assign->getLhs()->needType()->getActualType());
+	}
+
 	// Constants.
 	if (const NumberConstExpr::Ptr& num = NumberConstExpr::from(node)) {
 		DefinedType::Ptr typeInt(new DefinedType), typeReal(new DefinedType);

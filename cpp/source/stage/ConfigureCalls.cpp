@@ -16,16 +16,57 @@ void ConfigureCalls::process(const NodePtr& node)
 	}
 
 	// Configure call expressions.
-	if (CallExpr* call = dynamic_cast<CallExpr*>(node.get())) {
-		/* CallExpr nodes do not need any argument configuration, as they
-		 * already have their arguments configured  as callArgs attributes. This
-		 * allows call code to automatically use the actual arguments.
-		 */
-		if (call->getCallName(false).empty()) {
-			if (call->getContext(false)) {
-				throw std::runtime_error("Contextual calls (as in " + call->getId().str() + ") are not yet supported.");
-			}
+	if (const CallExpr::Ptr& call = CallExpr::from(node)) {
+		if (call->getCallName(false).empty() || call->getCallArgs().empty())
+		{
+			// Reuse the call name.
 			call->setCallName(call->getName());
+
+			// If a context is set, inject that as the first argument to the call.
+			NodeVector args;
+			if (const NodePtr& context = call->getContext(false)) {
+				CallArg::Ptr arg(new CallArg);
+				arg->setExpr(context);
+				args.push_back(arg);
+			}
+
+			// Wrap the CallExprArg nodes into CallArg nodes. This is required
+			// as the parent node may inject additional arguments which should
+			// not modify the CallExpr itself.
+			const NodeVector& argsGiven = call->getArgs();
+			for (NodeVector::const_iterator it = argsGiven.begin(); it != argsGiven.end(); it++) {
+				const CallExprArg::Ptr& argGiven = CallExprArg::needFrom(*it);
+				CallArg::Ptr arg(new CallArg);
+				arg->setName(argGiven->getName(false));
+				arg->setExpr(argGiven->getExpr());
+				args.push_back(arg);
+			}
+
+			// Store the arguments.
+			call->setCallArgs(args);
+			call->updateHierarchyOfChildren();
+		}
+	}
+
+	// Configure call expressions that reside inside an assignment.
+	if (const AssignmentExpr::Ptr& assign = AssignmentExpr::from(node)) {
+		if (const CallExpr::Ptr& call = CallExpr::from(assign->getLhs())) {
+			string cn = call->getCallName();
+			if (cn[cn.size() - 1] != '=') {
+				// Append a "=" to the called function's name.
+				cn += '=';
+				call->setCallName(cn);
+
+				// Append the rhs of the assignment as a function argument.
+				NodeVector args = call->getCallArgs();
+				CallArg::Ptr arg(new CallArg);
+				arg->setExpr(assign->getRhs());
+				args.push_back(arg);
+
+				// Store the new arguments.
+				call->setCallArgs(args);
+				call->updateHierarchyOfChildren();
+			}
 		}
 	}
 

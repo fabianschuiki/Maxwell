@@ -40,22 +40,6 @@ public:
 
 	virtual string getClassName() const { return "AssignmentExpr"; }
 
-	void setLhs(const NodePtr& v)
-	{
-		if (!equal(v, lhs)) {
-			modify("lhs");
-			lhs = v;
-		}
-	}
-	const NodePtr& getLhs(bool required = true)
-	{
-		const NodePtr& v = lhs;
-		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have lhs set to a non-null value.");
-		}
-		return v;
-	}
-
 	void setRhs(const NodePtr& v)
 	{
 		if (!equal(v, rhs)) {
@@ -68,6 +52,22 @@ public:
 		const NodePtr& v = rhs;
 		if (required && !v) {
 			throw runtime_error("Node " + getId().str() + " is required to have rhs set to a non-null value.");
+		}
+		return v;
+	}
+
+	void setLhs(const NodePtr& v)
+	{
+		if (!equal(v, lhs)) {
+			modify("lhs");
+			lhs = v;
+		}
+	}
+	const NodePtr& getLhs(bool required = true)
+	{
+		const NodePtr& v = lhs;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have lhs set to a non-null value.");
 		}
 		return v;
 	}
@@ -161,8 +161,8 @@ public:
 		if (depth == 0) return "AssignmentExpr{…}";
 		stringstream str, b;
 		str << "AssignmentExpr{";
-		if (this->lhs) b << endl << "  \033[1mlhs\033[0m = " << indent(this->lhs->describe(depth-1));
 		if (this->rhs) b << endl << "  \033[1mrhs\033[0m = " << indent(this->rhs->describe(depth-1));
+		if (this->lhs) b << endl << "  \033[1mlhs\033[0m = " << indent(this->lhs->describe(depth-1));
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
@@ -175,8 +175,8 @@ public:
 
 	virtual void encode(Encoder& e)
 	{
-		e.encode(this->lhs);
 		e.encode(this->rhs);
+		e.encode(this->lhs);
 		e.encode(this->graphPrev);
 		e.encode(this->possibleType);
 		e.encode(this->requiredType);
@@ -185,8 +185,8 @@ public:
 
 	virtual void decode(Decoder& d)
 	{
-		d.decode(this->lhs);
 		d.decode(this->rhs);
+		d.decode(this->lhs);
 		d.decode(this->graphPrev);
 		d.decode(this->possibleType);
 		d.decode(this->requiredType);
@@ -195,8 +195,8 @@ public:
 
 	virtual void updateHierarchyOfChildren()
 	{
-		if (this->lhs) this->lhs->updateHierarchy(id + "lhs", repository, this);
 		if (this->rhs) this->rhs->updateHierarchy(id + "rhs", repository, this);
+		if (this->lhs) this->lhs->updateHierarchy(id + "lhs", repository, this);
 		if (this->possibleType) this->possibleType->updateHierarchy(id + "possibleType", repository, this);
 		if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
 		if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
@@ -271,8 +271,8 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		if (const NodePtr& n = this->getLhs(false)) v.push_back(n);
 		if (const NodePtr& n = this->getRhs(false)) v.push_back(n);
+		if (const NodePtr& n = this->getLhs(false)) v.push_back(n);
 		return v;
 	}
 
@@ -280,8 +280,8 @@ public:
 	{
 		const shared_ptr<AssignmentExpr>& other = boost::dynamic_pointer_cast<AssignmentExpr>(o);
 		if (!other) return false;
-		if (!equal(this->lhs, other->lhs)) return false;
 		if (!equal(this->rhs, other->rhs)) return false;
+		if (!equal(this->lhs, other->lhs)) return false;
 		if (!equal(this->graphPrev, other->graphPrev)) return false;
 		if (!equal(this->possibleType, other->possibleType)) return false;
 		if (!equal(this->requiredType, other->requiredType)) return false;
@@ -297,8 +297,8 @@ public:
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<AssignmentExpr>(n); }
 	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<AssignmentExpr>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to AssignmentExpr."); return r; }
 protected:
-	NodePtr lhs;
 	NodePtr rhs;
+	NodePtr lhs;
 	NodeRef graphPrev;
 	NodePtr possibleType;
 	NodePtr requiredType;

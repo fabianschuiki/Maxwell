@@ -18,11 +18,13 @@ void CalcRequiredTypes::process(const NodePtr& node)
 	}
 
 	// Assignments require the rhs to match the lhs.
-	if (AssignmentExpr* expr = dynamic_cast<AssignmentExpr*>(node.get())) {
+	if (const AssignmentExpr::Ptr& expr = AssignmentExpr::from(node)) {
 		const NodePtr& lhs = expr->getLhs();
-		const NodePtr& type = lhs->needType()->getPossibleType();
-		expr->getRhs()->needType()->setRequiredType(type);
-		addDependency(lhs, "possibleType");
+		if (!lhs->isKindOf(kCallExpr)) {
+			const NodePtr& type = lhs->needType()->getPossibleType();
+			expr->getRhs()->needType()->setRequiredType(type);
+			addDependency(lhs, "possibleType");
+		}
 	}
 
 	// Variables require the initial expression to match the variable type.
@@ -93,9 +95,8 @@ void CalcRequiredTypes::process(const NodePtr& node)
 
 	// Operate on the children
 	const NodeVector& children = node->getChildren();
-	for (NodeVector::const_iterator it = children.begin(); it != children.end(); it++) {
-		process(*it);
-
+	for (NodeVector::const_iterator it = children.begin(); it != children.end(); it++)
+	{
 		// Children without a type requirement configured have their required type
 		// set to the generic type.
 		if (TypeInterface* intf = (*it)->asType()) {
@@ -104,5 +105,8 @@ void CalcRequiredTypes::process(const NodePtr& node)
 			}
 			println(1, intf->getRequiredType()->describe(), *it);
 		}
+
+		// Process the child node.
+		process(*it);
 	}
 }

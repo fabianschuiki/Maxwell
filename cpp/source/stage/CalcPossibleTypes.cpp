@@ -71,6 +71,16 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		type->setDefinition(repository.getBuiltinType("String"));
 		str->setPossibleType(type);
 	}
+	if (const ArrayConstExpr::Ptr& ac = ArrayConstExpr::from(node)) {
+		NodeVector types;
+		const NodeVector& exprs = ac->getExprs();
+		for (NodeVector::const_iterator it = exprs.begin(); it != exprs.end(); it++) {
+			types.push_back((*it)->needType()->getPossibleType());
+		}
+		UnionType::Ptr type(new UnionType);
+		type->setTypes(types);
+		ac->setPossibleType(algorithm::type::simplify(type));
+	}
 
 
 	/*

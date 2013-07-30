@@ -5,6 +5,7 @@ namespace ast {
 
 /// Node kinds that may be used to test whether a Node is of a given subclass.
 typedef enum {
+	kArrayConstExpr,
 	kAssignmentExpr,
 	kBinaryOpExpr,
 	kCallArg,
@@ -24,6 +25,8 @@ typedef enum {
 	kImplAccessorArg,
 	kInterfaceQualifier,
 	kInvalidType,
+	kMapConstExpr,
+	kMapConstExprPair,
 	kMemberAccessExpr,
 	kNamedTypeExpr,
 	kNativeQualifier,
@@ -32,6 +35,7 @@ typedef enum {
 	kQualifiedTypeExpr,
 	kQualifiedTypeMember,
 	kRangeQualifier,
+	kSetConstExpr,
 	kStringConstExpr,
 	kStructureQualifier,
 	kStructureQualifierMember,

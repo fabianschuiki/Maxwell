@@ -53,7 +53,10 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 }
 
 %type <node> func_decl func_arg type_decl body stmt expr call_arg
-%type <node> primary_expr postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr assignment_expr
+
+%type <node> primary_expr postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr assignment_expr map_expr_pair
+%type <nodes> expr_list map_expr_pairs
+
 %type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg qualified_typeexpr qualified_typeexpr_qualifier
 %type <nodes> func_args_tuple func_args stmts union_typeexprs tuple_typeexpr_args call_args qualified_typeexpr_qualifiers
 
@@ -289,6 +292,42 @@ primary_expr
       $$ = s;
       delete $1;
     }
+  | LBRACK expr_list RBRACK { /* array literals */
+      ArrayConstExpr *a = new ArrayConstExpr;
+      a->setExprs(*$2);
+      $$ = a;
+      delete $2;
+    }
+  | LBRACE expr_list RBRACE { /* set literals */
+      SetConstExpr *s = new SetConstExpr;
+      s->setExprs(*$2);
+      $$ = s;
+      delete $2;
+    }
+  | LBRACE map_expr_pairs RBRACE { /* map literals */
+      MapConstExpr *m = new MapConstExpr;
+      m->setPairs(*$2);
+      $$ = m;
+      delete $2;
+    }
+  ;
+
+map_expr_pairs
+  : map_expr_pair {
+      $$ = new Nodes;
+      $$->push_back(shared_ptr<Node>($1));
+    }
+  | map_expr_pairs COMMA map_expr_pair {
+      $1->push_back(shared_ptr<Node>($3));
+    }
+  ;
+map_expr_pair
+  : primary_expr COLON expr {
+      MapConstExprPair *p = new MapConstExprPair;
+      p->setKey(NodePtr($1));
+      p->setValue(NodePtr($3));
+      $$ = p;
+    }
   ;
 
 postfix_expr
@@ -424,27 +463,39 @@ assignment_expr
     }
   ;
 
-expr  : assignment_expr
-      | var_expr { $$ = $<node>1; }
-      | var_expr ASSIGN assignment_expr {
-          $1->setInitialExpr(shared_ptr<Node>($3));
-        }
-      ;
+var_expr
+  : VAR IDENTIFIER typeexpr {
+      VarDefExpr *v = new VarDefExpr;
+      v->setName(*$2);
+      v->setTypeExpr(shared_ptr<Node>($3));
+      $$ = v;
+      delete $2;
+    }
+  | VAR IDENTIFIER {
+      VarDefExpr *v = new VarDefExpr;
+      v->setName(*$2);
+      $$ = v;
+      delete $2;
+    }
+  ;
 
-var_expr  : VAR IDENTIFIER typeexpr {
-              VarDefExpr *v = new VarDefExpr;
-              v->setName(*$2);
-              v->setTypeExpr(shared_ptr<Node>($3));
-              $$ = v;
-              delete $2;
-            }
-          | VAR IDENTIFIER {
-              VarDefExpr *v = new VarDefExpr;
-              v->setName(*$2);
-              $$ = v;
-              delete $2;
-            }
-          ;
+expr
+  : assignment_expr
+  | var_expr { $$ = $<node>1; }
+  | var_expr ASSIGN assignment_expr {
+      $1->setInitialExpr(shared_ptr<Node>($3));
+    }
+  ;
+
+expr_list
+  : expr {
+      $$ = new Nodes;
+      $$->push_back(shared_ptr<Node>($1));
+    }
+  | expr_list COMMA expr {
+      $1->push_back(shared_ptr<Node>($3));
+    }
+  ;
 
 
 /*

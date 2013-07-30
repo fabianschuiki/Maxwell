@@ -2,6 +2,7 @@
 #pragma once
 #include <string>
 
+#include "ArrayConstExpr.hpp"
 #include "AssignmentExpr.hpp"
 #include "BinaryOpExpr.hpp"
 #include "CallArg.hpp"
@@ -21,6 +22,8 @@
 #include "ImplAccessorArg.hpp"
 #include "InterfaceQualifier.hpp"
 #include "InvalidType.hpp"
+#include "MapConstExpr.hpp"
+#include "MapConstExprPair.hpp"
 #include "MemberAccessExpr.hpp"
 #include "NamedTypeExpr.hpp"
 #include "NativeQualifier.hpp"
@@ -29,6 +32,7 @@
 #include "QualifiedTypeExpr.hpp"
 #include "QualifiedTypeMember.hpp"
 #include "RangeQualifier.hpp"
+#include "SetConstExpr.hpp"
 #include "StringConstExpr.hpp"
 #include "StructureQualifier.hpp"
 #include "StructureQualifierMember.hpp"
@@ -56,10 +60,18 @@ public:
 		size_t size = name.size();
 		// .*
 		if (true) {
-			// AssignmentExpr.*
-			if (size >= 14 && name[0] == 'A' && name[1] == 's' && name[2] == 's' && name[3] == 'i' && name[4] == 'g' && name[5] == 'n' && name[6] == 'm' && name[7] == 'e' && name[8] == 'n' && name[9] == 't' && name[10] == 'E' && name[11] == 'x' && name[12] == 'p' && name[13] == 'r') {
-				// AssignmentExpr
-				if (size == 14) return NodePtr(new AssignmentExpr);
+			// A.*
+			if (size >= 1 && name[0] == 'A') {
+				// ArrayConstExpr.*
+				if (size >= 14 && name[1] == 'r' && name[2] == 'r' && name[3] == 'a' && name[4] == 'y' && name[5] == 'C' && name[6] == 'o' && name[7] == 'n' && name[8] == 's' && name[9] == 't' && name[10] == 'E' && name[11] == 'x' && name[12] == 'p' && name[13] == 'r') {
+					// ArrayConstExpr
+					if (size == 14) return NodePtr(new ArrayConstExpr);
+				}
+				// AssignmentExpr.*
+				if (size >= 14 && name[1] == 's' && name[2] == 's' && name[3] == 'i' && name[4] == 'g' && name[5] == 'n' && name[6] == 'm' && name[7] == 'e' && name[8] == 'n' && name[9] == 't' && name[10] == 'E' && name[11] == 'x' && name[12] == 'p' && name[13] == 'r') {
+					// AssignmentExpr
+					if (size == 14) return NodePtr(new AssignmentExpr);
+				}
 			}
 			// BinaryOpExpr.*
 			if (size >= 12 && name[0] == 'B' && name[1] == 'i' && name[2] == 'n' && name[3] == 'a' && name[4] == 'r' && name[5] == 'y' && name[6] == 'O' && name[7] == 'p' && name[8] == 'E' && name[9] == 'x' && name[10] == 'p' && name[11] == 'r') {
@@ -163,10 +175,23 @@ public:
 					}
 				}
 			}
-			// MemberAccessExpr.*
-			if (size >= 16 && name[0] == 'M' && name[1] == 'e' && name[2] == 'm' && name[3] == 'b' && name[4] == 'e' && name[5] == 'r' && name[6] == 'A' && name[7] == 'c' && name[8] == 'c' && name[9] == 'e' && name[10] == 's' && name[11] == 's' && name[12] == 'E' && name[13] == 'x' && name[14] == 'p' && name[15] == 'r') {
-				// MemberAccessExpr
-				if (size == 16) return NodePtr(new MemberAccessExpr);
+			// M.*
+			if (size >= 1 && name[0] == 'M') {
+				// MapConstExpr.*
+				if (size >= 12 && name[1] == 'a' && name[2] == 'p' && name[3] == 'C' && name[4] == 'o' && name[5] == 'n' && name[6] == 's' && name[7] == 't' && name[8] == 'E' && name[9] == 'x' && name[10] == 'p' && name[11] == 'r') {
+					// MapConstExpr
+					if (size == 12) return NodePtr(new MapConstExpr);
+					// MapConstExprPair.*
+					if (size >= 16 && name[12] == 'P' && name[13] == 'a' && name[14] == 'i' && name[15] == 'r') {
+						// MapConstExprPair
+						if (size == 16) return NodePtr(new MapConstExprPair);
+					}
+				}
+				// MemberAccessExpr.*
+				if (size >= 16 && name[1] == 'e' && name[2] == 'm' && name[3] == 'b' && name[4] == 'e' && name[5] == 'r' && name[6] == 'A' && name[7] == 'c' && name[8] == 'c' && name[9] == 'e' && name[10] == 's' && name[11] == 's' && name[12] == 'E' && name[13] == 'x' && name[14] == 'p' && name[15] == 'r') {
+					// MemberAccessExpr
+					if (size == 16) return NodePtr(new MemberAccessExpr);
+				}
 			}
 			// N.*
 			if (size >= 1 && name[0] == 'N') {
@@ -209,21 +234,29 @@ public:
 				// RangeQualifier
 				if (size == 14) return NodePtr(new RangeQualifier);
 			}
-			// Str.*
-			if (size >= 3 && name[0] == 'S' && name[1] == 't' && name[2] == 'r') {
-				// StringConstExpr.*
-				if (size >= 15 && name[3] == 'i' && name[4] == 'n' && name[5] == 'g' && name[6] == 'C' && name[7] == 'o' && name[8] == 'n' && name[9] == 's' && name[10] == 't' && name[11] == 'E' && name[12] == 'x' && name[13] == 'p' && name[14] == 'r') {
-					// StringConstExpr
-					if (size == 15) return NodePtr(new StringConstExpr);
+			// S.*
+			if (size >= 1 && name[0] == 'S') {
+				// SetConstExpr.*
+				if (size >= 12 && name[1] == 'e' && name[2] == 't' && name[3] == 'C' && name[4] == 'o' && name[5] == 'n' && name[6] == 's' && name[7] == 't' && name[8] == 'E' && name[9] == 'x' && name[10] == 'p' && name[11] == 'r') {
+					// SetConstExpr
+					if (size == 12) return NodePtr(new SetConstExpr);
 				}
-				// StructureQualifier.*
-				if (size >= 18 && name[3] == 'u' && name[4] == 'c' && name[5] == 't' && name[6] == 'u' && name[7] == 'r' && name[8] == 'e' && name[9] == 'Q' && name[10] == 'u' && name[11] == 'a' && name[12] == 'l' && name[13] == 'i' && name[14] == 'f' && name[15] == 'i' && name[16] == 'e' && name[17] == 'r') {
-					// StructureQualifier
-					if (size == 18) return NodePtr(new StructureQualifier);
-					// StructureQualifierMember.*
-					if (size >= 24 && name[18] == 'M' && name[19] == 'e' && name[20] == 'm' && name[21] == 'b' && name[22] == 'e' && name[23] == 'r') {
-						// StructureQualifierMember
-						if (size == 24) return NodePtr(new StructureQualifierMember);
+				// Str.*
+				if (size >= 3 && name[1] == 't' && name[2] == 'r') {
+					// StringConstExpr.*
+					if (size >= 15 && name[3] == 'i' && name[4] == 'n' && name[5] == 'g' && name[6] == 'C' && name[7] == 'o' && name[8] == 'n' && name[9] == 's' && name[10] == 't' && name[11] == 'E' && name[12] == 'x' && name[13] == 'p' && name[14] == 'r') {
+						// StringConstExpr
+						if (size == 15) return NodePtr(new StringConstExpr);
+					}
+					// StructureQualifier.*
+					if (size >= 18 && name[3] == 'u' && name[4] == 'c' && name[5] == 't' && name[6] == 'u' && name[7] == 'r' && name[8] == 'e' && name[9] == 'Q' && name[10] == 'u' && name[11] == 'a' && name[12] == 'l' && name[13] == 'i' && name[14] == 'f' && name[15] == 'i' && name[16] == 'e' && name[17] == 'r') {
+						// StructureQualifier
+						if (size == 18) return NodePtr(new StructureQualifier);
+						// StructureQualifierMember.*
+						if (size >= 24 && name[18] == 'M' && name[19] == 'e' && name[20] == 'm' && name[21] == 'b' && name[22] == 'e' && name[23] == 'r') {
+							// StructureQualifierMember
+							if (size == 24) return NodePtr(new StructureQualifierMember);
+						}
 					}
 				}
 			}

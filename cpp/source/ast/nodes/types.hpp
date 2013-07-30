@@ -36,6 +36,8 @@ typedef enum {
 	kQualifiedTypeMember,
 	kRangeQualifier,
 	kSetConstExpr,
+	kSpecializedType,
+	kSpecializedTypeExpr,
 	kStringConstExpr,
 	kStructureQualifier,
 	kStructureQualifierMember,

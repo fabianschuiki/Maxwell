@@ -86,6 +86,23 @@ void EvalTypeExprs::process(const NodePtr& node)
 			node->updateHierarchyOfChildren();
 		}
 
+		if (const SpecializedTypeExpr::Ptr& expr = SpecializedTypeExpr::from(node))
+		{
+			// Gather a list of the evaluated types of all specExprs.
+			const NodeVector& specExprs = expr->getSpecExprs();
+			NodeVector types(specExprs.size());
+			for (int i = 0; i < specExprs.size(); i++) {
+				types[i] = specExprs[i]->needTypeExpr()->getEvaluatedType();
+			}
+
+			// Merge into a proper type and store as the node's new evaluated type.
+			SpecializedType::Ptr st(new SpecializedType);
+			st->setType(expr->getExpr()->needTypeExpr()->getEvaluatedType());
+			st->setSpecs(types);
+			intf->setEvaluatedType(st);
+			node->updateHierarchyOfChildren();
+		}
+
 		// Throw an error if we were unable to assign an evaluated type.
 		if (!intf->getEvaluatedType(false)) {
 			throw std::runtime_error("Could not evaluate type expression " + node->getId().str() + ".");

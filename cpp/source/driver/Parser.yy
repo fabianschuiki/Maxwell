@@ -57,8 +57,8 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 %type <node> primary_expr postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr assignment_expr map_expr_pair
 %type <nodes> expr_list map_expr_pairs
 
-%type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg qualified_typeexpr qualified_typeexpr_qualifier
-%type <nodes> func_args_tuple func_args stmts union_typeexprs tuple_typeexpr_args call_args qualified_typeexpr_qualifiers
+%type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg qualified_typeexpr qualified_typeexpr_qualifier specialized_typeexpr
+%type <nodes> func_args_tuple func_args stmts union_typeexprs tuple_typeexpr_args call_args qualified_typeexpr_qualifiers specialized_typeexpr_specs
 
 %type <node> structure_qualifier structure_qualifier_stmt interface_qualifier interface_qualifier_stmt native_qualifier range_qualifier
 %type <nodes> structure_qualifier_stmts interface_qualifier_stmts
@@ -520,6 +520,7 @@ nonunion_typeexpr
     }
   | tuple_typeexpr
   | qualified_typeexpr
+  | specialized_typeexpr
   ;
 
 /* Union Type Expression */
@@ -596,6 +597,26 @@ qualified_typeexpr_qualifiers
     }
   | qualified_typeexpr_qualifiers qualified_typeexpr_qualifier {
       $1->push_back(NodePtr($2));
+    }
+  ;
+
+/* Specialized Type Expr */
+specialized_typeexpr
+  : nonunion_typeexpr LBRACK specialized_typeexpr_specs RBRACK {
+      SpecializedTypeExpr *t = new SpecializedTypeExpr;
+      t->setExpr(NodePtr($1));
+      t->setSpecExprs(*$3);
+      $$ = t;
+      delete $3;
+    }
+  ;
+specialized_typeexpr_specs
+  : typeexpr {
+      $$ = new Nodes;
+      $$->push_back(NodePtr($1));
+    }
+  | specialized_typeexpr_specs COMMA typeexpr {
+      $1->push_back(NodePtr($3));
     }
   ;
 

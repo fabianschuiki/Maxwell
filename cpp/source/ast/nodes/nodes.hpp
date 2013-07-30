@@ -33,6 +33,8 @@
 #include "QualifiedTypeMember.hpp"
 #include "RangeQualifier.hpp"
 #include "SetConstExpr.hpp"
+#include "SpecializedType.hpp"
+#include "SpecializedTypeExpr.hpp"
 #include "StringConstExpr.hpp"
 #include "StructureQualifier.hpp"
 #include "StructureQualifierMember.hpp"
@@ -240,6 +242,16 @@ public:
 				if (size >= 12 && name[1] == 'e' && name[2] == 't' && name[3] == 'C' && name[4] == 'o' && name[5] == 'n' && name[6] == 's' && name[7] == 't' && name[8] == 'E' && name[9] == 'x' && name[10] == 'p' && name[11] == 'r') {
 					// SetConstExpr
 					if (size == 12) return NodePtr(new SetConstExpr);
+				}
+				// SpecializedType.*
+				if (size >= 15 && name[1] == 'p' && name[2] == 'e' && name[3] == 'c' && name[4] == 'i' && name[5] == 'a' && name[6] == 'l' && name[7] == 'i' && name[8] == 'z' && name[9] == 'e' && name[10] == 'd' && name[11] == 'T' && name[12] == 'y' && name[13] == 'p' && name[14] == 'e') {
+					// SpecializedType
+					if (size == 15) return NodePtr(new SpecializedType);
+					// SpecializedTypeExpr.*
+					if (size >= 19 && name[15] == 'E' && name[16] == 'x' && name[17] == 'p' && name[18] == 'r') {
+						// SpecializedTypeExpr
+						if (size == 19) return NodePtr(new SpecializedTypeExpr);
+					}
 				}
 				// Str.*
 				if (size >= 3 && name[1] == 't' && name[2] == 'r') {

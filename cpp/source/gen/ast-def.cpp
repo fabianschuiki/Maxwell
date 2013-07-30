@@ -8,8 +8,8 @@
 void buildAST(Builder &node)
 {
 	// Groups
-	node.groups["type"] = "GenericType|InvalidType|DefinedType|UnionType|TupleType|FuncType|TypeSet|QualifiedType";
-	node.groups["typeExpr"] = "NamedTypeExpr|UnionTypeExpr|TupleTypeExpr|QualifiedTypeExpr";
+	node.groups["type"] = "GenericType|InvalidType|DefinedType|UnionType|TupleType|FuncType|TypeSet|QualifiedType|SpecializedType";
+	node.groups["typeExpr"] = "NamedTypeExpr|UnionTypeExpr|TupleTypeExpr|QualifiedTypeExpr|SpecializedTypeExpr";
 	node.groups["qualifier"] = "StructureQualifier|InterfaceQualifier|NativeQualifier|RangeQualifier";
 
 	// Interfaces
@@ -157,6 +157,10 @@ void buildAST(Builder &node)
 	node("QualifiedTypeExpr")
 		.intf(graph).intf(typeExpr)
 		.child("exprs", "[#qualifier]");
+	node("SpecializedTypeExpr")
+		.intf(graph).intf(typeExpr)
+		.child("expr", "#typeExpr")
+		.child("specExprs", "[#typeExpr]");
 
 	// Type Qualifiers
 	node("StructureQualifier")
@@ -240,4 +244,16 @@ void buildAST(Builder &node)
 	node("QualifiedTypeMember")
 		.attr("name", "string")
 		.child("type", "#type");
+	node("SpecializedType")
+		.child("type", "#type")
+		.child("specs", "[#type]")
+		.describe("\
+			str << type->describe(depth-1) << \"[\";\
+			bool first = true;\
+			for (NodeVector::iterator it = specs.begin(); it != specs.end(); it++) {\
+				if (!first) str << \",\";\
+				first = false;\
+				str << (*it)->describe(depth-1);\
+			}\
+			str << \"]\";");
 }

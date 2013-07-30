@@ -153,6 +153,23 @@ bool equal(const UnionType::Ptr& a, const UnionType::Ptr& b)
 	return equalTypes(a->getTypes(), b->getTypes());
 }
 
+/**
+ * Returns true if the type as well as the arguments of the specialization are
+ * identical.
+ */
+bool equal(const SpecializedType::Ptr& a, const SpecializedType::Ptr& b)
+{
+	if (!equal(a->getType(), b->getType())) return false;
+	const NodeVector& typesA = a->getSpecs();
+	const NodeVector& typesB = b->getSpecs();
+	if (typesA.size() != typesB.size()) return false;
+	for (int i = 0; i < typesA.size(); i++) {
+		if (!equal(typesA[i], typesB[i]))
+			return false;
+	}
+	return true;
+}
+
 
 /**
  * Returns the intersection between the TypeSet and the other node. The other
@@ -238,6 +255,11 @@ bool equal(const NodePtr& a, const NodePtr& b)
 	UnionType::Ptr unionTypeA = UnionType::from(a), unionTypeB = UnionType::from(b);
 	if (unionTypeA && unionTypeB)
 		return equal(unionTypeA, unionTypeB);
+
+	// Treat specialized types.
+	SpecializedType::Ptr specTypeA = SpecializedType::from(a), specTypeB = SpecializedType::from(b);
+	if (specTypeA && specTypeB)
+		return equal(specTypeA, specTypeB);
 
 	return false;
 }

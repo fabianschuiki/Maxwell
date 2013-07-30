@@ -95,6 +95,24 @@ void CalcRequiredTypes::process(const NodePtr& node)
 		}
 	}
 
+	// Array, set and map literals allow us to pass on the type specialization as
+	// type requirements to the literal's individual expressions.
+	if (const ArrayConstExpr::Ptr& expr = ArrayConstExpr::from(node)) 
+	{
+		// Determine the first type of the array specialization.
+		NodePtr elementType;
+		const SpecializedType::Ptr& specType = SpecializedType::from(expr->getRequiredType());
+		if (specType && specType->getSpecs().size() > 0) {
+			elementType = specType->getSpecs()[0];
+		}
+
+		// Set this type as the required type for each individual array element.
+		const NodeVector& exprs = expr->getExprs();
+		for (NodeVector::const_iterator it = exprs.begin(); it != exprs.end(); it++) {
+			(*it)->needType()->setRequiredType(elementType);
+		}
+	}
+
 	// Operate on the children
 	const NodeVector& children = node->getChildren();
 	for (NodeVector::const_iterator it = children.begin(); it != children.end(); it++)

@@ -75,11 +75,19 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		NodeVector types;
 		const NodeVector& exprs = ac->getExprs();
 		for (NodeVector::const_iterator it = exprs.begin(); it != exprs.end(); it++) {
-			types.push_back((*it)->needType()->getPossibleType());
+			addDependency((*it), "actualType");
+			types.push_back((*it)->needType()->getActualType());
 		}
-		UnionType::Ptr type(new UnionType);
-		type->setTypes(types);
-		ac->setPossibleType(algorithm::type::simplify(type));
+		UnionType::Ptr unionType(new UnionType);
+		unionType->setTypes(types);
+		DefinedType::Ptr typeArray(new DefinedType);
+		typeArray->setDefinition(repository.getBuiltinType("Array"));
+		NodeVector specs(1);
+		specs[0] = algorithm::type::simplify(unionType);
+		SpecializedType::Ptr type(new SpecializedType);
+		type->setType(typeArray);
+		type->setSpecs(specs);
+		ac->setPossibleType(type);
 	}
 
 

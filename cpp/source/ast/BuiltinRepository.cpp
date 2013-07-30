@@ -55,6 +55,8 @@ void BuiltinRepository::build()
 	numericType("Int");
 	numericType("Real");
 
+	numericType("String"); // needs to be changed
+
 	numericType("Array"); // needs to be changed
 	numericType("Set"); // dito
 	numericType("Map"); // dito

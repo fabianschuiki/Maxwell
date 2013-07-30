@@ -8,7 +8,7 @@
 void buildAST(Builder &node)
 {
 	// Groups
-	node.groups["type"] = "GenericType|InvalidType|DefinedType|UnionType|TupleType|FuncType|TypeSet|QualifiedType|SpecializedType";
+	node.groups["type"] = "GenericType|InvalidType|DefinedType|UnionType|TupleType|FuncType|TypeSet|QualifiedType|SpecializedType|UnionMappedType";
 	node.groups["typeExpr"] = "NamedTypeExpr|UnionTypeExpr|TupleTypeExpr|QualifiedTypeExpr|SpecializedTypeExpr";
 	node.groups["qualifier"] = "StructureQualifier|InterfaceQualifier|NativeQualifier|RangeQualifier";
 
@@ -256,4 +256,8 @@ void buildAST(Builder &node)
 				str << (*it)->describe(depth-1);\
 			}\
 			str << \"]\";");
+	node("UnionMappedType")
+		.child("in", "#type")
+		.child("out", "#type")
+		.describe("str << out->describe(depth-1) << '(' << in->describe(depth-1) << ')';");
 }

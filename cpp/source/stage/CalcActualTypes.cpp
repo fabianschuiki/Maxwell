@@ -44,6 +44,43 @@ NodePtr CalcActualTypes::match(const NodePtr& possible, const NodePtr& required,
 	// First try to perform a simple intersect on the two types.
 	NodePtr actual = algorithm::type::intersect(possible, required);
 
+	// In case the required type is a union, try mapping the possible type to
+	// the required union type.
+	if (actual->isKindOf(kInvalidType) && required->isKindOf(kUnionType)) {
+		println(1, "Trying to map " + possible->describe() + " to union " + required->describe(), node);
+		const UnionType::Ptr& possibleUnion = UnionType::from(possible);
+		const UnionType::Ptr& requiredUnion = UnionType::from(required);
+
+		NodeVector types;
+		if (possibleUnion) {
+			types = possibleUnion->getTypes();
+		} else {
+			types.push_back(possible);
+		}
+
+		bool valid = true;
+		for (NodeVector::iterator ia = types.begin(); ia != types.end(); ia++) {
+			bool found = false;
+			for (NodeVector::const_iterator ib = requiredUnion->getTypes().begin(); ib != requiredUnion->getTypes().end(); ib++) {
+				if (algorithm::type::equal(*ia, *ib)) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				valid = false;
+				break;
+			}
+		}
+
+		if (valid) {
+			UnionMappedType::Ptr type(new UnionMappedType);
+			type->setIn(possible);
+			type->setOut(required);
+			actual = type;
+		}
+	}
+
 	// Otherwise simply try to go with a regular cast.
 	if (actual->isKindOf(kInvalidType)) {
 		println(1, "Trying to cast from " + possible->describe() + " to " + required->describe(), node);

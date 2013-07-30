@@ -45,6 +45,7 @@
 #include "TypeDef.hpp"
 #include "TypeSet.hpp"
 #include "UnaryOpExpr.hpp"
+#include "UnionMappedType.hpp"
 #include "UnionType.hpp"
 #include "UnionTypeExpr.hpp"
 #include "VarDefExpr.hpp"
@@ -315,14 +316,22 @@ public:
 					// UnaryOpExpr
 					if (size == 11) return NodePtr(new UnaryOpExpr);
 				}
-				// UnionType.*
-				if (size >= 9 && name[2] == 'i' && name[3] == 'o' && name[4] == 'n' && name[5] == 'T' && name[6] == 'y' && name[7] == 'p' && name[8] == 'e') {
-					// UnionType
-					if (size == 9) return NodePtr(new UnionType);
-					// UnionTypeExpr.*
-					if (size >= 13 && name[9] == 'E' && name[10] == 'x' && name[11] == 'p' && name[12] == 'r') {
-						// UnionTypeExpr
-						if (size == 13) return NodePtr(new UnionTypeExpr);
+				// Union.*
+				if (size >= 5 && name[2] == 'i' && name[3] == 'o' && name[4] == 'n') {
+					// UnionMappedType.*
+					if (size >= 15 && name[5] == 'M' && name[6] == 'a' && name[7] == 'p' && name[8] == 'p' && name[9] == 'e' && name[10] == 'd' && name[11] == 'T' && name[12] == 'y' && name[13] == 'p' && name[14] == 'e') {
+						// UnionMappedType
+						if (size == 15) return NodePtr(new UnionMappedType);
+					}
+					// UnionType.*
+					if (size >= 9 && name[5] == 'T' && name[6] == 'y' && name[7] == 'p' && name[8] == 'e') {
+						// UnionType
+						if (size == 9) return NodePtr(new UnionType);
+						// UnionTypeExpr.*
+						if (size >= 13 && name[9] == 'E' && name[10] == 'x' && name[11] == 'p' && name[12] == 'r') {
+							// UnionTypeExpr
+							if (size == 13) return NodePtr(new UnionTypeExpr);
+						}
 					}
 				}
 			}

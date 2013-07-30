@@ -193,11 +193,13 @@ void buildAST(Builder &node)
 		.child("args", "[TupleTypeArg]")
 		.describe("\
 			bool first = true;\
+			str << \"(\";\
 			for (NodeVector::iterator it = args.begin(); it != args.end(); it++) {\
 				if (!first) str << \", \";\
 				first = false;\
 				str << (*it)->describe(depth-1);\
-			}");
+			}\
+			str << \")\";");
 	node("TupleTypeArg")
 		.attr("name", "string")
 		.child("type", "#type")

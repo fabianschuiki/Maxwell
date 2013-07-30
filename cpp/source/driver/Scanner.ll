@@ -80,6 +80,7 @@ symbol              {additive_op}|{multiplicative_op}|{relational_op}|[\.:~&''^]
 "type"       return token::TYPE;
 "unary"      return token::UNARY;
 "value"      return token::VALUE;
+"object"     return token::OBJECT;
 "interface"  return token::INTERFACE;
 "native"     return token::NATIVE;
 "range"      return token::RANGE;

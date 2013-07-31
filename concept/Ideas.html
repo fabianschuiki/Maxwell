@@ -414,6 +414,104 @@ object Blob {
 }</code>
 
 
+<h1>Expressions vs. Statements</h1>
+<p>Maxwell should not make a distinction between expressions and statements, as C, C++ or Java do. Statements in general do not have a return type and value, whereas expressions represent an operation having a return type and value. Instead, everything in Maxwell is an expression and has a return type.</p>
+<ul>
+	<li><strong>Type Definition</strong> returns the defined type itself.</li>
+	<li><strong>Function Definition</strong> returns the defined function object. This is useful since Maxwell should support anonymous functions that have no name, in which case getting a grip on the function object is only possible through the returned value of the function definition.</li>
+	<li><strong>Blocks</strong> count as an expression themselves. A block consists of a list of expressions with a semicolon at the end of each. The returned value of the block is the block's last expression.</li>
+	<li><strong>If Expressions</strong> return the value of the branch taken. Since the branches usually are blocks, the last expression of the if or else block is returned. The return type equals the union type of the if and else branch blocks.</li>
+	<li><strong>For Expressions</strong> return their body after the last iteration. Since the body is usually a block expression, the last expression in the block with the parameters of the last iteration is returned.</li>
+</ul>
+
+<h2>Return nil for Statements</h2>
+<p>The absence of a return value or type is denoted with the <code>nil</code> type. Functions without any outputs return <code>nil</code>.</p>
+
+<h2>Examples</h2>
+<code>// Returns a function object
+func main {...}
+
+// Returns a type object
+type Foo
+
+// Returns the integer 6
+{
+	var x = 5;
+	x + 1; // last expression, returned
+}
+
+// Returns either "Hello" or 123, based on whether x is 0. The return type is String|Int.
+if (x == 0) {
+	"Hello";
+} else {
+	123;
+}
+
+// Returns 9, since the last iteration is x = 3.
+for (var x Int = 0; x &lt; 4; x++) {
+	x*x;
+}
+</code>
+
+
+<h1>Complex For Loops</h1>
+<p>Maxwell shall support Scala-style for loops with complex iteration behaviour. This allows multiple nested for loops to be expressed in one for expression with a more elaborate loop configuration block.</p>
+<code> // For each x from 0 to 9, loop through all y between 0 to 9 that are not twice as big as x.
+for (var x Int = 0; x &lt; 10; x++) {
+	for (var y Int = 0; y &lt; 10; y++) {
+		if (y == x*2) continue;
+		// do stuff
+	}
+}
+
+// With a complex for loop, this can be collapsed into one.
+// The first block configures the looping behaviour, i.e. it performs the filtering
+// on the possible iterations. The second block is the actual iteration body that is
+// called for each loop iteration.
+for {
+	x &lt;- 0 to 9;
+	y &lt;- 0 to 9;
+	if (y == x*2) continue;
+} {
+	// do stuff
+}
+</code>
+
+
+<h1>Anonymous Functions</h1>
+<p>Maxwell shall have good support for anonymous and inline functions. This should make code much more readable and should allow for on-the-fly callbacks.</p>
+<code>var f = func (x Int) -> (y Int) {
+	y = x * 2;
+}
+f(1); // returns 2
+</code>
+
+<h2>Callback Variables</h2>
+<p>Anonymous function bodies should have access to variables defined outside their scope. The compiler should check what variables of the outer scope are referenced, and implicitly add all it finds to the anonymous function's inputs. If the function is used as a callback, the callback should properly bind the variable's values to the implicit function inputs, such that handling of the function feels natural.</p>
+<code>func main
+{
+	var x Int = 123;
+	var y String = "Hello";
+
+	// Define an anonymous function that references x and y.
+	var f = func (z Int) {
+		x.print; y.print; z.print;
+	};
+
+	// This is equivalent to the following:
+	var f0 = func (x Int, y String, z Int) {
+		x.print; y.print; z.print;
+	};
+	var f = f0.bind({"x": x, "y": y});
+
+	// The referenced variables are bound at the moment the function is defined.
+	x = 234;
+	y = "World";
+	f(0); // prints 123, Hello and 0.
+}
+</code>
+
+
 
 
 <h1>Random Code Snippets</h1>
@@ -547,6 +645,17 @@ var Vector v;
 var float f;
 multiply(v,f);
 multiply(f,v);</code>
+
+
+<h2>Short Function Definition</h2>
+<p>Small functions can be defined quickly by omitting the return type and instead adding a <code>=</code> and an equivalent expression. The function will then use the expression's type as its return type. Omitting the <code>=</code> symbol will define a regular function with no outputs, which will return nil.</p>
+<code>// Return type of squared is the same as that of the * operator for the type of x.
+func squared (x) = x*x;
+// Return type of norm is the same as that of sqrt.
+func norm (x) = { var x2 = x*x; sqrt(x); }
+// Return type of foo is nil.
+func foo (x) { sqrt(x); }
+</code>
 
 </body>
 </html>

@@ -38,6 +38,11 @@ p {
 	margin: 1em 0;
 }
 
+strong {
+	font-weight: bolder;
+	color: #729fcf;
+}
+
 body :first-child {
 	margin-top: 0;
 }

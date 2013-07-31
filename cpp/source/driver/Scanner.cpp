@@ -397,8 +397,8 @@ typedef unsigned char YY_CHAR;
 	(yy_c_buf_p) = yy_cp;
 
 /* %% [4.0] data tables for the DFA and the user's section 1 definitions go here */
-#define YY_NUM_RULES 38
-#define YY_END_OF_BUFFER 39
+#define YY_NUM_RULES 47
+#define YY_END_OF_BUFFER 48
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -406,21 +406,31 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static yyconst flex_int16_t yy_accept[115] =
+static yyconst flex_int16_t yy_accept[211] =
     {   0,
-       36,   36,    0,    0,   39,   37,    1,    2,   37,   34,
-       36,   20,   21,   33,   27,   33,   26,   34,   19,   28,
-       29,   35,   32,   18,   24,   25,   18,   18,   18,   18,
-       18,   18,   18,   18,   22,   31,   23,    6,    7,    1,
-        0,    8,    0,   34,   33,   34,   34,   36,   33,   35,
-       33,   33,   33,   30,    4,    3,   19,   19,   34,   35,
-       33,   35,   35,   18,   18,   18,   18,   18,   18,   18,
-       18,   18,    6,    5,   34,   35,   33,    3,    3,    3,
-        3,   19,   35,   18,   18,   18,   18,   18,   18,   18,
-       18,   10,    3,    9,   18,   18,   18,   18,   11,   18,
+       45,   45,    0,    0,   48,   46,    1,    2,   46,   46,
+       40,   45,   45,   26,   27,   39,   33,   39,   32,   40,
+       25,   34,   35,   41,   38,   24,   30,   31,   24,   24,
+       24,   24,   24,   24,   24,   24,   24,   28,   37,   29,
+        6,    7,    1,   42,    0,    8,    0,    0,   40,   40,
+       39,   40,    0,    0,   40,   43,   45,   39,   41,    0,
+       45,    0,   39,   39,   39,   39,    0,   36,    4,    3,
+       25,   25,    0,   40,   41,   41,   39,   41,   41,    0,
+       24,   24,   24,   24,   18,   24,   24,   24,   24,   24,
+       24,   24,   24,   24,   44,    6,    5,    0,   40,   42,
 
-       18,   18,   18,   18,   17,   12,   13,   18,   16,   14,
-       18,   18,   15,    0
+       42,   39,   41,    0,   40,   40,   40,   40,   42,    0,
+       40,   43,   43,   39,   41,    0,   41,   44,   43,   39,
+       39,   39,   39,    3,    3,    3,    3,    3,    3,    3,
+       25,   41,   41,   41,   41,   41,   24,   20,   24,   24,
+       24,   24,   23,   24,   24,   24,   24,   24,   24,   10,
+        0,   40,   44,   44,   39,   41,    0,   42,   41,   42,
+       40,   42,   43,   43,   41,   43,   42,   39,    3,    3,
+        3,    3,   19,    9,   24,   24,   24,   24,   24,   24,
+       11,   24,   24,   42,   43,   41,   42,   42,    3,   24,
+       24,   24,   24,   24,   17,   12,   13,   42,   21,   24,
+
+       16,   14,   24,   24,   24,   24,   24,   15,   22,    0
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
@@ -428,17 +438,17 @@ static yyconst flex_int32_t yy_ec[256] =
         1,    1,    1,    1,    1,    1,    1,    1,    2,    3,
         1,    1,    2,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    2,    4,    5,    1,    1,    6,    7,    7,    8,
-        9,   10,   11,   12,   13,   14,   15,   16,   16,   16,
-       16,   16,   16,   16,   16,   16,   16,   17,   18,   19,
-       20,   21,    4,    1,   22,   22,   22,   22,   22,   22,
-       22,   22,   22,   22,   22,   22,   22,   22,   22,   22,
-       22,   22,   22,   22,   22,   22,   22,   22,   22,   22,
-       23,   24,   25,    7,   22,    1,   26,   27,   28,   22,
+        1,    2,    4,    5,    1,    1,    6,    7,    8,    9,
+       10,   11,   12,   13,   14,   15,   16,   17,   17,   17,
+       17,   17,   17,   17,   17,   17,   17,   18,   19,   20,
+       21,   22,   23,    1,   24,   24,   24,   24,   24,   24,
+       24,   24,   24,   24,   24,   24,   24,   24,   24,   24,
+       24,   24,   24,   24,   24,   24,   24,   24,   24,   24,
+       25,   26,   27,    8,   24,    1,   28,   29,   30,   24,
 
-       29,   30,   31,   22,   32,   33,   22,   34,   22,   35,
-       36,   37,   22,   38,   22,   39,   40,   41,   22,   22,
-       42,   22,   43,   44,   45,    7,    1,    1,    1,    1,
+       31,   32,   33,   34,   35,   36,   24,   37,   24,   38,
+       39,   40,   24,   41,   42,   43,   44,   45,   46,   24,
+       47,   24,   48,   49,   50,    8,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -455,115 +465,208 @@ static yyconst flex_int32_t yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static yyconst flex_int32_t yy_meta[46] =
+static yyconst flex_int32_t yy_meta[51] =
     {   0,
-        1,    1,    2,    3,    1,    1,    1,    1,    1,    4,
-        1,    1,    1,    1,    1,    3,    1,    1,    1,    3,
-        1,    3,    1,    1,    1,    3,    3,    3,    3,    3,
+        1,    1,    2,    3,    1,    1,    1,    1,    1,    1,
+        4,    1,    1,    1,    1,    1,    3,    1,    1,    1,
+        3,    1,    3,    3,    1,    1,    1,    3,    3,    3,
         3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
-        3,    3,    1,    1,    1
+        3,    3,    3,    3,    3,    3,    3,    1,    1,    1
     } ;
 
-static yyconst flex_int16_t yy_base[120] =
+static yyconst flex_int16_t yy_base[216] =
     {   0,
-        0,    0,   43,   44,  190,  191,  187,  191,   43,   62,
-       78,  191,  191,   94,  191,  167,    0,   40,   35,    0,
-      191,  110,  191,    0,  191,  191,  147,  151,  159,  157,
-      157,  140,  146,  154,  191,  191,  191,    0,  164,  174,
-       47,  191,  170,    0,    0,  142,    0,    0,    0,  140,
-        0,    0,  138,  134,    0,  126,  135,   42,  130,  126,
-      124,  122,  118,    0,  100,   95,   89,   93,   87,   82,
-       92,   23,    0,  191,    0,    0,    0,    0,  142,    0,
-       94,   96,   90,   78,   74,   70,   69,   65,   65,   52,
-       47,    0,    0,    0,   48,   41,   52,   49,    0,   32,
+        0,    0,   48,   49,  287,  504,  284,  504,  264,   48,
+       71,  117,  277,  504,  504,  163,  504,  261,  275,   45,
+       40,  274,  504,  209,  259,    0,  504,  504,  242,   19,
+       30,   36,   37,  250,  227,  234,  240,  504,  216,  504,
+        0,  248,  258,  255,   62,  504,  254,  235,    0,  248,
+        0,  233,  204,  231,  244,  301,  243,  242,   63,  199,
+      240,  225,    0,  238,    0,  223,  194,  221,    0,  347,
+      224,   79,  219,  218,   69,  217,  216,  215,  214,  185,
+        0,  191,  191,  190,    0,   65,  183,  185,  183,  184,
+      176,  171,  182,   28,  393,    0,  504,  188,    0,  201,
 
-       41,   36,   36,   25,    0,    0,    0,   37,    0,    0,
-       34,   31,    0,  191,  163,  167,   56,  171,  174
+        0,    0,  186,  157,    0,  198,  183,    0,  196,  181,
+      194,  193,  192,  191,   90,  148,   91,  189,  188,    0,
+      187,  172,    0,    0,  171,  439,  184,    0,  169,  140,
+      171,  166,   92,  165,  161,  159,  145,    0,  143,  144,
+      137,  130,    0,  133,  132,  129,  130,  119,  115,    0,
+      137,    0,  150,    0,    0,  135,  106,  147,  132,    0,
+      131,  144,  143,  142,   93,  141,   94,  126,    0,  139,
+      124,    0,    0,    0,  102,  102,   97,  111,   99,  105,
+        0,   87,   99,    0,  120,  105,  101,   95,   98,   87,
+       85,   79,   66,   61,    0,    0,    0,   85,    0,   77,
+
+        0,    0,   69,   73,   39,   42,   41,    0,    0,  504,
+      488,  492,   51,  496,  499
     } ;
 
-static yyconst flex_int16_t yy_def[120] =
+static yyconst flex_int16_t yy_def[216] =
     {   0,
-      114,    1,  115,  115,  114,  114,  114,  114,  116,  114,
-      114,  114,  114,  114,  114,   14,   11,   10,  114,   11,
-      114,  114,  114,  117,  114,  114,  117,  117,  117,  117,
-      117,  117,  117,  117,  114,  114,  114,  118,  114,  114,
-      116,  114,  116,   10,   10,   10,   11,   11,   11,   11,
-       14,   14,   14,   14,   10,  119,  114,  114,   22,   22,
-       22,   22,   22,  117,  117,  117,  117,  117,  117,  117,
-      117,  117,  118,  114,   10,   11,   14,  119,  119,   79,
-       79,  114,   22,  117,  117,  117,  117,  117,  117,  117,
-      117,  117,   79,  117,  117,  117,  117,  117,  117,  117,
+      210,    1,  211,  211,  210,  210,  210,  210,  210,  212,
+      210,  210,   12,  210,  210,  210,  210,   16,   12,   11,
+      210,   12,  210,  210,  210,  213,  210,  210,  213,  213,
+      213,  213,  213,  213,  213,  213,  213,  210,  210,  210,
+      214,  210,  210,  210,  212,  210,  212,  210,   11,   11,
+       11,   11,  210,  210,   12,  210,   12,   12,   12,  210,
+       12,  210,   16,   16,   16,   16,  210,   16,   11,  215,
+      210,  210,  210,   24,   24,   24,   24,   24,   24,  210,
+      213,  213,  213,  213,  213,  213,  213,  213,  213,  213,
+      213,  213,  213,  213,  210,  214,  210,  210,   44,   44,
 
-      117,  117,  117,  117,  117,  117,  117,  117,  117,  117,
-      117,  117,  117,    0,  114,  114,  114,  114,  114
+       44,   44,   44,  210,   11,   11,   11,   11,   12,  210,
+       56,   56,   56,   56,   56,  210,   12,   12,   12,   16,
+       16,   16,   16,  215,  215,  215,  126,  126,  126,  215,
+      210,   24,   24,   24,   24,   24,  213,  213,  213,  213,
+      213,  213,  213,  213,  213,  213,  213,  213,  213,  213,
+      210,   95,   95,   95,   95,   95,  210,   44,   44,   44,
+       11,   56,   56,   56,   56,   56,   12,   16,  126,  126,
+      126,  126,  213,  213,  213,  213,  213,  213,  213,  213,
+      213,  213,  213,   95,   95,   95,   44,   56,  126,  213,
+      213,  213,  213,  213,  213,  213,  213,   95,  213,  213,
+
+      213,  213,  213,  213,  213,  213,  213,  213,  213,    0,
+      210,  210,  210,  210,  210
     } ;
 
-static yyconst flex_int16_t yy_nxt[237] =
+static yyconst flex_int16_t yy_nxt[555] =
     {   0,
-        6,    7,    8,    6,    9,   10,   11,   12,   13,   10,
-       14,   15,   16,   17,   18,   19,   20,   21,   22,   23,
-       22,   24,   25,    6,   26,   24,   24,   24,   24,   27,
-       24,   28,   24,   24,   29,   30,   24,   31,   32,   33,
-       34,   24,   35,   36,   37,    8,    8,   42,   57,   55,
-       58,   42,   39,   39,   56,   57,   91,   58,   64,  113,
-       92,  112,  111,  110,  109,  108,   43,   44,   44,  107,
-       43,   44,   45,  106,   45,   44,   44,  105,   44,  104,
-       46,  103,   46,   47,   48,  102,  101,   47,   49,  100,
-       49,   48,   47,   99,   48,   98,   50,   97,   50,   51,
+        6,    7,    8,    9,   10,   11,   12,   13,   14,   15,
+       11,   16,   17,   18,   19,   20,   21,   22,   23,   24,
+       25,   24,    6,   26,   27,    6,   28,   26,   26,   26,
+       29,   30,   26,   26,   31,   26,   26,   32,   33,   26,
+       34,   26,   35,   36,   37,   26,   26,   38,   39,   40,
+        8,    8,   46,   81,   71,   69,   72,   83,   42,   42,
+       70,   85,   84,   87,  149,   89,   46,   86,  150,   61,
+       88,  209,  208,   47,   48,  133,   49,   50,   49,   90,
+      207,   49,   51,  117,   51,   49,   49,   47,   49,   73,
+       52,   48,   52,   71,  140,   72,  163,   61,  133,  163,
 
-       52,   96,   95,   51,   52,   94,   52,   52,   51,  114,
-       52,   82,   53,   93,   53,   59,   60,   90,   89,   59,
-       61,   88,   61,   60,   59,   87,   60,   86,   62,   63,
-       62,   79,   79,   85,   84,   79,   80,  114,   80,   79,
-       79,   83,   79,  114,   81,  114,   81,   79,   79,  114,
-       82,   79,   80,   77,   80,   79,   79,   77,   79,   76,
-       81,   75,   81,   38,   38,   38,   38,   41,   41,   41,
-       41,   73,  114,   73,   78,   40,   78,   78,   74,   72,
-       71,   70,   69,   68,   67,   66,   65,   54,   40,  114,
-        5,  114,  114,  114,  114,  114,  114,  114,  114,  114,
+       61,  163,  206,  205,  204,  198,  203,  141,  202,  201,
+      165,  167,   73,  188,  167,  188,  200,  199,  189,   53,
+       54,  187,   55,   56,   57,  198,  185,   55,   58,  197,
+       58,   57,   55,  196,   57,  195,   59,   54,   59,  194,
+      193,  192,  191,  190,  189,  170,  168,  163,  164,  164,
+      163,  161,  187,  158,  154,  186,  185,  184,  183,  182,
+      181,  180,  179,  178,  177,   60,   62,  176,   63,   64,
+       65,  175,  174,   63,   65,  173,   65,   65,   63,   73,
+       65,  135,   66,   62,   66,  135,   73,  131,  172,  171,
+      170,  169,  168,  121,  119,   61,  166,  163,  163,  164,
 
-      114,  114,  114,  114,  114,  114,  114,  114,  114,  114,
-      114,  114,  114,  114,  114,  114,  114,  114,  114,  114,
-      114,  114,  114,  114,  114,  114,  114,  114,  114,  114,
-      114,  114,  114,  114,  114,  114
+      163,  162,   61,  161,  106,  160,  159,  158,  101,  148,
+      147,   67,   73,  146,   74,   75,   76,  145,  144,   74,
+       77,  143,   77,   76,   74,  142,   76,  139,   78,   79,
+       78,  138,  137,  136,  135,  134,   73,   73,   73,  132,
+      131,  122,  123,  122,  121,  120,  119,  118,   61,   61,
+       61,  109,  108,  107,  106,  105,  210,   80,   98,   43,
+       99,  100,  101,   97,   95,   99,  102,   94,  102,  101,
+       99,   93,  101,   92,  103,   98,  103,   91,   82,   44,
+       61,   61,   68,   61,   44,   43,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+
+      210,  210,  210,  104,  110,  210,  111,  112,  113,  210,
+      210,  111,  114,  210,  114,  113,  111,  210,  113,  210,
+      115,  110,  115,  210,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  210,  210,  210,  210,  116,
+      125,  210,  126,  127,  126,  210,  210,  126,  128,  210,
+      128,  126,  126,  210,  126,  210,  129,  125,  129,  210,
+      210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  130,  151,  210,  152,  153,
+
+      154,  210,  210,  152,  155,  210,  155,  154,  152,  210,
+      154,  210,  156,  151,  156,  210,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+      210,  157,  125,  210,  126,  127,  126,  210,  210,  126,
+      128,  210,  128,  126,  126,  210,  126,  210,  129,  125,
+      129,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  210,  210,  130,   41,   41,
+       41,   41,   45,   45,   45,   45,   96,  210,   96,  124,
+
+      210,  124,  124,    5,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210
     } ;
 
-static yyconst flex_int16_t yy_chk[237] =
+static yyconst flex_int16_t yy_chk[555] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    3,    4,    9,   19,   18,
-       19,   41,    3,    4,   18,   58,   72,   58,  117,  112,
-       72,  111,  108,  104,  103,  102,    9,   10,   10,  101,
-       41,   10,   10,  100,   10,   10,   10,   98,   10,   97,
-       10,   96,   10,   11,   11,   95,   91,   11,   11,   90,
-       11,   11,   11,   89,   11,   88,   11,   87,   11,   14,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        3,    4,   10,  213,   21,   20,   21,   30,    3,    4,
+       20,   31,   30,   32,   94,   33,   45,   31,   94,   59,
+       32,  207,  206,   10,   11,   75,   11,   11,   11,   33,
+      205,   11,   11,   59,   11,   11,   11,   45,   11,   75,
+       11,   11,   11,   72,   86,   72,  115,  117,  133,  165,
 
-       14,   86,   85,   14,   14,   84,   14,   14,   14,   83,
-       14,   82,   14,   81,   14,   22,   22,   71,   70,   22,
-       22,   69,   22,   22,   22,   68,   22,   67,   22,   22,
-       22,   56,   56,   66,   65,   56,   56,   63,   56,   56,
-       56,   62,   56,   61,   56,   60,   56,   79,   79,   59,
-       57,   79,   79,   54,   79,   79,   79,   53,   79,   50,
-       79,   46,   79,  115,  115,  115,  115,  116,  116,  116,
-      116,  118,   43,  118,  119,   40,  119,  119,   39,   34,
-       33,   32,   31,   30,   29,   28,   27,   16,    7,    5,
-      114,  114,  114,  114,  114,  114,  114,  114,  114,  114,
+      167,  188,  204,  203,  200,  198,  194,   86,  193,  192,
+      115,  117,  133,  165,  167,  188,  191,  190,  189,   11,
+       12,  187,   12,   12,   12,  186,  185,   12,   12,  183,
+       12,   12,   12,  182,   12,  180,   12,   12,   12,  179,
+      178,  177,  176,  175,  171,  170,  168,  166,  164,  163,
+      162,  161,  159,  158,  157,  156,  153,  151,  149,  148,
+      147,  146,  145,  144,  142,   12,   16,  141,   16,   16,
+       16,  140,  139,   16,   16,  137,   16,   16,   16,  136,
+       16,  135,   16,   16,   16,  134,  132,  131,  130,  129,
+      127,  125,  122,  121,  119,  118,  116,  114,  113,  112,
 
-      114,  114,  114,  114,  114,  114,  114,  114,  114,  114,
-      114,  114,  114,  114,  114,  114,  114,  114,  114,  114,
-      114,  114,  114,  114,  114,  114,  114,  114,  114,  114,
-      114,  114,  114,  114,  114,  114
+      111,  110,  109,  107,  106,  104,  103,  100,   98,   93,
+       92,   16,   24,   91,   24,   24,   24,   90,   89,   24,
+       24,   88,   24,   24,   24,   87,   24,   84,   24,   24,
+       24,   83,   82,   80,   79,   78,   77,   76,   74,   73,
+       71,   68,   67,   66,   64,   62,   61,   60,   58,   57,
+       55,   54,   53,   52,   50,   48,   47,   24,   44,   43,
+       44,   44,   44,   42,   39,   44,   44,   37,   44,   44,
+       44,   36,   44,   35,   44,   44,   44,   34,   29,   25,
+       22,   19,   18,   13,    9,    7,    5,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+
+        0,    0,    0,   44,   56,    0,   56,   56,   56,    0,
+        0,   56,   56,    0,   56,   56,   56,    0,   56,    0,
+       56,   56,   56,    0,    0,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,    0,    0,   56,
+       70,    0,   70,   70,   70,    0,    0,   70,   70,    0,
+       70,   70,   70,    0,   70,    0,   70,   70,   70,    0,
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,   70,   95,    0,   95,   95,
+
+       95,    0,    0,   95,   95,    0,   95,   95,   95,    0,
+       95,    0,   95,   95,   95,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+        0,   95,  126,    0,  126,  126,  126,    0,    0,  126,
+      126,    0,  126,  126,  126,    0,  126,    0,  126,  126,
+      126,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,  126,  211,  211,
+      211,  211,  212,  212,  212,  212,  214,    0,  214,  215,
+
+        0,  215,  215,  210,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+      210,  210,  210,  210
     } ;
 
-static yyconst flex_int16_t yy_rule_linenum[38] =
+static yyconst flex_int16_t yy_rule_linenum[47] =
     {   0,
-       53,   58,   64,   66,   69,   70,   71,   75,   78,   79,
-       80,   81,   82,   83,   84,   85,   86,   88,   89,   91,
-       92,   93,   94,   95,   96,   98,   99,  100,  101,  103,
-      104,  105,  107,  108,  109,  110,  113
+       56,   61,   67,   69,   72,   73,   74,   78,   81,   82,
+       83,   84,   85,   86,   87,   88,   89,   90,   91,   92,
+       93,   94,   97,   98,   99,  102,  103,  104,  105,  106,
+      107,  109,  110,  111,  112,  114,  115,  116,  118,  119,
+      120,  121,  122,  123,  124,  127
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -598,7 +701,7 @@ typedef driver::Parser::token_type token_type;
 #line 34 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 #define YY_USER_ACTION yylloc->columns(yyleng);
 
-#line 602 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
+#line 705 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
 
 #define INITIAL 0
 #define IN_COMMENT 1
@@ -756,7 +859,7 @@ YY_DECL
 	register int yy_act;
     
 /* %% [7.0] user's declarations go here */
-#line 44 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 47 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 
 
  /* Whenever yylex() is invoked, we step the location tracker forward. */
@@ -766,7 +869,7 @@ YY_DECL
 
 
  /* Ignore whitespaces. */
-#line 770 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
+#line 873 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
 
 	if ( !(yy_init) )
 		{
@@ -829,13 +932,13 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 115 )
+				if ( yy_current_state >= 211 )
 					yy_c = yy_meta[(unsigned int) yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 			++yy_cp;
 			}
-		while ( yy_current_state != 114 );
+		while ( yy_current_state != 210 );
 		yy_cp = (yy_last_accepting_cpos);
 		yy_current_state = (yy_last_accepting_state);
 
@@ -854,12 +957,12 @@ do_action:	/* This label is used only to access EOF actions. */
 			{
 			if ( yy_act == 0 )
 				std::cerr << "--scanner backing up\n";
-			else if ( yy_act < 38 )
+			else if ( yy_act < 47 )
 				std::cerr << "--accepting rule at line " << yy_rule_linenum[yy_act] <<
 				         "(\"" << yytext << "\")\n";
-			else if ( yy_act == 38 )
+			else if ( yy_act == 47 )
 				std::cerr << "--accepting default rule (\"" << yytext << "\")\n";
-			else if ( yy_act == 39 )
+			else if ( yy_act == 48 )
 				std::cerr << "--(end of buffer or a NUL)\n";
 			else
 				std::cerr << "--EOF (start condition " << YY_START << ")\n";
@@ -877,7 +980,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 53 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 56 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 {
     yylloc->step();
 }
@@ -886,7 +989,7 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 58 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 61 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 {
     yylloc->lines(yyleng);
     yylloc->step();
@@ -895,30 +998,30 @@ YY_RULE_SETUP
 /* Eat comments. */
 case 3:
 YY_RULE_SETUP
-#line 64 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 67 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 ; /* we might want to keep track of the comments, for automated documentation */
 	YY_BREAK
 
 case 4:
 YY_RULE_SETUP
-#line 66 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 69 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 BEGIN(IN_COMMENT);
 	YY_BREAK
 
 
 case 5:
 YY_RULE_SETUP
-#line 69 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 72 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 BEGIN(INITIAL);
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 70 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 73 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 // eat comment in chunks
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 71 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 74 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 // eat the lone star
 	YY_BREAK
 
@@ -926,166 +1029,213 @@ YY_RULE_SETUP
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 75 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 78 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 storeToken; return token::STRING_LITERAL;
 	YY_BREAK
 /* Keywords */
 case 9:
 YY_RULE_SETUP
-#line 78 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 81 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 return token::FUNC;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 79 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 82 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 return token::VAR;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 80 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 83 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 return token::TYPE;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 81 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 84 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 return token::UNARY;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 82 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 85 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 return token::VALUE;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 83 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 86 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 return token::OBJECT;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 84 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 87 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 return token::INTERFACE;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 85 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 88 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 return token::NATIVE;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 86 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 89 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 return token::RANGE;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 88 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-storeToken; return token::IDENTIFIER;
+#line 90 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::IF;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 89 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-storeToken; return token::NUMBER;
+#line 91 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::ELSE;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 91 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::LPAREN;
+#line 92 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::FOR;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 92 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::RPAREN;
+#line 93 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::INCASE;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 93 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::LBRACE;
+#line 94 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::OTHERWISE;
 	YY_BREAK
+/* Constants */
 case 23:
 YY_RULE_SETUP
-#line 94 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::RBRACE;
+#line 97 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::NIL;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 95 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::LBRACK;
+#line 98 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+storeToken; return token::IDENTIFIER;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 96 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::RBRACK;
+#line 99 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+storeToken; return token::NUMBER;
 	YY_BREAK
+/* Punctuation */
 case 26:
 YY_RULE_SETUP
-#line 98 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::DOT;
+#line 102 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::LPAREN;
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 99 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::COMMA;
+#line 103 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::RPAREN;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 100 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::COLON;
+#line 104 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::LBRACE;
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 101 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::SEMICOLON;
+#line 105 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::RBRACE;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 103 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::RIGHTARROW;
+#line 106 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::LBRACK;
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 104 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::PIPE;
+#line 107 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::RBRACK;
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 105 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-return token::ASSIGN;
+#line 109 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::DOT;
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 107 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-storeToken; return token::ADDITIVE_OPERATOR;
+#line 110 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::COMMA;
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 108 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-storeToken; return token::MULTIPLICATIVE_OPERATOR;
+#line 111 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::COLON;
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 109 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
-storeToken; return token::RELATIONAL_OPERATOR;
+#line 112 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::SEMICOLON;
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 110 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 114 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::RIGHTARROW;
+	YY_BREAK
+case 37:
+YY_RULE_SETUP
+#line 115 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::PIPE;
+	YY_BREAK
+case 38:
+YY_RULE_SETUP
+#line 116 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+return token::ASSIGN;
+	YY_BREAK
+case 39:
+YY_RULE_SETUP
+#line 118 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+storeToken; return token::ADDITIVE_OPERATOR;
+	YY_BREAK
+case 40:
+YY_RULE_SETUP
+#line 119 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+storeToken; return token::MULTIPLICATIVE_OPERATOR;
+	YY_BREAK
+case 41:
+YY_RULE_SETUP
+#line 120 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+storeToken; return token::RELATIONAL_OPERATOR;
+	YY_BREAK
+case 42:
+YY_RULE_SETUP
+#line 121 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+storeToken; return token::EQUALITY_OPERATOR;
+	YY_BREAK
+case 43:
+YY_RULE_SETUP
+#line 122 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+storeToken; return token::AND_OPERATOR;
+	YY_BREAK
+case 44:
+YY_RULE_SETUP
+#line 123 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+storeToken; return token::OR_OPERATOR;
+	YY_BREAK
+case 45:
+YY_RULE_SETUP
+#line 124 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 storeToken; return token::OPERATOR;
 	YY_BREAK
 /* All other characters are rejected. */
-case 37:
+case 46:
 YY_RULE_SETUP
-#line 113 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 127 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 {
     std::stringstream s;
     s << "Unknown token '" << yytext[0] << "'";
     throw std::runtime_error(s.str());
 }
 	YY_BREAK
-case 38:
+case 47:
 YY_RULE_SETUP
-#line 120 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 134 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 ECHO;
 	YY_BREAK
-#line 1089 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
+#line 1239 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(IN_COMMENT):
 	yyterminate();
@@ -1488,7 +1638,7 @@ int yyFlexLexer::yy_get_next_buffer()
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 115 )
+			if ( yy_current_state >= 211 )
 				yy_c = yy_meta[(unsigned int) yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
@@ -1521,11 +1671,11 @@ int yyFlexLexer::yy_get_next_buffer()
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 115 )
+		if ( yy_current_state >= 211 )
 			yy_c = yy_meta[(unsigned int) yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-	yy_is_jam = (yy_current_state == 114);
+	yy_is_jam = (yy_current_state == 210);
 
 	return yy_is_jam ? 0 : yy_current_state;
 }
@@ -2135,7 +2285,7 @@ void Driverfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 120 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 134 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
 
 
 

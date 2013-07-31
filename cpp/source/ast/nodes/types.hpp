@@ -21,6 +21,8 @@ typedef enum {
 	kFuncType,
 	kGenericType,
 	kIdentifierExpr,
+	kIfExpr,
+	kIfExprCond,
 	kImplAccessor,
 	kImplAccessorArg,
 	kInterfaceQualifier,

@@ -39,7 +39,10 @@ typedef driver::Parser::token_type token_type;
 additive_op         [+\-]
 multiplicative_op   [*%/]
 relational_op       [<>]=?
-symbol              {additive_op}|{multiplicative_op}|{relational_op}|[\.:~&''^]
+equality_op         [!=]=
+and_op              "&&"
+or_op               "||"
+symbol              {additive_op}|{multiplicative_op}|{relational_op}|{equality_op}|{and_op}|{or_op}|[\.:~&''^]
 
 %% /*** Token Regular Expressions ***/
 
@@ -84,10 +87,18 @@ symbol              {additive_op}|{multiplicative_op}|{relational_op}|[\.:~&''^]
 "interface"  return token::INTERFACE;
 "native"     return token::NATIVE;
 "range"      return token::RANGE;
+"if"         return token::IF;
+"else"       return token::ELSE;
+"for"        return token::FOR;
+"incase"     return token::INCASE;
+"otherwise"  return token::OTHERWISE;
 
-[a-zA-Z_][a-zA-Z0-9_!?=]*    storeToken; return token::IDENTIFIER;
-[0-9]+("."[0-9]*)?        storeToken; return token::NUMBER;
+ /* Constants */
+"nil"        return token::NIL;
+[a-zA-Z_][a-zA-Z0-9_!?=]*  storeToken; return token::IDENTIFIER;
+[0-9]+("."[0-9]*)?         storeToken; return token::NUMBER;
 
+ /* Punctuation */
 "("  return token::LPAREN;
 ")"  return token::RPAREN;
 "{"  return token::LBRACE;
@@ -107,7 +118,10 @@ symbol              {additive_op}|{multiplicative_op}|{relational_op}|[\.:~&''^]
 ({additive_op}{symbol}*|{symbol}*{additive_op})             storeToken; return token::ADDITIVE_OPERATOR;
 ({multiplicative_op}{symbol}*|{symbol}*{multiplicative_op}) storeToken; return token::MULTIPLICATIVE_OPERATOR;
 ({relational_op}{symbol}*|{symbol}*{relational_op})         storeToken; return token::RELATIONAL_OPERATOR;
-{symbol}*  storeToken; return token::OPERATOR;
+({equality_op}{symbol}*|{symbol}*{equality_op})             storeToken; return token::EQUALITY_OPERATOR;
+({and_op}{symbol}*|{symbol}*{and_op})                       storeToken; return token::AND_OPERATOR;
+({or_op}{symbol}*|{symbol}*{or_op})                         storeToken; return token::OR_OPERATOR;
+{symbol}*                                                   storeToken; return token::OPERATOR;
 
  /* All other characters are rejected. */
 . {

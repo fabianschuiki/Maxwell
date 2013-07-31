@@ -2,6 +2,8 @@
 #pragma once
 #include "Node.hpp"
 #include "builtin/NumericType.hpp"
+#include "builtin/FuncDef.hpp"
+#include "builtin/FuncArg.hpp"
 #include <string>
 #include <map>
 #include <boost/smart_ptr.hpp>
@@ -42,11 +44,11 @@ protected:
 	typedef map<string, NodePtr> NodesByName;
 	NodesByName nodesByName;
 
-	typedef shared_ptr<builtin::NumericType> NumericTypePtr;
-
 	void build();
 	void add(const NodePtr& node, const string& name);
-	NumericTypePtr numericType(string name);
+	builtin::NumericType::Ptr numericType(const string& name);
+	builtin::FuncDef::Ptr funcDef(const string& name, const NodePtr& in0, const NodePtr& out0);
+	builtin::FuncDef::Ptr funcDef(const string& name, const NodePtr& in0, const NodePtr& in1, const NodePtr& out0);
 };
 
 } // namespace ast

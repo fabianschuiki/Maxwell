@@ -54,8 +54,8 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 
 %type <node> func_decl func_arg type_decl body stmt expr call_arg
 
-%type <node> primary_expr postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr assignment_expr map_expr_pair
-%type <nodes> expr_list map_expr_pairs
+%type <node> primary_expr if_expr if_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair
+%type <nodes> expr_list map_expr_pairs if_expr_conds
 
 %type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg qualified_typeexpr qualified_typeexpr_qualifier specialized_typeexpr
 %type <nodes> func_args_tuple func_args stmts union_typeexprs tuple_typeexpr_args call_args qualified_typeexpr_qualifiers specialized_typeexpr_specs
@@ -73,7 +73,7 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 %token <string> IDENTIFIER "identifier"
 %token <string> NUMBER "number constant"
 %token <string> STRING_LITERAL "string constant"
-%token <string> MULTIPLICATIVE_OPERATOR ADDITIVE_OPERATOR RELATIONAL_OPERATOR OPERATOR
+%token <string> MULTIPLICATIVE_OPERATOR ADDITIVE_OPERATOR RELATIONAL_OPERATOR EQUALITY_OPERATOR AND_OPERATOR OR_OPERATOR OPERATOR
 %token <symbol> SYMBOL "symbol"
 %token END 0 "end of input"
 
@@ -86,6 +86,12 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 %token INTERFACE "interface keyword"
 %token NATIVE "native keyword"
 %token RANGE "range keyword"
+%token IF "if keyword"
+%token ELSE "else keyword"
+%token FOR "for keyword"
+%token NIL "nil constant"
+%token INCASE "incase keyword"
+%token OTHERWISE "otherwise keyword"
 
 %token LPAREN "opening paranthesis ("
 %token RPAREN "closing paranthesis )"
@@ -310,6 +316,7 @@ primary_expr
       $$ = m;
       delete $2;
     }
+  | if_expr
   ;
 
 map_expr_pairs
@@ -327,6 +334,39 @@ map_expr_pair
       p->setKey(NodePtr($1));
       p->setValue(NodePtr($3));
       $$ = p;
+    }
+  ;
+
+if_expr
+  : LBRACE if_expr_conds RBRACE {
+      IfExpr *i = new IfExpr;
+      i->setConds(*$2);
+      $$ = i;
+      delete $2;
+    }
+  | LBRACE if_expr_conds COMMA expr OTHERWISE RBRACE {
+      IfExpr *i = new IfExpr;
+      i->setConds(*$2);
+      i->setOtherwise(NodePtr($4));
+      $$ = i;
+      delete $2;
+    }
+  ;
+if_expr_conds
+  : if_expr_cond {
+      $$ = new Nodes;
+      $$->push_back(NodePtr($1));
+    }
+  | if_expr_conds COMMA if_expr_cond {
+      $1->push_back(NodePtr($3));
+    }
+  ;
+if_expr_cond
+  : expr IF expr {
+      IfExprCond *c = new IfExprCond;
+      c->setExpr(NodePtr($1));
+      c->setCond(NodePtr($3));
+      $$ = c;
     }
   ;
 
@@ -453,9 +493,45 @@ relational_expr
     }
   ;
 
-assignment_expr
+equality_expr
   : relational_expr
-  | assignment_expr ASSIGN relational_expr {
+  | equality_expr EQUALITY_OPERATOR relational_expr {
+      BinaryOpExpr *e = new BinaryOpExpr;
+      e->setOperatorName(*$2);
+      e->setLhs(shared_ptr<Node>($1));
+      e->setRhs(shared_ptr<Node>($3));
+      $$ = e;
+      delete $2;
+    }
+  ;
+
+and_expr
+  : equality_expr
+  | and_expr AND_OPERATOR equality_expr {
+      BinaryOpExpr *e = new BinaryOpExpr;
+      e->setOperatorName(*$2);
+      e->setLhs(shared_ptr<Node>($1));
+      e->setRhs(shared_ptr<Node>($3));
+      $$ = e;
+      delete $2;
+    }
+  ;
+
+or_expr
+  : and_expr
+  | or_expr OR_OPERATOR and_expr {
+      BinaryOpExpr *e = new BinaryOpExpr;
+      e->setOperatorName(*$2);
+      e->setLhs(shared_ptr<Node>($1));
+      e->setRhs(shared_ptr<Node>($3));
+      $$ = e;
+      delete $2;
+    }
+  ;
+
+assignment_expr
+  : or_expr
+  | assignment_expr ASSIGN or_expr {
       AssignmentExpr *e = new AssignmentExpr;
       e->setLhs(shared_ptr<Node>($1));
       e->setRhs(shared_ptr<Node>($3));

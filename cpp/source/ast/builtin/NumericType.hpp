@@ -16,6 +16,7 @@ class NumericType : public BuiltinNode
 {
 public:
 	NumericType() : interfaceNamed(this), BuiltinNode() {}
+	virtual string getClassName() const { return "BuiltinNumericType"; }
 	virtual const string& getName(bool required) const { return name; }
 	virtual void setName(const string& s) { throw std::runtime_error("Cannot set name of builtin type " + name + "."); }
 	virtual bool equalTo(const NodePtr& other)
@@ -33,6 +34,8 @@ public:
 
 	// Interfaces
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
+
+	typedef boost::shared_ptr<NumericType> Ptr;
 
 protected:
 	friend class BuiltinRepository;

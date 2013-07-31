@@ -52,7 +52,7 @@ typedef std::vector<shared_ptr<Node> > Nodes;
     int symbol;
 }
 
-%type <node> func_decl func_arg type_decl body stmt expr call_arg
+%type <node> func_decl func_arg type_decl body stmt if_stmt for_stmt expr call_arg
 
 %type <node> primary_expr if_expr if_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair
 %type <nodes> expr_list map_expr_pairs if_expr_conds
@@ -262,13 +262,57 @@ stmts : stmt {
         }
       ;
 
-stmt  : expr SEMICOLON {
-          ExprStmt *s = new ExprStmt;
-          s->setExpr(shared_ptr<Node>($1));
-          $$ = s;
-        }
-      ;
+stmt
+  : expr SEMICOLON {
+      ExprStmt *s = new ExprStmt;
+      s->setExpr(shared_ptr<Node>($1));
+      $$ = s;
+    }
+  | if_stmt
+  | for_stmt
+  | LBRACE RBRACE {
+      $$ = new BlockStmt;
+    }
+  | LBRACE stmts RBRACE {
+      BlockStmt *b = new BlockStmt;
+      b->setStmts(*$2);
+      $$ = b;
+      delete $2;
+    }
+  ;
 
+if_stmt
+  : IF LPAREN expr RPAREN stmt {
+      IfStmt *s = new IfStmt;
+      s->setCond(NodePtr($3));
+      s->setBody(NodePtr($5));
+      $$ = s;
+    }
+  | IF LPAREN expr RPAREN stmt ELSE stmt {
+      IfStmt *s = new IfStmt;
+      s->setCond(NodePtr($3));
+      s->setBody(NodePtr($5));
+      s->setElseStmt(NodePtr($7));
+      $$ = s;
+    }
+  ;
+
+for_stmt
+  : FOR LPAREN expr RPAREN stmt {
+      ForStmt *s = new ForStmt;
+      s->setCond(NodePtr($3));
+      s->setBody(NodePtr($5));
+      $$ = s;
+    }
+  | FOR LPAREN expr SEMICOLON expr SEMICOLON expr RPAREN stmt {
+      ForStmt *s = new ForStmt;
+      s->setInit(NodePtr($3));
+      s->setCond(NodePtr($5));
+      s->setStep(NodePtr($7));
+      s->setBody(NodePtr($9));
+      $$ = s;
+    }
+  ;
 
 /*
  * ----------------------------------------------------------------------------

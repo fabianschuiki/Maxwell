@@ -43,56 +43,69 @@ void CalcRequiredTypes::process(const NodePtr& node)
 	// resulting tuple as a requirement to each call argument individually.
 	if (CallInterface* call = node->asCall())
 	{
-		// Build a list of candidate types and assign the call's required type
-		// as each candidate's required type.
-		const NodeVector& candidates = call->getCallCandidates();
-		vector<NodeVector> inputTypes(call->getCallArgs().size());
-
-		for (NodeVector::const_iterator it = candidates.begin(); it != candidates.end(); it++) {
-			const CallCandidate::Ptr& candidate = CallCandidate::needFrom(*it);
-			const NodePtr& funcNode = candidate->getFunc();
-			CallableInterface* func = funcNode->needCallable();
-			//const FuncType::Ptr& funcType = FuncType::needFrom(func->getType());
-
-			// Calculate the required types for each argument.
-			const NodeVector& funcArgs = func->getIn();
-			const NodeVector& args = candidate->getArgs();
-			addDependency(funcNode, "in");
-
+		addDependency(node, "selectedCallCandidate");
+		const CallCandidate::Ptr& selectedCandidate = CallCandidate::from(call->getSelectedCallCandidate(false));
+		if (selectedCandidate) {
+			// Assign the candidate's argument types to the corresponding call arguments.
+			const NodeVector& candidateArgs = selectedCandidate->getArgs();
+			const NodeVector& args = call->getCallArgs();
 			for (int i = 0; i < args.size(); i++) {
+				CallArgInterface* arg = args[i]->needCallArg();
+				const NodePtr& type = candidateArgs[i]->needType()->getRequiredType();
+				arg->getExpr()->needType()->setRequiredType(type);
+			}
+		} else {
+			// Build a list of candidate types and assign the call's required type
+			// as each candidate's required type.
+			const NodeVector& candidates = call->getCallCandidates();
+			vector<NodeVector> inputTypes(call->getCallArgs().size());
+
+			for (NodeVector::const_iterator it = candidates.begin(); it != candidates.end(); it++) {
+				const CallCandidate::Ptr& candidate = CallCandidate::needFrom(*it);
+				const NodePtr& funcNode = candidate->getFunc();
+				CallableInterface* func = funcNode->needCallable();
+				//const FuncType::Ptr& funcType = FuncType::needFrom(func->getType());
+
+				// Calculate the required types for each argument.
+				const NodeVector& funcArgs = func->getIn();
+				const NodeVector& args = candidate->getArgs();
+				addDependency(funcNode, "in");
+
+				for (int i = 0; i < args.size(); i++) {
+					NodePtr type;
+					if (i < funcArgs.size()) {
+						const NodePtr& funcArgNode = funcArgs[i];
+						CallableArgInterface* funcArg = funcArgNode->needCallableArg();
+						type = funcArg->getActualType();
+						inputTypes[i].push_back(type);
+						addDependency(funcArgNode, "actualType");
+					} else {
+						type = NodePtr(new InvalidType);
+					}
+					args[i]->needType()->setRequiredType(type);
+				}
+
+				// Calculate the output type of this candidate.
+				candidate->needType()->setRequiredType(node->needType()->getRequiredType());
+				addDependency(node, "requiredType");
+			}
+
+			// For each call argument, use the inputTypes vector to find the set
+			// of required types this argument must adhere to.
+			const NodeVector& args = call->getCallArgs();
+			for (int i = 0; i < args.size(); i++) {
+				CallArgInterface* arg = args[i]->needCallArg();
 				NodePtr type;
-				if (i < funcArgs.size()) {
-					const NodePtr& funcArgNode = funcArgs[i];
-					CallableArgInterface* funcArg = funcArgNode->needCallableArg();
-					type = funcArg->getActualType();
-					inputTypes[i].push_back(type);
-					addDependency(funcArgNode, "actualType");
+				if (i < inputTypes.size()) {
+					TypeSet::Ptr typeSet(new TypeSet);
+					typeSet->setTypes(inputTypes[i]);
+					type = algorithm::type::simplify(typeSet);
 				} else {
 					type = NodePtr(new InvalidType);
 				}
-				args[i]->needType()->setRequiredType(type);
+				arg->getExpr()->needType()->setRequiredType(type);
 			}
-
-			// Calculate the output type of this candidate.
-			candidate->needType()->setRequiredType(node->needType()->getRequiredType());
-			addDependency(node, "requiredType");
-		}
-
-		// For each call argument, use the inputTypes vector to find the set
-		// of required types this argument must adhere to.
-		const NodeVector& args = call->getCallArgs();
-		for (int i = 0; i < args.size(); i++) {
-			CallArgInterface* arg = args[i]->needCallArg();
-			NodePtr type;
-			if (i < inputTypes.size()) {
-				TypeSet::Ptr typeSet(new TypeSet);
-				typeSet->setTypes(inputTypes[i]);
-				type = algorithm::type::simplify(typeSet);
-			} else {
-				type = NodePtr(new InvalidType);
-			}
-			arg->getExpr()->needType()->setRequiredType(type);
-		}
+		} // selectedCandidate
 	}
 
 	// Array, set and map literals allow us to pass on the type specialization as
@@ -110,6 +123,26 @@ void CalcRequiredTypes::process(const NodePtr& node)
 		const NodeVector& exprs = expr->getExprs();
 		for (NodeVector::const_iterator it = exprs.begin(); it != exprs.end(); it++) {
 			(*it)->needType()->setRequiredType(elementType);
+		}
+	}
+
+	// If expressions force their conditional expressions to be of boolean type. The
+	// required type is passed through to the expressions transparently.
+	if (const IfExpr::Ptr& expr = IfExpr::from(node)) {
+
+		const NodePtr& requiredType = expr->getRequiredType();
+		DefinedType::Ptr boolType(new DefinedType);
+		boolType->setDefinition(repository.getBuiltinType("Bool"));
+
+		const NodeVector& conds = expr->getConds();
+		for (NodeVector::const_iterator it = conds.begin(); it != conds.end(); it++) {
+			const IfExprCond::Ptr& cond = IfExprCond::from(*it);
+			cond->getExpr()->needType()->setRequiredType(requiredType);
+			cond->getCond()->needType()->setRequiredType(boolType);
+		}
+		const NodePtr& othw = expr->getOtherwise(false);
+		if (othw) {
+			othw->needType()->setRequiredType(requiredType);
 		}
 	}
 

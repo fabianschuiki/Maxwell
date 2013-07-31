@@ -5,6 +5,7 @@
 #include "ArrayConstExpr.hpp"
 #include "AssignmentExpr.hpp"
 #include "BinaryOpExpr.hpp"
+#include "BlockStmt.hpp"
 #include "CallArg.hpp"
 #include "CallCandidate.hpp"
 #include "CallCandidateArg.hpp"
@@ -12,6 +13,7 @@
 #include "CallExprArg.hpp"
 #include "DefinedType.hpp"
 #include "ExprStmt.hpp"
+#include "ForStmt.hpp"
 #include "FuncArg.hpp"
 #include "FuncBody.hpp"
 #include "FuncDef.hpp"
@@ -20,6 +22,7 @@
 #include "IdentifierExpr.hpp"
 #include "IfExpr.hpp"
 #include "IfExprCond.hpp"
+#include "IfStmt.hpp"
 #include "ImplAccessor.hpp"
 #include "ImplAccessorArg.hpp"
 #include "InterfaceQualifier.hpp"
@@ -78,10 +81,18 @@ public:
 					if (size == 14) return NodePtr(new AssignmentExpr);
 				}
 			}
-			// BinaryOpExpr.*
-			if (size >= 12 && name[0] == 'B' && name[1] == 'i' && name[2] == 'n' && name[3] == 'a' && name[4] == 'r' && name[5] == 'y' && name[6] == 'O' && name[7] == 'p' && name[8] == 'E' && name[9] == 'x' && name[10] == 'p' && name[11] == 'r') {
-				// BinaryOpExpr
-				if (size == 12) return NodePtr(new BinaryOpExpr);
+			// B.*
+			if (size >= 1 && name[0] == 'B') {
+				// BinaryOpExpr.*
+				if (size >= 12 && name[1] == 'i' && name[2] == 'n' && name[3] == 'a' && name[4] == 'r' && name[5] == 'y' && name[6] == 'O' && name[7] == 'p' && name[8] == 'E' && name[9] == 'x' && name[10] == 'p' && name[11] == 'r') {
+					// BinaryOpExpr
+					if (size == 12) return NodePtr(new BinaryOpExpr);
+				}
+				// BlockStmt.*
+				if (size >= 9 && name[1] == 'l' && name[2] == 'o' && name[3] == 'c' && name[4] == 'k' && name[5] == 'S' && name[6] == 't' && name[7] == 'm' && name[8] == 't') {
+					// BlockStmt
+					if (size == 9) return NodePtr(new BlockStmt);
+				}
 			}
 			// Call.*
 			if (size >= 4 && name[0] == 'C' && name[1] == 'a' && name[2] == 'l' && name[3] == 'l') {
@@ -121,27 +132,35 @@ public:
 				// ExprStmt
 				if (size == 8) return NodePtr(new ExprStmt);
 			}
-			// Func.*
-			if (size >= 4 && name[0] == 'F' && name[1] == 'u' && name[2] == 'n' && name[3] == 'c') {
-				// FuncArg.*
-				if (size >= 7 && name[4] == 'A' && name[5] == 'r' && name[6] == 'g') {
-					// FuncArg
-					if (size == 7) return NodePtr(new FuncArg);
+			// F.*
+			if (size >= 1 && name[0] == 'F') {
+				// ForStmt.*
+				if (size >= 7 && name[1] == 'o' && name[2] == 'r' && name[3] == 'S' && name[4] == 't' && name[5] == 'm' && name[6] == 't') {
+					// ForStmt
+					if (size == 7) return NodePtr(new ForStmt);
 				}
-				// FuncBody.*
-				if (size >= 8 && name[4] == 'B' && name[5] == 'o' && name[6] == 'd' && name[7] == 'y') {
-					// FuncBody
-					if (size == 8) return NodePtr(new FuncBody);
-				}
-				// FuncDef.*
-				if (size >= 7 && name[4] == 'D' && name[5] == 'e' && name[6] == 'f') {
-					// FuncDef
-					if (size == 7) return NodePtr(new FuncDef);
-				}
-				// FuncType.*
-				if (size >= 8 && name[4] == 'T' && name[5] == 'y' && name[6] == 'p' && name[7] == 'e') {
-					// FuncType
-					if (size == 8) return NodePtr(new FuncType);
+				// Func.*
+				if (size >= 4 && name[1] == 'u' && name[2] == 'n' && name[3] == 'c') {
+					// FuncArg.*
+					if (size >= 7 && name[4] == 'A' && name[5] == 'r' && name[6] == 'g') {
+						// FuncArg
+						if (size == 7) return NodePtr(new FuncArg);
+					}
+					// FuncBody.*
+					if (size >= 8 && name[4] == 'B' && name[5] == 'o' && name[6] == 'd' && name[7] == 'y') {
+						// FuncBody
+						if (size == 8) return NodePtr(new FuncBody);
+					}
+					// FuncDef.*
+					if (size >= 7 && name[4] == 'D' && name[5] == 'e' && name[6] == 'f') {
+						// FuncDef
+						if (size == 7) return NodePtr(new FuncDef);
+					}
+					// FuncType.*
+					if (size >= 8 && name[4] == 'T' && name[5] == 'y' && name[6] == 'p' && name[7] == 'e') {
+						// FuncType
+						if (size == 8) return NodePtr(new FuncType);
+					}
 				}
 			}
 			// GenericType.*
@@ -156,14 +175,22 @@ public:
 					// IdentifierExpr
 					if (size == 14) return NodePtr(new IdentifierExpr);
 				}
-				// IfExpr.*
-				if (size >= 6 && name[1] == 'f' && name[2] == 'E' && name[3] == 'x' && name[4] == 'p' && name[5] == 'r') {
-					// IfExpr
-					if (size == 6) return NodePtr(new IfExpr);
-					// IfExprCond.*
-					if (size >= 10 && name[6] == 'C' && name[7] == 'o' && name[8] == 'n' && name[9] == 'd') {
-						// IfExprCond
-						if (size == 10) return NodePtr(new IfExprCond);
+				// If.*
+				if (size >= 2 && name[1] == 'f') {
+					// IfExpr.*
+					if (size >= 6 && name[2] == 'E' && name[3] == 'x' && name[4] == 'p' && name[5] == 'r') {
+						// IfExpr
+						if (size == 6) return NodePtr(new IfExpr);
+						// IfExprCond.*
+						if (size >= 10 && name[6] == 'C' && name[7] == 'o' && name[8] == 'n' && name[9] == 'd') {
+							// IfExprCond
+							if (size == 10) return NodePtr(new IfExprCond);
+						}
+					}
+					// IfStmt.*
+					if (size >= 6 && name[2] == 'S' && name[3] == 't' && name[4] == 'm' && name[5] == 't') {
+						// IfStmt
+						if (size == 6) return NodePtr(new IfStmt);
 					}
 				}
 				// ImplAccessor.*

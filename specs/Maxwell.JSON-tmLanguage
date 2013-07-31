@@ -4,39 +4,10 @@
  	"fileTypes": ["mw"],
  	"patterns": [
  		{ "include": "#comments" },
- 		{ "include": "#function-super" },
- 		{
- 			"match": "\\b(if|else|otherwise|for|incase|throw|new|package|external|import|return|inherits|where)\\b",
- 			"name": "keyword.control.maxwell"
- 		},
-
- 		{	"captures": {
- 				"1": { "name": "storage.type.function.maxwell" },
- 				"2": { "name": "entity.name.function"}
- 			},
-			"match": "\\b(func)\\s+([^\\s]+)\\b"
-		},
- 		{	"captures": {
- 				"1": { "name": "storage.type.type.maxwell" },
- 				"2": { "name": "entity.name.type" }
- 			},
-			"match": "\\b(type)\\s+([^\\s]+)\\b"
-		},
-		{	"match": "\\b(var)\\s+([^\\s]+)\\b",
-			"captures": {
-				"1": { "name": "storage.type.variable.maxwell" },
-				"2": { "name": "entity.name.variable" }
-			}
-		},
-		{	"match": "\\b(object|value)\\b",
-			"name": "storage.modifier.struct.maxwell"
-		},
-		{	"match": "\\b(native|interface|range)\\b",
-			"name": "storage.modifier.restriction.maxwell"
-		},
-
  		{ "include": "#builtin-types" },
 	 	{ "include": "#builtin-constants" },
+	 	{ "include": "#keywords" },
+	 	
  		{
  			"match": "\\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\\.?[0-9]*)|(\\.[0-9]+))((e|E)(\\+|-)?[0-9]+)?)\\b",
  			"name": "constant.numeric.maxwell"
@@ -60,122 +31,16 @@
 	],
 
 	"repository": {
-		"function": {
-			"begin": "\\b(func)\\s+([^\\s]+)",
- 			"end": "(?=\\{)|;",
- 			"name": "meta.function.maxwell",
- 			"captures": {
- 				"1": {"name":"storage.type.function.maxwell"},
- 				"2": {"name":"entity.name.function.maxwell"}
- 				},
- 			"patterns": [{
- 					"begin": "\\s*(->)\\s*(?=\\()",
- 					"end": "(?<=\\))",
-					"name": "meta.function.outputs.maxwell",
-					"patterns": [{"include":"#function-arguments"}]
- 				},{
- 					"begin": "(?=\\()",
- 					"end": "(?<=\\))",
-					"name": "meta.function.inputs.maxwell",
-					"patterns": [{"include":"#function-arguments"}]
- 				}]
- 			},
- 		"function-super": {
- 			"begin": "\\b(?=func\\s+)",
- 			"end": "(?<=\\})",
- 			"name": "meta.function-with-body.maxwell",
- 			"patterns": [
- 				{"include":"#function"},
- 				{"include":"#function-body"}
- 				]
- 			},
- 		"function-arguments": {
- 			"begin": "(\\(|,)",
- 			"end": "([^\\s]+)\\s*(?=,|\\))",
- 			"name": "meta.function.argument",
- 			"endCaptures": {
- 			    "0": {"name":"variable.parameter.function.maxwell"}
- 				},
- 			"patterns": [{"include":"#type-exprs"}]
- 			},
- 		"function-body": {
- 			"begin": "(\\{)",
- 			"end": "(\\})",
- 			"name": "meta.function.body",
- 			"patterns": [{"include":"#function-body-innards"}]
- 			},
- 		"type-exprs-with-identifier": {
- 			"patterns": [
- 				{ "include": "#type-exprs" }, {
- 				"match": "\\b([^\\s]+)",
- 				"name": "meta.type.identifier.maxwell",
- 				"captures": {"0":{"name":"storage.type.maxwell"}}
- 				}]
- 			},
- 		"type-exprs": {
- 			"patterns": [{
-	 				"begin": "\\b(interface)\\s*(?=\\{)",
-	 				"end": "(?<=\\})",
-	 				"name": "meta.type.interface.maxwell",
-	 				"beginCaptures": {"1":{"name":"storage.modifier.subset.interface.maxwell"}}
- 				},{
-	 				"begin": "\\b(object|value)\\s*(?=\\{)",
-	 				"end": "(?<=\\})",
-	 				"name": "meta.type.struct.maxwell",
-	 				"beginCaptures": {"1":{"name":"storage.modifier.subset.struct.maxwell"}}
- 				},
- 				{ "include": "#builtin-types" },
-	 			{ "include": "#builtin-constants" },
- 				{ "include": "#keywords" }
- 			]
- 		},
- 		"function-body-innards": {
- 			"patterns": [
- 				{ "include": "#comments" },
- 				{ "include": "#variable-definition" },
- 				{ "include": "#exprs" },
- 				{ "include": "#type-exprs" }
- 			]},
-
- 		"exprs": {
- 			"patterns": [{
-		 			"match": "\\b(var)\\s+([^\\s]+)",
-		 			"captures": {
-		 				"1": { "name": "storage.type.variable.maxwell" },
-		 				"2": { "name": "entity.other.attribute-name.variable.maxwell" }
-		 			}
-	 			},{
-	 				"name": "meta.function-call.maxwell",
-		 			"match": "\\b([^\\s\\.]+)\\s*\\(",
-		 			"captures": {
-		 			    "1": { "name": "support.function.any-method.maxwell" }
-	 				}
-	 			},{
-		 			"match": "\\.([^@][^\\s]*?)\\b",
-		 			"captures": {
-		 			    "1": { "name": "support.function.member.maxwell" }
-	 				}
-	 			},{
-		 			"match": "(@[^\\s]+?)\\b",
-		 			"captures": {
-		 			    "1": { "name": "constant.language.struct-field.maxwell" }
-	 				}
-	 			},
-	 			{ "include": "#keywords" },
-	 			{ "include": "#builtin-types" },
-	 			{ "include": "#builtin-constants" }
- 			]
- 		},
  		"keywords": {
  			"patterns": [{
 	 				"name": "keyword.control.directive.maxwell",
-		 			"match": "\\b(if|while|for|return|else|assume|require|constrain)\\b"
+		 			"match": "\\b(if|else|while|for|otherwise|incase|return|assume|require|constrain)\\b"
 	 			},{
 		 			"name": "storage.type.maxwell",
 		 			"match": "\\b(var|func|type)\\b"
 	 			},{
 	 				"name": "storage.modifier.maxwell",
-	 				"match": "\\b(native|range)\\b"
+	 				"match": "\\b(native|range|interface|value|object)\\b"
 	 			}]
  			},
  		"builtin-types": {

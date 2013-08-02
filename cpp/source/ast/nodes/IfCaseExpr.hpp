@@ -17,17 +17,17 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class IfExpr : public Node
+class IfCaseExpr : public Node
 {
 public:
-	IfExpr() : Node(),
+	IfCaseExpr() : Node(),
 		interfaceGraph(this),
 		interfaceType(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kIfExpr;
+		return k == kIfCaseExpr;
 	}
 
 	virtual bool implements(Interface i)
@@ -38,7 +38,7 @@ public:
 		return false;
 	}
 
-	virtual string getClassName() const { return "IfExpr"; }
+	virtual string getClassName() const { return "IfCaseExpr"; }
 
 	void setConds(const NodeVector& v)
 	{
@@ -158,9 +158,9 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "IfExpr{…}";
+		if (depth == 0) return "IfCaseExpr{…}";
 		stringstream str, b;
-		str << "IfExpr{";
+		str << "IfCaseExpr{";
 		if (!this->conds.empty()) b << endl << "  \033[1mconds\033[0m = " << indent(describeVector(this->conds, depth-1));
 		if (this->otherwise) b << endl << "  \033[1motherwise\033[0m = " << indent(this->otherwise->describe(depth-1));
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
@@ -289,7 +289,7 @@ public:
 
 	virtual bool equalTo(const NodePtr& o)
 	{
-		const shared_ptr<IfExpr>& other = boost::dynamic_pointer_cast<IfExpr>(o);
+		const shared_ptr<IfCaseExpr>& other = boost::dynamic_pointer_cast<IfCaseExpr>(o);
 		if (!other) return false;
 		if (!equal(this->conds, other->conds)) return false;
 		if (!equal(this->otherwise, other->otherwise)) return false;
@@ -304,9 +304,9 @@ public:
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual TypeInterface* asType() { return &this->interfaceType; }
 
-	typedef boost::shared_ptr<IfExpr> Ptr;
-	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<IfExpr>(n); }
-	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<IfExpr>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to IfExpr."); return r; }
+	typedef boost::shared_ptr<IfCaseExpr> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<IfCaseExpr>(n); }
+	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<IfCaseExpr>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to IfCaseExpr."); return r; }
 protected:
 	NodeVector conds;
 	NodePtr otherwise;
@@ -316,8 +316,8 @@ protected:
 	NodePtr actualType;
 
 	// Interfaces
-	GraphInterfaceImpl<IfExpr> interfaceGraph;
-	TypeInterfaceImpl<IfExpr> interfaceType;
+	GraphInterfaceImpl<IfCaseExpr> interfaceGraph;
+	TypeInterfaceImpl<IfCaseExpr> interfaceType;
 };
 
 } // namespace ast

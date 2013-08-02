@@ -91,13 +91,13 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 	}
 
 	// If expressions produce the union type of all expressions.
-	if (const IfExpr::Ptr& expr = IfExpr::from(node)) {
+	if (const IfCaseExpr::Ptr& expr = IfCaseExpr::from(node)) {
 		NodeVector types;
 
 		// Gather the types of all the expressions and the optional otherwise expression.
 		const NodeVector& conds = expr->getConds();
 		for (NodeVector::const_iterator it = conds.begin(); it != conds.end(); it++) {
-			const IfExprCond::Ptr& cond = IfExprCond::from(*it);
+			const IfCaseExprCond::Ptr& cond = IfCaseExprCond::from(*it);
 			addDependency(cond, "expr.actualType");
 			types.push_back(cond->getExpr()->needType()->getActualType());
 		}

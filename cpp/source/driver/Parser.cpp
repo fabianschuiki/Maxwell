@@ -789,7 +789,7 @@ namespace driver
   case 48:
 #line 385 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
-      IfExpr *i = new IfExpr;
+      IfCaseExpr *i = new IfCaseExpr;
       i->setConds(*(yysemantic_stack_[(3) - (2)].nodes));
       (yyval.node) = i;
       delete (yysemantic_stack_[(3) - (2)].nodes);
@@ -799,7 +799,7 @@ namespace driver
   case 49:
 #line 391 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
-      IfExpr *i = new IfExpr;
+      IfCaseExpr *i = new IfCaseExpr;
       i->setConds(*(yysemantic_stack_[(6) - (2)].nodes));
       i->setOtherwise(NodePtr((yysemantic_stack_[(6) - (4)].node)));
       (yyval.node) = i;
@@ -825,7 +825,7 @@ namespace driver
   case 52:
 #line 409 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
-      IfExprCond *c = new IfExprCond;
+      IfCaseExprCond *c = new IfCaseExprCond;
       c->setExpr(NodePtr((yysemantic_stack_[(3) - (1)].node)));
       c->setCond(NodePtr((yysemantic_stack_[(3) - (3)].node)));
       (yyval.node) = c;

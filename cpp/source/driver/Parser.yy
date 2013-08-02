@@ -54,8 +54,8 @@ typedef std::vector<shared_ptr<Node> > Nodes;
 
 %type <node> func_decl func_arg type_decl body stmt if_stmt for_stmt expr call_arg
 
-%type <node> primary_expr if_expr if_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair
-%type <nodes> expr_list map_expr_pairs if_expr_conds
+%type <node> primary_expr ifcase_expr ifcase_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair
+%type <nodes> expr_list map_expr_pairs ifcase_expr_conds
 
 %type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg qualified_typeexpr qualified_typeexpr_qualifier specialized_typeexpr
 %type <nodes> func_args_tuple func_args stmts union_typeexprs tuple_typeexpr_args call_args qualified_typeexpr_qualifiers specialized_typeexpr_specs
@@ -360,7 +360,7 @@ primary_expr
       $$ = m;
       delete $2;
     }
-  | if_expr
+  | ifcase_expr
   ;
 
 map_expr_pairs
@@ -381,33 +381,33 @@ map_expr_pair
     }
   ;
 
-if_expr
-  : LBRACE if_expr_conds RBRACE {
-      IfExpr *i = new IfExpr;
+ifcase_expr
+  : LBRACE ifcase_expr_conds RBRACE {
+      IfCaseExpr *i = new IfCaseExpr;
       i->setConds(*$2);
       $$ = i;
       delete $2;
     }
-  | LBRACE if_expr_conds COMMA expr OTHERWISE RBRACE {
-      IfExpr *i = new IfExpr;
+  | LBRACE ifcase_expr_conds COMMA expr OTHERWISE RBRACE {
+      IfCaseExpr *i = new IfCaseExpr;
       i->setConds(*$2);
       i->setOtherwise(NodePtr($4));
       $$ = i;
       delete $2;
     }
   ;
-if_expr_conds
-  : if_expr_cond {
+ifcase_expr_conds
+  : ifcase_expr_cond {
       $$ = new Nodes;
       $$->push_back(NodePtr($1));
     }
-  | if_expr_conds COMMA if_expr_cond {
+  | ifcase_expr_conds COMMA ifcase_expr_cond {
       $1->push_back(NodePtr($3));
     }
   ;
-if_expr_cond
+ifcase_expr_cond
   : expr IF expr {
-      IfExprCond *c = new IfExprCond;
+      IfCaseExprCond *c = new IfCaseExprCond;
       c->setExpr(NodePtr($1));
       c->setCond(NodePtr($3));
       $$ = c;

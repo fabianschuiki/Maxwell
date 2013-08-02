@@ -154,11 +154,11 @@ void buildAST(Builder &node)
 		.child("rhs", "any") // having the rhs first allows for easier handling of implicit setter calls
 		.child("lhs", "any")
 		.intf(graph).intf(type);
-	node("IfExpr")
-		.child("conds", "[IfExprCond]")
+	node("IfCaseExpr")
+		.child("conds", "[IfCaseExprCond]")
 		.child("otherwise", "@Type")
 		.intf(graph).intf(type);
-	node("IfExprCond")
+	node("IfCaseExprCond")
 		.child("expr", "@Type")
 		.child("cond", "@Type")
 		.intf(graph);

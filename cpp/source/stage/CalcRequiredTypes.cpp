@@ -128,7 +128,7 @@ void CalcRequiredTypes::process(const NodePtr& node)
 
 	// If expressions force their conditional expressions to be of boolean type. The
 	// required type is passed through to the expressions transparently.
-	if (const IfExpr::Ptr& expr = IfExpr::from(node)) {
+	if (const IfCaseExpr::Ptr& expr = IfCaseExpr::from(node)) {
 
 		const NodePtr& requiredType = expr->getRequiredType();
 		DefinedType::Ptr boolType(new DefinedType);
@@ -136,7 +136,7 @@ void CalcRequiredTypes::process(const NodePtr& node)
 
 		const NodeVector& conds = expr->getConds();
 		for (NodeVector::const_iterator it = conds.begin(); it != conds.end(); it++) {
-			const IfExprCond::Ptr& cond = IfExprCond::from(*it);
+			const IfCaseExprCond::Ptr& cond = IfCaseExprCond::from(*it);
 			cond->getExpr()->needType()->setRequiredType(requiredType);
 			cond->getCond()->needType()->setRequiredType(boolType);
 		}

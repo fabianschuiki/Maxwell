@@ -20,8 +20,8 @@
 #include "FuncType.hpp"
 #include "GenericType.hpp"
 #include "IdentifierExpr.hpp"
-#include "IfExpr.hpp"
-#include "IfExprCond.hpp"
+#include "IfCaseExpr.hpp"
+#include "IfCaseExprCond.hpp"
 #include "IfStmt.hpp"
 #include "ImplAccessor.hpp"
 #include "ImplAccessorArg.hpp"
@@ -177,14 +177,14 @@ public:
 				}
 				// If.*
 				if (size >= 2 && name[1] == 'f') {
-					// IfExpr.*
-					if (size >= 6 && name[2] == 'E' && name[3] == 'x' && name[4] == 'p' && name[5] == 'r') {
-						// IfExpr
-						if (size == 6) return NodePtr(new IfExpr);
-						// IfExprCond.*
-						if (size >= 10 && name[6] == 'C' && name[7] == 'o' && name[8] == 'n' && name[9] == 'd') {
-							// IfExprCond
-							if (size == 10) return NodePtr(new IfExprCond);
+					// IfCaseExpr.*
+					if (size >= 10 && name[2] == 'C' && name[3] == 'a' && name[4] == 's' && name[5] == 'e' && name[6] == 'E' && name[7] == 'x' && name[8] == 'p' && name[9] == 'r') {
+						// IfCaseExpr
+						if (size == 10) return NodePtr(new IfCaseExpr);
+						// IfCaseExprCond.*
+						if (size >= 14 && name[10] == 'C' && name[11] == 'o' && name[12] == 'n' && name[13] == 'd') {
+							// IfCaseExprCond
+							if (size == 14) return NodePtr(new IfCaseExprCond);
 						}
 					}
 					// IfStmt.*

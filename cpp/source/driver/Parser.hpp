@@ -58,7 +58,7 @@ namespace driver
 
 using namespace ast;
 using boost::shared_ptr;
-typedef std::vector<shared_ptr<Node> > Nodes;
+typedef std::vector<NodePtr> Nodes;
 
 
 /* Line 303 of lalr1.cc.  */
@@ -270,7 +270,7 @@ namespace driver
     /// - if positive, shift that token.
     /// - if negative, reduce the rule which number is the opposite.
     /// - if zero, do what YYDEFACT says.
-    static const unsigned char yytable_[];
+    static const short int yytable_[];
     static const signed char yytable_ninf_;
 
     static const short int yycheck_[];

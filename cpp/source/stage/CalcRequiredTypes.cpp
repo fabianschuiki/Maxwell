@@ -9,14 +9,6 @@ using boost::dynamic_pointer_cast;
 
 void CalcRequiredTypes::process(const NodePtr& node)
 {
-	// Expression statements do not impose any type requirements.
-	if (const ExprStmt::Ptr& stmt = ExprStmt::from(node)) {
-		TypeInterface* exprType = stmt->getExpr()->needType();
-		if (!exprType->getRequiredType(false)) {
-			exprType->setRequiredType(NodePtr(new GenericType));
-		}
-	}
-
 	// Assignments require the rhs to match the lhs.
 	if (const AssignmentExpr::Ptr& expr = AssignmentExpr::from(node)) {
 		const NodePtr& lhs = expr->getLhs();

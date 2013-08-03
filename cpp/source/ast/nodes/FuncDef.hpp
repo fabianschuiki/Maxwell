@@ -113,8 +113,8 @@ public:
 
 	void setBody(const NodePtr& v)
 	{
-		if (v && !v->isKindOf(kFuncBody)) {
-			throw runtime_error("'body' of " + id.str() + " needs to be of kind {FuncBody} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
+		if (v && !v->implements(kTypeInterface)) {
+			throw runtime_error("'body' of " + id.str() + " needs to be of kind {} or implement interface {Type}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
 		}
 		if (!equal(v, body)) {
 			modify("body");

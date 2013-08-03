@@ -17,17 +17,17 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class BlockStmt : public Node
+class IfExpr : public Node
 {
 public:
-	BlockStmt() : Node(),
+	IfExpr() : Node(),
 		interfaceGraph(this),
 		interfaceType(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kBlockStmt;
+		return k == kIfExpr;
 	}
 
 	virtual bool implements(Interface i)
@@ -38,7 +38,7 @@ public:
 		return false;
 	}
 
-	virtual string getClassName() const { return "BlockStmt"; }
+	virtual string getClassName() const { return "IfExpr"; }
 
 	void setGraphPrev(const NodePtr& v)
 	{
@@ -124,29 +124,75 @@ public:
 		return v;
 	}
 
-	void setStmts(const NodeVector& v)
+	void setCond(const NodePtr& v)
 	{
-		if (!equal(v, stmts)) {
-			modify("stmts");
-			stmts = v;
+		if (v && !v->implements(kTypeInterface)) {
+			throw runtime_error("'cond' of " + id.str() + " needs to be of kind {} or implement interface {Type}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
+		}
+		if (!equal(v, cond)) {
+			modify("cond");
+			cond = v;
 		}
 	}
-	const NodeVector& getStmts(bool required = true)
+	const NodePtr& getCond(bool required = true)
 	{
-		const NodeVector& v = stmts;
+		const NodePtr& v = cond;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have cond set to a non-null value.");
+		}
+		return v;
+	}
+
+	void setBody(const NodePtr& v)
+	{
+		if (v && !v->implements(kTypeInterface)) {
+			throw runtime_error("'body' of " + id.str() + " needs to be of kind {} or implement interface {Type}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
+		}
+		if (!equal(v, body)) {
+			modify("body");
+			body = v;
+		}
+	}
+	const NodePtr& getBody(bool required = true)
+	{
+		const NodePtr& v = body;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have body set to a non-null value.");
+		}
+		return v;
+	}
+
+	void setElseExpr(const NodePtr& v)
+	{
+		if (v && !v->implements(kTypeInterface)) {
+			throw runtime_error("'elseExpr' of " + id.str() + " needs to be of kind {} or implement interface {Type}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
+		}
+		if (!equal(v, elseExpr)) {
+			modify("elseExpr");
+			elseExpr = v;
+		}
+	}
+	const NodePtr& getElseExpr(bool required = true)
+	{
+		const NodePtr& v = elseExpr;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have elseExpr set to a non-null value.");
+		}
 		return v;
 	}
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "BlockStmt{…}";
+		if (depth == 0) return "IfExpr{…}";
 		stringstream str, b;
-		str << "BlockStmt{";
+		str << "IfExpr{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
-		if (!this->stmts.empty()) b << endl << "  \033[1mstmts\033[0m = " << indent(describeVector(this->stmts, depth-1));
+		if (this->cond) b << endl << "  \033[1mcond\033[0m = " << indent(this->cond->describe(depth-1));
+		if (this->body) b << endl << "  \033[1mbody\033[0m = " << indent(this->body->describe(depth-1));
+		if (this->elseExpr) b << endl << "  \033[1melseExpr\033[0m = " << indent(this->elseExpr->describe(depth-1));
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -159,7 +205,9 @@ public:
 		e.encode(this->possibleType);
 		e.encode(this->requiredType);
 		e.encode(this->actualType);
-		e.encode(this->stmts);
+		e.encode(this->cond);
+		e.encode(this->body);
+		e.encode(this->elseExpr);
 	}
 
 	virtual void decode(Decoder& d)
@@ -168,7 +216,9 @@ public:
 		d.decode(this->possibleType);
 		d.decode(this->requiredType);
 		d.decode(this->actualType);
-		d.decode(this->stmts);
+		d.decode(this->cond);
+		d.decode(this->body);
+		d.decode(this->elseExpr);
 	}
 
 	virtual void updateHierarchyOfChildren()
@@ -176,10 +226,9 @@ public:
 		if (this->possibleType) this->possibleType->updateHierarchy(id + "possibleType", repository, this);
 		if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
 		if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
-		for (int i = 0; i < this->stmts.size(); i++) {
-			char buf[32]; snprintf(buf, 31, "%i", i);
-			this->stmts[i]->updateHierarchy((id + "stmts") + buf, repository, this);
-		}
+		if (this->cond) this->cond->updateHierarchy(id + "cond", repository, this);
+		if (this->body) this->body->updateHierarchy(id + "body", repository, this);
+		if (this->elseExpr) this->elseExpr->updateHierarchy(id + "elseExpr", repository, this);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -194,6 +243,33 @@ public:
 					return getActualType();
 				} else if (path[10] == '.') {
 					return getActualType()->resolvePath(path.substr(11));
+				}
+			}
+			// body.*
+			if (size >= 4 && path[0] == 'b' && path[1] == 'o' && path[2] == 'd' && path[3] == 'y') {
+				// body
+				if (size == 4) {
+					return getBody();
+				} else if (path[4] == '.') {
+					return getBody()->resolvePath(path.substr(5));
+				}
+			}
+			// cond.*
+			if (size >= 4 && path[0] == 'c' && path[1] == 'o' && path[2] == 'n' && path[3] == 'd') {
+				// cond
+				if (size == 4) {
+					return getCond();
+				} else if (path[4] == '.') {
+					return getCond()->resolvePath(path.substr(5));
+				}
+			}
+			// elseExpr.*
+			if (size >= 8 && path[0] == 'e' && path[1] == 'l' && path[2] == 's' && path[3] == 'e' && path[4] == 'E' && path[5] == 'x' && path[6] == 'p' && path[7] == 'r') {
+				// elseExpr
+				if (size == 8) {
+					return getElseExpr();
+				} else if (path[8] == '.') {
+					return getElseExpr()->resolvePath(path.substr(9));
 				}
 			}
 			// graphPrev.*
@@ -223,26 +299,6 @@ public:
 					return getRequiredType()->resolvePath(path.substr(13));
 				}
 			}
-			// stmts.*
-			if (size >= 5 && path[0] == 's' && path[1] == 't' && path[2] == 'm' && path[3] == 't' && path[4] == 's') {
-				// stmts
-				if (size == 5) {
-					throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
-				} else if (path[5] == '.') {
-					size_t dot = path.find(".", 6);
-					string idx_str = path.substr(6, dot);
-					int idx = atoi(idx_str.c_str());
-					const NodeVector& a = getStmts();
-					if (idx < 0 || idx >= a.size()) {
-						throw std::runtime_error("Index into array '" + path.substr(0, 5) + "' is out of bounds.");
-					}
-					if (dot == string::npos) {
-						return a[idx];
-					} else {
-						return a[idx]->resolvePath(path.substr(dot + 1));
-					}
-				}
-			}
 		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
@@ -250,19 +306,23 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		v.insert(v.end(), this->stmts.begin(), this->stmts.end());
+		if (const NodePtr& n = this->getCond(false)) v.push_back(n);
+		if (const NodePtr& n = this->getBody(false)) v.push_back(n);
+		if (const NodePtr& n = this->getElseExpr(false)) v.push_back(n);
 		return v;
 	}
 
 	virtual bool equalTo(const NodePtr& o)
 	{
-		const shared_ptr<BlockStmt>& other = boost::dynamic_pointer_cast<BlockStmt>(o);
+		const shared_ptr<IfExpr>& other = boost::dynamic_pointer_cast<IfExpr>(o);
 		if (!other) return false;
 		if (!equal(this->graphPrev, other->graphPrev)) return false;
 		if (!equal(this->possibleType, other->possibleType)) return false;
 		if (!equal(this->requiredType, other->requiredType)) return false;
 		if (!equal(this->actualType, other->actualType)) return false;
-		if (!equal(this->stmts, other->stmts)) return false;
+		if (!equal(this->cond, other->cond)) return false;
+		if (!equal(this->body, other->body)) return false;
+		if (!equal(this->elseExpr, other->elseExpr)) return false;
 		return true;
 	}
 
@@ -270,19 +330,21 @@ public:
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual TypeInterface* asType() { return &this->interfaceType; }
 
-	typedef boost::shared_ptr<BlockStmt> Ptr;
-	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<BlockStmt>(n); }
-	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<BlockStmt>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to BlockStmt."); return r; }
+	typedef boost::shared_ptr<IfExpr> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<IfExpr>(n); }
+	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<IfExpr>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to IfExpr."); return r; }
 protected:
 	NodeRef graphPrev;
 	NodePtr possibleType;
 	NodePtr requiredType;
 	NodePtr actualType;
-	NodeVector stmts;
+	NodePtr cond;
+	NodePtr body;
+	NodePtr elseExpr;
 
 	// Interfaces
-	GraphInterfaceImpl<BlockStmt> interfaceGraph;
-	TypeInterfaceImpl<BlockStmt> interfaceType;
+	GraphInterfaceImpl<IfExpr> interfaceGraph;
+	TypeInterfaceImpl<IfExpr> interfaceType;
 };
 
 } // namespace ast

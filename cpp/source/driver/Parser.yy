@@ -9,7 +9,7 @@
 
 using namespace ast;
 using boost::shared_ptr;
-typedef std::vector<shared_ptr<Node> > Nodes;
+typedef std::vector<NodePtr> Nodes;
 %}
 
 /* Require Bison 2.3 */
@@ -52,10 +52,10 @@ typedef std::vector<shared_ptr<Node> > Nodes;
     int symbol;
 }
 
-%type <node> func_decl func_arg type_decl body stmt if_stmt for_stmt expr call_arg
+%type <node> func_decl func_arg type_decl stmt if_expr for_expr expr call_arg
 
-%type <node> primary_expr ifcase_expr ifcase_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair
-%type <nodes> expr_list map_expr_pairs ifcase_expr_conds
+%type <node> primary_expr ifcase_expr ifcase_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair body_expr block_expr block_expr_expr macro_expr any_expr
+%type <nodes> expr_list map_expr_pairs ifcase_expr_conds block_expr_exprs
 
 %type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg qualified_typeexpr qualified_typeexpr_qualifier specialized_typeexpr
 %type <nodes> func_args_tuple func_args stmts union_typeexprs tuple_typeexpr_args call_args qualified_typeexpr_qualifiers specialized_typeexpr_specs
@@ -137,31 +137,31 @@ root_stmts : root_stmts root_stmt
            ;
 
 root_stmt : func_decl {
-              driver.add(shared_ptr<Node>($1));
+              driver.add(NodePtr($1));
             }
           | type_decl {
-              driver.add(shared_ptr<Node>($1));
+              driver.add(NodePtr($1));
             }
           ;
 
 /* Function Declaration*/
-func_decl : func_decl_name body {
-              $1->setBody(shared_ptr<Node>($2));
+func_decl : func_decl_name body_expr {
+              $1->setBody(NodePtr($2));
             }
-          | func_decl_name func_args_tuple body {
+          | func_decl_name func_args_tuple body_expr {
               $1->setIn(*$2);
-              $1->setBody(shared_ptr<Node>($3));
+              $1->setBody(NodePtr($3));
               delete $2;
             }
-          | func_decl_name RIGHTARROW func_args_tuple body {
+          | func_decl_name RIGHTARROW func_args_tuple body_expr {
               $1->setOut(*$3);
-              $1->setBody(shared_ptr<Node>($4));
+              $1->setBody(NodePtr($4));
               delete $3;
             }
-          | func_decl_name func_args_tuple RIGHTARROW func_args_tuple body {
+          | func_decl_name func_args_tuple RIGHTARROW func_args_tuple body_expr {
               $1->setIn(*$2);
               $1->setOut(*$4);
-              $1->setBody(shared_ptr<Node>($5));
+              $1->setBody(NodePtr($5));
               delete $2;
               delete $4;
              }
@@ -189,7 +189,7 @@ func_args_tuple
   : LPAREN RPAREN { $$ = new Nodes; }
   | func_arg {
       $$ = new Nodes;
-      $$->push_back(shared_ptr<Node>($1));
+      $$->push_back(NodePtr($1));
     }
   | LPAREN func_args RPAREN {
       $$ = $2;
@@ -199,10 +199,10 @@ func_args_tuple
 func_args
   : func_arg {
       $$ = new Nodes;
-      $$->push_back(shared_ptr<Node>($1));
+      $$->push_back(NodePtr($1));
     }
   | func_args COMMA func_arg {
-      $1->push_back(shared_ptr<Node>($3));
+      $1->push_back(NodePtr($3));
     }
   ;
 
@@ -216,7 +216,7 @@ func_arg
   | IDENTIFIER typeexpr {
       FuncArg *a = new FuncArg;
       a->setName(*$1);
-      a->setTypeExpr(shared_ptr<Node>($2));
+      a->setTypeExpr(NodePtr($2));
       $$ = a;
       delete $1;
     }
@@ -241,77 +241,18 @@ type_decl_name
     }
   ;
 
-body  : LBRACE RBRACE {
-          FuncBody *b = new FuncBody;
-          $$ = b;
-        }
-      | LBRACE stmts RBRACE {
-          FuncBody *b = new FuncBody;
-          b->setStmts(*$2);
-          $$ = b;
-          delete $2;
-        }
-      ;
-
 stmts : stmt {
           $$ = new Nodes;
-          $$->push_back(shared_ptr<Node>($1));
+          $$->push_back(NodePtr($1));
         }
       | stmts stmt {
-          $1->push_back(shared_ptr<Node>($2));
+          $1->push_back(NodePtr($2));
         }
       ;
 
 stmt
-  : expr SEMICOLON {
-      ExprStmt *s = new ExprStmt;
-      s->setExpr(shared_ptr<Node>($1));
-      $$ = s;
-    }
-  | if_stmt
-  | for_stmt
-  | LBRACE RBRACE {
-      $$ = new BlockStmt;
-    }
-  | LBRACE stmts RBRACE {
-      BlockStmt *b = new BlockStmt;
-      b->setStmts(*$2);
-      $$ = b;
-      delete $2;
-    }
-  ;
-
-if_stmt
-  : IF LPAREN expr RPAREN stmt {
-      IfStmt *s = new IfStmt;
-      s->setCond(NodePtr($3));
-      s->setBody(NodePtr($5));
-      $$ = s;
-    }
-  | IF LPAREN expr RPAREN stmt ELSE stmt {
-      IfStmt *s = new IfStmt;
-      s->setCond(NodePtr($3));
-      s->setBody(NodePtr($5));
-      s->setElseStmt(NodePtr($7));
-      $$ = s;
-    }
-  ;
-
-for_stmt
-  : FOR LPAREN expr RPAREN stmt {
-      ForStmt *s = new ForStmt;
-      s->setCond(NodePtr($3));
-      s->setBody(NodePtr($5));
-      $$ = s;
-    }
-  | FOR LPAREN expr SEMICOLON expr SEMICOLON expr RPAREN stmt {
-      ForStmt *s = new ForStmt;
-      s->setInit(NodePtr($3));
-      s->setCond(NodePtr($5));
-      s->setStep(NodePtr($7));
-      s->setBody(NodePtr($9));
-      $$ = s;
-    }
+  : expr SEMICOLON
+  | macro_expr
   ;
 
 /*
@@ -329,7 +270,7 @@ primary_expr
       $$ = i;
       delete $1;
     }
-  | LPAREN expr RPAREN { $$ = $2; }
+  | LPAREN any_expr RPAREN { $$ = $2; }
   | NUMBER {
      NumberConstExpr *n = new NumberConstExpr;
      n->setValue(*$1);
@@ -366,10 +307,10 @@ primary_expr
 map_expr_pairs
   : map_expr_pair {
       $$ = new Nodes;
-      $$->push_back(shared_ptr<Node>($1));
+      $$->push_back(NodePtr($1));
     }
   | map_expr_pairs COMMA map_expr_pair {
-      $1->push_back(shared_ptr<Node>($3));
+      $1->push_back(NodePtr($3));
     }
   ;
 map_expr_pair
@@ -412,6 +353,70 @@ ifcase_expr_cond
       c->setCond(NodePtr($3));
       $$ = c;
     }
+  ;
+
+if_expr
+  : IF LPAREN expr RPAREN body_expr {
+      IfExpr *s = new IfExpr;
+      s->setCond(NodePtr($3));
+      s->setBody(NodePtr($5));
+      $$ = s;
+    }
+  | IF LPAREN expr RPAREN body_expr ELSE body_expr {
+      IfExpr *s = new IfExpr;
+      s->setCond(NodePtr($3));
+      s->setBody(NodePtr($5));
+      s->setElseExpr(NodePtr($7));
+      $$ = s;
+    }
+  ;
+
+for_expr
+  : FOR LPAREN expr RPAREN body_expr {
+      ForExpr *s = new ForExpr;
+      s->setCond(NodePtr($3));
+      s->setBody(NodePtr($5));
+      $$ = s;
+    }
+  | FOR LPAREN expr SEMICOLON expr SEMICOLON expr RPAREN body_expr {
+      ForExpr *s = new ForExpr;
+      s->setInit(NodePtr($3));
+      s->setCond(NodePtr($5));
+      s->setStep(NodePtr($7));
+      s->setBody(NodePtr($9));
+      $$ = s;
+    }
+  ;
+
+body_expr
+  : block_expr
+  | expr SEMICOLON
+  ;
+
+block_expr
+  : LBRACE RBRACE {
+      BlockExpr *b = new BlockExpr;
+      $$ = b;
+    }
+  | LBRACE block_expr_exprs RBRACE {
+      BlockExpr *b = new BlockExpr;
+      b->setExprs(*$2);
+      $$ = b;
+      delete $2;
+    }
+  ;
+block_expr_exprs
+  : block_expr_expr {
+      $$ = new Nodes;
+      $$->push_back(NodePtr($1));
+    }
+  | block_expr_exprs block_expr_expr {
+      $1->push_back(NodePtr($2));
+    }
+  ;
+block_expr_expr
+  : expr SEMICOLON
+  | macro_expr
   ;
 
 postfix_expr
@@ -466,10 +471,10 @@ postfix_expr
 call_args
   : call_arg {
       $$ = new Nodes;
-      $$->push_back(shared_ptr<Node>($1));
+      $$->push_back(NodePtr($1));
     }
   | call_args COMMA call_arg {
-      $1->push_back(shared_ptr<Node>($3));
+      $1->push_back(NodePtr($3));
     }
   ;
 
@@ -477,13 +482,13 @@ call_arg
   : IDENTIFIER COLON expr {
       CallExprArg *a = new CallExprArg;
       a->setName(*$1);
-      a->setExpr(shared_ptr<Node>($3));
+      a->setExpr(NodePtr($3));
       $$ = a;
       delete $1;
     }
   | expr {
       CallExprArg *a = new CallExprArg;
-      a->setExpr(shared_ptr<Node>($1));
+      a->setExpr(NodePtr($1));
       $$ = a;
     }
   ;
@@ -494,7 +499,7 @@ prefix_expr
       UnaryOpExpr *u = new UnaryOpExpr;
       u->setPostfix(false);
       u->setOperatorName(*$1);
-      u->setExpr(shared_ptr<Node>($2));
+      u->setExpr(NodePtr($2));
       $$ = u;
       delete $1;
     }
@@ -506,8 +511,8 @@ multiplicative_expr
   | multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr {
       BinaryOpExpr *e = new BinaryOpExpr;
       e->setOperatorName(*$2);
-      e->setLhs(shared_ptr<Node>($1));
-      e->setRhs(shared_ptr<Node>($3));
+      e->setLhs(NodePtr($1));
+      e->setRhs(NodePtr($3));
       $$ = e;
       delete $2;
     }
@@ -518,8 +523,8 @@ additive_expr
   | additive_expr ADDITIVE_OPERATOR multiplicative_expr {
       BinaryOpExpr *e = new BinaryOpExpr;
       e->setOperatorName(*$2);
-      e->setLhs(shared_ptr<Node>($1));
-      e->setRhs(shared_ptr<Node>($3));
+      e->setLhs(NodePtr($1));
+      e->setRhs(NodePtr($3));
       $$ = e;
       delete $2;
     }
@@ -530,8 +535,8 @@ relational_expr
   | relational_expr RELATIONAL_OPERATOR additive_expr {
       BinaryOpExpr *e = new BinaryOpExpr;
       e->setOperatorName(*$2);
-      e->setLhs(shared_ptr<Node>($1));
-      e->setRhs(shared_ptr<Node>($3));
+      e->setLhs(NodePtr($1));
+      e->setRhs(NodePtr($3));
       $$ = e;
       delete $2;
     }
@@ -542,8 +547,8 @@ equality_expr
   | equality_expr EQUALITY_OPERATOR relational_expr {
       BinaryOpExpr *e = new BinaryOpExpr;
       e->setOperatorName(*$2);
-      e->setLhs(shared_ptr<Node>($1));
-      e->setRhs(shared_ptr<Node>($3));
+      e->setLhs(NodePtr($1));
+      e->setRhs(NodePtr($3));
       $$ = e;
       delete $2;
     }
@@ -554,8 +559,8 @@ and_expr
   | and_expr AND_OPERATOR equality_expr {
       BinaryOpExpr *e = new BinaryOpExpr;
       e->setOperatorName(*$2);
-      e->setLhs(shared_ptr<Node>($1));
-      e->setRhs(shared_ptr<Node>($3));
+      e->setLhs(NodePtr($1));
+      e->setRhs(NodePtr($3));
       $$ = e;
       delete $2;
     }
@@ -566,8 +571,8 @@ or_expr
   | or_expr OR_OPERATOR and_expr {
       BinaryOpExpr *e = new BinaryOpExpr;
       e->setOperatorName(*$2);
-      e->setLhs(shared_ptr<Node>($1));
-      e->setRhs(shared_ptr<Node>($3));
+      e->setLhs(NodePtr($1));
+      e->setRhs(NodePtr($3));
       $$ = e;
       delete $2;
     }
@@ -577,8 +582,8 @@ assignment_expr
   : or_expr
   | assignment_expr ASSIGN or_expr {
       AssignmentExpr *e = new AssignmentExpr;
-      e->setLhs(shared_ptr<Node>($1));
-      e->setRhs(shared_ptr<Node>($3));
+      e->setLhs(NodePtr($1));
+      e->setRhs(NodePtr($3));
       $$ = e;
     }
   ;
@@ -587,7 +592,7 @@ var_expr
   : VAR IDENTIFIER typeexpr {
       VarDefExpr *v = new VarDefExpr;
       v->setName(*$2);
-      v->setTypeExpr(shared_ptr<Node>($3));
+      v->setTypeExpr(NodePtr($3));
       $$ = v;
       delete $2;
     }
@@ -603,17 +608,26 @@ expr
   : assignment_expr
   | var_expr { $$ = $<node>1; }
   | var_expr ASSIGN assignment_expr {
-      $1->setInitialExpr(shared_ptr<Node>($3));
+      $1->setInitialExpr(NodePtr($3));
     }
   ;
+
+/* Large expressions that in C/C++ would be statements. Usually incorporate a
+ * block of expressions or similar. */
+macro_expr
+  : if_expr
+  | for_expr
+  ;
+
+any_expr: macro_expr | expr;
 
 expr_list
   : expr {
       $$ = new Nodes;
-      $$->push_back(shared_ptr<Node>($1));
+      $$->push_back(NodePtr($1));
     }
   | expr_list COMMA expr {
-      $1->push_back(shared_ptr<Node>($3));
+      $1->push_back(NodePtr($3));
     }
   ;
 
@@ -656,11 +670,11 @@ union_typeexpr
 union_typeexprs
   : nonunion_typeexpr PIPE nonunion_typeexpr {
       $$ = new Nodes;
-      $$->push_back(shared_ptr<Node>($1));
-      $$->push_back(shared_ptr<Node>($3));
+      $$->push_back(NodePtr($1));
+      $$->push_back(NodePtr($3));
     }
   | union_typeexprs PIPE nonunion_typeexpr {
-      $1->push_back(shared_ptr<Node>($3));
+      $1->push_back(NodePtr($3));
     }
   ;
 
@@ -677,24 +691,24 @@ tuple_typeexpr
 tuple_typeexpr_args
   : tuple_typeexpr_arg COMMA tuple_typeexpr_arg {
       $$ = new Nodes;
-      $$->push_back(shared_ptr<Node>($1));
-      $$->push_back(shared_ptr<Node>($3));
+      $$->push_back(NodePtr($1));
+      $$->push_back(NodePtr($3));
     }
   | tuple_typeexpr_args COMMA tuple_typeexpr_arg {
-      $1->push_back(shared_ptr<Node>($3));
+      $1->push_back(NodePtr($3));
     }
   ;
 
 tuple_typeexpr_arg
   : typeexpr {
       TupleTypeExprArg *t = new TupleTypeExprArg;
-      t->setExpr(shared_ptr<Node>($1));
+      t->setExpr(NodePtr($1));
       $$ = t;
     }
   | IDENTIFIER COLON typeexpr {
       TupleTypeExprArg *t = new TupleTypeExprArg;
       t->setName(*$1);
-      t->setExpr(shared_ptr<Node>($3));
+      t->setExpr(NodePtr($3));
       $$ = t;
       delete $1;
     }

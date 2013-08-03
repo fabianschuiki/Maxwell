@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 		// Create a function definition.
 		shared_ptr<FuncDef> fdef(new FuncDef);
 		fdef->setName("main");
-		shared_ptr<FuncBody> fbody(new FuncBody);
+		shared_ptr<BlockExpr> fbody(new BlockExpr);
 		fdef->setBody(fbody);
 		shared_ptr<FuncArg> farg(new FuncArg);
 		farg->setName("x");

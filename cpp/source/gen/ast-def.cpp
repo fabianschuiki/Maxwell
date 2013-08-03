@@ -11,7 +11,6 @@ void buildAST(Builder &node)
 	node.groups["type"] = "GenericType|InvalidType|DefinedType|UnionType|TupleType|FuncType|TypeSet|QualifiedType|SpecializedType|UnionMappedType";
 	node.groups["typeExpr"] = "NamedTypeExpr|UnionTypeExpr|TupleTypeExpr|QualifiedTypeExpr|SpecializedTypeExpr";
 	node.groups["qualifier"] = "StructureQualifier|InterfaceQualifier|NativeQualifier|RangeQualifier";
-	node.groups["stmt"] = "BlockStmt|ExprStmt|IfStmt";
 
 	// Interfaces
 	Node& graph = node("@Graph")
@@ -65,36 +64,14 @@ void buildAST(Builder &node)
 		.attr("name", "string")
 		.child("in", "[FuncArg]")
 		.child("out", "[FuncArg]")
-		.child("body", "FuncBody")
+		.child("body", "@Type")
 		.child("type", "FuncType");
 	node("FuncArg")
 		.intf(graph).intf(variable).intf(callableArg);
-	node("FuncBody")
-		.intf(graph)
-		.child("stmts", "[any]");
 	node("TypeDef")
 		.intf(graph)
 		.attr("name", "string")
 		.child("type", "#typeExpr");
-
-	// Statements
-	node("BlockStmt")
-		.intf(graph)
-		.child("stmts", "[#stmt]");
-	node("ExprStmt")
-		.intf(graph)
-		.child("expr", "any");
-	node("IfStmt")
-		.intf(graph)
-		.child("cond", "@Type")
-		.child("body", "#stmt")
-		.child("elseStmt", "#stmt");
-	node("ForStmt")
-		.intf(graph)
-		.child("init", "any")
-		.child("cond", "@Type")
-		.child("step", "any")
-		.child("body", "#stmt");
 
 	// Expressions
 	node("NumberConstExpr")
@@ -162,6 +139,20 @@ void buildAST(Builder &node)
 		.child("expr", "@Type")
 		.child("cond", "@Type")
 		.intf(graph);
+	node("IfExpr")
+		.intf(graph).intf(type)
+		.child("cond", "@Type")
+		.child("body", "@Type")
+		.child("elseExpr", "@Type");
+	node("ForExpr")
+		.intf(graph).intf(type)
+		.child("init", "any")
+		.child("cond", "@Type")
+		.child("step", "any")
+		.child("body", "@Type");
+	node("BlockExpr")
+		.intf(graph).intf(type)
+		.child("exprs", "[@Type]");
 
 	// Type Expressions
 	node("NamedTypeExpr")

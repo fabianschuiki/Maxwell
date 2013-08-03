@@ -118,7 +118,7 @@ void CalcRequiredTypes::process(const NodePtr& node)
 		}
 	}
 
-	// If expressions force their conditional expressions to be of boolean type. The
+	// IfCaseExprs force their conditional expressions to be of boolean type. The
 	// required type is passed through to the expressions transparently.
 	if (const IfCaseExpr::Ptr& expr = IfCaseExpr::from(node)) {
 
@@ -137,6 +137,28 @@ void CalcRequiredTypes::process(const NodePtr& node)
 			othw->needType()->setRequiredType(requiredType);
 		}
 	}
+
+	// Blocks pass on the type requirement to the last expression contained in them.
+	if (const BlockExpr::Ptr& expr = BlockExpr::from(node)) {
+		if (!expr->getExprs().empty()) {
+			const NodePtr& requiredType = expr->getRequiredType();
+			const NodePtr& last = expr->getExprs().back();
+			last->needType()->setRequiredType(requiredType);
+		}
+	}
+
+	// IfExprs pass on the type requirement to both branches.
+	if (const IfExpr::Ptr& expr = IfExpr::from(node)) {
+		const NodePtr& requiredType = expr->getRequiredType();
+		const NodePtr& bodyBranch = expr->getBody();
+		bodyBranch->needType()->setRequiredType(requiredType);
+		const NodePtr& elseBranch = expr->getElseExpr(false);
+		if (elseBranch) {
+			elseBranch->needType()->setRequiredType(requiredType);
+		}
+	}
+
+	// ForExprs don't do anything at the moment. This should change in the future.
 
 	// Operate on the children
 	const NodeVector& children = node->getChildren();

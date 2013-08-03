@@ -33,6 +33,7 @@ typedef enum {
 	kMemberAccessExpr,
 	kNamedTypeExpr,
 	kNativeQualifier,
+	kNilType,
 	kNumberConstExpr,
 	kQualifiedType,
 	kQualifiedTypeExpr,

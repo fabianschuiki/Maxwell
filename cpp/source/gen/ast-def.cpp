@@ -8,7 +8,7 @@
 void buildAST(Builder &node)
 {
 	// Groups
-	node.groups["type"] = "GenericType|InvalidType|DefinedType|UnionType|TupleType|FuncType|TypeSet|QualifiedType|SpecializedType|UnionMappedType";
+	node.groups["type"] = "GenericType|InvalidType|NilType|DefinedType|UnionType|TupleType|FuncType|TypeSet|QualifiedType|SpecializedType|UnionMappedType";
 	node.groups["typeExpr"] = "NamedTypeExpr|UnionTypeExpr|TupleTypeExpr|QualifiedTypeExpr|SpecializedTypeExpr";
 	node.groups["qualifier"] = "StructureQualifier|InterfaceQualifier|NativeQualifier|RangeQualifier";
 
@@ -209,6 +209,7 @@ void buildAST(Builder &node)
 	// Types
 	node("GenericType").describe("str << \"*\";");
 	node("InvalidType").describe("str << \"<invalid>\";");
+	node("NilType").describe("str << \"nil\";");
 	node("DefinedType")
 		.attr("definition", "&any")
 		.describe("str << (getDefinition()->implements(kNamedInterface) ? getDefinition()->needNamed()->getName() : getDefinition()->getId().str());");

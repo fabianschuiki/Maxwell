@@ -90,7 +90,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		ac->setPossibleType(type);
 	}
 
-	// If expressions produce the union type of all expressions.
+	// IfCaseExpr produce the union type of all expressions.
 	if (const IfCaseExpr::Ptr& expr = IfCaseExpr::from(node)) {
 		NodeVector types;
 
@@ -111,6 +111,43 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		UnionType::Ptr unionType(new UnionType);
 		unionType->setTypes(types);
 		expr->setPossibleType(algorithm::type::simplify(unionType));
+	}
+
+	// Blocks in general "return" the same type/value as their last element, or nil if they are empty.
+	if (const BlockExpr::Ptr& block = BlockExpr::from(node)) {
+		if (block->getExprs().empty()) {
+			block->setPossibleType(NodePtr(new NilType));
+		} else {
+			const NodePtr& last = block->getExprs().back();
+			addDependency(last, "actualType");
+			block->setPossibleType(last->needType()->getActualType());
+		}
+	}
+
+	// If-expressions produce the union type of both branches.
+	if (const IfExpr::Ptr& expr = IfExpr::from(node)) {
+		NodeVector types;
+
+		// Gather the types.
+		const NodePtr& bodyBranch = expr->getBody();
+		const NodePtr& elseBranch = expr->getElseExpr(false);
+		addDependency(bodyBranch, "actualType");
+		types.push_back(bodyBranch->needType()->getActualType());
+		if (elseBranch) {
+			addDependency(elseBranch, "actualType");
+			types.push_back(elseBranch->needType()->getActualType());
+		}
+
+		// Wrap up in a UnionType.
+		UnionType::Ptr unionType(new UnionType);
+		unionType->setTypes(types);
+		expr->setPossibleType(algorithm::type::simplify(unionType));
+	}
+
+	// For-expressions produce a nil type for now. Later on they maybe should return the last expression
+	// in the body for the last iteration step.
+	if (const ForExpr::Ptr& expr = ForExpr::from(node)) {
+		expr->setPossibleType(NodePtr(new NilType));
 	}
 
 

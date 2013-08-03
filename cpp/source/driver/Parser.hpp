@@ -255,7 +255,7 @@ namespace driver
     /* Tables.  */
     /// For a state, the index in \a yytable_ of its portion.
     static const short int yypact_[];
-    static const signed char yypact_ninf_;
+    static const short int yypact_ninf_;
 
     /// For a state, default rule to reduce.
     /// Unless\a  yytable_ specifies something else to do.
@@ -270,10 +270,10 @@ namespace driver
     /// - if positive, shift that token.
     /// - if negative, reduce the rule which number is the opposite.
     /// - if zero, do what YYDEFACT says.
-    static const short int yytable_[];
+    static const unsigned char yytable_[];
     static const signed char yytable_ninf_;
 
-    static const short int yycheck_[];
+    static const unsigned char yycheck_[];
 
     /// For a state, its accessing symbol.
     static const unsigned char yystos_[];

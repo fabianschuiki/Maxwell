@@ -9,7 +9,7 @@ void buildAST(Builder &node)
 {
 	// Groups
 	node.groups["type"] = "GenericType|InvalidType|NilType|DefinedType|UnionType|TupleType|FuncType|TypeSet|QualifiedType|SpecializedType|UnionMappedType";
-	node.groups["typeExpr"] = "NamedTypeExpr|UnionTypeExpr|TupleTypeExpr|QualifiedTypeExpr|SpecializedTypeExpr";
+	node.groups["typeExpr"] = "NamedTypeExpr|NilTypeExpr|UnionTypeExpr|TupleTypeExpr|QualifiedTypeExpr|SpecializedTypeExpr";
 	node.groups["qualifier"] = "StructureQualifier|InterfaceQualifier|NativeQualifier|RangeQualifier";
 
 	// Interfaces
@@ -159,6 +159,8 @@ void buildAST(Builder &node)
 		.intf(graph).intf(typeExpr)
 		.attr("name", "string")
 		.attr("definition", "&any");
+	node("NilTypeExpr")
+		.intf(typeExpr);
 	node("UnionTypeExpr")
 		.intf(graph).intf(typeExpr)
 		.child("types", "[#typeExpr]");

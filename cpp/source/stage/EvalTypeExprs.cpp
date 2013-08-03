@@ -30,6 +30,11 @@ void EvalTypeExprs::process(const NodePtr& node)
 			node->updateHierarchyOfChildren();
 		}
 
+		if (const NilTypeExpr::Ptr& expr = NilTypeExpr::from(node)) {
+			intf->setEvaluatedType(NodePtr(new NilType));
+			node->updateHierarchyOfChildren();
+		}
+
 		if (const UnionTypeExpr::Ptr& expr = UnionTypeExpr::from(node)) {
 			const NodeVector& typeExprs = expr->getTypes();
 			NodeVector types(typeExprs.size());

@@ -31,6 +31,7 @@
 #include "NamedTypeExpr.hpp"
 #include "NativeQualifier.hpp"
 #include "NilType.hpp"
+#include "NilTypeExpr.hpp"
 #include "NumberConstExpr.hpp"
 #include "QualifiedType.hpp"
 #include "QualifiedTypeExpr.hpp"
@@ -243,6 +244,11 @@ public:
 				if (size >= 7 && name[1] == 'i' && name[2] == 'l' && name[3] == 'T' && name[4] == 'y' && name[5] == 'p' && name[6] == 'e') {
 					// NilType
 					if (size == 7) return NodePtr(new NilType);
+					// NilTypeExpr.*
+					if (size >= 11 && name[7] == 'E' && name[8] == 'x' && name[9] == 'p' && name[10] == 'r') {
+						// NilTypeExpr
+						if (size == 11) return NodePtr(new NilTypeExpr);
+					}
 				}
 				// NumberConstExpr.*
 				if (size >= 15 && name[1] == 'u' && name[2] == 'm' && name[3] == 'b' && name[4] == 'e' && name[5] == 'r' && name[6] == 'C' && name[7] == 'o' && name[8] == 'n' && name[9] == 's' && name[10] == 't' && name[11] == 'E' && name[12] == 'x' && name[13] == 'p' && name[14] == 'r') {

@@ -52,13 +52,13 @@ typedef std::vector<NodePtr> Nodes;
     int symbol;
 }
 
-%type <node> func_decl func_arg type_decl stmt if_expr for_expr expr call_arg
+%type <node> func_decl func_arg type_decl if_expr for_expr expr call_arg
 
 %type <node> primary_expr ifcase_expr ifcase_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair body_expr block_expr block_expr_expr macro_expr any_expr
 %type <nodes> expr_list map_expr_pairs ifcase_expr_conds block_expr_exprs
 
 %type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg qualified_typeexpr qualified_typeexpr_qualifier specialized_typeexpr
-%type <nodes> func_args_tuple func_args stmts union_typeexprs tuple_typeexpr_args call_args qualified_typeexpr_qualifiers specialized_typeexpr_specs
+%type <nodes> func_args_tuple func_args union_typeexprs tuple_typeexpr_args call_args qualified_typeexpr_qualifiers specialized_typeexpr_specs
 
 %type <node> structure_qualifier structure_qualifier_stmt interface_qualifier interface_qualifier_stmt native_qualifier range_qualifier
 %type <nodes> structure_qualifier_stmts interface_qualifier_stmts
@@ -145,20 +145,20 @@ root_stmt : func_decl {
           ;
 
 /* Function Declaration*/
-func_decl : func_decl_name body_expr {
+func_decl : func_decl_name block_expr {
               $1->setBody(NodePtr($2));
             }
-          | func_decl_name func_args_tuple body_expr {
+          | func_decl_name func_args_tuple block_expr {
               $1->setIn(*$2);
               $1->setBody(NodePtr($3));
               delete $2;
             }
-          | func_decl_name RIGHTARROW func_args_tuple body_expr {
+          | func_decl_name RIGHTARROW func_args_tuple block_expr {
               $1->setOut(*$3);
               $1->setBody(NodePtr($4));
               delete $3;
             }
-          | func_decl_name func_args_tuple RIGHTARROW func_args_tuple body_expr {
+          | func_decl_name func_args_tuple RIGHTARROW func_args_tuple block_expr {
               $1->setIn(*$2);
               $1->setOut(*$4);
               $1->setBody(NodePtr($5));
@@ -239,20 +239,6 @@ type_decl_name
       $$ = t;
       delete $2;
     }
-  ;
-
-stmts : stmt {
-          $$ = new Nodes;
-          $$->push_back(NodePtr($1));
-        }
-      | stmts stmt {
-          $1->push_back(NodePtr($2));
-        }
-      ;
-
-stmt
-  : expr SEMICOLON
-  | macro_expr
   ;
 
 /*
@@ -651,6 +637,9 @@ nonunion_typeexpr
       n->setName(*$1);
       $$ = n;
       delete $1;
+    }
+  | NIL {
+      $$ = new NilTypeExpr;
     }
   | tuple_typeexpr
   | qualified_typeexpr

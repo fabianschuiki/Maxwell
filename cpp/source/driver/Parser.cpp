@@ -595,7 +595,7 @@ namespace driver
     break;
 
   case 24:
-#line 267 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 253 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       IdentifierExpr *i = new IdentifierExpr;
       i->setName(*(yysemantic_stack_[(1) - (1)].string));
@@ -605,12 +605,12 @@ namespace driver
     break;
 
   case 25:
-#line 273 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 259 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { (yyval.node) = (yysemantic_stack_[(3) - (2)].node); ;}
     break;
 
   case 26:
-#line 274 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 260 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
      NumberConstExpr *n = new NumberConstExpr;
      n->setValue(*(yysemantic_stack_[(1) - (1)].string));
@@ -620,7 +620,7 @@ namespace driver
     break;
 
   case 27:
-#line 280 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 266 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       StringConstExpr *s = new StringConstExpr;
       s->setValue(*(yysemantic_stack_[(1) - (1)].string));
@@ -630,7 +630,7 @@ namespace driver
     break;
 
   case 28:
-#line 286 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 272 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { /* array literals */
       ArrayConstExpr *a = new ArrayConstExpr;
       a->setExprs(*(yysemantic_stack_[(3) - (2)].nodes));
@@ -640,7 +640,7 @@ namespace driver
     break;
 
   case 29:
-#line 292 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 278 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { /* set literals */
       SetConstExpr *s = new SetConstExpr;
       s->setExprs(*(yysemantic_stack_[(3) - (2)].nodes));
@@ -650,7 +650,7 @@ namespace driver
     break;
 
   case 30:
-#line 298 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 284 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { /* map literals */
       MapConstExpr *m = new MapConstExpr;
       m->setPairs(*(yysemantic_stack_[(3) - (2)].nodes));
@@ -660,7 +660,7 @@ namespace driver
     break;
 
   case 32:
-#line 308 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 294 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yyval.nodes) = new Nodes;
       (yyval.nodes)->push_back(NodePtr((yysemantic_stack_[(1) - (1)].node)));
@@ -668,14 +668,14 @@ namespace driver
     break;
 
   case 33:
-#line 312 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 298 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yysemantic_stack_[(3) - (1)].nodes)->push_back(NodePtr((yysemantic_stack_[(3) - (3)].node)));
     ;}
     break;
 
   case 34:
-#line 317 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 303 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       MapConstExprPair *p = new MapConstExprPair;
       p->setKey(NodePtr((yysemantic_stack_[(3) - (1)].node)));
@@ -685,7 +685,7 @@ namespace driver
     break;
 
   case 35:
-#line 326 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 312 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       IfCaseExpr *i = new IfCaseExpr;
       i->setConds(*(yysemantic_stack_[(3) - (2)].nodes));
@@ -695,7 +695,7 @@ namespace driver
     break;
 
   case 36:
-#line 332 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 318 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       IfCaseExpr *i = new IfCaseExpr;
       i->setConds(*(yysemantic_stack_[(6) - (2)].nodes));
@@ -706,7 +706,7 @@ namespace driver
     break;
 
   case 37:
-#line 341 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 327 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yyval.nodes) = new Nodes;
       (yyval.nodes)->push_back(NodePtr((yysemantic_stack_[(1) - (1)].node)));
@@ -714,14 +714,14 @@ namespace driver
     break;
 
   case 38:
-#line 345 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 331 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yysemantic_stack_[(3) - (1)].nodes)->push_back(NodePtr((yysemantic_stack_[(3) - (3)].node)));
     ;}
     break;
 
   case 39:
-#line 350 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 336 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       IfCaseExprCond *c = new IfCaseExprCond;
       c->setExpr(NodePtr((yysemantic_stack_[(3) - (1)].node)));
@@ -731,7 +731,7 @@ namespace driver
     break;
 
   case 40:
-#line 359 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 345 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       IfExpr *s = new IfExpr;
       s->setCond(NodePtr((yysemantic_stack_[(5) - (3)].node)));
@@ -741,7 +741,7 @@ namespace driver
     break;
 
   case 41:
-#line 365 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 351 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       IfExpr *s = new IfExpr;
       s->setCond(NodePtr((yysemantic_stack_[(7) - (3)].node)));
@@ -752,7 +752,7 @@ namespace driver
     break;
 
   case 42:
-#line 375 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 361 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       ForExpr *s = new ForExpr;
       s->setCond(NodePtr((yysemantic_stack_[(5) - (3)].node)));
@@ -762,7 +762,7 @@ namespace driver
     break;
 
   case 43:
-#line 381 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 367 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       ForExpr *s = new ForExpr;
       s->setInit(NodePtr((yysemantic_stack_[(9) - (3)].node)));
@@ -774,7 +774,7 @@ namespace driver
     break;
 
   case 46:
-#line 397 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 383 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       BlockExpr *b = new BlockExpr;
       (yyval.node) = b;
@@ -782,7 +782,7 @@ namespace driver
     break;
 
   case 47:
-#line 401 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 387 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       BlockExpr *b = new BlockExpr;
       b->setExprs(*(yysemantic_stack_[(3) - (2)].nodes));
@@ -792,7 +792,7 @@ namespace driver
     break;
 
   case 48:
-#line 409 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 395 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yyval.nodes) = new Nodes;
       (yyval.nodes)->push_back(NodePtr((yysemantic_stack_[(1) - (1)].node)));
@@ -800,14 +800,14 @@ namespace driver
     break;
 
   case 49:
-#line 413 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 399 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yysemantic_stack_[(2) - (1)].nodes)->push_back(NodePtr((yysemantic_stack_[(2) - (2)].node)));
     ;}
     break;
 
   case 53:
-#line 424 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 410 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       UnaryOpExpr *u = new UnaryOpExpr;
       u->setPostfix(true);
@@ -819,7 +819,7 @@ namespace driver
     break;
 
   case 54:
-#line 432 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 418 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       CallExpr *c = new CallExpr;
       c->setName(*(yysemantic_stack_[(5) - (3)].string));
@@ -830,7 +830,7 @@ namespace driver
     break;
 
   case 55:
-#line 439 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 425 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       CallExpr *c = new CallExpr;
       c->setName(*(yysemantic_stack_[(6) - (3)].string));
@@ -843,7 +843,7 @@ namespace driver
     break;
 
   case 56:
-#line 448 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 434 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       CallExpr *c = new CallExpr;
       c->setName(*(yysemantic_stack_[(3) - (3)].string));
@@ -854,7 +854,7 @@ namespace driver
     break;
 
   case 57:
-#line 455 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 441 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       CallExpr *c = new CallExpr;
       c->setName(*(yysemantic_stack_[(3) - (1)].string));
@@ -864,7 +864,7 @@ namespace driver
     break;
 
   case 58:
-#line 461 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 447 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       CallExpr *c = new CallExpr;
       c->setName(*(yysemantic_stack_[(4) - (1)].string));
@@ -876,7 +876,7 @@ namespace driver
     break;
 
   case 59:
-#line 472 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 458 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yyval.nodes) = new Nodes;
       (yyval.nodes)->push_back(NodePtr((yysemantic_stack_[(1) - (1)].node)));
@@ -884,14 +884,14 @@ namespace driver
     break;
 
   case 60:
-#line 476 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 462 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yysemantic_stack_[(3) - (1)].nodes)->push_back(NodePtr((yysemantic_stack_[(3) - (3)].node)));
     ;}
     break;
 
   case 61:
-#line 482 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 468 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       CallExprArg *a = new CallExprArg;
       a->setName(*(yysemantic_stack_[(3) - (1)].string));
@@ -902,7 +902,7 @@ namespace driver
     break;
 
   case 62:
-#line 489 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 475 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       CallExprArg *a = new CallExprArg;
       a->setExpr(NodePtr((yysemantic_stack_[(1) - (1)].node)));
@@ -911,7 +911,7 @@ namespace driver
     break;
 
   case 64:
-#line 498 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 484 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       UnaryOpExpr *u = new UnaryOpExpr;
       u->setPostfix(false);
@@ -923,7 +923,7 @@ namespace driver
     break;
 
   case 70:
-#line 511 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 497 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       BinaryOpExpr *e = new BinaryOpExpr;
       e->setOperatorName(*(yysemantic_stack_[(3) - (2)].string));
@@ -935,7 +935,7 @@ namespace driver
     break;
 
   case 72:
-#line 523 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 509 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       BinaryOpExpr *e = new BinaryOpExpr;
       e->setOperatorName(*(yysemantic_stack_[(3) - (2)].string));
@@ -947,7 +947,7 @@ namespace driver
     break;
 
   case 74:
-#line 535 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 521 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       BinaryOpExpr *e = new BinaryOpExpr;
       e->setOperatorName(*(yysemantic_stack_[(3) - (2)].string));
@@ -959,7 +959,7 @@ namespace driver
     break;
 
   case 76:
-#line 547 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 533 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       BinaryOpExpr *e = new BinaryOpExpr;
       e->setOperatorName(*(yysemantic_stack_[(3) - (2)].string));
@@ -971,7 +971,7 @@ namespace driver
     break;
 
   case 78:
-#line 559 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 545 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       BinaryOpExpr *e = new BinaryOpExpr;
       e->setOperatorName(*(yysemantic_stack_[(3) - (2)].string));
@@ -983,7 +983,7 @@ namespace driver
     break;
 
   case 80:
-#line 571 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 557 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       BinaryOpExpr *e = new BinaryOpExpr;
       e->setOperatorName(*(yysemantic_stack_[(3) - (2)].string));
@@ -995,7 +995,7 @@ namespace driver
     break;
 
   case 82:
-#line 583 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 569 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       AssignmentExpr *e = new AssignmentExpr;
       e->setLhs(NodePtr((yysemantic_stack_[(3) - (1)].node)));
@@ -1005,7 +1005,7 @@ namespace driver
     break;
 
   case 83:
-#line 592 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 578 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       VarDefExpr *v = new VarDefExpr;
       v->setName(*(yysemantic_stack_[(3) - (2)].string));
@@ -1016,7 +1016,7 @@ namespace driver
     break;
 
   case 84:
-#line 599 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 585 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       VarDefExpr *v = new VarDefExpr;
       v->setName(*(yysemantic_stack_[(2) - (2)].string));
@@ -1026,19 +1026,19 @@ namespace driver
     break;
 
   case 86:
-#line 609 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 595 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { (yyval.node) = (yysemantic_stack_[(1) - (1)].node); ;}
     break;
 
   case 87:
-#line 610 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 596 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yysemantic_stack_[(3) - (1)].varDefExpr)->setInitialExpr(NodePtr((yysemantic_stack_[(3) - (3)].node)));
     ;}
     break;
 
   case 92:
-#line 625 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 611 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yyval.nodes) = new Nodes;
       (yyval.nodes)->push_back(NodePtr((yysemantic_stack_[(1) - (1)].node)));
@@ -1046,14 +1046,14 @@ namespace driver
     break;
 
   case 93:
-#line 629 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 615 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yysemantic_stack_[(3) - (1)].nodes)->push_back(NodePtr((yysemantic_stack_[(3) - (3)].node)));
     ;}
     break;
 
   case 96:
-#line 649 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 635 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       NamedTypeExpr *n = new NamedTypeExpr;
       n->setName(*(yysemantic_stack_[(1) - (1)].string));
@@ -1062,8 +1062,15 @@ namespace driver
     ;}
     break;
 
-  case 100:
-#line 662 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 97:
+#line 641 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+    {
+      (yyval.node) = new NilTypeExpr;
+    ;}
+    break;
+
+  case 101:
+#line 651 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       UnionTypeExpr *t = new UnionTypeExpr;
       t->setTypes(*(yysemantic_stack_[(1) - (1)].nodes));
@@ -1072,8 +1079,8 @@ namespace driver
     ;}
     break;
 
-  case 101:
-#line 671 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 102:
+#line 660 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yyval.nodes) = new Nodes;
       (yyval.nodes)->push_back(NodePtr((yysemantic_stack_[(3) - (1)].node)));
@@ -1081,15 +1088,15 @@ namespace driver
     ;}
     break;
 
-  case 102:
-#line 676 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 103:
+#line 665 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yysemantic_stack_[(3) - (1)].nodes)->push_back(NodePtr((yysemantic_stack_[(3) - (3)].node)));
     ;}
     break;
 
-  case 103:
-#line 683 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 104:
+#line 672 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       TupleTypeExpr *t = new TupleTypeExpr;
       t->setArgs(*(yysemantic_stack_[(3) - (2)].nodes));
@@ -1098,8 +1105,8 @@ namespace driver
     ;}
     break;
 
-  case 104:
-#line 692 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 105:
+#line 681 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yyval.nodes) = new Nodes;
       (yyval.nodes)->push_back(NodePtr((yysemantic_stack_[(3) - (1)].node)));
@@ -1107,15 +1114,15 @@ namespace driver
     ;}
     break;
 
-  case 105:
-#line 697 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 106:
+#line 686 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yysemantic_stack_[(3) - (1)].nodes)->push_back(NodePtr((yysemantic_stack_[(3) - (3)].node)));
     ;}
     break;
 
-  case 106:
-#line 703 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 107:
+#line 692 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       TupleTypeExprArg *t = new TupleTypeExprArg;
       t->setExpr(NodePtr((yysemantic_stack_[(1) - (1)].node)));
@@ -1123,8 +1130,8 @@ namespace driver
     ;}
     break;
 
-  case 107:
-#line 708 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 108:
+#line 697 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       TupleTypeExprArg *t = new TupleTypeExprArg;
       t->setName(*(yysemantic_stack_[(3) - (1)].string));
@@ -1134,8 +1141,8 @@ namespace driver
     ;}
     break;
 
-  case 108:
-#line 719 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 109:
+#line 708 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       QualifiedTypeExpr *q = new QualifiedTypeExpr;
       q->setExprs(*(yysemantic_stack_[(1) - (1)].nodes));
@@ -1144,23 +1151,23 @@ namespace driver
     ;}
     break;
 
-  case 109:
-#line 728 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 110:
+#line 717 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yyval.nodes) = new Nodes;
       (yyval.nodes)->push_back(NodePtr((yysemantic_stack_[(1) - (1)].node)));
     ;}
     break;
 
-  case 110:
-#line 732 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 111:
+#line 721 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yysemantic_stack_[(2) - (1)].nodes)->push_back(NodePtr((yysemantic_stack_[(2) - (2)].node)));
     ;}
     break;
 
-  case 111:
-#line 739 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 112:
+#line 728 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       SpecializedTypeExpr *t = new SpecializedTypeExpr;
       t->setExpr(NodePtr((yysemantic_stack_[(4) - (1)].node)));
@@ -1170,36 +1177,36 @@ namespace driver
     ;}
     break;
 
-  case 112:
-#line 748 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 113:
+#line 737 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yyval.nodes) = new Nodes;
       (yyval.nodes)->push_back(NodePtr((yysemantic_stack_[(1) - (1)].node)));
     ;}
     break;
 
-  case 113:
-#line 752 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 114:
+#line 741 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yysemantic_stack_[(3) - (1)].nodes)->push_back(NodePtr((yysemantic_stack_[(3) - (3)].node)));
     ;}
     break;
 
-  case 118:
-#line 769 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 119:
+#line 758 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { (yyval.node) = (yysemantic_stack_[(3) - (1)].structureQualifier); ;}
     break;
 
-  case 119:
-#line 770 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 120:
+#line 759 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yysemantic_stack_[(4) - (1)].structureQualifier)->setStmts(*(yysemantic_stack_[(4) - (3)].nodes));
       delete (yysemantic_stack_[(4) - (3)].nodes);
     ;}
     break;
 
-  case 120:
-#line 777 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 121:
+#line 766 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       StructureQualifier *s = new StructureQualifier;
       s->setMode("value");
@@ -1207,8 +1214,8 @@ namespace driver
     ;}
     break;
 
-  case 121:
-#line 782 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 122:
+#line 771 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       StructureQualifier *s = new StructureQualifier;
       s->setMode("object");
@@ -1216,18 +1223,18 @@ namespace driver
     ;}
     break;
 
-  case 122:
-#line 790 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 123:
+#line 779 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { (yyval.nodes) = new Nodes; (yyval.nodes)->push_back(NodePtr((yysemantic_stack_[(1) - (1)].node))); ;}
     break;
 
-  case 123:
-#line 791 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 124:
+#line 780 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { (yysemantic_stack_[(2) - (1)].nodes)->push_back(NodePtr((yysemantic_stack_[(2) - (2)].node))); ;}
     break;
 
-  case 124:
-#line 795 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 125:
+#line 784 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       StructureQualifierMember *s = new StructureQualifierMember;
       s->setName(*(yysemantic_stack_[(2) - (1)].string));
@@ -1236,8 +1243,8 @@ namespace driver
     ;}
     break;
 
-  case 125:
-#line 801 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 126:
+#line 790 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       StructureQualifierMember *s = new StructureQualifierMember;
       s->setName(*(yysemantic_stack_[(3) - (1)].string));
@@ -1247,16 +1254,16 @@ namespace driver
     ;}
     break;
 
-  case 126:
-#line 812 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 127:
+#line 801 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       InterfaceQualifier *i = new InterfaceQualifier;
       (yyval.node) = i;
     ;}
     break;
 
-  case 127:
-#line 816 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 128:
+#line 805 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       InterfaceQualifier *i = new InterfaceQualifier;
       i->setStmts(*(yysemantic_stack_[(4) - (3)].nodes));
@@ -1265,23 +1272,23 @@ namespace driver
     ;}
     break;
 
-  case 128:
-#line 825 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 129:
+#line 814 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { (yyval.nodes) = new Nodes; (yyval.nodes)->push_back(NodePtr((yysemantic_stack_[(1) - (1)].node))); ;}
     break;
 
-  case 129:
-#line 826 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 130:
+#line 815 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { (yysemantic_stack_[(2) - (1)].nodes)->push_back(NodePtr((yysemantic_stack_[(2) - (2)].node))); ;}
     break;
 
-  case 130:
-#line 830 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 131:
+#line 819 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { (yyval.node) = new InvalidType; delete (yysemantic_stack_[(1) - (1)].string); /* dummy */ ;}
     break;
 
-  case 131:
-#line 835 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 132:
+#line 824 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       NativeQualifier *n = new NativeQualifier;
       n->setName(*(yysemantic_stack_[(2) - (2)].string));
@@ -1290,13 +1297,13 @@ namespace driver
     ;}
     break;
 
-  case 132:
-#line 845 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 133:
+#line 834 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     { (yyval.node) = (yysemantic_stack_[(1) - (1)].rangeQualifier); ;}
     break;
 
-  case 133:
-#line 846 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 134:
+#line 835 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       (yysemantic_stack_[(6) - (1)].rangeQualifier)->setMin(*(yysemantic_stack_[(6) - (3)].string));
       (yysemantic_stack_[(6) - (1)].rangeQualifier)->setMax(*(yysemantic_stack_[(6) - (5)].string));
@@ -1305,8 +1312,8 @@ namespace driver
     ;}
     break;
 
-  case 134:
-#line 855 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+  case 135:
+#line 844 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
     {
       RangeQualifier *r = new RangeQualifier;
       r->setName(*(yysemantic_stack_[(2) - (2)].string));
@@ -1317,7 +1324,7 @@ namespace driver
 
 
     /* Line 675 of lalr1.cc.  */
-#line 1321 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
+#line 1328 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.cpp"
 	default: break;
       }
     YY_SYMBOL_PRINT ("-> $$ =", yyr1_[yyn], &yyval, &yyloc);
@@ -1524,34 +1531,34 @@ namespace driver
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
-  const signed char Parser::yypact_ninf_ = -29;
+  const short int Parser::yypact_ninf_ = -186;
   const short int
   Parser::yypact_[] =
   {
-        74,   321,    50,    73,    74,   -29,   -29,    54,   -29,    79,
-     -29,   -29,   -29,   -29,   -29,   229,   -29,   -29,   -29,   -29,
-      10,   -29,   -29,    89,   280,   311,   437,    19,   132,   -29,
-     -29,   -29,   -29,   -29,    35,   -29,   148,    98,   127,   108,
-     133,   135,   146,   117,   130,   134,   -29,   -29,   -29,   143,
-     175,   179,   167,   -29,   131,   -29,   149,   -29,   -29,   278,
-     -29,   -29,   -29,   152,   -29,   -29,   -29,   161,   -29,   240,
-     -29,    79,   169,   171,   373,   -29,   437,    66,   -29,   -29,
-     -29,   -29,   -29,   173,   172,   -29,   168,    42,   -29,    78,
-     -29,   342,   -29,    33,   -29,   109,   -29,   -11,    79,    12,
-     450,    19,   -29,   -29,   202,   -29,   148,   148,   148,   148,
-     148,   148,   148,   148,   -29,     6,   -29,   -29,   170,   -29,
-      72,   181,    79,    79,    79,   -29,     8,   206,   164,   209,
-     -29,    76,   -29,   -29,   -29,   437,   437,   196,   -29,   217,
-     -29,   404,   437,   -29,    60,   -29,   437,   -29,   -29,   183,
-     437,   -29,   -29,   437,   -29,   -29,   450,   194,   -29,    98,
-     127,   108,   133,   135,   146,   117,   -29,   -29,     9,   -29,
-      79,   -29,   167,   167,   -29,   -10,   192,   192,    15,   -29,
-      11,   -29,   189,   260,    95,   -29,   470,   203,   -14,   -29,
-      48,   -29,   -29,   168,   -29,   -29,   120,   -29,   -29,   -29,
-     417,   -29,   -29,   -29,   -29,   -29,   -29,    79,   -29,   200,
-     -29,   -29,   245,    92,   -29,   -29,   450,   450,   437,   437,
-     218,   -29,    77,   -29,   -29,   221,   230,   -29,   214,   -29,
-     -29,   -29,   450,   437,   -29,   226,   450,   -29
+        47,    94,    28,    62,    47,  -186,  -186,     3,  -186,   259,
+    -186,  -186,  -186,  -186,  -186,   174,  -186,  -186,  -186,  -186,
+     259,    11,    45,    52,   -18,  -186,  -186,  -186,  -186,  -186,
+      48,    91,   101,  -186,   272,  -186,    38,  -186,    73,  -186,
+    -186,   284,  -186,  -186,  -186,    79,  -186,  -186,  -186,    85,
+    -186,  -186,  -186,    68,  -186,    89,  -186,  -186,   117,   118,
+     119,   154,   202,  -186,   202,  -186,  -186,  -186,  -186,    84,
+    -186,    57,  -186,   253,   115,   149,   155,   156,   158,   160,
+     132,   133,   137,  -186,   157,    52,  -186,     5,  -186,  -186,
+     151,  -186,    82,   161,   259,   259,   259,  -186,    12,   187,
+    -186,   196,   120,   259,   202,   202,  -186,  -186,   170,   164,
+      99,  -186,   105,  -186,   188,   108,  -186,   -17,  -186,  -186,
+    -186,   209,  -186,   253,   253,   253,   253,   253,   253,   253,
+     253,  -186,  -186,   157,  -186,  -186,    27,  -186,   259,  -186,
+     272,   272,  -186,   130,   180,   180,     7,  -186,    32,  -186,
+     178,  -186,    29,  -186,    92,  -186,  -186,  -186,   186,    36,
+    -186,   202,  -186,   241,  -186,   202,   202,  -186,   202,  -186,
+     192,  -186,   115,   149,   155,   156,   158,   160,   132,  -186,
+    -186,  -186,  -186,  -186,  -186,  -186,   259,  -186,   184,  -186,
+    -186,   220,   202,  -186,   222,   235,   235,   202,  -186,  -186,
+     164,  -186,  -186,    -7,  -186,  -186,   189,  -186,  -186,   206,
+    -186,  -186,    45,   208,  -186,   210,  -186,   213,   216,  -186,
+     104,  -186,    33,   235,  -186,   202,  -186,  -186,  -186,   224,
+     235,  -186
   };
 
   /* YYDEFACT[S] -- default rule to reduce with in state S when YYTABLE
@@ -1562,171 +1569,133 @@ namespace driver
   {
          0,     0,     0,     0,     2,     4,     5,     0,     6,    21,
       11,    65,    66,    67,    68,     0,    12,    23,     1,     3,
-      19,    26,    27,     0,     0,     0,     0,     0,     0,    15,
-      52,    31,     7,    44,    63,    69,     0,    71,    73,    75,
-      77,    79,    81,    85,    86,     0,    96,   120,   121,     0,
-       0,     0,     0,    22,    94,    95,   100,    97,    98,   108,
-      99,   109,   114,     0,   115,   116,   117,   132,    13,     0,
-      20,    84,     0,     0,     0,    14,     0,     0,    17,    88,
-      89,    91,    90,     0,    24,    46,    52,     0,    32,     0,
-      37,     0,    48,    92,    51,     0,    92,     0,    19,     0,
-       0,     0,     8,    53,     0,    64,     0,     0,     0,     0,
-       0,     0,     0,     0,    45,     0,   131,   134,    96,   106,
-       0,     0,     0,     0,     0,   110,     0,     0,    24,     0,
-      57,     0,    59,    62,    83,     0,     0,    92,    16,     0,
-      25,     0,     0,    30,     0,    35,     0,    47,    49,     0,
-       0,    50,    29,     0,    28,     9,     0,    56,    70,    72,
-      74,    76,    78,    80,    82,    87,   130,   126,     0,   128,
-       0,   103,     0,     0,   112,     0,   101,   102,     0,   118,
-       0,   122,     0,     0,    24,    58,     0,     0,     0,    18,
-      24,    34,    24,     0,    33,    38,     0,    39,    93,    10,
-       0,   127,   129,   107,   105,   104,   111,     0,   124,     0,
-     119,   123,     0,    24,    61,    60,     0,     0,     0,     0,
-       0,    54,     0,   113,   125,     0,    40,    42,     0,    36,
-      55,   133,     0,     0,    41,     0,     0,    43
+      19,     0,     0,     0,     0,    15,     7,    96,   121,   122,
+       0,     0,     0,    97,     0,    22,    94,    95,   101,    98,
+      99,   109,   100,   110,   115,     0,   116,   117,   118,   133,
+      13,    20,    14,     0,    17,    24,    26,    27,     0,     0,
+       0,     0,     0,    46,     0,    52,    31,    88,    89,     0,
+      48,    63,    69,     0,    71,    73,    75,    77,    79,    81,
+      85,    86,     0,    51,     0,     0,     8,     0,   132,   135,
+      96,   107,     0,     0,     0,     0,     0,   111,     0,     0,
+      16,     0,     0,    84,     0,     0,    91,    90,     0,    52,
+       0,    32,     0,    37,    92,     0,    92,     0,    47,    49,
+      53,     0,    64,     0,     0,     0,     0,     0,     0,     0,
+       0,    50,     9,     0,   131,   127,     0,   129,     0,   104,
+       0,     0,   113,     0,   102,   103,     0,   119,     0,   123,
+       0,    18,    24,    57,     0,    59,    62,    83,     0,     0,
+      25,     0,    30,     0,    35,     0,     0,    29,     0,    28,
+      56,    70,    72,    74,    76,    78,    80,    82,    87,    10,
+     128,   130,   108,   106,   105,   112,     0,   125,     0,   120,
+     124,     0,     0,    58,     0,     0,     0,     0,    34,    24,
+       0,    33,    38,     0,    39,    93,     0,   114,   126,     0,
+      61,    60,     0,    40,    44,     0,    42,     0,     0,    54,
+       0,   134,    92,     0,    45,     0,    36,    55,    41,     0,
+       0,    43
   };
 
   /* YYPGOTO[NTERM-NUM].  */
   const short int
   Parser::yypgoto_[] =
   {
-       -29,   -29,   -29,   253,   -29,   -29,   -20,   -29,   -19,   -29,
-     -29,   -21,   -29,   150,   -29,   -29,   128,   -29,   -29,   -25,
-     -29,   -29,   185,   -29,    90,    91,   -28,    69,   195,   193,
-     197,   198,   201,   208,   191,   -29,   -24,   -15,   -29,   281,
-      -3,    26,   -29,   -29,   -29,   -29,    -4,   -29,   -29,   -29,
-     -29,   262,   -29,   -29,   -29,   142,   -29,   -29,   157,   -29,
-     -29,   -29
+      -186,  -186,  -186,   263,  -186,  -186,   -20,  -186,   -16,  -186,
+    -186,   -60,  -186,   100,  -186,  -186,   106,  -186,  -186,  -185,
+       0,  -186,   200,  -186,    67,    93,   -69,     8,   152,   171,
+     163,   168,   169,   179,   153,  -186,   -22,   238,  -186,   236,
+      -8,   -77,  -186,  -186,  -186,  -186,    14,  -186,  -186,  -186,
+    -186,   266,  -186,  -186,  -186,   162,  -186,  -186,   173,  -186,
+    -186,  -186
   };
 
   /* YYDEFGOTO[NTERM-NUM].  */
   const short int
   Parser::yydefgoto_[] =
   {
-        -1,     3,     4,     5,     6,     7,    28,    77,    29,     8,
-       9,    30,    87,    88,    31,    89,    90,    79,    80,    32,
-      33,    91,    92,    34,   131,   132,    35,    36,    37,    38,
-      39,    40,    41,    42,    43,    44,    45,    82,    83,    95,
-     119,    54,    55,    56,    57,   120,   121,    58,    59,    60,
-     175,    61,    62,    63,   180,   181,    64,   168,   169,    65,
-      66,    67
+        -1,     3,     4,     5,     6,     7,    24,    53,    25,     8,
+       9,    65,   110,   111,    66,   112,   113,    67,    68,   213,
+     214,    69,    70,    71,   154,   155,    72,    73,    74,    75,
+      76,    77,    78,    79,    80,    81,   215,    83,   108,   115,
+      91,    36,    37,    38,    39,    92,    93,    40,    41,    42,
+     143,    43,    44,    45,   148,   149,    46,   136,   137,    47,
+      48,    49
   };
 
   /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
      positive, shift that token.  If negative, reduce the rule which
      number is the opposite.  If zero, do what YYDEFACT says.  */
-  const signed char Parser::yytable_ninf_ = -97;
-  const short int
+  const signed char Parser::yytable_ninf_ = -1;
+  const unsigned char
   Parser::yytable_[] =
   {
-        81,    93,    96,   102,    86,    78,    53,   100,   105,   166,
-      94,   178,   166,    46,   178,    98,   217,    70,    46,   -24,
-     -24,   -24,    98,   154,   206,   218,   153,   207,    47,    48,
-      49,    50,    51,    47,    48,    49,    50,    51,   167,    69,
-     179,   201,    75,   210,    52,   133,   -24,   103,    99,   -24,
-      81,   -24,   137,    17,   208,    86,   150,    20,    21,    22,
-      11,    12,    13,   192,    21,    22,    14,   149,   134,    23,
-      16,   104,   151,    18,   143,   155,    94,   141,   158,   144,
-      78,   156,    46,    24,    68,    25,   219,    26,     1,    74,
-       2,    76,    71,    26,    27,    70,   138,    47,    48,    49,
-      50,    51,   171,   139,   106,    81,   185,   230,    52,   172,
-     145,   187,   188,   186,   186,   146,   108,   133,   191,   174,
-     189,   141,   196,   193,   141,   -96,   197,   -96,   -96,   198,
-     -96,   199,   -96,   170,   107,    84,    21,    22,    11,    12,
-      13,   152,   109,   150,    14,   110,   153,    23,   220,   176,
-     177,    84,    21,    22,    11,    12,    13,   111,   112,   214,
-      14,    74,   133,    25,   122,    26,   123,   203,   204,   205,
-     118,   113,   101,   114,   115,   209,   133,    74,   116,    76,
-     203,    26,   117,   126,   124,    47,    48,    49,    50,    51,
-     127,   226,   227,   141,   228,   214,    52,   -96,   135,   -96,
-     136,   141,   183,   140,   223,   157,   142,   234,   170,   235,
-     182,   237,   184,    21,    22,    11,    12,    13,   173,   150,
-      98,    14,   151,   200,    23,   122,   212,    47,    48,    49,
-      50,    51,    72,   216,    73,    11,    12,    13,   129,   224,
-      76,    14,    26,   128,    21,    22,    11,    12,    13,   225,
-     229,   231,    14,   233,   232,    23,   236,    19,    47,    48,
-      49,    50,    51,   213,    21,    22,    11,    12,    13,   129,
-     130,    76,    14,    26,   195,    23,   148,   215,    47,    48,
-      49,    50,    51,    20,    21,    22,    11,    12,    13,   129,
-     222,    76,    14,    26,   194,    23,    47,    48,    49,    50,
-      51,   160,   159,    72,   165,    73,   161,    97,   162,    74,
-      75,    76,   163,    26,    84,    21,    22,    11,    12,    13,
-     164,   125,   211,    14,    10,   202,    23,    11,    12,    13,
-       0,     0,     0,    14,    72,     0,    73,     0,    15,     0,
-      74,     0,    76,    85,    26,    84,    21,    22,    11,    12,
-      13,     0,     0,     0,    14,     0,     0,    23,     0,     0,
-       0,     0,     0,     0,     0,    72,     0,    73,     0,     0,
-       0,    74,     0,    76,   147,    26,    84,    21,    22,    11,
-      12,    13,     0,     0,     0,    14,     0,     0,    23,     0,
-       0,     0,     0,     0,     0,     0,    72,     0,    73,     0,
-       0,     0,    74,     0,    76,     0,    26,   190,    21,    22,
-      11,    12,    13,     0,     0,     0,    14,     0,     0,    23,
-     190,    21,    22,    11,    12,    13,     0,     0,     0,    14,
-       0,     0,    23,    74,   130,    76,     0,    26,     0,     0,
-      84,    21,    22,    11,    12,    13,    74,   221,    76,    14,
-      26,     0,    23,    84,    21,    22,    11,    12,    13,     0,
-       0,     0,    14,     0,     0,    23,    74,     0,    76,     0,
-      26,     0,     0,   190,    21,    22,    11,    12,    13,    74,
-       0,    25,    14,    26,     0,    23,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,    74,
-       0,    76,     0,    26
+        82,    35,   109,    84,   122,    54,    20,    26,   134,    16,
+      27,   216,    51,    22,    20,   146,   166,   169,   144,   145,
+     168,   218,    85,    50,    86,    28,    29,    30,    31,    32,
+     134,    17,    21,    33,    22,   146,    34,   135,   228,   106,
+     114,    52,   116,    23,   147,   231,   187,    82,    55,    56,
+      57,    11,    12,    13,   171,    20,   166,    14,   102,   180,
+      58,     1,    18,     2,   189,   133,   196,   192,    59,   120,
+      60,    94,   131,    95,    61,   197,    62,    63,    64,    87,
+     156,    21,   158,   159,   132,   151,   142,    55,    56,    57,
+      11,    12,    13,   121,    88,   157,    14,    10,   100,    58,
+      11,    12,    13,   200,    89,   101,    14,    59,    96,    60,
+      98,    15,   139,    61,    99,    62,   118,    64,   102,   140,
+     103,   123,   193,   152,    56,    57,    11,    12,    13,   194,
+     182,   162,    14,   179,   227,    58,   163,   164,   188,   198,
+     167,   194,   165,   203,   204,   168,   205,   104,   105,    61,
+     153,    62,   109,    64,   183,   184,   124,    55,    56,    57,
+      11,    12,    13,   125,   185,   126,    14,   186,   127,    58,
+     210,   128,   156,   129,   130,   217,   131,    59,   207,    60,
+      11,    12,    13,    61,   156,    62,    14,    64,    22,   138,
+     222,   150,   152,    56,    57,    11,    12,    13,   141,    20,
+     160,    14,   161,   229,    58,    55,    56,    57,    11,    12,
+      13,   166,   170,    94,    14,   191,   195,    58,    61,   219,
+      62,   206,    64,   208,   209,   152,    56,    57,    11,    12,
+      13,    61,   223,    62,    14,    64,   221,    58,    55,    56,
+      57,    11,    12,    13,   199,    56,    57,    14,   226,   224,
+      58,    61,   225,    62,   230,    64,    55,    56,    57,    11,
+      12,    13,    27,   201,    61,    14,   212,    19,    64,   119,
+      61,   202,    62,   220,    64,    90,   172,    28,    29,    30,
+      31,    32,    61,   178,    62,    33,    64,   211,    34,   174,
+      28,    29,    30,    31,    32,   175,   173,   176,    33,   107,
+     117,    34,    28,    29,    30,    31,    32,    97,   177,   181,
+     190
   };
 
   /* YYCHECK.  */
-  const short int
+  const unsigned char
   Parser::yycheck_[] =
   {
-        24,    25,    26,    28,    25,    24,     9,    27,    36,     3,
-      25,     3,     3,     3,     3,     3,    30,    20,     3,     9,
-      10,    11,     3,    34,    34,    39,    37,    37,    18,    19,
-      20,    21,    22,    18,    19,    20,    21,    22,    32,    29,
-      32,    32,    30,    32,    29,    69,    36,    12,    29,    39,
-      74,    41,    76,     3,    39,    76,    23,     3,     4,     5,
-       6,     7,     8,     3,     4,     5,    12,    91,    71,    15,
-       1,    36,    39,     0,    32,   100,    91,    29,   106,    37,
-      99,   101,     3,    29,    15,    31,    38,    33,    14,    29,
-      16,    31,     3,    33,    40,    98,    30,    18,    19,    20,
-      21,    22,    30,    37,     6,   129,    30,    30,    29,    37,
-      32,   135,   136,    37,    37,    37,     8,   141,   142,   122,
-     139,    29,   146,   144,    29,    33,   150,    35,    33,   153,
-      35,   156,    37,    38,     7,     3,     4,     5,     6,     7,
-       8,    32,     9,    23,    12,    10,    37,    15,    28,   123,
-     124,     3,     4,     5,     6,     7,     8,    11,    41,   183,
-      12,    29,   186,    31,    33,    33,    35,   170,   172,   173,
-       3,    41,    40,    39,    31,   178,   200,    29,     3,    31,
-     183,    33,     3,    31,    35,    18,    19,    20,    21,    22,
-      29,   216,   217,    29,   218,   219,    29,    33,    29,    35,
-      29,    29,    38,    30,   207,     3,    38,   232,    38,   233,
-       4,   236,     3,     4,     5,     6,     7,     8,    37,    23,
-       3,    12,    39,    29,    15,    33,    37,    18,    19,    20,
-      21,    22,    23,    30,    25,     6,     7,     8,    29,    39,
-      31,    12,    33,     3,     4,     5,     6,     7,     8,     4,
-      32,    30,    12,    39,    24,    15,    30,     4,    18,    19,
-      20,    21,    22,     3,     4,     5,     6,     7,     8,    29,
-      30,    31,    12,    33,   146,    15,    91,   186,    18,    19,
-      20,    21,    22,     3,     4,     5,     6,     7,     8,    29,
-     200,    31,    12,    33,   144,    15,    18,    19,    20,    21,
-      22,   108,   107,    23,   113,    25,   109,    26,   110,    29,
-      30,    31,   111,    33,     3,     4,     5,     6,     7,     8,
-     112,    59,   180,    12,     3,   168,    15,     6,     7,     8,
-      -1,    -1,    -1,    12,    23,    -1,    25,    -1,    17,    -1,
-      29,    -1,    31,    32,    33,     3,     4,     5,     6,     7,
-       8,    -1,    -1,    -1,    12,    -1,    -1,    15,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    23,    -1,    25,    -1,    -1,
-      -1,    29,    -1,    31,    32,    33,     3,     4,     5,     6,
-       7,     8,    -1,    -1,    -1,    12,    -1,    -1,    15,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    23,    -1,    25,    -1,
-      -1,    -1,    29,    -1,    31,    -1,    33,     3,     4,     5,
-       6,     7,     8,    -1,    -1,    -1,    12,    -1,    -1,    15,
-       3,     4,     5,     6,     7,     8,    -1,    -1,    -1,    12,
-      -1,    -1,    15,    29,    30,    31,    -1,    33,    -1,    -1,
-       3,     4,     5,     6,     7,     8,    29,    30,    31,    12,
-      33,    -1,    15,     3,     4,     5,     6,     7,     8,    -1,
-      -1,    -1,    12,    -1,    -1,    15,    29,    -1,    31,    -1,
-      33,    -1,    -1,     3,     4,     5,     6,     7,     8,    29,
-      -1,    31,    12,    33,    -1,    15,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    29,
-      -1,    31,    -1,    33
+        22,     9,    62,    23,    73,    21,     3,     7,     3,     1,
+       3,   196,    20,    31,     3,     3,    23,    34,    95,    96,
+      37,    28,    40,    15,    24,    18,    19,    20,    21,    22,
+       3,     3,    29,    26,    31,     3,    29,    32,   223,    61,
+      62,    30,    64,    40,    32,   230,    39,    69,     3,     4,
+       5,     6,     7,     8,   123,     3,    23,    12,    29,    32,
+      15,    14,     0,    16,    32,    85,    30,    38,    23,    12,
+      25,    33,    39,    35,    29,    39,    31,    32,    33,    31,
+     102,    29,   104,   105,    84,   101,    94,     3,     4,     5,
+       6,     7,     8,    36,     3,   103,    12,     3,    30,    15,
+       6,     7,     8,   163,     3,    37,    12,    23,    35,    25,
+      31,    17,    30,    29,    29,    31,    32,    33,    29,    37,
+       3,     6,    30,     3,     4,     5,     6,     7,     8,    37,
+     138,    32,    12,   133,    30,    15,    37,    32,   146,   161,
+      32,    37,    37,   165,   166,    37,   168,    29,    29,    29,
+      30,    31,   212,    33,   140,   141,     7,     3,     4,     5,
+       6,     7,     8,     8,    34,     9,    12,    37,    10,    15,
+     192,    11,   194,    41,    41,   197,    39,    23,   186,    25,
+       6,     7,     8,    29,   206,    31,    12,    33,    31,    38,
+     212,     4,     3,     4,     5,     6,     7,     8,    37,     3,
+      30,    12,    38,   225,    15,     3,     4,     5,     6,     7,
+       8,    23,     3,    33,    12,    37,    30,    15,    29,    30,
+      31,    29,    33,    39,     4,     3,     4,     5,     6,     7,
+       8,    29,    24,    31,    12,    33,    30,    15,     3,     4,
+       5,     6,     7,     8,     3,     4,     5,    12,    32,    39,
+      15,    29,    39,    31,    30,    33,     3,     4,     5,     6,
+       7,     8,     3,   163,    29,    12,    31,     4,    33,    69,
+      29,   165,    31,   206,    33,     3,   124,    18,    19,    20,
+      21,    22,    29,   130,    31,    26,    33,   194,    29,   126,
+      18,    19,    20,    21,    22,   127,   125,   128,    26,    61,
+      64,    29,    18,    19,    20,    21,    22,    41,   129,   136,
+     148
   };
 
   /* STOS_[STATE-NUM] -- The (internal number of the) accessing
@@ -1736,28 +1705,28 @@ namespace driver
   {
          0,    14,    16,    43,    44,    45,    46,    47,    51,    52,
        3,     6,     7,     8,    12,    17,    69,     3,     0,    45,
-       3,     4,     5,    15,    29,    31,    33,    40,    48,    50,
-      53,    56,    61,    62,    65,    68,    69,    70,    71,    72,
-      73,    74,    75,    76,    77,    78,     3,    18,    19,    20,
-      21,    22,    29,    82,    83,    84,    85,    86,    89,    90,
-      91,    93,    94,    95,    98,   101,   102,   103,    69,    29,
-      82,     3,    23,    25,    29,    30,    31,    49,    50,    59,
-      60,    78,    79,    80,     3,    32,    53,    54,    55,    57,
-      58,    63,    64,    78,    79,    81,    78,    81,     3,    29,
-      48,    40,    61,    12,    36,    68,     6,     7,     8,     9,
-      10,    11,    41,    41,    39,    31,     3,     3,     3,    82,
-      87,    88,    33,    35,    35,    93,    31,    29,     3,    29,
-      30,    66,    67,    78,    82,    29,    29,    78,    30,    37,
-      30,    29,    38,    32,    37,    32,    37,    32,    64,    78,
-      23,    39,    32,    37,    34,    61,    48,     3,    68,    70,
-      71,    72,    73,    74,    75,    76,     3,    32,    99,   100,
-      38,    30,    37,    37,    82,    92,    83,    83,     3,    32,
-      96,    97,     4,    38,     3,    30,    37,    78,    78,    50,
-       3,    78,     3,    53,    55,    58,    78,    78,    78,    61,
-      29,    32,   100,    82,    88,    88,    34,    37,    39,    82,
-      32,    97,    37,     3,    78,    67,    30,    30,    39,    38,
-      28,    30,    66,    82,    39,     4,    61,    61,    78,    32,
-      30,    30,    24,    39,    61,    78,    30,    61
+       3,    29,    31,    40,    48,    50,    62,     3,    18,    19,
+      20,    21,    22,    26,    29,    82,    83,    84,    85,    86,
+      89,    90,    91,    93,    94,    95,    98,   101,   102,   103,
+      69,    82,    30,    49,    50,     3,     4,     5,    15,    23,
+      25,    29,    31,    32,    33,    53,    56,    59,    60,    63,
+      64,    65,    68,    69,    70,    71,    72,    73,    74,    75,
+      76,    77,    78,    79,    48,    40,    62,    31,     3,     3,
+       3,    82,    87,    88,    33,    35,    35,    93,    31,    29,
+      30,    37,    29,     3,    29,    29,    78,    79,    80,    53,
+      54,    55,    57,    58,    78,    81,    78,    81,    32,    64,
+      12,    36,    68,     6,     7,     8,     9,    10,    11,    41,
+      41,    39,    62,    48,     3,    32,    99,   100,    38,    30,
+      37,    37,    82,    92,    83,    83,     3,    32,    96,    97,
+       4,    50,     3,    30,    66,    67,    78,    82,    78,    78,
+      30,    38,    32,    37,    32,    37,    23,    32,    37,    34,
+       3,    68,    70,    71,    72,    73,    74,    75,    76,    62,
+      32,   100,    82,    88,    88,    34,    37,    39,    82,    32,
+      97,    37,    38,    30,    37,    30,    30,    39,    78,     3,
+      53,    55,    58,    78,    78,    78,    29,    82,    39,     4,
+      78,    67,    31,    61,    62,    78,    61,    78,    28,    30,
+      66,    30,    78,    24,    39,    39,    32,    30,    61,    78,
+      30,    61
   };
 
 #if YYDEBUG
@@ -1788,10 +1757,10 @@ namespace driver
       70,    71,    71,    72,    72,    73,    73,    74,    74,    75,
       75,    76,    76,    77,    77,    78,    78,    78,    79,    79,
       80,    80,    81,    81,    82,    82,    83,    83,    83,    83,
-      84,    85,    85,    86,    87,    87,    88,    88,    89,    90,
-      90,    91,    92,    92,    93,    93,    93,    93,    94,    94,
-      95,    95,    96,    96,    97,    97,    98,    98,    99,    99,
-     100,   101,   102,   102,   103
+      83,    84,    85,    85,    86,    87,    87,    88,    88,    89,
+      90,    90,    91,    92,    92,    93,    93,    93,    93,    94,
+      94,    95,    95,    96,    96,    97,    97,    98,    98,    99,
+      99,   100,   101,   102,   102,   103
   };
 
   /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -1808,10 +1777,10 @@ namespace driver
        3,     1,     3,     1,     3,     1,     3,     1,     3,     1,
        3,     1,     3,     3,     2,     1,     1,     3,     1,     1,
        1,     1,     1,     3,     1,     1,     1,     1,     1,     1,
-       1,     3,     3,     3,     3,     3,     1,     3,     1,     1,
-       2,     4,     1,     3,     1,     1,     1,     1,     3,     4,
-       1,     1,     1,     2,     2,     3,     3,     4,     1,     2,
-       1,     2,     1,     6,     2
+       1,     1,     3,     3,     3,     3,     3,     1,     3,     1,
+       1,     2,     4,     1,     3,     1,     1,     1,     1,     3,
+       4,     1,     1,     1,     2,     2,     3,     3,     4,     1,
+       2,     1,     2,     1,     6,     2
   };
 
 #if YYDEBUG || YYERROR_VERBOSE || YYTOKEN_TABLE
@@ -1861,9 +1830,9 @@ namespace driver
   Parser::yyrhs_[] =
   {
         43,     0,    -1,    44,    -1,    44,    45,    -1,    45,    -1,
-      46,    -1,    51,    -1,    47,    61,    -1,    47,    48,    61,
-      -1,    47,    40,    48,    61,    -1,    47,    48,    40,    48,
-      61,    -1,    14,     3,    -1,    14,    69,    -1,    14,    17,
+      46,    -1,    51,    -1,    47,    62,    -1,    47,    48,    62,
+      -1,    47,    40,    48,    62,    -1,    47,    48,    40,    48,
+      62,    -1,    14,     3,    -1,    14,    69,    -1,    14,    17,
       69,    -1,    29,    30,    -1,    50,    -1,    29,    49,    30,
       -1,    50,    -1,    49,    37,    50,    -1,     3,    -1,     3,
       82,    -1,    52,    -1,    52,    82,    -1,    16,     3,    -1,
@@ -1891,18 +1860,18 @@ namespace driver
        3,    -1,    76,    -1,    77,    -1,    77,    41,    76,    -1,
       59,    -1,    60,    -1,    79,    -1,    78,    -1,    78,    -1,
       81,    37,    78,    -1,    83,    -1,    84,    -1,     3,    -1,
-      86,    -1,    89,    -1,    91,    -1,    85,    -1,    83,    35,
-      83,    -1,    85,    35,    83,    -1,    29,    87,    30,    -1,
-      88,    37,    88,    -1,    87,    37,    88,    -1,    82,    -1,
-       3,    38,    82,    -1,    90,    -1,    93,    -1,    90,    93,
-      -1,    83,    33,    92,    34,    -1,    82,    -1,    92,    37,
-      82,    -1,    94,    -1,    98,    -1,   101,    -1,   102,    -1,
-      95,    31,    32,    -1,    95,    31,    96,    32,    -1,    18,
-      -1,    19,    -1,    97,    -1,    96,    97,    -1,     3,    39,
-      -1,     3,    82,    39,    -1,    20,    31,    32,    -1,    20,
-      31,    99,    32,    -1,   100,    -1,    99,   100,    -1,     3,
-      -1,    21,     3,    -1,   103,    -1,   103,    29,     4,    37,
-       4,    30,    -1,    22,     3,    -1
+      26,    -1,    86,    -1,    89,    -1,    91,    -1,    85,    -1,
+      83,    35,    83,    -1,    85,    35,    83,    -1,    29,    87,
+      30,    -1,    88,    37,    88,    -1,    87,    37,    88,    -1,
+      82,    -1,     3,    38,    82,    -1,    90,    -1,    93,    -1,
+      90,    93,    -1,    83,    33,    92,    34,    -1,    82,    -1,
+      92,    37,    82,    -1,    94,    -1,    98,    -1,   101,    -1,
+     102,    -1,    95,    31,    32,    -1,    95,    31,    96,    32,
+      -1,    18,    -1,    19,    -1,    97,    -1,    96,    97,    -1,
+       3,    39,    -1,     3,    82,    39,    -1,    20,    31,    32,
+      -1,    20,    31,    99,    32,    -1,   100,    -1,    99,   100,
+      -1,     3,    -1,    21,     3,    -1,   103,    -1,   103,    29,
+       4,    37,     4,    30,    -1,    22,     3,    -1
   };
 
   /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
@@ -1920,10 +1889,10 @@ namespace driver
      235,   239,   241,   245,   247,   251,   253,   257,   259,   263,
      265,   269,   271,   275,   279,   282,   284,   286,   290,   292,
      294,   296,   298,   300,   304,   306,   308,   310,   312,   314,
-     316,   318,   322,   326,   330,   334,   338,   340,   344,   346,
-     348,   351,   356,   358,   362,   364,   366,   368,   370,   374,
-     379,   381,   383,   385,   388,   391,   395,   399,   404,   406,
-     409,   411,   414,   416,   423
+     316,   318,   320,   324,   328,   332,   336,   340,   342,   346,
+     348,   350,   353,   358,   360,   364,   366,   368,   370,   372,
+     376,   381,   383,   385,   387,   390,   393,   397,   401,   406,
+     408,   411,   413,   416,   418,   425
   };
 
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
@@ -1932,18 +1901,18 @@ namespace driver
   {
          0,   132,   132,   135,   136,   139,   142,   148,   151,   156,
      161,   171,   176,   181,   189,   190,   194,   200,   204,   210,
-     216,   227,   228,   236,   267,   273,   274,   280,   286,   292,
-     298,   304,   308,   312,   317,   326,   332,   341,   345,   350,
-     359,   365,   375,   381,   392,   393,   397,   401,   409,   413,
-     418,   419,   423,   424,   432,   439,   448,   455,   461,   472,
-     476,   482,   489,   497,   498,   507,   507,   507,   507,   510,
-     511,   522,   523,   534,   535,   546,   547,   558,   559,   570,
-     571,   582,   583,   592,   599,   608,   609,   610,   618,   619,
-     622,   622,   625,   629,   644,   645,   649,   655,   656,   657,
-     662,   671,   676,   683,   692,   697,   703,   708,   719,   728,
-     732,   739,   748,   752,   761,   762,   763,   764,   769,   770,
-     777,   782,   790,   791,   795,   801,   812,   816,   825,   826,
-     830,   835,   845,   846,   855
+     216,   227,   228,   236,   253,   259,   260,   266,   272,   278,
+     284,   290,   294,   298,   303,   312,   318,   327,   331,   336,
+     345,   351,   361,   367,   378,   379,   383,   387,   395,   399,
+     404,   405,   409,   410,   418,   425,   434,   441,   447,   458,
+     462,   468,   475,   483,   484,   493,   493,   493,   493,   496,
+     497,   508,   509,   520,   521,   532,   533,   544,   545,   556,
+     557,   568,   569,   578,   585,   594,   595,   596,   604,   605,
+     608,   608,   611,   615,   630,   631,   635,   641,   644,   645,
+     646,   651,   660,   665,   672,   681,   686,   692,   697,   708,
+     717,   721,   728,   737,   741,   750,   751,   752,   753,   758,
+     759,   766,   771,   779,   780,   784,   790,   801,   805,   814,
+     815,   819,   824,   834,   835,   844
   };
 
   // Print the state stack on the debug stream.
@@ -2021,7 +1990,7 @@ namespace driver
   }
 
   const int Parser::yyeof_ = 0;
-  const int Parser::yylast_ = 503;
+  const int Parser::yylast_ = 310;
   const int Parser::yynnts_ = 62;
   const int Parser::yyempty_ = -2;
   const int Parser::yyfinal_ = 18;
@@ -2034,7 +2003,7 @@ namespace driver
 
 } // namespace driver
 
-#line 863 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
+#line 852 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Parser.yy"
  /*** Additional Code ***/
 
 void driver::Parser::error(const Parser::location_type& l, const std::string& m)

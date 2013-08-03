@@ -65,7 +65,8 @@ void buildAST(Builder &node)
 		.child("in", "[FuncArg]")
 		.child("out", "[FuncArg]")
 		.child("body", "@Type")
-		.child("type", "FuncType");
+		.child("type", "FuncType")
+		.child("implOut", "bool");
 	node("FuncArg")
 		.intf(graph).intf(variable).intf(callableArg);
 	node("TypeDef")

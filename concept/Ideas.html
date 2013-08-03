@@ -513,6 +513,64 @@ f(1); // returns 2
 
 
 
+<h1>Tuples</h1>
+<p>Tuples are first-class citizens of Maxwell. They form the input and output of functions and allow for parallel assignments and more. A tuple combines traits of arrays and map in that its fields are ordered and indexed (0,1,2,…) as in the former, yet also named ("a", "b", …) as in the latter.</p>
+<code>// Variable with a tuple type and an initial tuple expression.
+var x (Int, Int) = (1, 2);
+
+// It should be possible to drop the paranthesis most of the time.
+var x (Int, Int) = 1, 2;
+</code>
+
+<p>Tuples provide access to their fields through indexes and strings, as well as through member accessors. They provide additional functions that make using them feel like using maps or arrays. A tuple also provides an implicit cast to its map and array equivalent.</p>
+<code>var x = (a: 6, b: 7, c: 8);
+
+// The following lines of expressions are all equivalent:
+x[0]; x[1]; x[2];
+x["a"]; x["b"]; x["c"];
+x.a; x.b; x.c;
+
+Array(x); // returns [6,7,8]
+Map(x); // returns {"a": 6, "b": 7, "c": 8}
+
+// Tuples shall also provide the following convenience functions that provide a container-like interface:
+x.empty;
+x.length;
+</code>
+
+<h2>Parallel Assignment</h2>
+<p>Using a tuple as the left hand side of an assignment will match assign the right hand side to all fields of the tuple, or if the right hand side is a tuple as well, will assign the corresponding fields.</p>
+<code>var x Int;
+var y Int;
+(x,y) = (1,2);
+</code>
+<p>This should be implemented by spawning an AssignmentExpr for each pair of tuple fields. This should also deactivate the root AssignmentExpr that assigns the tuple to the other tuple, since the type system will try to cast the tuple otherwise. Spawning "sub-assignments" has the powerful side effect of allowing nested parallel assignments:</p>
+<code>var x Int;
+var y Int;
+var z Int;
+(x,(y,z)) = (1,(2,3));
+</code>
+
+<h2>Implicit Tuple Operators</h2>
+<p>If an operator is used on two matching tuples but no implementation of the operator can be found, the compiler should implicitly spawn a BinaryOpExpr for each pair of tuple fields. If the binary operator has a tuple on its LHS, but not on its RHS, the spawned operators will all use the same RHS. This allows the user to assign the same value to all tuple fields at once. This should, as was the case in the parallel assignment, deactivate the root BinaryOpExpr to avoid type system trouble. These "sub-operators" again provide the side effect of nesting:</p>
+<code>(5,(6,7)) + (1,(2,3)); // returns (6,(8,10))
+(1,2,3) + 5; // returns (6,7,8)
+</code>
+<p>It is important that the compiler first tries to find an implementation of the operator. This allows the user to write custom and/or more efficient versions of tuple operators.</p>
+
+<h2>Finding Field Pairs</h2>
+<p>If a tuple is to be assigned to another tuple, or a tuple is to be used as a list of function arguments, the individual fields of one tuple need to be mapped to the fields of the other tuple. This is accomplished by first mapping all unnamed fields to the corresponding <strong>index</strong> and secondly mapping all named fields to the corrseponding <strong>field name</strong> of the other tuple.</p>
+<p>This implies that the mapping between two tuples of equal length may have less mapped fields than the tuples are long. In general it will be good practice to hardly ever mix named and unnamed tuples. The mapping of tuple fields should be wrapped and stored in a separate object. If two tuples and the mapping from one to the other have the same length, the tuples are called <strong>matching</strong>.</p>
+
+<code>// The following calls the generic + function for tuples which is detailed below.
+(1,2) + (3,4);
+// This calls the following function, specializing it for (Int,Int) input tuples.
+func + (a Tuple, b Tuple) -> (c Tuple) { ... }
+func + (a (Int,Int), b (Int,Int)) = (a[0] + b[0], a[1] + b[1]); // specialized
+</code>
+
+
+
 
 <h1>Random Code Snippets</h1>
 

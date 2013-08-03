@@ -149,6 +149,19 @@ public:
 		return v;
 	}
 
+	void setImplOut(const bool& v)
+	{
+		if (!equal(v, implOut)) {
+			modify("implOut");
+			implOut = v;
+		}
+	}
+	const bool& getImplOut(bool required = true)
+	{
+		const bool& v = implOut;
+		return v;
+	}
+
 	virtual string describe(int depth = -1)
 	{
 		if (depth == 0) return "FuncDef{…}";
@@ -160,6 +173,7 @@ public:
 		if (!this->out.empty()) b << endl << "  \033[1mout\033[0m = " << indent(describeVector(this->out, depth-1));
 		if (this->body) b << endl << "  \033[1mbody\033[0m = " << indent(this->body->describe(depth-1));
 		if (this->type) b << endl << "  \033[1mtype\033[0m = " << indent(this->type->describe(depth-1));
+		b << endl << "  \033[1mimplOut\033[0m = \033[34m" << (this->implOut ? "true" : "false") << "\033[0m";
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -174,6 +188,7 @@ public:
 		e.encode(this->out);
 		e.encode(this->body);
 		e.encode(this->type);
+		e.encode(this->implOut);
 	}
 
 	virtual void decode(Decoder& d)
@@ -184,6 +199,7 @@ public:
 		d.decode(this->out);
 		d.decode(this->body);
 		d.decode(this->type);
+		d.decode(this->implOut);
 	}
 
 	virtual void updateHierarchyOfChildren()
@@ -296,6 +312,7 @@ public:
 		if (!equal(this->out, other->out)) return false;
 		if (!equal(this->body, other->body)) return false;
 		if (!equal(this->type, other->type)) return false;
+		if (!equal(this->implOut, other->implOut)) return false;
 		return true;
 	}
 
@@ -314,6 +331,7 @@ protected:
 	NodeVector out;
 	NodePtr body;
 	NodePtr type;
+	bool implOut;
 
 	// Interfaces
 	GraphInterfaceImpl<FuncDef> interfaceGraph;

@@ -52,7 +52,7 @@ typedef std::vector<NodePtr> Nodes;
     int symbol;
 }
 
-%type <node> func_decl func_arg type_decl if_expr for_expr expr call_arg
+%type <node> func_def func_arg type_def if_expr for_expr expr call_arg
 
 %type <node> primary_expr ifcase_expr ifcase_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair body_expr block_expr block_expr_expr macro_expr any_expr
 %type <nodes> expr_list map_expr_pairs ifcase_expr_conds block_expr_exprs
@@ -65,8 +65,8 @@ typedef std::vector<NodePtr> Nodes;
 
 %type <varDefExpr> var_expr
 %type <string> any_operator
-%type <funcDef> func_decl_name
-%type <typeDef> type_decl_name
+%type <funcDef> func_def_name func_def_signature
+%type <typeDef> type_def_name
 %type <structureQualifier> structure_qualifier_decl
 %type <rangeQualifier> range_qualifier_decl
 
@@ -136,38 +136,45 @@ root_stmts : root_stmts root_stmt
            | root_stmt
            ;
 
-root_stmt : func_decl {
+root_stmt : func_def {
               driver.add(NodePtr($1));
             }
-          | type_decl {
+          | type_def {
               driver.add(NodePtr($1));
             }
           ;
 
 /* Function Declaration*/
-func_decl : func_decl_name block_expr {
-              $1->setBody(NodePtr($2));
-            }
-          | func_decl_name func_args_tuple block_expr {
-              $1->setIn(*$2);
-              $1->setBody(NodePtr($3));
-              delete $2;
-            }
-          | func_decl_name RIGHTARROW func_args_tuple block_expr {
-              $1->setOut(*$3);
-              $1->setBody(NodePtr($4));
-              delete $3;
-            }
-          | func_decl_name func_args_tuple RIGHTARROW func_args_tuple block_expr {
-              $1->setIn(*$2);
-              $1->setOut(*$4);
-              $1->setBody(NodePtr($5));
-              delete $2;
-              delete $4;
-             }
-          ;
+func_def
+  : func_def_signature block_expr {
+      $1->setBody(NodePtr($2));
+      $1->setImplOut(false);
+    }
+  | func_def_signature ASSIGN body_expr {
+      $1->setBody(NodePtr($3));
+      $1->setImplOut(true);
+    }
+  ;
 
-func_decl_name
+func_def_signature
+  : func_def_name
+  | func_def_name func_args_tuple {
+      $1->setIn(*$2);
+      delete $2;
+    }
+  | func_def_name RIGHTARROW func_args_tuple {
+      $1->setOut(*$3);
+      delete $3;
+    }
+  | func_def_name func_args_tuple RIGHTARROW func_args_tuple {
+      $1->setIn(*$2);
+      $1->setOut(*$4);
+      delete $2;
+      delete $4;
+     }
+  ;
+
+func_def_name
   : FUNC IDENTIFIER {
       FuncDef* d = new FuncDef;
       d->setName(*$2); delete $2;
@@ -223,14 +230,14 @@ func_arg
   ;
 
 /* Type Declaration */
-type_decl
-  : type_decl_name { $$ = $1; }
-  | type_decl_name typeexpr {
+type_def
+  : type_def_name { $$ = $1; }
+  | type_def_name typeexpr {
       $1->setType(NodePtr($2));
     }
   ;
 
-type_decl_name
+type_def_name
   /*: TYPE { $$ = new TypeDef; }
   | TYPE IDENTIFIER {*/
   : TYPE IDENTIFIER {

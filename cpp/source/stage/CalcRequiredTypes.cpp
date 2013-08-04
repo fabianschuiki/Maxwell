@@ -56,21 +56,20 @@ void CalcRequiredTypes::process(const NodePtr& node)
 				const CallCandidate::Ptr& candidate = CallCandidate::needFrom(*it);
 				const NodePtr& funcNode = candidate->getFunc();
 				CallableInterface* func = funcNode->needCallable();
-				//const FuncType::Ptr& funcType = FuncType::needFrom(func->getType());
+				const FuncType::Ptr& funcType = FuncType::needFrom(func->getType());
+				const TupleType::Ptr& inTupleType = TupleType::from(funcType->getIn());
 
 				// Calculate the required types for each argument.
-				const NodeVector& funcArgs = func->getIn();
 				const NodeVector& args = candidate->getArgs();
-				addDependency(funcNode, "in");
+				addDependency(funcNode, "type.in");
 
 				for (int i = 0; i < args.size(); i++) {
 					NodePtr type;
-					if (i < funcArgs.size()) {
-						const NodePtr& funcArgNode = funcArgs[i];
-						CallableArgInterface* funcArg = funcArgNode->needCallableArg();
-						type = funcArg->getActualType();
+					if (inTupleType && i < inTupleType->getArgs().size()) {
+						const TupleTypeArg::Ptr& funcArg = TupleTypeArg::needFrom(inTupleType->getArgs()[i]);
+						type = funcArg->getType();
 						inputTypes[i].push_back(type);
-						addDependency(funcArgNode, "actualType");
+						addDependency(funcArg, "type");
 					} else {
 						type = NodePtr(new InvalidType);
 					}

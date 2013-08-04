@@ -3,7 +3,6 @@
 #include "Node.hpp"
 #include "builtin/NumericType.hpp"
 #include "builtin/FuncDef.hpp"
-#include "builtin/FuncArg.hpp"
 #include <string>
 #include <map>
 #include <boost/smart_ptr.hpp>

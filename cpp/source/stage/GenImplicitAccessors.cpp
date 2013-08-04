@@ -55,33 +55,46 @@ void GenImplicitAccessors::processChildren(const NodePtr& node)
 				const StructureQualifierMember::Ptr& member = StructureQualifierMember::needFrom(*it);
 
 				// Generate the argument templates.
-				ImplAccessorArg::Ptr refArg(new ImplAccessorArg), valueArg(new ImplAccessorArg), retArg(new ImplAccessorArg);
-				refArg->setPossibleType(typeExpr->getEvaluatedType());
-				valueArg->setPossibleType(member->getType()->needTypeExpr()->getEvaluatedType());
-				retArg->setPossibleType(member->getType()->needTypeExpr()->getEvaluatedType());
-
-				refArg->setActualType(refArg->getPossibleType());
-				valueArg->setActualType(valueArg->getPossibleType());
-				retArg->setActualType(retArg->getPossibleType());
+				TupleTypeArg::Ptr refArg(new TupleTypeArg), valueArg(new TupleTypeArg), retArg(new TupleTypeArg);
+				refArg->setType(typeExpr->getEvaluatedType());
+				valueArg->setType(member->getType()->needTypeExpr()->getEvaluatedType());
+				retArg->setType(member->getType()->needTypeExpr()->getEvaluatedType());
 
 				// Generate the setter.
 				ImplAccessor::Ptr setter(new ImplAccessor);
 				setter->setName(member->getName() + "=");
+				
 				NodeVector setterIn, setterOut;
-				setterIn.push_back(NodePtr(refArg));
-				setterIn.push_back(NodePtr(valueArg));
-				setterOut.push_back(NodePtr(retArg));
-				setter->setIn(setterIn);
-				setter->setOut(setterOut);
+				setterIn.push_back(refArg);
+				setterIn.push_back(valueArg);
+				setterOut.push_back(retArg);
+				
+				TupleType::Ptr setterInTuple(new TupleType), setterOutTuple(new TupleType);
+				setterInTuple->setArgs(setterIn);
+				setterOutTuple->setArgs(setterOut);
+
+				FuncType::Ptr setterType(new FuncType);
+				setterType->setIn(setterInTuple);
+				setterType->setOut(setterOutTuple);
+				setter->setType(setterType);
+
 
 				// Generate the getter.
 				ImplAccessor::Ptr getter(new ImplAccessor);
 				getter->setName(member->getName());
+
 				NodeVector getterIn, getterOut;
 				getterIn.push_back(NodePtr(refArg));
 				getterOut.push_back(NodePtr(retArg));
-				getter->setIn(getterIn);
-				getter->setOut(getterOut);
+
+				TupleType::Ptr getterInTuple(new TupleType), getterOutTuple(new TupleType);
+				getterInTuple->setArgs(getterIn);
+				getterOutTuple->setArgs(getterOut);
+
+				FuncType::Ptr getterType(new FuncType);
+				getterType->setIn(getterInTuple);
+				getterType->setOut(getterOutTuple);
+				getter->setType(getterType);
 
 				// Store the accessors.
 				member->setImplSetter(setter);

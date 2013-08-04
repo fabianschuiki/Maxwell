@@ -1,6 +1,6 @@
 /* Copyright © 2013 Fabian Schuiki */
 #include "BuiltinRepository.hpp"
-#include "nodes/DefinedType.hpp"
+#include "nodes/ast.hpp"
 #include <stdexcept>
 #include <boost/lexical_cast.hpp>
 
@@ -59,18 +59,27 @@ ast::builtin::FuncDef::Ptr BuiltinRepository::funcDef(const string& name, const 
 	tin0->setDefinition(in0);
 	tout0->setDefinition(out0);
 
-	builtin::FuncArg::Ptr ain0(new builtin::FuncArg), aout0(new builtin::FuncArg);
-	ain0->name = "a";
-	ain0->type = tin0;
-	aout0->name = "b";
-	aout0->type = tout0;
+	TupleTypeArg::Ptr ain0(new TupleTypeArg), aout0(new TupleTypeArg);
+	ain0->setName("a");
+	ain0->setType(tin0);
+	aout0->setName("b");
+	aout0->setType(tout0);
+
+	NodeVector inArgs(1), outArgs(1);
+	inArgs[0] = ain0;
+	outArgs[0] = aout0;
+
+	TupleType::Ptr inTuple(new TupleType), outTuple(new TupleType);
+	inTuple->setArgs(inArgs);
+	outTuple->setArgs(outArgs);
+
+	FuncType::Ptr type(new FuncType);
+	type->setIn(inTuple);
+	type->setOut(outTuple);
 
 	builtin::FuncDef::Ptr f(new builtin::FuncDef);
 	f->name = name;
-	f->in.resize(1);
-	f->in[0] = ain0;
-	f->out.resize(1);
-	f->out[0] = aout0;
+	f->type = type;
 	add(f, f->name);
 	return f;
 }
@@ -84,21 +93,30 @@ ast::builtin::FuncDef::Ptr BuiltinRepository::funcDef(const string& name, const 
 	tin1->setDefinition(in1);
 	tout0->setDefinition(out0);
 
-	builtin::FuncArg::Ptr ain0(new builtin::FuncArg), ain1(new builtin::FuncArg), aout0(new builtin::FuncArg);
-	ain0->name = "a";
-	ain0->type = tin0;
-	ain1->name = "a";
-	ain1->type = tin1;
-	aout0->name = "b";
-	aout0->type = tout0;
+	TupleTypeArg::Ptr ain0(new TupleTypeArg), ain1(new TupleTypeArg), aout0(new TupleTypeArg);
+	ain0->setName("a");
+	ain0->setType(tin0);
+	ain1->setName("b");
+	ain1->setType(tin1);
+	aout0->setName("c");
+	aout0->setType(tout0);
+
+	NodeVector inArgs(2), outArgs(1);
+	inArgs[0] = ain0;
+	inArgs[1] = ain1;
+	outArgs[0] = aout0;
+
+	TupleType::Ptr inTuple(new TupleType), outTuple(new TupleType);
+	inTuple->setArgs(inArgs);
+	outTuple->setArgs(outArgs);
+
+	FuncType::Ptr type(new FuncType);
+	type->setIn(inTuple);
+	type->setOut(outTuple);
 
 	builtin::FuncDef::Ptr f(new builtin::FuncDef);
 	f->name = name;
-	f->in.resize(2);
-	f->in[0] = ain0;
-	f->in[1] = ain1;
-	f->out.resize(1);
-	f->out[0] = aout0;
+	f->type = type;
 	add(f, f->name);
 	return f;
 }

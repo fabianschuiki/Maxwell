@@ -26,7 +26,10 @@ void FindCallCandidates::process(const NodePtr& node)
 			const NodePtr& n = repository.getNode(it->first);
 			CallableInterface *callable = n->asCallable();
 			if (!callable) continue; // discard anything but Callable nodes
-			if (callable->getIn().size() != intf->getCallArgs().size()) continue; // discard functions with incorrect number of arguments
+			const FuncType::Ptr& funcType = FuncType::needFrom(callable->getType());
+			const TupleType::Ptr& funcInType = TupleType::from(funcType->getIn());
+			if (!funcInType) continue; // nil return type
+			if (funcInType->getArgs().size() != intf->getCallArgs().size()) continue; // discard functions with incorrect number of arguments
 			nodes.push_back(n);
 		}
 

@@ -35,12 +35,12 @@ void buildAST(Builder &node)
 		.attr("expr", "@Type");
 	Node& callable = node("@Callable") // everything that looks like a function that can be called
 		.attr("name", "string")
-		.attr("in", "[@CallableArg]")
-		.attr("out", "[@CallableArg]")
+		// .attr("in", "[@CallableArg]")
+		// .attr("out", "[@CallableArg]")
 		.attr("type", "FuncType");
-	Node& callableArg = node("@CallableArg")
-		.intf(type)
-		.attr("name", "string");
+	// Node& callableArg = node("@CallableArg")
+	// 	.intf(type)
+	// 	.attr("name", "string");
 
 	// Anonymous interfaces.
 	node("@Named").attr("name", "string");
@@ -69,7 +69,7 @@ void buildAST(Builder &node)
 		.child("type", "FuncType")
 		.child("implOut", "bool");
 	node("FuncArg")
-		.intf(graph).intf(variable).intf(callableArg);
+		.intf(graph).intf(variable)/*.intf(callableArg)*/;
 	node("TypeDef")
 		.intf(graph)
 		.attr("name", "string")
@@ -193,11 +193,11 @@ void buildAST(Builder &node)
 		.child("implSetter", "ImplAccessor")
 		.child("implGetter", "ImplAccessor");
 	node("ImplAccessor")
-		.intf(graph).intf(callable)
-		.child("in", "[ImplAccessorArg]")
-		.child("out", "[ImplAccessorArg]");
-	node("ImplAccessorArg")
-		.intf(graph).intf(callableArg);
+		.intf(graph).intf(callable);
+		// .child("in", "[ImplAccessorArg]")
+		// .child("out", "[ImplAccessorArg]");
+	// node("ImplAccessorArg")
+	// 	.intf(graph).intf(callableArg);
 	node("InterfaceQualifier")
 		.intf(graph)
 		.child("stmts", "[any]");

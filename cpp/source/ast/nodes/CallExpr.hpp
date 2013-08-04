@@ -24,7 +24,6 @@ public:
 		interfaceGraph(this),
 		interfaceCall(this),
 		interfaceType(this),
-		interfaceCallableArg(this),
 		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
@@ -39,7 +38,6 @@ public:
 		if (i == kGraphInterface) return true;
 		if (i == kCallInterface) return true;
 		if (i == kTypeInterface) return true;
-		if (i == kCallableArgInterface) return true;
 		if (i == kNamedInterface) return true;
 		return false;
 	}
@@ -483,7 +481,6 @@ public:
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual CallInterface* asCall() { return &this->interfaceCall; }
 	virtual TypeInterface* asType() { return &this->interfaceType; }
-	virtual CallableArgInterface* asCallableArg() { return &this->interfaceCallableArg; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
 	typedef boost::shared_ptr<CallExpr> Ptr;
@@ -506,7 +503,6 @@ protected:
 	GraphInterfaceImpl<CallExpr> interfaceGraph;
 	CallInterfaceImpl<CallExpr> interfaceCall;
 	TypeInterfaceImpl<CallExpr> interfaceType;
-	CallableArgInterfaceImpl<CallExpr> interfaceCallableArg;
 	NamedInterfaceImpl<CallExpr> interfaceNamed;
 };
 

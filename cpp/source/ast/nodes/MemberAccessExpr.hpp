@@ -25,7 +25,6 @@ public:
 		interfaceCall(this),
 		interfaceType(this),
 		interfaceCallArg(this),
-		interfaceCallableArg(this),
 		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
@@ -41,7 +40,6 @@ public:
 		if (i == kCallInterface) return true;
 		if (i == kTypeInterface) return true;
 		if (i == kCallArgInterface) return true;
-		if (i == kCallableArgInterface) return true;
 		if (i == kNamedInterface) return true;
 		return false;
 	}
@@ -438,7 +436,6 @@ public:
 	virtual CallInterface* asCall() { return &this->interfaceCall; }
 	virtual TypeInterface* asType() { return &this->interfaceType; }
 	virtual CallArgInterface* asCallArg() { return &this->interfaceCallArg; }
-	virtual CallableArgInterface* asCallableArg() { return &this->interfaceCallableArg; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
 	typedef boost::shared_ptr<MemberAccessExpr> Ptr;
@@ -461,7 +458,6 @@ protected:
 	CallInterfaceImpl<MemberAccessExpr> interfaceCall;
 	TypeInterfaceImpl<MemberAccessExpr> interfaceType;
 	CallArgInterfaceImpl<MemberAccessExpr> interfaceCallArg;
-	CallableArgInterfaceImpl<MemberAccessExpr> interfaceCallableArg;
 	NamedInterfaceImpl<MemberAccessExpr> interfaceNamed;
 };
 

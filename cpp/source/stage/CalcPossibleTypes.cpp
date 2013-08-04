@@ -185,20 +185,27 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 	if (const CallCandidate::Ptr& candidate = CallCandidate::from(node)) {
 		const NodePtr& funcNode = candidate->getFunc();
 		CallableInterface* func = funcNode->needCallable();
-		const FuncType::Ptr& funcType = FuncType::from(func->getType());
+		const FuncType::Ptr& funcType = FuncType::needFrom(func->getType());
+		const TupleType::Ptr& outTuple = TupleType::from(funcType->getOut());
+		addDependency(funcNode, "type.out");
 
-		// For now enforce single return values.
-		if (func->getOut().size() > 1) {
-			throw std::runtime_error("Only calls to functions with zero or one output argument are supported at the moment. Function " + funcNode->getId().str() + " called by " + node->getParent()->getId().str() + " violates this constraint.");
-		}
-		addDependency(funcNode, "out.0.actualType");
-		if (func->getOut().size() == 1) {
-			const NodePtr& funcOut0 = func->getOut()[0];
-			// println(-1, "func->getOut()[0] = " + funcOut0->getId().str(), candidate);
-			// println(-1, "func->getOut()[0]->needType()->getActualType() = " + funcOut0->needType()->getActualType()->getId().str(), candidate);
-			candidate->setPossibleType(funcOut0->needType()->getActualType());
+		// If the output type of the function is not a tuple we reuse it directly.
+		// Otherwise we dissect the tuple. This step should become obsolete later on
+		// when 1-tuples have an implicit conversion to their only field.
+		if (!outTuple) {
+			candidate->setPossibleType(funcType->getOut());
 		} else {
-			candidate->setPossibleType(NodePtr(new NilType));
+			assert(outTuple->getArgs().size() > 0 && "Output tuple should have at least one field, or be nil otherwise.");
+
+			// For now enforce single return values.
+			if (outTuple->getArgs().size() > 1) {
+				throw std::runtime_error("Only calls to functions with zero or one output argument are supported at the moment. Function " + funcNode->getId().str() + " called by " + node->getParent()->getId().str() + " violates this constraint.");
+			}
+			addDependency(funcNode, "type.out.args.0.type");
+			if (outTuple->getArgs().size() == 1) {
+				const TupleTypeArg::Ptr& funcOut0 = TupleTypeArg::needFrom(outTuple->getArgs()[0]);
+				candidate->setPossibleType(funcOut0->getType());
+			}
 		}
 	}
 

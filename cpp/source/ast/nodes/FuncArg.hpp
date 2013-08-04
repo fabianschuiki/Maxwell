@@ -24,7 +24,6 @@ public:
 		interfaceGraph(this),
 		interfaceType(this),
 		interfaceVariable(this),
-		interfaceCallableArg(this),
 		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
@@ -39,7 +38,6 @@ public:
 		if (i == kGraphInterface) return true;
 		if (i == kTypeInterface) return true;
 		if (i == kVariableInterface) return true;
-		if (i == kCallableArgInterface) return true;
 		if (i == kNamedInterface) return true;
 		return false;
 	}
@@ -69,25 +67,6 @@ public:
 		const NodePtr& v = graphPrev.get(repository);
 		if (required && !v) {
 			throw runtime_error("Node " + getId().str() + " is required to have graphPrev set to a non-null value.");
-		}
-		return v;
-	}
-
-	void setTypeExpr(const NodePtr& v)
-	{
-		if (v && !v->isKindOf(kNamedTypeExpr) && !v->isKindOf(kNilTypeExpr) && !v->isKindOf(kUnionTypeExpr) && !v->isKindOf(kTupleTypeExpr) && !v->isKindOf(kQualifiedTypeExpr) && !v->isKindOf(kSpecializedTypeExpr)) {
-			throw runtime_error("'typeExpr' of " + id.str() + " needs to be of kind {NamedTypeExpr, NilTypeExpr, UnionTypeExpr, TupleTypeExpr, QualifiedTypeExpr, SpecializedTypeExpr} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
-		}
-		if (!equal(v, typeExpr)) {
-			modify("typeExpr");
-			typeExpr = v;
-		}
-	}
-	const NodePtr& getTypeExpr(bool required = true)
-	{
-		const NodePtr& v = typeExpr;
-		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have typeExpr set to a non-null value.");
 		}
 		return v;
 	}
@@ -165,17 +144,36 @@ public:
 		return v;
 	}
 
+	void setTypeExpr(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kNamedTypeExpr) && !v->isKindOf(kNilTypeExpr) && !v->isKindOf(kUnionTypeExpr) && !v->isKindOf(kTupleTypeExpr) && !v->isKindOf(kQualifiedTypeExpr) && !v->isKindOf(kSpecializedTypeExpr)) {
+			throw runtime_error("'typeExpr' of " + id.str() + " needs to be of kind {NamedTypeExpr, NilTypeExpr, UnionTypeExpr, TupleTypeExpr, QualifiedTypeExpr, SpecializedTypeExpr} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
+		}
+		if (!equal(v, typeExpr)) {
+			modify("typeExpr");
+			typeExpr = v;
+		}
+	}
+	const NodePtr& getTypeExpr(bool required = true)
+	{
+		const NodePtr& v = typeExpr;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have typeExpr set to a non-null value.");
+		}
+		return v;
+	}
+
 	virtual string describe(int depth = -1)
 	{
 		stringstream str, b;
 		if (depth == 0) return "FuncArg{…}";
 		str << "FuncArg{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
-		if (this->typeExpr) b << endl << "  \033[1mtypeExpr\033[0m = " << indent(this->typeExpr->describe(depth-1));
 		if (this->possibleType) b << endl << "  \033[1mpossibleType\033[0m = " << indent(this->possibleType->describe(depth-1));
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
+		if (this->typeExpr) b << endl << "  \033[1mtypeExpr\033[0m = " << indent(this->typeExpr->describe(depth-1));
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -185,29 +183,29 @@ public:
 	virtual void encode(Encoder& e)
 	{
 		e.encode(this->graphPrev);
-		e.encode(this->typeExpr);
 		e.encode(this->possibleType);
 		e.encode(this->requiredType);
 		e.encode(this->actualType);
 		e.encode(this->name);
+		e.encode(this->typeExpr);
 	}
 
 	virtual void decode(Decoder& d)
 	{
 		d.decode(this->graphPrev);
-		d.decode(this->typeExpr);
 		d.decode(this->possibleType);
 		d.decode(this->requiredType);
 		d.decode(this->actualType);
 		d.decode(this->name);
+		d.decode(this->typeExpr);
 	}
 
 	virtual void updateHierarchyOfChildren()
 	{
-		if (this->typeExpr) this->typeExpr->updateHierarchy(id + "typeExpr", repository, this);
 		if (this->possibleType) this->possibleType->updateHierarchy(id + "possibleType", repository, this);
 		if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
 		if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
+		if (this->typeExpr) this->typeExpr->updateHierarchy(id + "typeExpr", repository, this);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -276,11 +274,11 @@ public:
 		const shared_ptr<FuncArg>& other = boost::dynamic_pointer_cast<FuncArg>(o);
 		if (!other) return false;
 		if (!equal(this->graphPrev, other->graphPrev)) return false;
-		if (!equal(this->typeExpr, other->typeExpr)) return false;
 		if (!equal(this->possibleType, other->possibleType)) return false;
 		if (!equal(this->requiredType, other->requiredType)) return false;
 		if (!equal(this->actualType, other->actualType)) return false;
 		if (!equal(this->name, other->name)) return false;
+		if (!equal(this->typeExpr, other->typeExpr)) return false;
 		return true;
 	}
 
@@ -288,7 +286,6 @@ public:
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual TypeInterface* asType() { return &this->interfaceType; }
 	virtual VariableInterface* asVariable() { return &this->interfaceVariable; }
-	virtual CallableArgInterface* asCallableArg() { return &this->interfaceCallableArg; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
 	typedef boost::shared_ptr<FuncArg> Ptr;
@@ -296,17 +293,16 @@ public:
 	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<FuncArg>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to FuncArg."); return r; }
 protected:
 	NodeRef graphPrev;
-	NodePtr typeExpr;
 	NodePtr possibleType;
 	NodePtr requiredType;
 	NodePtr actualType;
 	string name;
+	NodePtr typeExpr;
 
 	// Interfaces
 	GraphInterfaceImpl<FuncArg> interfaceGraph;
 	TypeInterfaceImpl<FuncArg> interfaceType;
 	VariableInterfaceImpl<FuncArg> interfaceVariable;
-	CallableArgInterfaceImpl<FuncArg> interfaceCallableArg;
 	NamedInterfaceImpl<FuncArg> interfaceNamed;
 };
 

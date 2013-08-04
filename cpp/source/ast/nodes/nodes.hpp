@@ -22,7 +22,6 @@
 #include "IfCaseExprCond.hpp"
 #include "IfExpr.hpp"
 #include "ImplAccessor.hpp"
-#include "ImplAccessorArg.hpp"
 #include "InterfaceQualifier.hpp"
 #include "InvalidType.hpp"
 #include "MapConstExpr.hpp"
@@ -187,11 +186,6 @@ public:
 				if (size >= 12 && name[1] == 'm' && name[2] == 'p' && name[3] == 'l' && name[4] == 'A' && name[5] == 'c' && name[6] == 'c' && name[7] == 'e' && name[8] == 's' && name[9] == 's' && name[10] == 'o' && name[11] == 'r') {
 					// ImplAccessor
 					if (size == 12) return NodePtr(new ImplAccessor);
-					// ImplAccessorArg.*
-					if (size >= 15 && name[12] == 'A' && name[13] == 'r' && name[14] == 'g') {
-						// ImplAccessorArg
-						if (size == 15) return NodePtr(new ImplAccessorArg);
-					}
 				}
 				// In.*
 				if (size >= 2 && name[1] == 'n') {

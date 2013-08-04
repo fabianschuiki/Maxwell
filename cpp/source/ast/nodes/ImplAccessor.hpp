@@ -104,32 +104,6 @@ public:
 		return v;
 	}
 
-	void setIn(const NodeVector& v)
-	{
-		if (!equal(v, in)) {
-			modify("in");
-			in = v;
-		}
-	}
-	const NodeVector& getIn(bool required = true)
-	{
-		const NodeVector& v = in;
-		return v;
-	}
-
-	void setOut(const NodeVector& v)
-	{
-		if (!equal(v, out)) {
-			modify("out");
-			out = v;
-		}
-	}
-	const NodeVector& getOut(bool required = true)
-	{
-		const NodeVector& v = out;
-		return v;
-	}
-
 	virtual string describe(int depth = -1)
 	{
 		stringstream str, b;
@@ -138,8 +112,6 @@ public:
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
 		if (this->type) b << endl << "  \033[1mtype\033[0m = " << indent(this->type->describe(depth-1));
-		if (!this->in.empty()) b << endl << "  \033[1min\033[0m = " << indent(describeVector(this->in, depth-1));
-		if (!this->out.empty()) b << endl << "  \033[1mout\033[0m = " << indent(describeVector(this->out, depth-1));
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -151,8 +123,6 @@ public:
 		e.encode(this->graphPrev);
 		e.encode(this->name);
 		e.encode(this->type);
-		e.encode(this->in);
-		e.encode(this->out);
 	}
 
 	virtual void decode(Decoder& d)
@@ -160,21 +130,11 @@ public:
 		d.decode(this->graphPrev);
 		d.decode(this->name);
 		d.decode(this->type);
-		d.decode(this->in);
-		d.decode(this->out);
 	}
 
 	virtual void updateHierarchyOfChildren()
 	{
 		if (this->type) this->type->updateHierarchy(id + "type", repository, this);
-		for (int i = 0; i < this->in.size(); i++) {
-			char buf[32]; snprintf(buf, 31, "%i", i);
-			this->in[i]->updateHierarchy((id + "in") + buf, repository, this);
-		}
-		for (int i = 0; i < this->out.size(); i++) {
-			char buf[32]; snprintf(buf, 31, "%i", i);
-			this->out[i]->updateHierarchy((id + "out") + buf, repository, this);
-		}
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -191,46 +151,6 @@ public:
 					return getGraphPrev()->resolvePath(path.substr(10));
 				}
 			}
-			// in.*
-			if (size >= 2 && path[0] == 'i' && path[1] == 'n') {
-				// in
-				if (size == 2) {
-					throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
-				} else if (path[2] == '.') {
-					size_t dot = path.find(".", 3);
-					string idx_str = path.substr(3, dot);
-					int idx = atoi(idx_str.c_str());
-					const NodeVector& a = getIn();
-					if (idx < 0 || idx >= a.size()) {
-						throw std::runtime_error("Index into array '" + path.substr(0, 2) + "' is out of bounds.");
-					}
-					if (dot == string::npos) {
-						return a[idx];
-					} else {
-						return a[idx]->resolvePath(path.substr(dot + 1));
-					}
-				}
-			}
-			// out.*
-			if (size >= 3 && path[0] == 'o' && path[1] == 'u' && path[2] == 't') {
-				// out
-				if (size == 3) {
-					throw std::runtime_error("Path '" + path + "' refers to an array instead of a concrete array element.");
-				} else if (path[3] == '.') {
-					size_t dot = path.find(".", 4);
-					string idx_str = path.substr(4, dot);
-					int idx = atoi(idx_str.c_str());
-					const NodeVector& a = getOut();
-					if (idx < 0 || idx >= a.size()) {
-						throw std::runtime_error("Index into array '" + path.substr(0, 3) + "' is out of bounds.");
-					}
-					if (dot == string::npos) {
-						return a[idx];
-					} else {
-						return a[idx]->resolvePath(path.substr(dot + 1));
-					}
-				}
-			}
 			// type.*
 			if (size >= 4 && path[0] == 't' && path[1] == 'y' && path[2] == 'p' && path[3] == 'e') {
 				// type
@@ -244,14 +164,6 @@ public:
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
 
-	virtual NodeVector getChildren()
-	{
-		NodeVector v;
-		v.insert(v.end(), this->in.begin(), this->in.end());
-		v.insert(v.end(), this->out.begin(), this->out.end());
-		return v;
-	}
-
 	virtual bool equalTo(const NodePtr& o)
 	{
 		const shared_ptr<ImplAccessor>& other = boost::dynamic_pointer_cast<ImplAccessor>(o);
@@ -259,8 +171,6 @@ public:
 		if (!equal(this->graphPrev, other->graphPrev)) return false;
 		if (!equal(this->name, other->name)) return false;
 		if (!equal(this->type, other->type)) return false;
-		if (!equal(this->in, other->in)) return false;
-		if (!equal(this->out, other->out)) return false;
 		return true;
 	}
 
@@ -276,8 +186,6 @@ protected:
 	NodeRef graphPrev;
 	string name;
 	NodePtr type;
-	NodeVector in;
-	NodeVector out;
 
 	// Interfaces
 	GraphInterfaceImpl<ImplAccessor> interfaceGraph;

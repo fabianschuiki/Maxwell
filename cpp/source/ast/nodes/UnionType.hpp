@@ -51,7 +51,6 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "UnionType{…}";
 		stringstream str, b;
 					bool first = true;			for (NodeVector::iterator it = types.begin(); it != types.end(); it++) {				if (!first) str << "|";				first = false;				str << (*it)->describe(depth-1);			}
 		return str.str();

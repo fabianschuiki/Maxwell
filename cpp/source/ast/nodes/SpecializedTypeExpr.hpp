@@ -120,8 +120,8 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "SpecializedTypeExpr{…}";
 		stringstream str, b;
+		if (depth == 0) return "SpecializedTypeExpr{…}";
 		str << "SpecializedTypeExpr{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
 		if (this->evaluatedType) b << endl << "  \033[1mevaluatedType\033[0m = " << indent(this->evaluatedType->describe(depth-1));

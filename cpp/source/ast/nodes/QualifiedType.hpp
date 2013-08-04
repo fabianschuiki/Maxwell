@@ -90,8 +90,8 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "QualifiedType{…}";
 		stringstream str, b;
+		if (depth == 0) return "QualifiedType{…}";
 		str << "QualifiedType{";
 		if (!this->members.empty()) b << endl << "  \033[1mmembers\033[0m = " << indent(describeVector(this->members, depth-1));
 		if (!this->funcs.empty()) b << endl << "  \033[1mfuncs\033[0m = " << indent(describeVector(this->funcs, depth-1));

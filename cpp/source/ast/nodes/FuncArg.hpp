@@ -167,8 +167,8 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "FuncArg{…}";
 		stringstream str, b;
+		if (depth == 0) return "FuncArg{…}";
 		str << "FuncArg{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
 		if (this->typeExpr) b << endl << "  \033[1mtypeExpr\033[0m = " << indent(this->typeExpr->describe(depth-1));

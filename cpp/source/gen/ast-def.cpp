@@ -36,7 +36,8 @@ void buildAST(Builder &node)
 	Node& callable = node("@Callable") // everything that looks like a function that can be called
 		.attr("name", "string")
 		.attr("in", "[@CallableArg]")
-		.attr("out", "[@CallableArg]");
+		.attr("out", "[@CallableArg]")
+		.attr("type", "FuncType");
 	Node& callableArg = node("@CallableArg")
 		.intf(type)
 		.attr("name", "string");
@@ -241,8 +242,8 @@ void buildAST(Builder &node)
 		.child("type", "#type")
 		.describe("if (!name.empty()) str << name << \": \"; str << type->describe(depth-1);");
 	node("FuncType")
-		.child("in", "TupleType")
-		.child("out", "TupleType")
+		.child("in", "#type")
+		.child("out", "#type")
 		.describe("str << in->describe(depth-1) << \"->\" << out->describe(depth-1);");
 	node("TypeSet")
 		.child("types", "[#type]")

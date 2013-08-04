@@ -70,7 +70,6 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "SpecializedType{…}";
 		stringstream str, b;
 					str << type->describe(depth-1) << "[";			bool first = true;			for (NodeVector::iterator it = specs.begin(); it != specs.end(); it++) {				if (!first) str << ",";				first = false;				str << (*it)->describe(depth-1);			}			str << "]";
 		return str.str();

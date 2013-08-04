@@ -96,8 +96,8 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "StructureQualifier{…}";
 		stringstream str, b;
+		if (depth == 0) return "StructureQualifier{…}";
 		str << "StructureQualifier{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
 		if (!this->mode.empty()) b << endl << "  \033[1mmode\033[0m = \033[33m\"" << this->mode << "\"\033[0m";

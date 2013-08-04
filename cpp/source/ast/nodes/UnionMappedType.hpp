@@ -76,7 +76,6 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "UnionMappedType{…}";
 		stringstream str, b;
 		str << out->describe(depth-1) << '(' << in->describe(depth-1) << ')';
 		return str.str();

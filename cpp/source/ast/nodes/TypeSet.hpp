@@ -51,7 +51,6 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "TypeSet{…}";
 		stringstream str, b;
 					str << "{";			bool first = true;			for (NodeVector::iterator it = types.begin(); it != types.end(); it++) {				if (!first) str << ", ";				first = false;				str << (*it)->describe(depth-1);			}			str << "}";
 		return str.str();

@@ -59,8 +59,8 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "NilTypeExpr{…}";
 		stringstream str, b;
+		if (depth == 0) return "NilTypeExpr{…}";
 		str << "NilTypeExpr{";
 		if (this->evaluatedType) b << endl << "  \033[1mevaluatedType\033[0m = " << indent(this->evaluatedType->describe(depth-1));
 		string bs = b.str();

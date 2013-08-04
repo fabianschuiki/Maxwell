@@ -65,7 +65,6 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "DefinedType{…}";
 		stringstream str, b;
 		str << (getDefinition()->implements(kNamedInterface) ? getDefinition()->needNamed()->getName() : getDefinition()->getId().str());
 		return str.str();

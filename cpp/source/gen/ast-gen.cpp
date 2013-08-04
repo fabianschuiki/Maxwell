@@ -556,9 +556,9 @@ int main(int argc, char *argv[])
 
 		// Generate the describe() function.
 		h << "\tvirtual string describe(int depth = -1)\n\t{\n";
-		h << "\t\tif (depth == 0) return \"" << name << "{…}\";\n";
 		h << "\t\tstringstream str, b;\n";
 		if (node.descriptionBody.empty()) {
+			h << "\t\tif (depth == 0) return \"" << name << "{…}\";\n";
 			h << "\t\tstr << \"" << name << "{\";\n";
 			for (Node::Fields::iterator fit = node.attributes.begin(); fit != node.attributes.end(); fit++) {
 				Node::Field& f = *fit;

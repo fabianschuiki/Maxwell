@@ -88,8 +88,8 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "CallArg{…}";
 		stringstream str, b;
+		if (depth == 0) return "CallArg{…}";
 		str << "CallArg{";
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
 		if (this->expr) b << endl << "  \033[1mexpr\033[0m = \033[36m" << this->expr.id << "\033[0m";

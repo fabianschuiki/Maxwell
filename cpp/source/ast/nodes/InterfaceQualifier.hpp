@@ -80,8 +80,8 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "InterfaceQualifier{…}";
 		stringstream str, b;
+		if (depth == 0) return "InterfaceQualifier{…}";
 		str << "InterfaceQualifier{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
 		if (!this->stmts.empty()) b << endl << "  \033[1mstmts\033[0m = " << indent(describeVector(this->stmts, depth-1));

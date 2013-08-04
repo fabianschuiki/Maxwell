@@ -38,7 +38,6 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "NilType{…}";
 		stringstream str, b;
 		str << "nil";
 		return str.str();

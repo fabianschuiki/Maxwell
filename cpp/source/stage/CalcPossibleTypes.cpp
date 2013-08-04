@@ -185,6 +185,8 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 	if (const CallCandidate::Ptr& candidate = CallCandidate::from(node)) {
 		const NodePtr& funcNode = candidate->getFunc();
 		CallableInterface* func = funcNode->needCallable();
+		const FuncType::Ptr& funcType = FuncType::from(func->getType());
+
 		// For now enforce single return values.
 		if (func->getOut().size() > 1) {
 			throw std::runtime_error("Only calls to functions with zero or one output argument are supported at the moment. Function " + funcNode->getId().str() + " called by " + node->getParent()->getId().str() + " violates this constraint.");
@@ -196,7 +198,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 			// println(-1, "func->getOut()[0]->needType()->getActualType() = " + funcOut0->needType()->getActualType()->getId().str(), candidate);
 			candidate->setPossibleType(funcOut0->needType()->getActualType());
 		} else {
-			candidate->setPossibleType(NodePtr(new InvalidType));
+			candidate->setPossibleType(NodePtr(new NilType));
 		}
 	}
 

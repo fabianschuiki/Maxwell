@@ -38,7 +38,6 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "InvalidType{…}";
 		stringstream str, b;
 		str << "<invalid>";
 		return str.str();

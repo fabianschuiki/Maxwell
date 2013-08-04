@@ -166,8 +166,8 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "CallCandidate{…}";
 		stringstream str, b;
+		if (depth == 0) return "CallCandidate{…}";
 		str << "CallCandidate{";
 		if (this->func) b << endl << "  \033[1mfunc\033[0m = \033[36m" << this->func.id << "\033[0m";
 		if (!this->args.empty()) b << endl << "  \033[1margs\033[0m = " << indent(describeVector(this->args, depth-1));

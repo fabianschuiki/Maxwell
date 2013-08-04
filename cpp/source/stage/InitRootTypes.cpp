@@ -22,23 +22,53 @@ void InitRootTypes::process(const NodePtr& node)
 	}
 
 	// Assign types to functions.
-	if (FuncDef* def = dynamic_cast<FuncDef*>(node.get()))
+	if (const FuncDef::Ptr& def = FuncDef::from(node))
 	{
-		// Create the arrays of input and output TupleTypeArgs based on the
-		// function arguments.
-		NodeVector inArgs, outArgs;
-		wrapFuncArgs(inArgs, def->getIn());
-		wrapFuncArgs(outArgs, def->getOut());
+		NodePtr inType, outType;
 
-		// Wrap the arrays in two TupleType nodes.
-		shared_ptr<TupleType> inTuple(new TupleType), outTuple(new TupleType);
-		inTuple->setArgs(inArgs);
-		outTuple->setArgs(outArgs);
+		// Create either a tuple for the in and out types if the function has
+		// input or output arguments, or nil if it doesn't.
+		if (def->getIn().empty()) {
+			inType.reset(new NilType);
+		} else {
+			NodeVector inArgs;
+			wrapFuncArgs(inArgs, def->getIn());
+			
+			TupleType::Ptr inTuple(new TupleType);
+			inTuple->setArgs(inArgs);
+			inType = inTuple;
+		}
 
-		// Wrap the two TupleTypes in a FuncType node.
-		shared_ptr<FuncType> func(new FuncType);
-		func->setIn(inTuple);
-		func->setOut(outTuple);
+		if (def->getImplOut()) {
+			addDependency(def, "body.actualType");
+			NodePtr actualType = def->getBody()->needType()->getActualType(false);
+			if (!actualType)
+				actualType.reset(new GenericType);
+
+			TupleTypeArg::Ptr outArg(new TupleTypeArg);
+			outArg->setName("_");
+			outArg->setType(actualType);
+			NodeVector outArgs(1);
+			outArgs[0] = outArg;
+
+			TupleType::Ptr outTuple(new TupleType);
+			outTuple->setArgs(outArgs);
+			outType = outTuple;
+		} else if (def->getOut().empty()) {
+			outType.reset(new NilType);
+		} else {
+			NodeVector outArgs;
+			wrapFuncArgs(outArgs, def->getOut());
+			
+			TupleType::Ptr outTuple(new TupleType);
+			outTuple->setArgs(outArgs);
+			outType = outTuple;
+		}
+
+		// Wrap the two types in a FuncType node.
+		FuncType::Ptr func(new FuncType);
+		func->setIn(inType);
+		func->setOut(outType);
 
 		// Assign the FuncType to the function definition.
 		def->setType(func);
@@ -48,8 +78,8 @@ void InitRootTypes::process(const NodePtr& node)
 void InitRootTypes::wrapFuncArgs(NodeVector& args, const NodeVector& funcArgs)
 {
 	for (NodeVector::const_iterator it = funcArgs.begin(); it != funcArgs.end(); it++) {
-		const shared_ptr<FuncArg>& funcArg = dynamic_pointer_cast<FuncArg>(*it);
-		shared_ptr<TupleTypeArg> arg(new TupleTypeArg);
+		const FuncArg::Ptr& funcArg = FuncArg::from(*it);
+		TupleTypeArg::Ptr arg(new TupleTypeArg);
 		arg->setName(funcArg->getName());
 		arg->setType(funcArg->getPossibleType());
 		args.push_back(arg);

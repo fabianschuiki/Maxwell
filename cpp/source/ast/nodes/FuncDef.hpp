@@ -164,8 +164,8 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "FuncDef{…}";
 		stringstream str, b;
+		if (depth == 0) return "FuncDef{…}";
 		str << "FuncDef{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";

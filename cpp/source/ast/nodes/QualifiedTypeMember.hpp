@@ -75,8 +75,8 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "QualifiedTypeMember{…}";
 		stringstream str, b;
+		if (depth == 0) return "QualifiedTypeMember{…}";
 		str << "QualifiedTypeMember{";
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
 		if (this->type) b << endl << "  \033[1mtype\033[0m = " << indent(this->type->describe(depth-1));

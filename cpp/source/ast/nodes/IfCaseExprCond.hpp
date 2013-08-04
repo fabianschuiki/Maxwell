@@ -105,8 +105,8 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "IfCaseExprCond{…}";
 		stringstream str, b;
+		if (depth == 0) return "IfCaseExprCond{…}";
 		str << "IfCaseExprCond{";
 		if (this->expr) b << endl << "  \033[1mexpr\033[0m = " << indent(this->expr->describe(depth-1));
 		if (this->cond) b << endl << "  \033[1mcond\033[0m = " << indent(this->cond->describe(depth-1));

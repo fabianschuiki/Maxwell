@@ -514,7 +514,7 @@ f(1); // returns 2
 
 
 <h1>Tuples</h1>
-<p>Tuples are first-class citizens of Maxwell. They form the input and output of functions and allow for parallel assignments and more. A tuple combines traits of arrays and map in that its fields are ordered and indexed (0,1,2,…) as in the former, yet also named ("a", "b", …) as in the latter.</p>
+<p>Tuples are first-class citizens of Maxwell. They form the input and output of functions and allow for parallel assignments and more. A tuple combines traits of arrays and map in that its fields are ordered and indexed (0,1,2,…) as in the former, yet also named ("a", "b", …) as in the latter. A tuple in general contains one or more fields. Tuples with only one field are implicitly convertible to their single field's type. The <code>nil</code> type/value should be used as a placeholder for empty tuples.</p>
 <code>// Variable with a tuple type and an initial tuple expression.
 var x (Int, Int) = (1, 2);
 

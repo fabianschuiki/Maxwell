@@ -85,6 +85,25 @@ public:
 		return v;
 	}
 
+	void setType(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kFuncType)) {
+			throw runtime_error("'type' of " + id.str() + " needs to be of kind {FuncType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
+		}
+		if (!equal(v, type)) {
+			modify("type");
+			type = v;
+		}
+	}
+	const NodePtr& getType(bool required = true)
+	{
+		const NodePtr& v = type;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have type set to a non-null value.");
+		}
+		return v;
+	}
+
 	void setIn(const NodeVector& v)
 	{
 		if (!equal(v, in)) {
@@ -113,11 +132,12 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "ImplAccessor{…}";
 		stringstream str, b;
+		if (depth == 0) return "ImplAccessor{…}";
 		str << "ImplAccessor{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
+		if (this->type) b << endl << "  \033[1mtype\033[0m = " << indent(this->type->describe(depth-1));
 		if (!this->in.empty()) b << endl << "  \033[1min\033[0m = " << indent(describeVector(this->in, depth-1));
 		if (!this->out.empty()) b << endl << "  \033[1mout\033[0m = " << indent(describeVector(this->out, depth-1));
 		string bs = b.str();
@@ -130,6 +150,7 @@ public:
 	{
 		e.encode(this->graphPrev);
 		e.encode(this->name);
+		e.encode(this->type);
 		e.encode(this->in);
 		e.encode(this->out);
 	}
@@ -138,12 +159,14 @@ public:
 	{
 		d.decode(this->graphPrev);
 		d.decode(this->name);
+		d.decode(this->type);
 		d.decode(this->in);
 		d.decode(this->out);
 	}
 
 	virtual void updateHierarchyOfChildren()
 	{
+		if (this->type) this->type->updateHierarchy(id + "type", repository, this);
 		for (int i = 0; i < this->in.size(); i++) {
 			char buf[32]; snprintf(buf, 31, "%i", i);
 			this->in[i]->updateHierarchy((id + "in") + buf, repository, this);
@@ -208,6 +231,15 @@ public:
 					}
 				}
 			}
+			// type.*
+			if (size >= 4 && path[0] == 't' && path[1] == 'y' && path[2] == 'p' && path[3] == 'e') {
+				// type
+				if (size == 4) {
+					return getType();
+				} else if (path[4] == '.') {
+					return getType()->resolvePath(path.substr(5));
+				}
+			}
 		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
@@ -226,6 +258,7 @@ public:
 		if (!other) return false;
 		if (!equal(this->graphPrev, other->graphPrev)) return false;
 		if (!equal(this->name, other->name)) return false;
+		if (!equal(this->type, other->type)) return false;
 		if (!equal(this->in, other->in)) return false;
 		if (!equal(this->out, other->out)) return false;
 		return true;
@@ -242,6 +275,7 @@ public:
 protected:
 	NodeRef graphPrev;
 	string name;
+	NodePtr type;
 	NodeVector in;
 	NodeVector out;
 

@@ -79,6 +79,9 @@ public:
 
 	virtual void setOut(const NodeVector& v) = 0;
 	virtual const NodeVector& getOut(bool required = true) = 0;
+
+	virtual void setType(const NodePtr& v) = 0;
+	virtual const NodePtr& getType(bool required = true) = 0;
 };
 template <typename T> class CallableInterfaceImpl : public CallableInterface
 {
@@ -92,6 +95,8 @@ public:
 	void setIn(const NodeVector& v) { node->setIn(v); }
 	const NodeVector& getOut(bool required = true) { return node->getOut(required); }
 	void setOut(const NodeVector& v) { node->setOut(v); }
+	const NodePtr& getType(bool required = true) { return node->getType(required); }
+	void setType(const NodePtr& v) { node->setType(v); }
 
 protected:
 	T* const node;

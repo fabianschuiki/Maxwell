@@ -158,8 +158,8 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "AssignmentExpr{…}";
 		stringstream str, b;
+		if (depth == 0) return "AssignmentExpr{…}";
 		str << "AssignmentExpr{";
 		if (this->rhs) b << endl << "  \033[1mrhs\033[0m = " << indent(this->rhs->describe(depth-1));
 		if (this->lhs) b << endl << "  \033[1mlhs\033[0m = " << indent(this->lhs->describe(depth-1));

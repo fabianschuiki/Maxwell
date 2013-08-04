@@ -158,8 +158,8 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "IfCaseExpr{…}";
 		stringstream str, b;
+		if (depth == 0) return "IfCaseExpr{…}";
 		str << "IfCaseExpr{";
 		if (!this->conds.empty()) b << endl << "  \033[1mconds\033[0m = " << indent(describeVector(this->conds, depth-1));
 		if (this->otherwise) b << endl << "  \033[1motherwise\033[0m = " << indent(this->otherwise->describe(depth-1));

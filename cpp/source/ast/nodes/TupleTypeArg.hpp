@@ -75,7 +75,6 @@ public:
 
 	virtual string describe(int depth = -1)
 	{
-		if (depth == 0) return "TupleTypeArg{…}";
 		stringstream str, b;
 		if (!name.empty()) str << name << ": "; str << type->describe(depth-1);
 		return str.str();

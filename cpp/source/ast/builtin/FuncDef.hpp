@@ -23,10 +23,12 @@ public:
 	const string& getName(bool required = true) const { return name; }
 	const NodeVector& getIn(bool required = true) { return in; }
 	const NodeVector& getOut(bool required = true) { return out; }
+	const NodePtr& getType(bool required = true) { return type; }
 
 	void setName(const string& s) { throw std::runtime_error("Cannot set name of builtin function " + name + "."); }	
 	void setIn(const NodeVector& v) { throw std::runtime_error("Cannot set input of builtin function " + name + "."); }
 	void setOut(const NodeVector& v) { throw std::runtime_error("Cannot set output of builtin function " + name + "."); }
+	void setType(const NodePtr& v) { throw std::runtime_error("Cannot set type of builtin function " + name + "."); }
 
 	virtual bool equalTo(const NodePtr& other)
 	{
@@ -53,6 +55,7 @@ protected:
 	string name;
 	NodeVector in;
 	NodeVector out;
+	NodePtr type;
 
 	// Interfaces
 	NamedInterfaceImpl<FuncDef> interfaceNamed;

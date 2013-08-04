@@ -170,7 +170,7 @@ void buildAST(Builder &node)
 		.intf(graph).intf(typeExpr)
 		.child("args", "[TupleTypeExprArg]");
 	node("TupleTypeExprArg")
-		.intf(graph).intf(typeExpr)
+		.intf(graph)
 		.attr("name", "string")
 		.child("expr", "#typeExpr");
 	node("QualifiedTypeExpr")

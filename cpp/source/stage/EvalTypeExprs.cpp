@@ -108,6 +108,26 @@ void EvalTypeExprs::process(const NodePtr& node)
 			node->updateHierarchyOfChildren();
 		}
 
+		if (const TupleTypeExpr::Ptr& expr = TupleTypeExpr::from(node))
+		{
+			// Gather the list of fields of this tuple type.
+			const NodeVector& exprArgs = expr->getArgs();
+			NodeVector args(exprArgs.size());
+			for (int i = 0; i < exprArgs.size(); i++) {
+				const TupleTypeExprArg::Ptr& exprArg = TupleTypeExprArg::needFrom(exprArgs[i]);
+				TupleTypeArg::Ptr arg(new TupleTypeArg);
+				arg->setName(exprArg->getName(false));
+				arg->setType(exprArg->getExpr()->needTypeExpr()->getEvaluatedType());
+				args[i] = arg;
+			}
+
+			// Merge the fields into a TupleType.
+			TupleType::Ptr type(new TupleType);
+			type->setArgs(args);
+			intf->setEvaluatedType(type);
+			node->updateHierarchyOfChildren();
+		}
+
 		// Throw an error if we were unable to assign an evaluated type.
 		if (!intf->getEvaluatedType(false)) {
 			throw std::runtime_error("Could not evaluate type expression " + node->getId().str() + ".");

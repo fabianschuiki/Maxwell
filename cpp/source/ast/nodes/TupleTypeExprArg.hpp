@@ -22,7 +22,6 @@ class TupleTypeExprArg : public Node
 public:
 	TupleTypeExprArg() : Node(),
 		interfaceGraph(this),
-		interfaceTypeExpr(this),
 		interfaceCallArg(this),
 		interfaceNamed(this) {}
 
@@ -36,7 +35,6 @@ public:
 	{
 		if (Node::implements(i)) return true;
 		if (i == kGraphInterface) return true;
-		if (i == kTypeExprInterface) return true;
 		if (i == kCallArgInterface) return true;
 		if (i == kNamedInterface) return true;
 		return false;
@@ -67,25 +65,6 @@ public:
 		const NodePtr& v = graphPrev.get(repository);
 		if (required && !v) {
 			throw runtime_error("Node " + getId().str() + " is required to have graphPrev set to a non-null value.");
-		}
-		return v;
-	}
-
-	void setEvaluatedType(const NodePtr& v)
-	{
-		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kNilType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet) && !v->isKindOf(kQualifiedType) && !v->isKindOf(kSpecializedType) && !v->isKindOf(kUnionMappedType)) {
-			throw runtime_error("'evaluatedType' of " + id.str() + " needs to be of kind {GenericType, InvalidType, NilType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType, SpecializedType, UnionMappedType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
-		}
-		if (!equal(v, evaluatedType)) {
-			modify("evaluatedType");
-			evaluatedType = v;
-		}
-	}
-	const NodePtr& getEvaluatedType(bool required = true)
-	{
-		const NodePtr& v = evaluatedType;
-		if (required && !v) {
-			throw runtime_error("Node " + getId().str() + " is required to have evaluatedType set to a non-null value.");
 		}
 		return v;
 	}
@@ -131,7 +110,6 @@ public:
 		if (depth == 0) return "TupleTypeExprArg{…}";
 		str << "TupleTypeExprArg{";
 		if (this->graphPrev) b << endl << "  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
-		if (this->evaluatedType) b << endl << "  \033[1mevaluatedType\033[0m = " << indent(this->evaluatedType->describe(depth-1));
 		if (!this->name.empty()) b << endl << "  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
 		if (this->expr) b << endl << "  \033[1mexpr\033[0m = " << indent(this->expr->describe(depth-1));
 		string bs = b.str();
@@ -143,7 +121,6 @@ public:
 	virtual void encode(Encoder& e)
 	{
 		e.encode(this->graphPrev);
-		e.encode(this->evaluatedType);
 		e.encode(this->name);
 		e.encode(this->expr);
 	}
@@ -151,14 +128,12 @@ public:
 	virtual void decode(Decoder& d)
 	{
 		d.decode(this->graphPrev);
-		d.decode(this->evaluatedType);
 		d.decode(this->name);
 		d.decode(this->expr);
 	}
 
 	virtual void updateHierarchyOfChildren()
 	{
-		if (this->evaluatedType) this->evaluatedType->updateHierarchy(id + "evaluatedType", repository, this);
 		if (this->expr) this->expr->updateHierarchy(id + "expr", repository, this);
 	}
 
@@ -167,25 +142,13 @@ public:
 		size_t size = path.size();
 		// .*
 		if (true) {
-			// e.*
-			if (size >= 1 && path[0] == 'e') {
-				// evaluatedType.*
-				if (size >= 13 && path[1] == 'v' && path[2] == 'a' && path[3] == 'l' && path[4] == 'u' && path[5] == 'a' && path[6] == 't' && path[7] == 'e' && path[8] == 'd' && path[9] == 'T' && path[10] == 'y' && path[11] == 'p' && path[12] == 'e') {
-					// evaluatedType
-					if (size == 13) {
-						return getEvaluatedType();
-					} else if (path[13] == '.') {
-						return getEvaluatedType()->resolvePath(path.substr(14));
-					}
-				}
-				// expr.*
-				if (size >= 4 && path[1] == 'x' && path[2] == 'p' && path[3] == 'r') {
-					// expr
-					if (size == 4) {
-						return getExpr();
-					} else if (path[4] == '.') {
-						return getExpr()->resolvePath(path.substr(5));
-					}
+			// expr.*
+			if (size >= 4 && path[0] == 'e' && path[1] == 'x' && path[2] == 'p' && path[3] == 'r') {
+				// expr
+				if (size == 4) {
+					return getExpr();
+				} else if (path[4] == '.') {
+					return getExpr()->resolvePath(path.substr(5));
 				}
 			}
 			// graphPrev.*
@@ -204,7 +167,6 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
-		if (const NodePtr& n = this->getEvaluatedType(false)) v.push_back(n);
 		if (const NodePtr& n = this->getExpr(false)) v.push_back(n);
 		return v;
 	}
@@ -214,7 +176,6 @@ public:
 		const shared_ptr<TupleTypeExprArg>& other = boost::dynamic_pointer_cast<TupleTypeExprArg>(o);
 		if (!other) return false;
 		if (!equal(this->graphPrev, other->graphPrev)) return false;
-		if (!equal(this->evaluatedType, other->evaluatedType)) return false;
 		if (!equal(this->name, other->name)) return false;
 		if (!equal(this->expr, other->expr)) return false;
 		return true;
@@ -222,7 +183,6 @@ public:
 
 	// Interfaces
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
-	virtual TypeExprInterface* asTypeExpr() { return &this->interfaceTypeExpr; }
 	virtual CallArgInterface* asCallArg() { return &this->interfaceCallArg; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
@@ -231,13 +191,11 @@ public:
 	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<TupleTypeExprArg>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to TupleTypeExprArg."); return r; }
 protected:
 	NodeRef graphPrev;
-	NodePtr evaluatedType;
 	string name;
 	NodePtr expr;
 
 	// Interfaces
 	GraphInterfaceImpl<TupleTypeExprArg> interfaceGraph;
-	TypeExprInterfaceImpl<TupleTypeExprArg> interfaceTypeExpr;
 	CallArgInterfaceImpl<TupleTypeExprArg> interfaceCallArg;
 	NamedInterfaceImpl<TupleTypeExprArg> interfaceNamed;
 };

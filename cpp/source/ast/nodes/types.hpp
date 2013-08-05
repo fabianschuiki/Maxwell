@@ -35,6 +35,7 @@ typedef enum {
 	kNilType,
 	kNilTypeExpr,
 	kNumberConstExpr,
+	kOneTupleMappedType,
 	kQualifiedType,
 	kQualifiedTypeExpr,
 	kQualifiedTypeMember,

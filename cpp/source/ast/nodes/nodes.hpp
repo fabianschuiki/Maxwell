@@ -32,6 +32,7 @@
 #include "NilType.hpp"
 #include "NilTypeExpr.hpp"
 #include "NumberConstExpr.hpp"
+#include "OneTupleMappedType.hpp"
 #include "QualifiedType.hpp"
 #include "QualifiedTypeExpr.hpp"
 #include "QualifiedTypeMember.hpp"
@@ -249,6 +250,11 @@ public:
 					// NumberConstExpr
 					if (size == 15) return NodePtr(new NumberConstExpr);
 				}
+			}
+			// OneTupleMappedType.*
+			if (size >= 18 && name[0] == 'O' && name[1] == 'n' && name[2] == 'e' && name[3] == 'T' && name[4] == 'u' && name[5] == 'p' && name[6] == 'l' && name[7] == 'e' && name[8] == 'M' && name[9] == 'a' && name[10] == 'p' && name[11] == 'p' && name[12] == 'e' && name[13] == 'd' && name[14] == 'T' && name[15] == 'y' && name[16] == 'p' && name[17] == 'e') {
+				// OneTupleMappedType
+				if (size == 18) return NodePtr(new OneTupleMappedType);
 			}
 			// QualifiedType.*
 			if (size >= 13 && name[0] == 'Q' && name[1] == 'u' && name[2] == 'a' && name[3] == 'l' && name[4] == 'i' && name[5] == 'f' && name[6] == 'i' && name[7] == 'e' && name[8] == 'd' && name[9] == 'T' && name[10] == 'y' && name[11] == 'p' && name[12] == 'e') {

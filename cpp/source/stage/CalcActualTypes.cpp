@@ -86,5 +86,23 @@ NodePtr CalcActualTypes::match(const NodePtr& possible, const NodePtr& required,
 		println(1, "Trying to cast from " + possible->describe() + " to " + required->describe(), node);
 	}
 
+	// In case the possible type is a 1-tuple and the required type is not, try
+	// the implicit tuple access.
+	if (actual->isKindOf(kInvalidType) && possible->isKindOf(kTupleType) && !required->isKindOf(kTupleType)) {
+		const TupleType::Ptr& ptuple = TupleType::needFrom(possible);
+		if (ptuple->getArgs().size() == 1) {
+			println(1, "Implicitly accessing single field of 1-tuple " + possible->describe());
+
+			OneTupleMappedType::Ptr type(new OneTupleMappedType);
+			type->setTuple(ptuple);
+			actual = type;
+			// actual = match(ptuple->getArgs()[0], required, node);
+		}
+	}
+
+	// Complain if the conversion was not possible.
+	if (actual->isKindOf(kInvalidType)) {
+		throw std::runtime_error("Unable to find satisfy " + possible->describe() + " and " + required->describe() + " at the same time.");
+	}
 	return actual;
 }

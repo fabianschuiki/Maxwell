@@ -158,7 +158,7 @@ Grammar
 
   105 tuple_typeexpr: "opening paranthesis (" tuple_typeexpr_args "closing paranthesis )"
 
-  106 tuple_typeexpr_args: tuple_typeexpr_arg "," tuple_typeexpr_arg
+  106 tuple_typeexpr_args: tuple_typeexpr_arg
   107                    | tuple_typeexpr_args "," tuple_typeexpr_arg
 
   108 tuple_typeexpr_arg: typeexpr
@@ -248,7 +248,7 @@ OPERATOR (267) 54 69
 "closing bracket ]" (289) 29 113
 "vertical pipe |" (290) 103 104
 "." (291) 55 56 57
-"," (292) 19 34 37 39 61 94 106 107 115 135
+"," (292) 19 34 37 39 61 94 107 115 135
 ":" (293) 35 62 109
 ";" (294) 44 46 51 126 127
 "right arrow ->" (295) 10 11
@@ -1038,7 +1038,7 @@ state 36
   104                | . union_typeexprs "vertical pipe |" nonunion_typeexpr
   105 tuple_typeexpr: . "opening paranthesis (" tuple_typeexpr_args "closing paranthesis )"
   105               | "opening paranthesis (" . tuple_typeexpr_args "closing paranthesis )"
-  106 tuple_typeexpr_args: . tuple_typeexpr_arg "," tuple_typeexpr_arg
+  106 tuple_typeexpr_args: . tuple_typeexpr_arg
   107                    | . tuple_typeexpr_args "," tuple_typeexpr_arg
   108 tuple_typeexpr_arg: . typeexpr
   109                   | . "identifier" ":" typeexpr
@@ -2079,9 +2079,9 @@ state 97
 
 state 98
 
-  106 tuple_typeexpr_args: tuple_typeexpr_arg . "," tuple_typeexpr_arg
+  106 tuple_typeexpr_args: tuple_typeexpr_arg .
 
-    ","  shift, and go to state 147
+    $default  reduce using rule 106 (tuple_typeexpr_args)
 
 
 state 99
@@ -2128,7 +2128,7 @@ state 99
     "nil constant"           shift, and go to state 35
     "opening paranthesis ("  shift, and go to state 36
 
-    typeexpr                       go to state 148
+    typeexpr                       go to state 147
     nonunion_typeexpr              go to state 38
     union_typeexpr                 go to state 39
     union_typeexprs                go to state 40
@@ -2136,7 +2136,7 @@ state 99
     qualified_typeexpr             go to state 42
     qualified_typeexpr_qualifiers  go to state 43
     specialized_typeexpr           go to state 44
-    specialized_typeexpr_specs     go to state 149
+    specialized_typeexpr_specs     go to state 148
     qualified_typeexpr_qualifier   go to state 45
     structure_qualifier            go to state 46
     structure_qualifier_decl       go to state 47
@@ -2183,7 +2183,7 @@ state 100
     "nil constant"           shift, and go to state 35
     "opening paranthesis ("  shift, and go to state 36
 
-    nonunion_typeexpr              go to state 150
+    nonunion_typeexpr              go to state 149
     tuple_typeexpr                 go to state 41
     qualified_typeexpr             go to state 42
     qualified_typeexpr_qualifiers  go to state 43
@@ -2234,7 +2234,7 @@ state 101
     "nil constant"           shift, and go to state 35
     "opening paranthesis ("  shift, and go to state 36
 
-    nonunion_typeexpr              go to state 151
+    nonunion_typeexpr              go to state 150
     tuple_typeexpr                 go to state 41
     qualified_typeexpr             go to state 42
     qualified_typeexpr_qualifiers  go to state 43
@@ -2264,18 +2264,18 @@ state 103
   126 structure_qualifier_stmt: . "identifier" ";"
   127                         | . "identifier" typeexpr ";"
 
-    "identifier"        shift, and go to state 152
-    "closing braces }"  shift, and go to state 153
+    "identifier"        shift, and go to state 151
+    "closing braces }"  shift, and go to state 152
 
-    structure_qualifier_stmts  go to state 154
-    structure_qualifier_stmt   go to state 155
+    structure_qualifier_stmts  go to state 153
+    structure_qualifier_stmt   go to state 154
 
 
 state 104
 
   135 range_qualifier: range_qualifier_decl "opening paranthesis (" . "number constant" "," "number constant" "closing paranthesis )"
 
-    "number constant"  shift, and go to state 156
+    "number constant"  shift, and go to state 155
 
 
 state 105
@@ -2329,7 +2329,7 @@ state 105
    87     | . var_expr
    88     | . var_expr "assignment operator =" assignment_expr
 
-    "identifier"             shift, and go to state 157
+    "identifier"             shift, and go to state 156
     "number constant"        shift, and go to state 54
     "string constant"        shift, and go to state 55
     MULTIPLICATIVE_OPERATOR  shift, and go to state 12
@@ -2338,15 +2338,15 @@ state 105
     OPERATOR                 shift, and go to state 15
     "var keyword"            shift, and go to state 56
     "opening paranthesis ("  shift, and go to state 59
-    "closing paranthesis )"  shift, and go to state 158
+    "closing paranthesis )"  shift, and go to state 157
     "opening braces {"       shift, and go to state 60
     "opening bracket ["      shift, and go to state 62
 
     primary_expr         go to state 63
     ifcase_expr          go to state 64
     postfix_expr         go to state 69
-    call_args            go to state 159
-    call_arg             go to state 160
+    call_args            go to state 158
+    call_arg             go to state 159
     prefix_expr          go to state 70
     any_operator         go to state 71
     multiplicative_expr  go to state 72
@@ -2357,7 +2357,7 @@ state 105
     or_expr              go to state 77
     assignment_expr      go to state 78
     var_expr             go to state 79
-    expr                 go to state 161
+    expr                 go to state 160
 
 
 state 106
@@ -2405,7 +2405,7 @@ state 106
 
     $default  reduce using rule 85 (var_expr)
 
-    typeexpr                       go to state 162
+    typeexpr                       go to state 161
     nonunion_typeexpr              go to state 38
     union_typeexpr                 go to state 39
     union_typeexprs                go to state 40
@@ -2494,7 +2494,7 @@ state 107
     or_expr              go to state 77
     assignment_expr      go to state 78
     var_expr             go to state 79
-    expr                 go to state 163
+    expr                 go to state 162
 
 
 state 108
@@ -2569,7 +2569,7 @@ state 108
     or_expr              go to state 77
     assignment_expr      go to state 78
     var_expr             go to state 79
-    expr                 go to state 164
+    expr                 go to state 163
 
 
 state 109
@@ -2590,7 +2590,7 @@ state 111
 
    26 primary_expr: "opening paranthesis (" any_expr . "closing paranthesis )"
 
-    "closing paranthesis )"  shift, and go to state 165
+    "closing paranthesis )"  shift, and go to state 164
 
 
 state 112
@@ -2598,7 +2598,7 @@ state 112
    35 map_expr_pair: primary_expr . ":" expr
    53 postfix_expr: primary_expr .  [MULTIPLICATIVE_OPERATOR, ADDITIVE_OPERATOR, RELATIONAL_OPERATOR, EQUALITY_OPERATOR, AND_OPERATOR, OR_OPERATOR, OPERATOR, "if keyword", "closing braces }", ".", ",", ";", "assignment operator ="]
 
-    ":"  shift, and go to state 166
+    ":"  shift, and go to state 165
 
     $default  reduce using rule 53 (postfix_expr)
 
@@ -2608,8 +2608,8 @@ state 113
    31 primary_expr: "opening braces {" map_expr_pairs . "closing braces }"
    34 map_expr_pairs: map_expr_pairs . "," map_expr_pair
 
-    "closing braces }"  shift, and go to state 167
-    ","                 shift, and go to state 168
+    "closing braces }"  shift, and go to state 166
+    ","                 shift, and go to state 167
 
 
 state 114
@@ -2625,8 +2625,8 @@ state 115
    37            | "opening braces {" ifcase_expr_conds . "," expr "otherwise keyword" "closing braces }"
    39 ifcase_expr_conds: ifcase_expr_conds . "," ifcase_expr_cond
 
-    "closing braces }"  shift, and go to state 169
-    ","                 shift, and go to state 170
+    "closing braces }"  shift, and go to state 168
+    ","                 shift, and go to state 169
 
 
 state 116
@@ -2641,7 +2641,7 @@ state 117
    40 ifcase_expr_cond: expr . "if keyword" expr
    93 expr_list: expr .  ["closing braces }", ","]
 
-    "if keyword"  shift, and go to state 171
+    "if keyword"  shift, and go to state 170
 
     $default  reduce using rule 93 (expr_list)
 
@@ -2651,8 +2651,8 @@ state 118
    30 primary_expr: "opening braces {" expr_list . "closing braces }"
    94 expr_list: expr_list . "," expr
 
-    "closing braces }"  shift, and go to state 172
-    ","                 shift, and go to state 173
+    "closing braces }"  shift, and go to state 171
+    ","                 shift, and go to state 172
 
 
 state 119
@@ -2667,8 +2667,8 @@ state 120
    29 primary_expr: "opening bracket [" expr_list . "closing bracket ]"
    94 expr_list: expr_list . "," expr
 
-    "closing bracket ]"  shift, and go to state 174
-    ","                  shift, and go to state 173
+    "closing bracket ]"  shift, and go to state 173
+    ","                  shift, and go to state 172
 
 
 state 121
@@ -2698,7 +2698,7 @@ state 124
    56             | postfix_expr "." . "identifier" "opening paranthesis (" call_args "closing paranthesis )"
    57             | postfix_expr "." . "identifier"
 
-    "identifier"  shift, and go to state 175
+    "identifier"  shift, and go to state 174
 
 
 state 125
@@ -2749,7 +2749,7 @@ state 126
     primary_expr  go to state 63
     ifcase_expr   go to state 64
     postfix_expr  go to state 69
-    prefix_expr   go to state 176
+    prefix_expr   go to state 175
     any_operator  go to state 71
 
 
@@ -2798,7 +2798,7 @@ state 127
     postfix_expr         go to state 69
     prefix_expr          go to state 70
     any_operator         go to state 71
-    multiplicative_expr  go to state 177
+    multiplicative_expr  go to state 176
 
 
 state 128
@@ -2849,7 +2849,7 @@ state 128
     prefix_expr          go to state 70
     any_operator         go to state 71
     multiplicative_expr  go to state 72
-    additive_expr        go to state 178
+    additive_expr        go to state 177
 
 
 state 129
@@ -2903,7 +2903,7 @@ state 129
     any_operator         go to state 71
     multiplicative_expr  go to state 72
     additive_expr        go to state 73
-    relational_expr      go to state 179
+    relational_expr      go to state 178
 
 
 state 130
@@ -2960,7 +2960,7 @@ state 130
     multiplicative_expr  go to state 72
     additive_expr        go to state 73
     relational_expr      go to state 74
-    equality_expr        go to state 180
+    equality_expr        go to state 179
 
 
 state 131
@@ -3020,7 +3020,7 @@ state 131
     additive_expr        go to state 73
     relational_expr      go to state 74
     equality_expr        go to state 75
-    and_expr             go to state 181
+    and_expr             go to state 180
 
 
 state 132
@@ -3083,7 +3083,7 @@ state 132
     relational_expr      go to state 74
     equality_expr        go to state 75
     and_expr             go to state 76
-    or_expr              go to state 182
+    or_expr              go to state 181
 
 
 state 133
@@ -3149,7 +3149,7 @@ state 133
     equality_expr        go to state 75
     and_expr             go to state 76
     or_expr              go to state 77
-    assignment_expr      go to state 183
+    assignment_expr      go to state 182
 
 
 state 134
@@ -3165,7 +3165,7 @@ state 135
    51 block_expr_expr: expr . ";"
    93 expr_list: expr .  ["closing braces }", ","]
 
-    "if keyword"  shift, and go to state 171
+    "if keyword"  shift, and go to state 170
     ";"           shift, and go to state 134
 
     $default  reduce using rule 93 (expr_list)
@@ -3193,7 +3193,7 @@ state 138
 
     "identifier"  shift, and go to state 24
 
-    func_arg  go to state 184
+    func_arg  go to state 183
 
 
 state 139
@@ -3224,9 +3224,9 @@ state 142
   132 interface_qualifier_stmt: . "identifier"
 
     "identifier"        shift, and go to state 140
-    "closing braces }"  shift, and go to state 185
+    "closing braces }"  shift, and go to state 184
 
-    interface_qualifier_stmt  go to state 186
+    interface_qualifier_stmt  go to state 185
 
 
 state 143
@@ -3278,7 +3278,7 @@ state 144
     "nil constant"           shift, and go to state 35
     "opening paranthesis ("  shift, and go to state 36
 
-    typeexpr                       go to state 187
+    typeexpr                       go to state 186
     nonunion_typeexpr              go to state 38
     union_typeexpr                 go to state 39
     union_typeexprs                go to state 40
@@ -3351,7 +3351,7 @@ state 146
     union_typeexpr                 go to state 39
     union_typeexprs                go to state 40
     tuple_typeexpr                 go to state 41
-    tuple_typeexpr_arg             go to state 188
+    tuple_typeexpr_arg             go to state 187
     qualified_typeexpr             go to state 42
     qualified_typeexpr_qualifiers  go to state 43
     specialized_typeexpr           go to state 44
@@ -3366,83 +3366,21 @@ state 146
 
 state 147
 
-   95 typeexpr: . nonunion_typeexpr
-   96         | . union_typeexpr
-   97 nonunion_typeexpr: . "identifier"
-   98                  | . "nil constant"
-   99                  | . tuple_typeexpr
-  100                  | . qualified_typeexpr
-  101                  | . specialized_typeexpr
-  102 union_typeexpr: . union_typeexprs
-  103 union_typeexprs: . nonunion_typeexpr "vertical pipe |" nonunion_typeexpr
-  104                | . union_typeexprs "vertical pipe |" nonunion_typeexpr
-  105 tuple_typeexpr: . "opening paranthesis (" tuple_typeexpr_args "closing paranthesis )"
-  106 tuple_typeexpr_args: tuple_typeexpr_arg "," . tuple_typeexpr_arg
-  108 tuple_typeexpr_arg: . typeexpr
-  109                   | . "identifier" ":" typeexpr
-  110 qualified_typeexpr: . qualified_typeexpr_qualifiers
-  111 qualified_typeexpr_qualifiers: . qualified_typeexpr_qualifier
-  112                              | . qualified_typeexpr_qualifiers qualified_typeexpr_qualifier
-  113 specialized_typeexpr: . nonunion_typeexpr "opening bracket [" specialized_typeexpr_specs "closing bracket ]"
-  116 qualified_typeexpr_qualifier: . structure_qualifier
-  117                             | . interface_qualifier
-  118                             | . native_qualifier
-  119                             | . range_qualifier
-  120 structure_qualifier: . structure_qualifier_decl "opening braces {" "closing braces }"
-  121                    | . structure_qualifier_decl "opening braces {" structure_qualifier_stmts "closing braces }"
-  122 structure_qualifier_decl: . "value keyword"
-  123                         | . "object keyword"
-  128 interface_qualifier: . "interface keyword" "opening braces {" "closing braces }"
-  129                    | . "interface keyword" "opening braces {" interface_qualifier_stmts "closing braces }"
-  133 native_qualifier: . "native keyword" "identifier"
-  134 range_qualifier: . range_qualifier_decl
-  135                | . range_qualifier_decl "opening paranthesis (" "number constant" "," "number constant" "closing paranthesis )"
-  136 range_qualifier_decl: . "range keyword" "identifier"
-
-    "identifier"             shift, and go to state 95
-    "value keyword"          shift, and go to state 30
-    "object keyword"         shift, and go to state 31
-    "interface keyword"      shift, and go to state 32
-    "native keyword"         shift, and go to state 33
-    "range keyword"          shift, and go to state 34
-    "nil constant"           shift, and go to state 35
-    "opening paranthesis ("  shift, and go to state 36
-
-    typeexpr                       go to state 96
-    nonunion_typeexpr              go to state 38
-    union_typeexpr                 go to state 39
-    union_typeexprs                go to state 40
-    tuple_typeexpr                 go to state 41
-    tuple_typeexpr_arg             go to state 189
-    qualified_typeexpr             go to state 42
-    qualified_typeexpr_qualifiers  go to state 43
-    specialized_typeexpr           go to state 44
-    qualified_typeexpr_qualifier   go to state 45
-    structure_qualifier            go to state 46
-    structure_qualifier_decl       go to state 47
-    interface_qualifier            go to state 48
-    native_qualifier               go to state 49
-    range_qualifier                go to state 50
-    range_qualifier_decl           go to state 51
-
-
-state 148
-
   114 specialized_typeexpr_specs: typeexpr .
 
     $default  reduce using rule 114 (specialized_typeexpr_specs)
 
 
-state 149
+state 148
 
   113 specialized_typeexpr: nonunion_typeexpr "opening bracket [" specialized_typeexpr_specs . "closing bracket ]"
   115 specialized_typeexpr_specs: specialized_typeexpr_specs . "," typeexpr
 
-    "closing bracket ]"  shift, and go to state 190
-    ","                  shift, and go to state 191
+    "closing bracket ]"  shift, and go to state 188
+    ","                  shift, and go to state 189
 
 
-state 150
+state 149
 
   103 union_typeexprs: nonunion_typeexpr "vertical pipe |" nonunion_typeexpr .  ["end of input", "func keyword", "type keyword", "if keyword", "otherwise keyword", "closing paranthesis )", "opening braces {", "closing braces }", "closing bracket ]", "vertical pipe |", ",", ";", "right arrow ->", "assignment operator ="]
   113 specialized_typeexpr: nonunion_typeexpr . "opening bracket [" specialized_typeexpr_specs "closing bracket ]"
@@ -3452,7 +3390,7 @@ state 150
     $default  reduce using rule 103 (union_typeexprs)
 
 
-state 151
+state 150
 
   104 union_typeexprs: union_typeexprs "vertical pipe |" nonunion_typeexpr .  ["end of input", "func keyword", "type keyword", "if keyword", "otherwise keyword", "closing paranthesis )", "opening braces {", "closing braces }", "closing bracket ]", "vertical pipe |", ",", ";", "right arrow ->", "assignment operator ="]
   113 specialized_typeexpr: nonunion_typeexpr . "opening bracket [" specialized_typeexpr_specs "closing bracket ]"
@@ -3462,7 +3400,7 @@ state 151
     $default  reduce using rule 104 (union_typeexprs)
 
 
-state 152
+state 151
 
    95 typeexpr: . nonunion_typeexpr
    96         | . union_typeexpr
@@ -3504,9 +3442,9 @@ state 152
     "range keyword"          shift, and go to state 34
     "nil constant"           shift, and go to state 35
     "opening paranthesis ("  shift, and go to state 36
-    ";"                      shift, and go to state 192
+    ";"                      shift, and go to state 190
 
-    typeexpr                       go to state 193
+    typeexpr                       go to state 191
     nonunion_typeexpr              go to state 38
     union_typeexpr                 go to state 39
     union_typeexprs                go to state 40
@@ -3523,41 +3461,41 @@ state 152
     range_qualifier_decl           go to state 51
 
 
-state 153
+state 152
 
   120 structure_qualifier: structure_qualifier_decl "opening braces {" "closing braces }" .
 
     $default  reduce using rule 120 (structure_qualifier)
 
 
-state 154
+state 153
 
   121 structure_qualifier: structure_qualifier_decl "opening braces {" structure_qualifier_stmts . "closing braces }"
   125 structure_qualifier_stmts: structure_qualifier_stmts . structure_qualifier_stmt
   126 structure_qualifier_stmt: . "identifier" ";"
   127                         | . "identifier" typeexpr ";"
 
-    "identifier"        shift, and go to state 152
-    "closing braces }"  shift, and go to state 194
+    "identifier"        shift, and go to state 151
+    "closing braces }"  shift, and go to state 192
 
-    structure_qualifier_stmt  go to state 195
+    structure_qualifier_stmt  go to state 193
 
 
-state 155
+state 154
 
   124 structure_qualifier_stmts: structure_qualifier_stmt .
 
     $default  reduce using rule 124 (structure_qualifier_stmts)
 
 
-state 156
+state 155
 
   135 range_qualifier: range_qualifier_decl "opening paranthesis (" "number constant" . "," "number constant" "closing paranthesis )"
 
-    ","  shift, and go to state 196
+    ","  shift, and go to state 194
 
 
-state 157
+state 156
 
    25 primary_expr: "identifier" .  [MULTIPLICATIVE_OPERATOR, ADDITIVE_OPERATOR, RELATIONAL_OPERATOR, EQUALITY_OPERATOR, AND_OPERATOR, OR_OPERATOR, OPERATOR, "closing paranthesis )", ".", ",", "assignment operator ="]
    58 postfix_expr: "identifier" . "opening paranthesis (" "closing paranthesis )"
@@ -3565,73 +3503,73 @@ state 157
    62 call_arg: "identifier" . ":" expr
 
     "opening paranthesis ("  shift, and go to state 105
-    ":"                      shift, and go to state 197
+    ":"                      shift, and go to state 195
 
     $default  reduce using rule 25 (primary_expr)
 
 
-state 158
+state 157
 
    58 postfix_expr: "identifier" "opening paranthesis (" "closing paranthesis )" .
 
     $default  reduce using rule 58 (postfix_expr)
 
 
-state 159
+state 158
 
    59 postfix_expr: "identifier" "opening paranthesis (" call_args . "closing paranthesis )"
    61 call_args: call_args . "," call_arg
 
-    "closing paranthesis )"  shift, and go to state 198
-    ","                      shift, and go to state 199
+    "closing paranthesis )"  shift, and go to state 196
+    ","                      shift, and go to state 197
 
 
-state 160
+state 159
 
    60 call_args: call_arg .
 
     $default  reduce using rule 60 (call_args)
 
 
-state 161
+state 160
 
    63 call_arg: expr .
 
     $default  reduce using rule 63 (call_arg)
 
 
-state 162
+state 161
 
    84 var_expr: "var keyword" "identifier" typeexpr .
 
     $default  reduce using rule 84 (var_expr)
 
 
-state 163
+state 162
 
    41 if_expr: "if keyword" "opening paranthesis (" expr . "closing paranthesis )" body_expr
    42        | "if keyword" "opening paranthesis (" expr . "closing paranthesis )" body_expr "else keyword" body_expr
 
-    "closing paranthesis )"  shift, and go to state 200
+    "closing paranthesis )"  shift, and go to state 198
 
 
-state 164
+state 163
 
    43 for_expr: "for keyword" "opening paranthesis (" expr . "closing paranthesis )" body_expr
    44         | "for keyword" "opening paranthesis (" expr . ";" expr ";" expr "closing paranthesis )" body_expr
 
-    "closing paranthesis )"  shift, and go to state 201
-    ";"                      shift, and go to state 202
+    "closing paranthesis )"  shift, and go to state 199
+    ";"                      shift, and go to state 200
 
 
-state 165
+state 164
 
    26 primary_expr: "opening paranthesis (" any_expr "closing paranthesis )" .
 
     $default  reduce using rule 26 (primary_expr)
 
 
-state 166
+state 165
 
    25 primary_expr: . "identifier"
    26             | . "opening paranthesis (" any_expr "closing paranthesis )"
@@ -3702,17 +3640,17 @@ state 166
     or_expr              go to state 77
     assignment_expr      go to state 78
     var_expr             go to state 79
-    expr                 go to state 203
+    expr                 go to state 201
 
 
-state 167
+state 166
 
    31 primary_expr: "opening braces {" map_expr_pairs "closing braces }" .
 
     $default  reduce using rule 31 (primary_expr)
 
 
-state 168
+state 167
 
    25 primary_expr: . "identifier"
    26             | . "opening paranthesis (" any_expr "closing paranthesis )"
@@ -3727,26 +3665,26 @@ state 168
    36 ifcase_expr: . "opening braces {" ifcase_expr_conds "closing braces }"
    37            | . "opening braces {" ifcase_expr_conds "," expr "otherwise keyword" "closing braces }"
 
-    "identifier"             shift, and go to state 204
+    "identifier"             shift, and go to state 202
     "number constant"        shift, and go to state 54
     "string constant"        shift, and go to state 55
     "opening paranthesis ("  shift, and go to state 59
     "opening braces {"       shift, and go to state 60
     "opening bracket ["      shift, and go to state 62
 
-    primary_expr   go to state 205
-    map_expr_pair  go to state 206
+    primary_expr   go to state 203
+    map_expr_pair  go to state 204
     ifcase_expr    go to state 64
 
 
-state 169
+state 168
 
    36 ifcase_expr: "opening braces {" ifcase_expr_conds "closing braces }" .
 
     $default  reduce using rule 36 (ifcase_expr)
 
 
-state 170
+state 169
 
    25 primary_expr: . "identifier"
    26             | . "opening paranthesis (" any_expr "closing paranthesis )"
@@ -3808,7 +3746,7 @@ state 170
 
     primary_expr         go to state 63
     ifcase_expr          go to state 64
-    ifcase_expr_cond     go to state 207
+    ifcase_expr_cond     go to state 205
     postfix_expr         go to state 69
     prefix_expr          go to state 70
     any_operator         go to state 71
@@ -3820,10 +3758,10 @@ state 170
     or_expr              go to state 77
     assignment_expr      go to state 78
     var_expr             go to state 79
-    expr                 go to state 208
+    expr                 go to state 206
 
 
-state 171
+state 170
 
    25 primary_expr: . "identifier"
    26             | . "opening paranthesis (" any_expr "closing paranthesis )"
@@ -3894,17 +3832,17 @@ state 171
     or_expr              go to state 77
     assignment_expr      go to state 78
     var_expr             go to state 79
-    expr                 go to state 209
+    expr                 go to state 207
 
 
-state 172
+state 171
 
    30 primary_expr: "opening braces {" expr_list "closing braces }" .
 
     $default  reduce using rule 30 (primary_expr)
 
 
-state 173
+state 172
 
    25 primary_expr: . "identifier"
    26             | . "opening paranthesis (" any_expr "closing paranthesis )"
@@ -3975,35 +3913,35 @@ state 173
     or_expr              go to state 77
     assignment_expr      go to state 78
     var_expr             go to state 79
-    expr                 go to state 210
+    expr                 go to state 208
 
 
-state 174
+state 173
 
    29 primary_expr: "opening bracket [" expr_list "closing bracket ]" .
 
     $default  reduce using rule 29 (primary_expr)
 
 
-state 175
+state 174
 
    55 postfix_expr: postfix_expr "." "identifier" . "opening paranthesis (" "closing paranthesis )"
    56             | postfix_expr "." "identifier" . "opening paranthesis (" call_args "closing paranthesis )"
    57             | postfix_expr "." "identifier" .  [MULTIPLICATIVE_OPERATOR, ADDITIVE_OPERATOR, RELATIONAL_OPERATOR, EQUALITY_OPERATOR, AND_OPERATOR, OR_OPERATOR, OPERATOR, "if keyword", "otherwise keyword", "closing paranthesis )", "closing braces }", "closing bracket ]", ".", ",", ";", "assignment operator ="]
 
-    "opening paranthesis ("  shift, and go to state 211
+    "opening paranthesis ("  shift, and go to state 209
 
     $default  reduce using rule 57 (postfix_expr)
 
 
-state 176
+state 175
 
    71 multiplicative_expr: multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr .
 
     $default  reduce using rule 71 (multiplicative_expr)
 
 
-state 177
+state 176
 
    71 multiplicative_expr: multiplicative_expr . MULTIPLICATIVE_OPERATOR prefix_expr
    73 additive_expr: additive_expr ADDITIVE_OPERATOR multiplicative_expr .  [ADDITIVE_OPERATOR, RELATIONAL_OPERATOR, EQUALITY_OPERATOR, AND_OPERATOR, OR_OPERATOR, "if keyword", "otherwise keyword", "closing paranthesis )", "closing braces }", "closing bracket ]", ",", ";", "assignment operator ="]
@@ -4013,7 +3951,7 @@ state 177
     $default  reduce using rule 73 (additive_expr)
 
 
-state 178
+state 177
 
    73 additive_expr: additive_expr . ADDITIVE_OPERATOR multiplicative_expr
    75 relational_expr: relational_expr RELATIONAL_OPERATOR additive_expr .  [RELATIONAL_OPERATOR, EQUALITY_OPERATOR, AND_OPERATOR, OR_OPERATOR, "if keyword", "otherwise keyword", "closing paranthesis )", "closing braces }", "closing bracket ]", ",", ";", "assignment operator ="]
@@ -4023,7 +3961,7 @@ state 178
     $default  reduce using rule 75 (relational_expr)
 
 
-state 179
+state 178
 
    75 relational_expr: relational_expr . RELATIONAL_OPERATOR additive_expr
    77 equality_expr: equality_expr EQUALITY_OPERATOR relational_expr .  [EQUALITY_OPERATOR, AND_OPERATOR, OR_OPERATOR, "if keyword", "otherwise keyword", "closing paranthesis )", "closing braces }", "closing bracket ]", ",", ";", "assignment operator ="]
@@ -4033,7 +3971,7 @@ state 179
     $default  reduce using rule 77 (equality_expr)
 
 
-state 180
+state 179
 
    77 equality_expr: equality_expr . EQUALITY_OPERATOR relational_expr
    79 and_expr: and_expr AND_OPERATOR equality_expr .  [AND_OPERATOR, OR_OPERATOR, "if keyword", "otherwise keyword", "closing paranthesis )", "closing braces }", "closing bracket ]", ",", ";", "assignment operator ="]
@@ -4043,7 +3981,7 @@ state 180
     $default  reduce using rule 79 (and_expr)
 
 
-state 181
+state 180
 
    79 and_expr: and_expr . AND_OPERATOR equality_expr
    81 or_expr: or_expr OR_OPERATOR and_expr .  [OR_OPERATOR, "if keyword", "otherwise keyword", "closing paranthesis )", "closing braces }", "closing bracket ]", ",", ";", "assignment operator ="]
@@ -4053,7 +3991,7 @@ state 181
     $default  reduce using rule 81 (or_expr)
 
 
-state 182
+state 181
 
    81 or_expr: or_expr . OR_OPERATOR and_expr
    83 assignment_expr: assignment_expr "assignment operator =" or_expr .  ["if keyword", "otherwise keyword", "closing paranthesis )", "closing braces }", "closing bracket ]", ",", ";", "assignment operator ="]
@@ -4063,7 +4001,7 @@ state 182
     $default  reduce using rule 83 (assignment_expr)
 
 
-state 183
+state 182
 
    83 assignment_expr: assignment_expr . "assignment operator =" or_expr
    88 expr: var_expr "assignment operator =" assignment_expr .  ["if keyword", "otherwise keyword", "closing paranthesis )", "closing braces }", "closing bracket ]", ",", ";"]
@@ -4073,56 +4011,49 @@ state 183
     $default  reduce using rule 88 (expr)
 
 
-state 184
+state 183
 
    19 func_args: func_args "," func_arg .
 
     $default  reduce using rule 19 (func_args)
 
 
-state 185
+state 184
 
   129 interface_qualifier: "interface keyword" "opening braces {" interface_qualifier_stmts "closing braces }" .
 
     $default  reduce using rule 129 (interface_qualifier)
 
 
-state 186
+state 185
 
   131 interface_qualifier_stmts: interface_qualifier_stmts interface_qualifier_stmt .
 
     $default  reduce using rule 131 (interface_qualifier_stmts)
 
 
-state 187
+state 186
 
   109 tuple_typeexpr_arg: "identifier" ":" typeexpr .
 
     $default  reduce using rule 109 (tuple_typeexpr_arg)
 
 
-state 188
+state 187
 
   107 tuple_typeexpr_args: tuple_typeexpr_args "," tuple_typeexpr_arg .
 
     $default  reduce using rule 107 (tuple_typeexpr_args)
 
 
-state 189
-
-  106 tuple_typeexpr_args: tuple_typeexpr_arg "," tuple_typeexpr_arg .
-
-    $default  reduce using rule 106 (tuple_typeexpr_args)
-
-
-state 190
+state 188
 
   113 specialized_typeexpr: nonunion_typeexpr "opening bracket [" specialized_typeexpr_specs "closing bracket ]" .
 
     $default  reduce using rule 113 (specialized_typeexpr)
 
 
-state 191
+state 189
 
    95 typeexpr: . nonunion_typeexpr
    96         | . union_typeexpr
@@ -4164,7 +4095,7 @@ state 191
     "nil constant"           shift, and go to state 35
     "opening paranthesis ("  shift, and go to state 36
 
-    typeexpr                       go to state 212
+    typeexpr                       go to state 210
     nonunion_typeexpr              go to state 38
     union_typeexpr                 go to state 39
     union_typeexprs                go to state 40
@@ -4181,42 +4112,42 @@ state 191
     range_qualifier_decl           go to state 51
 
 
-state 192
+state 190
 
   126 structure_qualifier_stmt: "identifier" ";" .
 
     $default  reduce using rule 126 (structure_qualifier_stmt)
 
 
-state 193
+state 191
 
   127 structure_qualifier_stmt: "identifier" typeexpr . ";"
 
-    ";"  shift, and go to state 213
+    ";"  shift, and go to state 211
 
 
-state 194
+state 192
 
   121 structure_qualifier: structure_qualifier_decl "opening braces {" structure_qualifier_stmts "closing braces }" .
 
     $default  reduce using rule 121 (structure_qualifier)
 
 
-state 195
+state 193
 
   125 structure_qualifier_stmts: structure_qualifier_stmts structure_qualifier_stmt .
 
     $default  reduce using rule 125 (structure_qualifier_stmts)
 
 
-state 196
+state 194
 
   135 range_qualifier: range_qualifier_decl "opening paranthesis (" "number constant" "," . "number constant" "closing paranthesis )"
 
-    "number constant"  shift, and go to state 214
+    "number constant"  shift, and go to state 212
 
 
-state 197
+state 195
 
    25 primary_expr: . "identifier"
    26             | . "opening paranthesis (" any_expr "closing paranthesis )"
@@ -4287,17 +4218,17 @@ state 197
     or_expr              go to state 77
     assignment_expr      go to state 78
     var_expr             go to state 79
-    expr                 go to state 215
+    expr                 go to state 213
 
 
-state 198
+state 196
 
    59 postfix_expr: "identifier" "opening paranthesis (" call_args "closing paranthesis )" .
 
     $default  reduce using rule 59 (postfix_expr)
 
 
-state 199
+state 197
 
    25 primary_expr: . "identifier"
    26             | . "opening paranthesis (" any_expr "closing paranthesis )"
@@ -4345,7 +4276,7 @@ state 199
    87     | . var_expr
    88     | . var_expr "assignment operator =" assignment_expr
 
-    "identifier"             shift, and go to state 157
+    "identifier"             shift, and go to state 156
     "number constant"        shift, and go to state 54
     "string constant"        shift, and go to state 55
     MULTIPLICATIVE_OPERATOR  shift, and go to state 12
@@ -4360,7 +4291,7 @@ state 199
     primary_expr         go to state 63
     ifcase_expr          go to state 64
     postfix_expr         go to state 69
-    call_arg             go to state 216
+    call_arg             go to state 214
     prefix_expr          go to state 70
     any_operator         go to state 71
     multiplicative_expr  go to state 72
@@ -4371,10 +4302,10 @@ state 199
     or_expr              go to state 77
     assignment_expr      go to state 78
     var_expr             go to state 79
-    expr                 go to state 161
+    expr                 go to state 160
 
 
-state 200
+state 198
 
    25 primary_expr: . "identifier"
    26             | . "opening paranthesis (" any_expr "closing paranthesis )"
@@ -4439,7 +4370,7 @@ state 200
 
     primary_expr         go to state 63
     ifcase_expr          go to state 64
-    body_expr            go to state 217
+    body_expr            go to state 215
     block_expr           go to state 84
     postfix_expr         go to state 69
     prefix_expr          go to state 70
@@ -4455,7 +4386,7 @@ state 200
     expr                 go to state 85
 
 
-state 201
+state 199
 
    25 primary_expr: . "identifier"
    26             | . "opening paranthesis (" any_expr "closing paranthesis )"
@@ -4519,7 +4450,7 @@ state 201
 
     primary_expr         go to state 63
     ifcase_expr          go to state 64
-    body_expr            go to state 218
+    body_expr            go to state 216
     block_expr           go to state 84
     postfix_expr         go to state 69
     prefix_expr          go to state 70
@@ -4535,7 +4466,7 @@ state 201
     expr                 go to state 85
 
 
-state 202
+state 200
 
    25 primary_expr: . "identifier"
    26             | . "opening paranthesis (" any_expr "closing paranthesis )"
@@ -4606,68 +4537,68 @@ state 202
     or_expr              go to state 77
     assignment_expr      go to state 78
     var_expr             go to state 79
-    expr                 go to state 219
+    expr                 go to state 217
 
 
-state 203
+state 201
 
    35 map_expr_pair: primary_expr ":" expr .
 
     $default  reduce using rule 35 (map_expr_pair)
 
 
-state 204
+state 202
 
    25 primary_expr: "identifier" .
 
     $default  reduce using rule 25 (primary_expr)
 
 
-state 205
+state 203
 
    35 map_expr_pair: primary_expr . ":" expr
 
-    ":"  shift, and go to state 166
+    ":"  shift, and go to state 165
 
 
-state 206
+state 204
 
    34 map_expr_pairs: map_expr_pairs "," map_expr_pair .
 
     $default  reduce using rule 34 (map_expr_pairs)
 
 
-state 207
+state 205
 
    39 ifcase_expr_conds: ifcase_expr_conds "," ifcase_expr_cond .
 
     $default  reduce using rule 39 (ifcase_expr_conds)
 
 
-state 208
+state 206
 
    37 ifcase_expr: "opening braces {" ifcase_expr_conds "," expr . "otherwise keyword" "closing braces }"
    40 ifcase_expr_cond: expr . "if keyword" expr
 
-    "if keyword"         shift, and go to state 171
-    "otherwise keyword"  shift, and go to state 220
+    "if keyword"         shift, and go to state 170
+    "otherwise keyword"  shift, and go to state 218
 
 
-state 209
+state 207
 
    40 ifcase_expr_cond: expr "if keyword" expr .
 
     $default  reduce using rule 40 (ifcase_expr_cond)
 
 
-state 210
+state 208
 
    94 expr_list: expr_list "," expr .
 
     $default  reduce using rule 94 (expr_list)
 
 
-state 211
+state 209
 
    25 primary_expr: . "identifier"
    26             | . "opening paranthesis (" any_expr "closing paranthesis )"
@@ -4718,7 +4649,7 @@ state 211
    87     | . var_expr
    88     | . var_expr "assignment operator =" assignment_expr
 
-    "identifier"             shift, and go to state 157
+    "identifier"             shift, and go to state 156
     "number constant"        shift, and go to state 54
     "string constant"        shift, and go to state 55
     MULTIPLICATIVE_OPERATOR  shift, and go to state 12
@@ -4727,15 +4658,15 @@ state 211
     OPERATOR                 shift, and go to state 15
     "var keyword"            shift, and go to state 56
     "opening paranthesis ("  shift, and go to state 59
-    "closing paranthesis )"  shift, and go to state 221
+    "closing paranthesis )"  shift, and go to state 219
     "opening braces {"       shift, and go to state 60
     "opening bracket ["      shift, and go to state 62
 
     primary_expr         go to state 63
     ifcase_expr          go to state 64
     postfix_expr         go to state 69
-    call_args            go to state 222
-    call_arg             go to state 160
+    call_args            go to state 220
+    call_arg             go to state 159
     prefix_expr          go to state 70
     any_operator         go to state 71
     multiplicative_expr  go to state 72
@@ -4746,99 +4677,99 @@ state 211
     or_expr              go to state 77
     assignment_expr      go to state 78
     var_expr             go to state 79
-    expr                 go to state 161
+    expr                 go to state 160
 
 
-state 212
+state 210
 
   115 specialized_typeexpr_specs: specialized_typeexpr_specs "," typeexpr .
 
     $default  reduce using rule 115 (specialized_typeexpr_specs)
 
 
-state 213
+state 211
 
   127 structure_qualifier_stmt: "identifier" typeexpr ";" .
 
     $default  reduce using rule 127 (structure_qualifier_stmt)
 
 
-state 214
+state 212
 
   135 range_qualifier: range_qualifier_decl "opening paranthesis (" "number constant" "," "number constant" . "closing paranthesis )"
 
-    "closing paranthesis )"  shift, and go to state 223
+    "closing paranthesis )"  shift, and go to state 221
 
 
-state 215
+state 213
 
    62 call_arg: "identifier" ":" expr .
 
     $default  reduce using rule 62 (call_arg)
 
 
-state 216
+state 214
 
    61 call_args: call_args "," call_arg .
 
     $default  reduce using rule 61 (call_args)
 
 
-state 217
+state 215
 
    41 if_expr: "if keyword" "opening paranthesis (" expr "closing paranthesis )" body_expr .  ["identifier", "number constant", "string constant", MULTIPLICATIVE_OPERATOR, ADDITIVE_OPERATOR, RELATIONAL_OPERATOR, OPERATOR, "var keyword", "if keyword", "for keyword", "opening paranthesis (", "closing paranthesis )", "opening braces {", "closing braces }", "opening bracket ["]
    42        | "if keyword" "opening paranthesis (" expr "closing paranthesis )" body_expr . "else keyword" body_expr
 
-    "else keyword"  shift, and go to state 224
+    "else keyword"  shift, and go to state 222
 
     $default  reduce using rule 41 (if_expr)
 
 
-state 218
+state 216
 
    43 for_expr: "for keyword" "opening paranthesis (" expr "closing paranthesis )" body_expr .
 
     $default  reduce using rule 43 (for_expr)
 
 
-state 219
+state 217
 
    44 for_expr: "for keyword" "opening paranthesis (" expr ";" expr . ";" expr "closing paranthesis )" body_expr
 
-    ";"  shift, and go to state 225
+    ";"  shift, and go to state 223
 
 
-state 220
+state 218
 
    37 ifcase_expr: "opening braces {" ifcase_expr_conds "," expr "otherwise keyword" . "closing braces }"
 
-    "closing braces }"  shift, and go to state 226
+    "closing braces }"  shift, and go to state 224
 
 
-state 221
+state 219
 
    55 postfix_expr: postfix_expr "." "identifier" "opening paranthesis (" "closing paranthesis )" .
 
     $default  reduce using rule 55 (postfix_expr)
 
 
-state 222
+state 220
 
    56 postfix_expr: postfix_expr "." "identifier" "opening paranthesis (" call_args . "closing paranthesis )"
    61 call_args: call_args . "," call_arg
 
-    "closing paranthesis )"  shift, and go to state 227
-    ","                      shift, and go to state 199
+    "closing paranthesis )"  shift, and go to state 225
+    ","                      shift, and go to state 197
 
 
-state 223
+state 221
 
   135 range_qualifier: range_qualifier_decl "opening paranthesis (" "number constant" "," "number constant" "closing paranthesis )" .
 
     $default  reduce using rule 135 (range_qualifier)
 
 
-state 224
+state 222
 
    25 primary_expr: . "identifier"
    26             | . "opening paranthesis (" any_expr "closing paranthesis )"
@@ -4902,7 +4833,7 @@ state 224
 
     primary_expr         go to state 63
     ifcase_expr          go to state 64
-    body_expr            go to state 228
+    body_expr            go to state 226
     block_expr           go to state 84
     postfix_expr         go to state 69
     prefix_expr          go to state 70
@@ -4918,7 +4849,7 @@ state 224
     expr                 go to state 85
 
 
-state 225
+state 223
 
    25 primary_expr: . "identifier"
    26             | . "opening paranthesis (" any_expr "closing paranthesis )"
@@ -4989,38 +4920,38 @@ state 225
     or_expr              go to state 77
     assignment_expr      go to state 78
     var_expr             go to state 79
-    expr                 go to state 229
+    expr                 go to state 227
 
 
-state 226
+state 224
 
    37 ifcase_expr: "opening braces {" ifcase_expr_conds "," expr "otherwise keyword" "closing braces }" .
 
     $default  reduce using rule 37 (ifcase_expr)
 
 
-state 227
+state 225
 
    56 postfix_expr: postfix_expr "." "identifier" "opening paranthesis (" call_args "closing paranthesis )" .
 
     $default  reduce using rule 56 (postfix_expr)
 
 
-state 228
+state 226
 
    42 if_expr: "if keyword" "opening paranthesis (" expr "closing paranthesis )" body_expr "else keyword" body_expr .
 
     $default  reduce using rule 42 (if_expr)
 
 
-state 229
+state 227
 
    44 for_expr: "for keyword" "opening paranthesis (" expr ";" expr ";" expr . "closing paranthesis )" body_expr
 
-    "closing paranthesis )"  shift, and go to state 230
+    "closing paranthesis )"  shift, and go to state 228
 
 
-state 230
+state 228
 
    25 primary_expr: . "identifier"
    26             | . "opening paranthesis (" any_expr "closing paranthesis )"
@@ -5084,7 +5015,7 @@ state 230
 
     primary_expr         go to state 63
     ifcase_expr          go to state 64
-    body_expr            go to state 231
+    body_expr            go to state 229
     block_expr           go to state 84
     postfix_expr         go to state 69
     prefix_expr          go to state 70
@@ -5100,7 +5031,7 @@ state 230
     expr                 go to state 85
 
 
-state 231
+state 229
 
    44 for_expr: "for keyword" "opening paranthesis (" expr ";" expr ";" expr "closing paranthesis )" body_expr .
 

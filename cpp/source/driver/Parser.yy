@@ -685,10 +685,9 @@ tuple_typeexpr
   ;
 
 tuple_typeexpr_args
-  : tuple_typeexpr_arg COMMA tuple_typeexpr_arg {
+  : tuple_typeexpr_arg {
       $$ = new Nodes;
       $$->push_back(NodePtr($1));
-      $$->push_back(NodePtr($3));
     }
   | tuple_typeexpr_args COMMA tuple_typeexpr_arg {
       $1->push_back(NodePtr($3));

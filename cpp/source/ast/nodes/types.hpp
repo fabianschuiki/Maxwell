@@ -14,6 +14,7 @@ typedef enum {
 	kCallCandidateArg,
 	kCallExpr,
 	kCallExprArg,
+	kCastType,
 	kDefinedType,
 	kForExpr,
 	kFuncArg,

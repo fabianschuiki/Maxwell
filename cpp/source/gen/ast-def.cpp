@@ -8,7 +8,7 @@
 void buildAST(Builder &node)
 {
 	// Groups
-	node.groups["type"] = "GenericType|InvalidType|NilType|DefinedType|UnionType|TupleType|FuncType|TypeSet|QualifiedType|SpecializedType|UnionMappedType|OneTupleMappedType";
+	node.groups["type"] = "GenericType|InvalidType|NilType|DefinedType|UnionType|TupleType|FuncType|TypeSet|QualifiedType|SpecializedType|UnionMappedType|OneTupleMappedType|CastType";
 	node.groups["typeExpr"] = "NamedTypeExpr|NilTypeExpr|UnionTypeExpr|TupleTypeExpr|QualifiedTypeExpr|SpecializedTypeExpr";
 	node.groups["qualifier"] = "StructureQualifier|InterfaceQualifier|NativeQualifier|RangeQualifier";
 
@@ -54,10 +54,10 @@ void buildAST(Builder &node)
 		.child("args", "[CallCandidateArg]")
 		.attr("feasible", "bool")
 		.attr("cost", "int")
-		.intf(type);
+		.intf(type).intf(graph);
 	node("CallCandidateArg")
 		.attr("arg", "&@CallArg")
-		.intf(type);
+		.intf(type).intf(graph);
 
 	// Nodes
 	node("FuncDef")
@@ -283,4 +283,9 @@ void buildAST(Builder &node)
 	node("OneTupleMappedType")
 		.child("tuple", "#type")
 		.describe("str << tuple->describe(depth-1) << \".0\";");
+	node("CastType")
+		.child("func", "&@Callable")
+		.child("in", "#type")
+		.child("out", "#type")
+		.describe("str << out->describe(depth-1) << '(' << func.id << '|' << in->describe(depth-1) << ')';");
 }

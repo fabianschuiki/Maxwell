@@ -20,7 +20,7 @@ void BindNamedTypes::process(const NodePtr& node)
 			return;
 
 		// Traverse graph looking for a type with this name.
-		NodePtr current(type->asGraph()->getGraphPrev());
+		NodePtr current(type->needGraph()->getGraphPrev());
 		NodeId target;
 		const string& name = type->getName();
 		while (current) {
@@ -30,7 +30,7 @@ void BindNamedTypes::process(const NodePtr& node)
 					break;
 				}
 			}
-			current = current->asGraph()->getGraphPrev(false);
+			current = current->needGraph()->getGraphPrev(false);
 		}
 
 		// Find an external type if nothing has been found yet.

@@ -41,10 +41,11 @@ void FindCallCandidates::process(const NodePtr& node)
 			println(0, "Wrapping candidate " + funcNode->getId().str(), funcNode);
 
 			// Create the candidate object to hold the function.
-			shared_ptr<CallCandidate> candidate(new CallCandidate);
+			CallCandidate::Ptr candidate(new CallCandidate);
 			candidate->setFunc(funcNode);
 			candidate->setFeasible(true);
 			candidate->setCost(0);
+			candidate->setGraphPrev(node);
 
 			// Wrap the input arguments into pairing nodes.
 			const NodeVector& callArgs = intf->getCallArgs();
@@ -53,8 +54,9 @@ void FindCallCandidates::process(const NodePtr& node)
 			for (NodeVector::const_iterator it = callArgs.begin(); it != callArgs.end(); it++) {
 				const NodePtr& arg = *it;
 				println(1, "  argument " + arg->getId().str(), funcNode);
-				shared_ptr<CallCandidateArg> cca(new CallCandidateArg);
+				CallCandidateArg::Ptr cca(new CallCandidateArg);
 				cca->setArg(arg);
+				cca->setGraphPrev(candidate);
 				args.push_back(cca);
 			}
 

@@ -11,6 +11,7 @@
 #include "CallCandidateArg.hpp"
 #include "CallExpr.hpp"
 #include "CallExprArg.hpp"
+#include "CastType.hpp"
 #include "DefinedType.hpp"
 #include "ForExpr.hpp"
 #include "FuncArg.hpp"
@@ -94,32 +95,40 @@ public:
 					if (size == 9) return NodePtr(new BlockExpr);
 				}
 			}
-			// Call.*
-			if (size >= 4 && name[0] == 'C' && name[1] == 'a' && name[2] == 'l' && name[3] == 'l') {
-				// CallArg.*
-				if (size >= 7 && name[4] == 'A' && name[5] == 'r' && name[6] == 'g') {
-					// CallArg
-					if (size == 7) return NodePtr(new CallArg);
-				}
-				// CallCandidate.*
-				if (size >= 13 && name[4] == 'C' && name[5] == 'a' && name[6] == 'n' && name[7] == 'd' && name[8] == 'i' && name[9] == 'd' && name[10] == 'a' && name[11] == 't' && name[12] == 'e') {
-					// CallCandidate
-					if (size == 13) return NodePtr(new CallCandidate);
-					// CallCandidateArg.*
-					if (size >= 16 && name[13] == 'A' && name[14] == 'r' && name[15] == 'g') {
-						// CallCandidateArg
-						if (size == 16) return NodePtr(new CallCandidateArg);
+			// Ca.*
+			if (size >= 2 && name[0] == 'C' && name[1] == 'a') {
+				// Call.*
+				if (size >= 4 && name[2] == 'l' && name[3] == 'l') {
+					// CallArg.*
+					if (size >= 7 && name[4] == 'A' && name[5] == 'r' && name[6] == 'g') {
+						// CallArg
+						if (size == 7) return NodePtr(new CallArg);
+					}
+					// CallCandidate.*
+					if (size >= 13 && name[4] == 'C' && name[5] == 'a' && name[6] == 'n' && name[7] == 'd' && name[8] == 'i' && name[9] == 'd' && name[10] == 'a' && name[11] == 't' && name[12] == 'e') {
+						// CallCandidate
+						if (size == 13) return NodePtr(new CallCandidate);
+						// CallCandidateArg.*
+						if (size >= 16 && name[13] == 'A' && name[14] == 'r' && name[15] == 'g') {
+							// CallCandidateArg
+							if (size == 16) return NodePtr(new CallCandidateArg);
+						}
+					}
+					// CallExpr.*
+					if (size >= 8 && name[4] == 'E' && name[5] == 'x' && name[6] == 'p' && name[7] == 'r') {
+						// CallExpr
+						if (size == 8) return NodePtr(new CallExpr);
+						// CallExprArg.*
+						if (size >= 11 && name[8] == 'A' && name[9] == 'r' && name[10] == 'g') {
+							// CallExprArg
+							if (size == 11) return NodePtr(new CallExprArg);
+						}
 					}
 				}
-				// CallExpr.*
-				if (size >= 8 && name[4] == 'E' && name[5] == 'x' && name[6] == 'p' && name[7] == 'r') {
-					// CallExpr
-					if (size == 8) return NodePtr(new CallExpr);
-					// CallExprArg.*
-					if (size >= 11 && name[8] == 'A' && name[9] == 'r' && name[10] == 'g') {
-						// CallExprArg
-						if (size == 11) return NodePtr(new CallExprArg);
-					}
+				// CastType.*
+				if (size >= 8 && name[2] == 's' && name[3] == 't' && name[4] == 'T' && name[5] == 'y' && name[6] == 'p' && name[7] == 'e') {
+					// CastType
+					if (size == 8) return NodePtr(new CastType);
 				}
 			}
 			// DefinedType.*

@@ -17,15 +17,15 @@ using std::stringstream;
 using std::endl;
 using std::runtime_error;
 
-class FuncType : public Node
+class CastType : public Node
 {
 public:
-	FuncType() : Node() {}
+	CastType() : Node() {}
 
 	virtual bool isKindOf(Kind k)
 	{
 		if (Node::isKindOf(k)) return true;
-		return k == kFuncType;
+		return k == kCastType;
 	}
 
 	virtual bool implements(Interface i)
@@ -34,7 +34,37 @@ public:
 		return false;
 	}
 
-	virtual string getClassName() const { return "FuncType"; }
+	virtual string getClassName() const { return "CastType"; }
+
+	void setFunc(const NodePtr& v)
+	{
+		if (v && !v->implements(kCallableInterface)) {
+			throw runtime_error("'func' of " + id.str() + " needs to be of kind {} or implement interface {Callable}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
+		}
+		if (!v && func) {
+			modify("func");
+			func.reset();
+		}
+		if (!func || v->getId() != func.id) {
+			modify("func");
+			func.set(v);
+		}
+	}
+	void setFunc(const NodeId& v)
+	{
+		if (v != func.id) {
+			modify("func");
+			func.set(v);
+		}
+	}
+	const NodePtr& getFunc(bool required = true)
+	{
+		const NodePtr& v = func.get(repository);
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have func set to a non-null value.");
+		}
+		return v;
+	}
 
 	void setIn(const NodePtr& v)
 	{
@@ -77,18 +107,20 @@ public:
 	virtual string describe(int depth = -1)
 	{
 		stringstream str, b;
-		str << in->describe(depth-1) << "->" << out->describe(depth-1);
+		str << out->describe(depth-1) << '(' << func.id << '|' << in->describe(depth-1) << ')';
 		return str.str();
 	}
 
 	virtual void encode(Encoder& e)
 	{
+		e.encode(this->func);
 		e.encode(this->in);
 		e.encode(this->out);
 	}
 
 	virtual void decode(Decoder& d)
 	{
+		d.decode(this->func);
 		d.decode(this->in);
 		d.decode(this->out);
 	}
@@ -104,6 +136,15 @@ public:
 		size_t size = path.size();
 		// .*
 		if (true) {
+			// func.*
+			if (size >= 4 && path[0] == 'f' && path[1] == 'u' && path[2] == 'n' && path[3] == 'c') {
+				// func
+				if (size == 4) {
+					return getFunc();
+				} else if (path[4] == '.') {
+					return getFunc()->resolvePath(path.substr(5));
+				}
+			}
 			// in.*
 			if (size >= 2 && path[0] == 'i' && path[1] == 'n') {
 				// in
@@ -129,6 +170,7 @@ public:
 	virtual NodeVector getChildren()
 	{
 		NodeVector v;
+		if (const NodePtr& n = this->getFunc(false)) v.push_back(n);
 		if (const NodePtr& n = this->getIn(false)) v.push_back(n);
 		if (const NodePtr& n = this->getOut(false)) v.push_back(n);
 		return v;
@@ -136,17 +178,19 @@ public:
 
 	virtual bool equalTo(const NodePtr& o)
 	{
-		const shared_ptr<FuncType>& other = boost::dynamic_pointer_cast<FuncType>(o);
+		const shared_ptr<CastType>& other = boost::dynamic_pointer_cast<CastType>(o);
 		if (!other) return false;
+		if (!equal(this->func, other->func)) return false;
 		if (!equal(this->in, other->in)) return false;
 		if (!equal(this->out, other->out)) return false;
 		return true;
 	}
 
-	typedef boost::shared_ptr<FuncType> Ptr;
-	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<FuncType>(n); }
-	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<FuncType>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to FuncType."); return r; }
+	typedef boost::shared_ptr<CastType> Ptr;
+	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<CastType>(n); }
+	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<CastType>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to CastType."); return r; }
 protected:
+	NodeRef func;
 	NodePtr in;
 	NodePtr out;
 };

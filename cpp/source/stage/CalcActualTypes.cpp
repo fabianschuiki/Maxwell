@@ -2,9 +2,11 @@
 #include "stages.hpp"
 #include "algorithm/type.hpp"
 #include <iostream>
+#include <boost/lexical_cast.hpp>
 
 using namespace ast;
 using stage::CalcActualTypes;
+using boost::lexical_cast;
 
 void CalcActualTypes::process(const NodePtr& node)
 {
@@ -84,6 +86,64 @@ NodePtr CalcActualTypes::match(const NodePtr& possible, const NodePtr& required,
 	// Otherwise simply try to go with a regular cast.
 	if (actual->isKindOf(kInvalidType)) {
 		println(1, "Trying to cast from " + possible->describe() + " to " + required->describe(), node);
+
+		// Assemble a list of available cast functions.
+		NodePtr current(node->needGraph()->getGraphPrev());
+
+		set<NodeId> castIds;
+		while (current) {
+			if (const FuncDef::Ptr& def = FuncDef::from(current)) {
+				if (def->getName() == "cast") {
+					castIds.insert(def->getId());
+				}
+			}
+			current = current->asGraph()->getGraphPrev(false);
+		}
+
+		const Repository::ExternalNames& externals = repository.getExternalNamesForNodeId(node->getId());
+		for (Repository::ExternalNames::const_iterator it = externals.begin(); it != externals.end(); it++) {
+			if (it->second == "cast") {
+				castIds.insert(it->first);
+			}
+		}
+
+		// Filter the list of casts such that only the type-compatible ones remain.
+		vector<CastType::Ptr> casts;
+		for (set<NodeId>::iterator it = castIds.begin(); it != castIds.end(); it++) {
+
+			// Lookup the cast function and find the input and output types.
+			const FuncDef::Ptr& func = FuncDef::needFrom(repository.getNode(*it));
+			const FuncType::Ptr& funcType = FuncType::needFrom(func->getType());
+			const TupleType::Ptr& inTupleType = TupleType::from(funcType->getIn());
+			const TupleType::Ptr& outTupleType = TupleType::from(funcType->getOut());
+
+			if (!inTupleType || !outTupleType) continue; // ignore non-tuple types
+			if (inTupleType->getArgs().size() != 1 || outTupleType->getArgs().size() != 1)
+				continue; // ignore casts that have more or less than 1 input/output
+
+			const NodePtr& inType = TupleTypeArg::needFrom(inTupleType->getArgs().front())->getType();
+			const NodePtr& outType = TupleTypeArg::needFrom(outTupleType->getArgs().front())->getType();
+
+			// Find the intersection between the possible and input, and the required and output type.
+			NodePtr inPossible = algorithm::type::intersect(possible, inType);
+			NodePtr outRequired = algorithm::type::intersect(required, outType);
+
+			// If the cast is possible, i.e. none of the types is the InvalidType, keep the cast around.
+			if (!inPossible->isKindOf(kInvalidType) && !outRequired->isKindOf(kInvalidType)) {
+				CastType::Ptr c(new CastType);
+				c->setIn(inPossible);
+				c->setOut(outRequired);
+				c->setFunc(func);
+				casts.push_back(c);
+			}
+		}
+
+		// Pick one of the casts found.
+		if (casts.size() == 1) {
+			actual = casts.front();
+		} else if (casts.size() > 1) {
+			throw std::runtime_error(lexical_cast<string>(casts.size()) + " casts viable from " + possible->describe() + " to " + required->describe() + ".");
+		}
 	}
 
 	// In case the possible type is a 1-tuple and the required type is not, try
@@ -101,8 +161,8 @@ NodePtr CalcActualTypes::match(const NodePtr& possible, const NodePtr& required,
 	}
 
 	// Complain if the conversion was not possible.
-	if (actual->isKindOf(kInvalidType)) {
-		throw std::runtime_error("Unable to find satisfy " + possible->describe() + " and " + required->describe() + " at the same time.");
-	}
+	// if (actual->isKindOf(kInvalidType)) {
+	// 	throw std::runtime_error("Unable to find satisfy " + possible->describe() + " and " + required->describe() + " at the same time.");
+	// }
 	return actual;
 }

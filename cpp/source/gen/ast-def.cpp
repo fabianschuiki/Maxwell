@@ -287,5 +287,5 @@ void buildAST(Builder &node)
 		.child("func", "&@Callable")
 		.child("in", "#type")
 		.child("out", "#type")
-		.describe("str << out->describe(depth-1) << '(' << func.id << '|' << in->describe(depth-1) << ')';");
+		.describe("str << out->describe(depth-1) << '(' << func.id << '<' << in->describe(depth-1) << ')';");
 }

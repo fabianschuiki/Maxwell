@@ -107,7 +107,7 @@ public:
 	virtual string describe(int depth = -1)
 	{
 		stringstream str, b;
-		str << out->describe(depth-1) << '(' << func.id << '|' << in->describe(depth-1) << ')';
+		str << out->describe(depth-1) << '(' << func.id << '<' << in->describe(depth-1) << ')';
 		return str.str();
 	}
 

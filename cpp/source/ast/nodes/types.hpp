@@ -40,6 +40,7 @@ typedef enum {
 	kQualifiedType,
 	kQualifiedTypeExpr,
 	kQualifiedTypeMember,
+	kQualifiedTypeNative,
 	kRangeQualifier,
 	kSetConstExpr,
 	kSpecializedType,

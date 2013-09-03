@@ -96,7 +96,7 @@ symbol              {additive_op}|{multiplicative_op}|{relational_op}|{equality_
  /* Constants */
 "nil"        return token::NIL;
 [a-zA-Z_][a-zA-Z0-9_!?=]*  storeToken; return token::IDENTIFIER;
-[0-9]+("."[0-9]*)?         storeToken; return token::NUMBER;
+"-"?[0-9]+("."[0-9]*)?         storeToken; return token::NUMBER;
 
  /* Punctuation */
 "("  return token::LPAREN;

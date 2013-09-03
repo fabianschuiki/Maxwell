@@ -259,11 +259,15 @@ void buildAST(Builder &node)
 	node("QualifiedType")
 		.child("members", "[QualifiedTypeMember]")
 		.child("funcs", "[any]")
-		.child("natives", "[any]")
+		.child("natives", "[QualifiedTypeNative]")
 		.child("ranges", "[any]");
 	node("QualifiedTypeMember")
 		.attr("name", "string")
-		.child("type", "#type");
+		.child("type", "#type")
+		.describe("str << name << \": \" << type->describe(depth-1);");
+	node("QualifiedTypeNative")
+		.attr("name", "string")
+		.describe("str << \"native \" << name;");
 	node("SpecializedType")
 		.child("type", "#type")
 		.child("specs", "[#type]")

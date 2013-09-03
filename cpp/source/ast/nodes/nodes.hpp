@@ -37,6 +37,7 @@
 #include "QualifiedType.hpp"
 #include "QualifiedTypeExpr.hpp"
 #include "QualifiedTypeMember.hpp"
+#include "QualifiedTypeNative.hpp"
 #include "RangeQualifier.hpp"
 #include "SetConstExpr.hpp"
 #include "SpecializedType.hpp"
@@ -278,6 +279,11 @@ public:
 				if (size >= 19 && name[13] == 'M' && name[14] == 'e' && name[15] == 'm' && name[16] == 'b' && name[17] == 'e' && name[18] == 'r') {
 					// QualifiedTypeMember
 					if (size == 19) return NodePtr(new QualifiedTypeMember);
+				}
+				// QualifiedTypeNative.*
+				if (size >= 19 && name[13] == 'N' && name[14] == 'a' && name[15] == 't' && name[16] == 'i' && name[17] == 'v' && name[18] == 'e') {
+					// QualifiedTypeNative
+					if (size == 19) return NodePtr(new QualifiedTypeNative);
 				}
 			}
 			// RangeQualifier.*

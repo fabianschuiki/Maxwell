@@ -72,7 +72,9 @@ void EvalTypeExprs::process(const NodePtr& node)
 					// TODO: Ignored for now...
 				}
 				else if (const NativeQualifier::Ptr& quali = NativeQualifier::from(*it)) {
-					// TODO: Ignored for now...
+					QualifiedTypeNative::Ptr qtn(new QualifiedTypeNative);
+					qtn->setName(quali->getName());
+					typeNatives.push_back(qtn);
 				}
 				else if (const RangeQualifier::Ptr& quali = RangeQualifier::from(*it)) {
 					// TODO: Ignored for now...

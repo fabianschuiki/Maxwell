@@ -228,7 +228,7 @@ bool equal(const NodePtr& a, const NodePtr& b)
 	// Treat combinations of defined types.
 	DefinedType::Ptr defTypeA = DefinedType::from(a), defTypeB = DefinedType::from(b);
 	if (defTypeA && defTypeB)
-		return equal(defTypeA, defTypeB);
+		return equal(defTypeA, defTypeB) || equal(defTypeA->getDefinition(), defTypeB->getDefinition());
 	if (defTypeA && !defTypeB)
 		return equal(defTypeA->getDefinition(), b);
 	if (!defTypeA && defTypeB)

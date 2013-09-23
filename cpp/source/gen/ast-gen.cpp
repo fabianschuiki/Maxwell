@@ -449,7 +449,7 @@ int main(int argc, char *argv[])
 		h << "#include \"../Coder.hpp\"\n";
 		h << "#include \"interfaces.hpp\"\n";
 		if (node.parent != "Node") h << "#include \"" << node.parent << ".hpp\"\n";
-		h << "#include <vector>\n#include <string>\n#include <sstream>\n#include <boost/smart_ptr.hpp>\n#include <stdexcept>\n\n";
+		h << "#include <vector>\n#include <string>\n#include <sstream>\n#include <boost/smart_ptr.hpp>\n#include <stdexcept>\n#include <cstdio>\n\n";
 		h << "namespace ast {\n\n";
 		h << "using std::vector;\nusing std::string;\nusing std::stringstream;\nusing std::endl;\nusing std::runtime_error;\n\n";
 		h << "class " << name << " : public Node\n{\npublic:\n";

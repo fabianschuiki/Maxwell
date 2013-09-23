@@ -1,6 +1,6 @@
-#line 2 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
+#line 2 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.cpp"
 
-#line 4 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
+#line 4 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -72,7 +72,6 @@ typedef int16_t flex_int16_t;
 typedef uint16_t flex_uint16_t;
 typedef int32_t flex_int32_t;
 typedef uint32_t flex_uint32_t;
-typedef uint64_t flex_uint64_t;
 #else
 typedef signed char flex_int8_t;
 typedef short int flex_int16_t;
@@ -80,7 +79,6 @@ typedef int flex_int32_t;
 typedef unsigned char flex_uint8_t; 
 typedef unsigned short int flex_uint16_t;
 typedef unsigned int flex_uint32_t;
-#endif /* ! C99 */
 
 /* Limits of integral types. */
 #ifndef INT8_MIN
@@ -111,6 +109,8 @@ typedef unsigned int flex_uint32_t;
 #define UINT32_MAX             (4294967295U)
 #endif
 
+#endif /* ! C99 */
+
 #endif /* ! FLEXINT_H */
 
 /* %endif */
@@ -120,6 +120,7 @@ typedef unsigned int flex_uint32_t;
 #include <iostream> 
 #include <errno.h>
 #include <cstdlib>
+#include <cstdio>
 #include <cstring>
 /* end standard C++ headers. */
 /* %endif */
@@ -191,7 +192,15 @@ typedef unsigned int flex_uint32_t;
 
 /* Size of default input buffer. */
 #ifndef YY_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k.
+ * Moreover, YY_BUF_SIZE is 2*YY_READ_BUF_SIZE in the general case.
+ * Ditto for the __ia64__ case accordingly.
+ */
+#define YY_BUF_SIZE 32768
+#else
 #define YY_BUF_SIZE 16384
+#endif /* __ia64__ */
 #endif
 
 /* The state buf must be large enough to hold one state per character in the main buffer.
@@ -203,13 +212,8 @@ typedef unsigned int flex_uint32_t;
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
 #endif
 
-#ifndef YY_TYPEDEF_YY_SIZE_T
-#define YY_TYPEDEF_YY_SIZE_T
-typedef size_t yy_size_t;
-#endif
-
 /* %if-not-reentrant */
-extern yy_size_t yyleng;
+extern int yyleng;
 /* %endif */
 
 /* %if-c-only */
@@ -239,6 +243,11 @@ extern yy_size_t yyleng;
 
 #define unput(c) yyunput( c, (yytext_ptr)  )
 
+#ifndef YY_TYPEDEF_YY_SIZE_T
+#define YY_TYPEDEF_YY_SIZE_T
+typedef size_t yy_size_t;
+#endif
+
 #ifndef YY_STRUCT_YY_BUFFER_STATE
 #define YY_STRUCT_YY_BUFFER_STATE
 struct yy_buffer_state
@@ -261,7 +270,7 @@ struct yy_buffer_state
 	/* Number of characters read into yy_ch_buf, not including EOB
 	 * characters.
 	 */
-	yy_size_t yy_n_chars;
+	int yy_n_chars;
 
 	/* Whether we "own" the buffer - i.e., we know we created it,
 	 * and can realloc() it to grow it, and should free() it to
@@ -390,7 +399,7 @@ typedef unsigned char YY_CHAR;
 #define YY_DO_BEFORE_ACTION \
 	(yytext_ptr) = yy_bp; \
 /* %% [2.0] code to fiddle yytext and yyleng for yymore() goes here \ */\
-	yyleng = (yy_size_t) (yy_cp - yy_bp); \
+	yyleng = (size_t) (yy_cp - yy_bp); \
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 /* %% [3.0] code to copy yytext_ptr to yytext[] goes here, if %array \ */\
@@ -662,11 +671,11 @@ static yyconst flex_int16_t yy_chk[555] =
 
 static yyconst flex_int16_t yy_rule_linenum[47] =
     {   0,
-       56,   61,   67,   69,   72,   73,   74,   78,   81,   82,
-       83,   84,   85,   86,   87,   88,   89,   90,   91,   92,
-       93,   94,   97,   98,   99,  102,  103,  104,  105,  106,
-      107,  109,  110,  111,  112,  114,  115,  116,  118,  119,
-      120,  121,  122,  123,  124,  127
+       62,   67,   73,   75,   78,   79,   80,   84,   87,   88,
+       89,   90,   91,   92,   93,   94,   95,   96,   97,   98,
+       99,  100,  103,  104,  105,  108,  109,  110,  111,  112,
+      113,  115,  116,  117,  118,  120,  121,  122,  124,  125,
+      126,  127,  128,  129,  130,  133
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -676,10 +685,16 @@ static yyconst flex_int16_t yy_rule_linenum[47] =
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
-#line 1 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 1 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 /* Copyright © 2013 Fabian Schuiki */
-#line 4 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 4 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 #include <string>
+#include <vector>
+#include <ast/nodes/ast.hpp>
+
+using namespace ast;
+typedef std::vector<NodePtr> Nodes;
+
 #include "Scanner.hpp"
 
 #define storeToken yylval->string = new std::string(yytext, yyleng)
@@ -698,10 +713,10 @@ typedef driver::Parser::token_type token_type;
 /* The manual says "somewhat more optimized", whatever that means. */
 /* Produce some debug output. Disable this for the release version. */
 /* Advance the location tracker during lexing. */
-#line 34 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 40 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 #define YY_USER_ACTION yylloc->columns(yyleng);
 
-#line 705 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
+#line 720 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.cpp"
 
 #define INITIAL 0
 #define IN_COMMENT 1
@@ -759,7 +774,12 @@ static int yy_flex_strlen (yyconst char * );
 
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k */
+#define YY_READ_BUF_SIZE 16384
+#else
 #define YY_READ_BUF_SIZE 8192
+#endif /* __ia64__ */
 #endif
 
 /* Copy whatever the last rule matched to the standard output. */
@@ -859,7 +879,7 @@ YY_DECL
 	register int yy_act;
     
 /* %% [7.0] user's declarations go here */
-#line 47 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 53 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 
 
  /* Whenever yylex() is invoked, we step the location tracker forward. */
@@ -869,7 +889,7 @@ YY_DECL
 
 
  /* Ignore whitespaces. */
-#line 873 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
+#line 893 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.cpp"
 
 	if ( !(yy_init) )
 		{
@@ -980,7 +1000,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 56 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 62 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 {
     yylloc->step();
 }
@@ -989,7 +1009,7 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 61 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 67 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 {
     yylloc->lines(yyleng);
     yylloc->step();
@@ -998,30 +1018,30 @@ YY_RULE_SETUP
 /* Eat comments. */
 case 3:
 YY_RULE_SETUP
-#line 67 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 73 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 ; /* we might want to keep track of the comments, for automated documentation */
 	YY_BREAK
 
 case 4:
 YY_RULE_SETUP
-#line 69 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 75 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 BEGIN(IN_COMMENT);
 	YY_BREAK
 
 
 case 5:
 YY_RULE_SETUP
-#line 72 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 78 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 BEGIN(INITIAL);
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 73 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 79 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 // eat comment in chunks
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 74 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 80 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 // eat the lone star
 	YY_BREAK
 
@@ -1029,201 +1049,201 @@ YY_RULE_SETUP
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 78 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 84 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 storeToken; return token::STRING_LITERAL;
 	YY_BREAK
 /* Keywords */
 case 9:
 YY_RULE_SETUP
-#line 81 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 87 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::FUNC;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 82 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 88 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::VAR;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 83 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 89 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::TYPE;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 84 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 90 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::UNARY;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 85 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 91 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::VALUE;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 86 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 92 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::OBJECT;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 87 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 93 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::INTERFACE;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 88 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 94 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::NATIVE;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 89 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 95 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::RANGE;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 90 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 96 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::IF;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 91 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 97 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::ELSE;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 92 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 98 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::FOR;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 93 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 99 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::INCASE;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 94 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 100 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::OTHERWISE;
 	YY_BREAK
 /* Constants */
 case 23:
 YY_RULE_SETUP
-#line 97 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 103 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::NIL;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 98 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 104 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 storeToken; return token::IDENTIFIER;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 99 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 105 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 storeToken; return token::NUMBER;
 	YY_BREAK
 /* Punctuation */
 case 26:
 YY_RULE_SETUP
-#line 102 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 108 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::LPAREN;
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 103 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 109 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::RPAREN;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 104 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 110 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::LBRACE;
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 105 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 111 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::RBRACE;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 106 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 112 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::LBRACK;
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 107 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 113 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::RBRACK;
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 109 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 115 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::DOT;
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 110 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 116 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::COMMA;
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 111 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 117 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::COLON;
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 112 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 118 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::SEMICOLON;
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 114 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 120 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::RIGHTARROW;
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 115 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 121 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::PIPE;
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 116 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 122 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 return token::ASSIGN;
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 118 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 124 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 storeToken; return token::ADDITIVE_OPERATOR;
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 119 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 125 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 storeToken; return token::MULTIPLICATIVE_OPERATOR;
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 120 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 126 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 storeToken; return token::RELATIONAL_OPERATOR;
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 121 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 127 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 storeToken; return token::EQUALITY_OPERATOR;
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 122 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 128 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 storeToken; return token::AND_OPERATOR;
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 123 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 129 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 storeToken; return token::OR_OPERATOR;
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 124 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 130 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 storeToken; return token::OPERATOR;
 	YY_BREAK
 /* All other characters are rejected. */
 case 46:
 YY_RULE_SETUP
-#line 127 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 133 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 {
     std::stringstream s;
     s << "Unknown token '" << yytext[0] << "'";
@@ -1232,10 +1252,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 134 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 140 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 ECHO;
 	YY_BREAK
-#line 1239 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.cpp"
+#line 1259 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(IN_COMMENT):
 	yyterminate();
@@ -1430,9 +1450,9 @@ void yyFlexLexer::switch_streams( std::istream* new_in, std::ostream* new_out )
 }
 
 #ifdef YY_INTERACTIVE
-size_t yyFlexLexer::LexerInput( char* buf, size_t /* max_size */ )
+int yyFlexLexer::LexerInput( char* buf, int /* max_size */ )
 #else
-size_t yyFlexLexer::LexerInput( char* buf, size_t max_size )
+int yyFlexLexer::LexerInput( char* buf, int max_size )
 #endif
 {
 	if ( yyin->eof() || yyin->fail() )
@@ -1459,7 +1479,7 @@ size_t yyFlexLexer::LexerInput( char* buf, size_t max_size )
 #endif
 }
 
-void yyFlexLexer::LexerOutput( const char* buf, size_t size )
+void yyFlexLexer::LexerOutput( const char* buf, int size )
 {
 	(void) yyout->write( buf, size );
 }
@@ -1524,7 +1544,7 @@ int yyFlexLexer::yy_get_next_buffer()
 
 	else
 		{
-			yy_size_t num_to_read =
+			int num_to_read =
 			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
 		while ( num_to_read <= 0 )
@@ -1538,7 +1558,7 @@ int yyFlexLexer::yy_get_next_buffer()
 
 			if ( b->yy_is_our_buffer )
 				{
-				yy_size_t new_size = b->yy_buf_size * 2;
+				int new_size = b->yy_buf_size * 2;
 
 				if ( new_size <= 0 )
 					b->yy_buf_size += b->yy_buf_size / 8;
@@ -1569,7 +1589,7 @@ int yyFlexLexer::yy_get_next_buffer()
 
 		/* Read in more data. */
 		YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
-			(yy_n_chars), num_to_read );
+			(yy_n_chars), (size_t) num_to_read );
 
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
 		}
@@ -1696,7 +1716,7 @@ int yyFlexLexer::yy_get_next_buffer()
 	if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
 		{ /* need to shift things up to make room */
 		/* +2 for EOB chars. */
-		register yy_size_t number_to_move = (yy_n_chars) + 2;
+		register int number_to_move = (yy_n_chars) + 2;
 		register char *dest = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[
 					YY_CURRENT_BUFFER_LVALUE->yy_buf_size + 2];
 		register char *source =
@@ -1747,7 +1767,7 @@ int yyFlexLexer::yy_get_next_buffer()
 
 		else
 			{ /* need more input */
-			yy_size_t offset = (yy_c_buf_p) - (yytext_ptr);
+			int offset = (yy_c_buf_p) - (yytext_ptr);
 			++(yy_c_buf_p);
 
 			switch ( yy_get_next_buffer(  ) )
@@ -1771,7 +1791,7 @@ int yyFlexLexer::yy_get_next_buffer()
 				case EOB_ACT_END_OF_FILE:
 					{
 					if ( yywrap(  ) )
-						return 0;
+						return EOF;
 
 					if ( ! (yy_did_buffer_switch_on_eof) )
 						YY_NEW_FILE;
@@ -2079,7 +2099,7 @@ void yyFlexLexer::yypop_buffer_state (void)
 void yyFlexLexer::yyensure_buffer_stack(void)
 /* %endif */
 {
-	yy_size_t num_to_alloc;
+	int num_to_alloc;
     
 	if (!(yy_buffer_stack)) {
 
@@ -2285,7 +2305,7 @@ void Driverfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 134 "/Users/fabian/Documents/Programmieren/Maxwell/cpp/source/driver/Scanner.ll"
+#line 140 "/home/fabian/Documents/Maxwell/cpp/source/driver/Scanner.ll"
 
 
 

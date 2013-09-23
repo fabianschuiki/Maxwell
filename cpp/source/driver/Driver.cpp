@@ -1,5 +1,10 @@
 /* Copyright © 2013 Fabian Schuiki */
 #include "Driver.hpp"
+#include <vector>
+
+using namespace ast;
+typedef std::vector<NodePtr> Nodes;
+
 #include "Scanner.hpp"
 #include <fstream>
 #include <sstream>

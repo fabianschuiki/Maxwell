@@ -8,6 +8,7 @@
 #include <sstream>
 #include <boost/smart_ptr.hpp>
 #include <stdexcept>
+#include <cstdio>
 
 namespace ast {
 

@@ -2,6 +2,12 @@
 
 %{
 #include <string>
+#include <vector>
+#include <ast/nodes/ast.hpp>
+
+using namespace ast;
+typedef std::vector<NodePtr> Nodes;
+
 #include "Scanner.hpp"
 
 #define storeToken yylval->string = new std::string(yytext, yyleng)

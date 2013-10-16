@@ -48,7 +48,7 @@ relational_op       [<>]=?
 equality_op         [!=]=
 and_op              "&&"
 or_op               "||"
-symbol              {additive_op}|{multiplicative_op}|{relational_op}|{equality_op}|{and_op}|{or_op}|[\.:~&''^]
+symbol              {additive_op}|{multiplicative_op}|{relational_op}|{equality_op}|{and_op}|{or_op}|[!\.:~&''^]
 
 %% /*** Token Regular Expressions ***/
 

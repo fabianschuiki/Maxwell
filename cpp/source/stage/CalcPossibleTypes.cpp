@@ -56,15 +56,22 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 
 	// Constants.
 	if (const NumberConstExpr::Ptr& num = NumberConstExpr::from(node)) {
-		DefinedType::Ptr typeInt(new DefinedType), typeReal(new DefinedType);
-		typeInt->setDefinition(repository.getBuiltinType("Int"));
-		typeReal->setDefinition(repository.getBuiltinType("Real"));
-		NodeVector types(2);
-		types[0] = typeInt;
-		types[1] = typeReal;
-		TypeSet::Ptr typeSet(new TypeSet);
-		typeSet->setTypes(types);
-		num->setPossibleType(typeSet);
+		// DefinedType::Ptr typeInt(new DefinedType), typeReal(new DefinedType);
+		// typeInt->setDefinition(repository.getBuiltinType("Int"));
+		// typeReal->setDefinition(repository.getBuiltinType("Real"));
+		// NodeVector types(2);
+		// types[0] = typeInt;
+		// types[1] = typeReal;
+		// TypeSet::Ptr typeSet(new TypeSet);
+		// typeSet->setTypes(types);
+		// num->setPossibleType(typeSet);
+		DefinedType::Ptr type(new DefinedType);
+		if (num->getValue().find('.') != string::npos) {
+			type->setDefinition(repository.getBuiltinType("Real"));
+		} else {
+			type->setDefinition(repository.getBuiltinType("Int"));
+		}
+		num->setPossibleType(type);
 	}
 	if (const StringConstExpr::Ptr& str = StringConstExpr::from(node)) {
 		DefinedType::Ptr type(new DefinedType);

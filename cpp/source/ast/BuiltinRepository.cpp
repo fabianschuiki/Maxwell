@@ -127,6 +127,8 @@ void BuiltinRepository::build()
 	const builtin::NumericType::Ptr& tReal = numericType("Real");
 	const builtin::NumericType::Ptr& tBool = numericType("Bool");
 
+	funcDef("!", tBool, tBool);
+
 	const char* comparisonNames[] = {
 		"==", "!=", ">", "<", ">=", "<=", NULL
 	};
@@ -144,6 +146,14 @@ void BuiltinRepository::build()
 		funcDef(mathBinaryNames[i], tReal, tReal, tReal);
 		funcDef(mathBinaryNames[i], tInt, tReal, tReal);
 		funcDef(mathBinaryNames[i], tReal, tInt, tReal);
+	}
+
+	const char* mathUnaryNames[] = {
+		"-", NULL
+	};
+	for (int i = 0; mathUnaryNames[i]; i++) {
+		funcDef(mathUnaryNames[i], tInt, tInt);
+		funcDef(mathUnaryNames[i], tReal, tReal);
 	}
 
 	numericType("String"); // needs to be changed

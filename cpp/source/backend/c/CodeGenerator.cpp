@@ -83,7 +83,7 @@ void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node)
 	stringstream bodyCode;
 	bodyCode << "{\n";
 	for (vector<string>::iterator it = bodyContext.stmts.begin(); it != bodyContext.stmts.end(); it++) {
-		bodyCode << "    " << indent(*it) << ";\n";
+		bodyCode << "    " << indent(*it) << "\n";
 	}
 	if (node->getImplOut()) {
 		bodyCode << "    return " << ec.code << ";\n";
@@ -108,7 +108,7 @@ CodeGenerator::ExprCode CodeGenerator::generateBlock(const BlockExpr::Ptr& node,
 		retVar = context.resVar;
 		if (retVar.empty()) {
 			retVar = makeTmpVar(context);
-			context.stmts.push_back("void* " + retVar);
+			context.stmts.push_back("void* " + retVar + ";");
 		}
 		code.code = retVar;
 		code.isRef = true;
@@ -133,7 +133,7 @@ CodeGenerator::ExprCode CodeGenerator::generateBlock(const BlockExpr::Ptr& node,
 				code = ec;
 			}
 		} else if (!ec.isRef) {
-			context.stmts.push_back(ec.code);
+			context.stmts.push_back(ec.code + ";");
 		}
 	}
 
@@ -167,6 +167,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 			ExprCode c = generateExpr(init, context);
 			stmt << " = " << c.code;
 		}
+		stmt << ";";
 		context.stmts.push_back(stmt.str());
 
 		// Return the resulting ExprCode structure.
@@ -298,7 +299,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 		string resVar = context.resVar;
 		if (resVar.empty()) {
 			resVar = makeTmpVar(context);
-			context.stmts.push_back("void* " + resVar);
+			context.stmts.push_back("void* " + resVar + ";");
 		}
 
 		// Generate code for the condition expression and initiate the if statement.
@@ -328,10 +329,68 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 
 			stmt << " else {\n";
 			for (BlockContext::Stmts::iterator it = context_else.stmts.begin(); it != context_else.stmts.end(); it++) {
-				stmt << "    " << indent(*it) << ";\n";
+				stmt << "    " << indent(*it) << "\n";
 			}
 			if (resVar != ec_else.code)
 				stmt << "    " << resVar << " = " << ec_else.code << ";\n";
+			stmt << "}";
+		}
+
+		// Add the synthesized statement to the context and wrap the result variable accordingly.
+		context.stmts.push_back(stmt.str());
+		ExprCode ec;
+		ec.code = resVar;
+		ec.isRef = true;
+		ec.precedence = kPrimaryPrec;
+		return ec;
+	}
+
+	if (const IfCaseExpr::Ptr& ice = IfCaseExpr::from(node))
+	{
+		// Generate the temporary variable that will hold the result of the statement.
+		string resVar = context.resVar;
+		if (resVar.empty()) {
+			resVar = makeTmpVar(context);
+			context.stmts.push_back("void* " + resVar + ";");
+		}
+
+		// Generate the conditional branches of the expression.
+		const NodeVector& conds = ice->getConds();
+		stringstream stmt;
+
+		for (NodeVector::const_iterator it = conds.begin(); it != conds.end(); it++) {
+			const IfCaseExprCond::Ptr& cond = IfCaseExprCond::needFrom(*it);
+			bool isFirst = (it == conds.begin());
+
+			// Generate the code for the condition expression.
+			ExprCode ec_cond = generateExpr(cond->getCond(), context);
+			if (!isFirst) stmt << " else ";
+			stmt << "if (" << ec_cond.code << ") {\n";
+			
+			// Generate the code for the body of the branch.
+			BlockContext context_branch(&context);
+			context_branch.resVar = resVar;
+			ExprCode ec_branch = generateExpr(cond->getExpr(), context_branch);
+			for (BlockContext::Stmts::iterator it = context_branch.stmts.begin(); it != context_branch.stmts.end(); it++) {
+				stmt << "    " << indent(*it) << "\n";
+			}
+			if (resVar != ec_branch.code)
+				stmt << "    " << resVar << " = " << ec_branch.code << ";\n";
+			stmt << "}";
+		}
+
+		// Generate the default branch of the expression.
+		const NodePtr& otherwise = ice->getOtherwise(false);
+		if (otherwise) {
+			BlockContext context_otherwise(&context);
+			context_otherwise.resVar = resVar;
+			ExprCode ec_otherwise = generateExpr(otherwise, context_otherwise);
+			stmt << " else {\n";
+			for (BlockContext::Stmts::iterator it = context_otherwise.stmts.begin(); it != context_otherwise.stmts.end(); it++) {
+				stmt << "   " << indent(*it) << "\n";
+			}
+			if (resVar != ec_otherwise.code)
+				stmt << "    " << resVar << " = " << ec_otherwise.code << ";\n";
 			stmt << "}";
 		}
 

@@ -50,10 +50,19 @@ protected:
 		VarMap vars;
 		Stmts stmts;
 		int tmpIndex;
+		string resVar;
 
 		BlockContext() {
 			parent = NULL;
 			tmpIndex = 0;
+		}
+
+		BlockContext(BlockContext* p) {
+			vars = p->vars;
+			usedSymbols = p->usedSymbols;
+			resVar = p->resVar;
+			parent = p;
+			tmpIndex = p->tmpIndex;
 		}
 	};
 

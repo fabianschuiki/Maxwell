@@ -105,8 +105,11 @@ CodeGenerator::ExprCode CodeGenerator::generateBlock(const BlockExpr::Ptr& node,
 	string retVar;
 	bool useRetVar = false;
 	if (context.parent) {
-		retVar = makeTmpVar(context);
-		context.stmts.push_back("void* " + retVar);
+		retVar = context.resVar;
+		if (retVar.empty()) {
+			retVar = makeTmpVar(context);
+			context.stmts.push_back("void* " + retVar);
+		}
 		code.code = retVar;
 		code.isRef = true;
 		useRetVar = true;
@@ -122,10 +125,13 @@ CodeGenerator::ExprCode CodeGenerator::generateBlock(const BlockExpr::Ptr& node,
 		bool last = (it == exprs.end());
 
 		ExprCode ec = generateExpr(expr, context);
-		if (last && useRetVar) {
-			context.stmts.push_back(retVar + " = " + ec.code);
-		} else if (last && !useRetVar) {
-			code = ec;
+		if (last) {
+			if (useRetVar) {
+				// The returned code may simply be a reference to our retVar, in which case the assignment is obsolete.
+				if (retVar != ec.code) context.stmts.push_back(retVar + " = " + ec.code);
+			} else {
+				code = ec;
+			}
 		} else if (!ec.isRef) {
 			context.stmts.push_back(ec.code);
 		}
@@ -280,6 +286,62 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 		else {
 			cout << "Generating code for call to " << funcNode->getId() << "\n";
 		}
+	}
+
+	if (const BlockExpr::Ptr& block = BlockExpr::from(node)) {
+		return generateBlock(block, context);
+	}
+
+	if (const IfExpr::Ptr& ie = IfExpr::from(node))
+	{
+		// Generate the temporary variable that will hold the result of the statement.
+		string resVar = context.resVar;
+		if (resVar.empty()) {
+			resVar = makeTmpVar(context);
+			context.stmts.push_back("void* " + resVar);
+		}
+
+		// Generate code for the condition expression and initiate the if statement.
+		ExprCode ec_cond = generateExpr(ie->getCond(), context);
+		stringstream stmt;
+		stmt << "if (" << ec_cond.code << ")";
+
+		// Generate code for the main body.
+		BlockContext context_body(&context);
+		context_body.resVar = resVar;
+		ExprCode ec_body = generateExpr(ie->getBody(), context_body);
+
+		stmt << " {\n";
+		for (BlockContext::Stmts::iterator it = context_body.stmts.begin(); it != context_body.stmts.end(); it++) {
+			stmt << "    " << indent(*it) << ";\n";
+		}
+		if (resVar != ec_body.code)
+			stmt << "    " << resVar << " = " << ec_body.code << ";\n";
+		stmt << "}";
+
+		// Generate code for the else block.
+		const NodePtr& elseBlock = ie->getElseExpr(false);
+		if (elseBlock) {
+			BlockContext context_else(&context);
+			context_else.resVar = resVar;
+			ExprCode ec_else = generateExpr(elseBlock, context_else);
+
+			stmt << " else {\n";
+			for (BlockContext::Stmts::iterator it = context_else.stmts.begin(); it != context_else.stmts.end(); it++) {
+				stmt << "    " << indent(*it) << ";\n";
+			}
+			if (resVar != ec_else.code)
+				stmt << "    " << resVar << " = " << ec_else.code << ";\n";
+			stmt << "}";
+		}
+
+		// Add the synthesized statement to the context and wrap the result variable accordingly.
+		context.stmts.push_back(stmt.str());
+		ExprCode ec;
+		ec.code = resVar;
+		ec.isRef = true;
+		ec.precedence = kPrimaryPrec;
+		return ec;
 	}
 
 	// If we get to this location, the expression could not be converted to C code.

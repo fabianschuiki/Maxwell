@@ -128,7 +128,8 @@ CodeGenerator::ExprCode CodeGenerator::generateBlock(const BlockExpr::Ptr& node,
 		if (last) {
 			if (useRetVar) {
 				// The returned code may simply be a reference to our retVar, in which case the assignment is obsolete.
-				if (retVar != ec.code) context.stmts.push_back(retVar + " = " + ec.code);
+				if (retVar != ec.code)
+					context.stmts.push_back(retVar + " = " + ec.code + ";");
 			} else {
 				code = ec;
 			}
@@ -314,7 +315,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 
 		stmt << " {\n";
 		for (BlockContext::Stmts::iterator it = context_body.stmts.begin(); it != context_body.stmts.end(); it++) {
-			stmt << "    " << indent(*it) << ";\n";
+			stmt << "    " << indent(*it) << "\n";
 		}
 		if (resVar != ec_body.code)
 			stmt << "    " << resVar << " = " << ec_body.code << ";\n";
@@ -399,6 +400,82 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 		ExprCode ec;
 		ec.code = resVar;
 		ec.isRef = true;
+		ec.precedence = kPrimaryPrec;
+		return ec;
+	}
+
+	if (const ForExpr::Ptr& fex = ForExpr::from(node))
+	{
+		const NodePtr& init = fex->getInit(false);
+		const NodePtr& cond = fex->getCond();
+		const NodePtr& step = fex->getStep(false);
+
+		// Generate the temporary variable that will hold the last iteration of the loop.
+		string resVar = context.resVar;
+		if (resVar.empty()) {
+			resVar = makeTmpVar(context);
+			context.stmts.push_back("void* " + resVar + ";");
+		}
+
+		// Generate the code for the initial expression and initialize the statement.
+		stringstream stmt;
+		stmt << "for (";
+		if (init) {
+			ExprCode ec_init = generateExpr(init, context);
+			if (!ec_init.isRef)
+				stmt << ec_init.code;
+		}
+		stmt << ";";
+
+		// Generate the code for the condition expression in a separate block
+		// context. If context_body contains any statements after the condition
+		// expression has been generated, the condition needs to be checked
+		// inside the body of the loop, instead of pasting the expression code
+		// into the for statement itself.
+		BlockContext context_body(&context);
+		ExprCode ec_cond = generateExpr(cond, context_body);
+
+		bool complexCond = !context_body.stmts.empty();
+		if (complexCond) {
+			stmt << ";"; // no explicit condition in the for statement
+			context_body.stmts.push_back("if (!" + precedenceWrapped(ec_cond, kPrefixPrec) + ") break;");
+		} else {
+			stmt << " " << ec_cond.code << ";";
+		}
+
+		// Generate the code for the loop body itself.
+		context_body.resVar = resVar;
+		ExprCode ec_body = generateExpr(fex->getBody(), context_body);
+		context_body.resVar.clear();
+		if (!ec_body.isRef)
+			context_body.stmts.push_back(ec_body.code + ";");
+
+		// Generate the code for the step instruction. If the step expression
+		// code introduced new statements into context_body, the step statement
+		// is moved into the loop body instead of keeping it in the for
+		// statement.
+		if (step) {
+			int size = context_body.stmts.size();
+			ExprCode ec_step = generateExpr(step, context_body);
+			if (size == context_body.stmts.size()) {
+				stmt << " " << ec_step.code;
+			} else {
+				context_body.stmts.push_back(ec_step.code + ";");
+			}
+		}
+
+		// Synthesize the body of the for loop.
+		stmt << ") {\n";
+		for (BlockContext::Stmts::iterator it = context_body.stmts.begin(); it != context_body.stmts.end(); it++) {
+			stmt << "    " << indent(*it) << "\n";
+		}
+		stmt << "}";
+
+		// Generate the output code structure.
+		context.stmts.push_back(stmt.str());
+		ExprCode ec;
+		ec.isRef = true;
+		ec.code = resVar;
 		ec.precedence = kPrimaryPrec;
 		return ec;
 	}

@@ -2,8 +2,7 @@
 #pragma once
 #include <boost/filesystem.hpp>
 
-namespace backend {
-namespace c {
+namespace backendc {
 
 /**
  * The main umbrella repository containing all the files associated with the
@@ -18,5 +17,4 @@ public:
 protected:
 };
 
-} // namespace c
-} // namespace backend
+} // namespace backendc

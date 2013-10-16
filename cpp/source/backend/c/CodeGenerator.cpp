@@ -80,8 +80,11 @@ void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node)
 		ec = generateExpr(body, bodyContext);
 	}
 
+	// Look up the C-flavored name for this function.
+	string name = node->getName();
+
 	stringstream bodyCode;
-	bodyCode << "{\n";
+	bodyCode << "void " << name << "()\n{\n";
 	for (vector<string>::iterator it = bodyContext.stmts.begin(); it != bodyContext.stmts.end(); it++) {
 		bodyCode << "    " << indent(*it) << "\n";
 	}
@@ -129,7 +132,7 @@ CodeGenerator::ExprCode CodeGenerator::generateBlock(const BlockExpr::Ptr& node,
 			if (useRetVar) {
 				// The returned code may simply be a reference to our retVar, in which case the assignment is obsolete.
 				if (retVar != ec.code)
-					context.stmts.push_back(retVar + " = " + ec.code + ";");
+					context.stmts.push_back(retVar + " = " + precedenceWrapped(ec, kAssignmentPrec) + ";");
 			} else {
 				code = ec;
 			}
@@ -166,7 +169,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 		stmt << name;
 		if (const NodePtr& init = var->getInitialExpr(false)) {
 			ExprCode c = generateExpr(init, context);
-			stmt << " = " << c.code;
+			stmt << " = " << precedenceWrapped(c, kAssignmentPrec);
 		}
 		stmt << ";";
 		context.stmts.push_back(stmt.str());
@@ -318,7 +321,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 			stmt << "    " << indent(*it) << "\n";
 		}
 		if (resVar != ec_body.code)
-			stmt << "    " << resVar << " = " << ec_body.code << ";\n";
+			stmt << "    " << resVar << " = " << precedenceWrapped(ec_body, kAssignmentPrec) << ";\n";
 		stmt << "}";
 
 		// Generate code for the else block.
@@ -333,7 +336,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 				stmt << "    " << indent(*it) << "\n";
 			}
 			if (resVar != ec_else.code)
-				stmt << "    " << resVar << " = " << ec_else.code << ";\n";
+				stmt << "    " << resVar << " = " << precedenceWrapped(ec_else, kAssignmentPrec) << ";\n";
 			stmt << "}";
 		}
 
@@ -376,7 +379,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 				stmt << "    " << indent(*it) << "\n";
 			}
 			if (resVar != ec_branch.code)
-				stmt << "    " << resVar << " = " << ec_branch.code << ";\n";
+				stmt << "    " << resVar << " = " << precedenceWrapped(ec_branch, kAssignmentPrec) << ";\n";
 			stmt << "}";
 		}
 
@@ -391,7 +394,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 				stmt << "   " << indent(*it) << "\n";
 			}
 			if (resVar != ec_otherwise.code)
-				stmt << "    " << resVar << " = " << ec_otherwise.code << ";\n";
+				stmt << "    " << resVar << " = " << precedenceWrapped(ec_otherwise, kAssignmentPrec) << ";\n";
 			stmt << "}";
 		}
 

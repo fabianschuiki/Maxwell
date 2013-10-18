@@ -312,7 +312,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 		string resVar = context.resVar;
 		if (resVar.empty()) {
 			resVar = makeTmpVar(context);
-			context.stmts.push_back("void* " + resVar + ";");
+			context.stmts.push_back(generateType(ie->getActualType(), context) + " " + resVar + ";");
 		}
 
 		// Generate code for the condition expression and initiate the if statement.
@@ -364,7 +364,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 		string resVar = context.resVar;
 		if (resVar.empty()) {
 			resVar = makeTmpVar(context);
-			context.stmts.push_back("void* " + resVar + ";");
+			context.stmts.push_back(generateType(ice->getActualType(), context) + " " + resVar + ";");
 		}
 
 		// Generate the conditional branches of the expression.
@@ -426,7 +426,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 		string resVar = context.resVar;
 		if (resVar.empty()) {
 			resVar = makeTmpVar(context);
-			context.stmts.push_back("void* " + resVar + ";");
+			context.stmts.push_back(generateType(fex->getActualType(), context) + " " + resVar + ";");
 		}
 
 		// Generate the code for the initial expression and initialize the statement.
@@ -591,5 +591,5 @@ string CodeGenerator::generateType(const NodePtr& node, BlockContext& context)
 		}
 	}
 
-	throw std::runtime_error("Code generation for type " + node->getId().str() + " (" + node->getClassName() + ") \"" + node->describe() + "\" not implemented.");
+	throw std::runtime_error("Code generation for type " + node->getId().str() + " (" + node->getClassName() + ") \"" + node->describe(2) + "\" not implemented.");
 }

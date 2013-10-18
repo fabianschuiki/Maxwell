@@ -79,6 +79,7 @@ protected:
 
 	ExprCode generateBlock(const BlockExpr::Ptr& node, BlockContext& context);
 	ExprCode generateExpr(const NodePtr& node, BlockContext& context);
+	string generateType(const NodePtr& node, BlockContext& context);
 
 	string makeTmpVar(BlockContext& context);
 

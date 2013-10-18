@@ -80,11 +80,21 @@ void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node)
 		ec = generateExpr(body, bodyContext);
 	}
 
-	// Look up the C-flavored name for this function.
+	// Look up the C-flavored name and return type for this function.
 	string name = node->getName();
+	const FuncType::Ptr& nodeType = FuncType::needFrom(node->getType());
+	string returnType;
+	if (nodeType->getOut()->isKindOf(kNilType)) {
+		returnType = "void";
+	} else {
+		BlockContext c;
+		returnType = generateType(nodeType->getOut(), c);
+		if (!c.stmts.empty())
+			throw std::runtime_error("Return type generation for function should not spawn any statements.");
+	}
 
 	stringstream bodyCode;
-	bodyCode << "void " << name << "()\n{\n";
+	bodyCode << returnType << " " << name << "()\n{\n";
 	for (vector<string>::iterator it = bodyContext.stmts.begin(); it != bodyContext.stmts.end(); it++) {
 		bodyCode << "    " << indent(*it) << "\n";
 	}
@@ -165,8 +175,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 
 		// Generate the statement that declares the variable.
 		stringstream stmt;
-		stmt << "void* ";
-		stmt << name;
+		stmt << generateType(var->getActualType(), context) << " " << name;
 		if (const NodePtr& init = var->getInitialExpr(false)) {
 			ExprCode c = generateExpr(init, context);
 			stmt << " = " << precedenceWrapped(c, kAssignmentPrec);
@@ -545,4 +554,42 @@ string CodeGenerator::precedenceWrapped(const string& s, int prec, int outer_pre
 string CodeGenerator::precedenceWrapped(const ExprCode& ec, int outer_prec)
 {
 	return precedenceWrapped(ec.code, ec.precedence, outer_prec);
+}
+
+/**
+ * @brief Returns the C-flavored type for the given type.
+ */
+string CodeGenerator::generateType(const NodePtr& node, BlockContext& context)
+{
+	if (const DefinedType::Ptr& dt = DefinedType::from(node))
+	{
+		const NodePtr& def = dt->getDefinition();
+
+		// Builtin numeric types may be synthesized directly.
+		if (const builtin::NumericType::Ptr& num = builtin::NumericType::from(def)) {
+			if (num->getName() == "Int") {
+				return "int";
+			} else if (num->getName() == "Real") {
+				return "float";
+			} else {
+				throw std::runtime_error("Code generation for builtin type " + num->getId().str() + " (" + num->getName() + ") not implemented.");
+			}
+		}
+	}
+
+	if (const TupleType::Ptr& tup = TupleType::from(node))
+	{
+		// Simplify tuples with only one field.
+		const NodeVector& args = tup->getArgs();
+		if (args.size() == 1) {
+			const TupleTypeArg::Ptr& arg = TupleTypeArg::needFrom(args[0]);
+			return generateType(arg->getType(), context);
+		} else {
+			stringstream s;
+			s << "Code generation for tuple types with " << args.size() << " arguments not implemented.";
+			throw std::runtime_error(s.str());
+		}
+	}
+
+	throw std::runtime_error("Code generation for type " + node->getId().str() + " (" + node->getClassName() + ") \"" + node->describe() + "\" not implemented.");
 }

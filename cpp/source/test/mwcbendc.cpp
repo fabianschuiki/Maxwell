@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 		backendc::CodeGenerator cg(repo, bendrepo);
 		for (int i = 0; i < ids.size(); i++) {
 			cout << "Generating code for \033[1m" << ids[i] << "\033[0m\n";
-				cg.run(ids[i]);
+			cg.run(ids[i]);
 		}
 		
 		// Gather the generated code per source file.

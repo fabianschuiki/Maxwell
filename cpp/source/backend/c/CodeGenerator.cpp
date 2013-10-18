@@ -100,6 +100,8 @@ void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node)
 	}
 	if (node->getImplOut()) {
 		bodyCode << "    return " << ec.code << ";\n";
+	} else if (!ec.isRef) {
+		bodyCode << "    " << ec.code << ";\n";
 	}
 	bodyCode << "}";
 
@@ -201,27 +203,31 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 
 	if (const AssignmentExpr::Ptr& as = AssignmentExpr::from(node))
 	{
-		// Only identifier expressions are supported as assignment targets.
-		const IdentifierExpr::Ptr& lhs = IdentifierExpr::from(as->getLhs());
-		if (!lhs) {
-			throw std::runtime_error("Only IdentifierExpr may be used as the lhs of an assignment, got " + as->getLhs()->getClassName() + " instead.");
-		}
+		// The assignment may either be performed to an identifier, or be
+		// wrapped in a function call.
+		if (const IdentifierExpr::Ptr& lhs = IdentifierExpr::from(as->getLhs())) {
+			// Look up the name that was given to the assignment target.
+			const NodeId& id = lhs->getBindingTarget()->getId();
+			BlockContext::VarMap::iterator lhs_name_it = context.vars.find(id);
+			if (lhs_name_it == context.vars.end()) {
+				throw std::runtime_error("Identifier " + lhs->getName() + " is bound to target " + id.str() + " (" + lhs->getBindingTarget()->getClassName() + ") for which no name has been generated.");
+			}
+			string name = lhs_name_it->second;
 
-		// Look up the name that was given to the assignment target.
-		const NodeId& id = lhs->getBindingTarget()->getId();
-		BlockContext::VarMap::iterator lhs_name_it = context.vars.find(id);
-		if (lhs_name_it == context.vars.end()) {
-			throw std::runtime_error("Identifier " + lhs->getName() + " is bound to target " + id.str() + " (" + lhs->getBindingTarget()->getClassName() + ") for which no name has been generated.");
+			// Generate the assignment.
+			ExprCode ec_rhs = generateExpr(as->getRhs(), context);
+			ExprCode ec;
+			ec.code = name + " = " + precedenceWrapped(ec_rhs, kAssignmentPrec);
+			ec.isRef = false;
+			ec.precedence = kAssignmentPrec;
+			return ec;
 		}
-		string name = lhs_name_it->second;
-
-		// Generate the assignment.
-		ExprCode ec_rhs = generateExpr(as->getRhs(), context);
-		ExprCode ec;
-		ec.code = name + " = " + precedenceWrapped(ec_rhs, kAssignmentPrec);
-		ec.isRef = false;
-		ec.precedence = kAssignmentPrec;
-		return ec;
+		else if (const CallExpr::Ptr& lhs = CallExpr::from(as->getLhs())) {
+			return generateExpr(lhs, context);
+		}
+		else {
+			throw std::runtime_error("Only IdentifierExpr or CallExpr may be used as the lhs of an assignment, got " + as->getLhs()->getClassName() + " instead.");
+		}
 	}
 
 	if (const IdentifierExpr::Ptr& ident = IdentifierExpr::from(node))
@@ -297,8 +303,44 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 				throw std::runtime_error(s.str());
 			}
 		}
+
+		// If the called function is an implicit accessor, implement it directly.
+		else if (const ImplAccessor::Ptr& iac = ImplAccessor::from(funcNode)) {
+			cout << "Generating code for implicit accessor " << iac->getId() << " \"" << iac->getName() << "\"\n";
+
+			// If the name ends in "=", this is a setter, otherwise we're dealing with a getter.
+			string name = iac->getName();
+			bool isSetter = (name[name.length()-1] == '=');
+			if (isSetter)
+				name = name.substr(0, name.length()-1);
+			cout << "- " << name << ", setter = " << isSetter << "\n";
+
+			// Generate the expression for accessing the requested field of the struct.
+			CallArgInterface* arg = args[0]->needCallArg();
+			ExprCode ec_arg = generateExpr(arg->getExpr(), context);
+
+			// Generate the accessor code.
+			if (isSetter) {
+				CallArgInterface* val = args[1]->needCallArg();
+				ExprCode ec_val = generateExpr(val->getExpr(), context);
+
+				ExprCode ec;
+				ec.precedence = kAssignmentPrec;
+				ec.code = ec_arg.code + "." + name + " = " + precedenceWrapped(ec_val, kAssignmentPrec);
+				ec.isRef = false;
+				return ec;
+			} else {
+				ExprCode ec;
+				ec.precedence = kPrefixPrec;
+				ec.code = ec_arg.code + "." + name;
+				ec.isRef = true;
+				return ec;
+			}
+		}
+
+		// Otherwise we haven't implemented things yet.
 		else {
-			cout << "Generating code for call to " << funcNode->getId() << "\n";
+			throw std::runtime_error("Generating code for call to " + funcNode->getId().str() + " \"" + funcNode->needNamed()->getName() + "\" is not implemented.");
 		}
 	}
 
@@ -575,6 +617,13 @@ string CodeGenerator::generateType(const NodePtr& node, BlockContext& context)
 				throw std::runtime_error("Code generation for builtin type " + num->getId().str() + " (" + num->getName() + ") not implemented.");
 			}
 		}
+
+		// Type definitions are resolved by directly generating code for their
+		// qualified type. Later on, we might want to change that to a point
+		// where these types may also be referred to by name.
+		if (const TypeDef::Ptr& td = TypeDef::from(def)) {
+			return generateType(td->getType()->needTypeExpr()->getEvaluatedType(), context);
+		}
 	}
 
 	if (const TupleType::Ptr& tup = TupleType::from(node))
@@ -588,6 +637,23 @@ string CodeGenerator::generateType(const NodePtr& node, BlockContext& context)
 			stringstream s;
 			s << "Code generation for tuple types with " << args.size() << " arguments not implemented.";
 			throw std::runtime_error(s.str());
+		}
+	}
+
+	if (const QualifiedType::Ptr& qual = QualifiedType::from(node))
+	{
+		const NodeVector& members = qual->getMembers();
+		if (!members.empty()) {
+			stringstream expr;
+			expr << "struct {\n";
+			for (NodeVector::const_iterator it = members.begin(); it != members.end(); it++) {
+				const QualifiedTypeMember::Ptr& member = QualifiedTypeMember::needFrom(*it);
+				expr << "    " << generateType(member->getType(), context) << " " << member->getName() << ";\n";
+			}
+			expr << "}";
+			return expr.str();
+		} else {
+			throw std::runtime_error("Code generation for qualified type " + node->describe(2) + " not implemented.");
 		}
 	}
 

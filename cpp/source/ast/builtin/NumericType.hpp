@@ -40,7 +40,7 @@ public:
 	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<NumericType>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to NumericType."); return r; }
 
 protected:
-	friend class BuiltinRepository;
+	friend class ast::BuiltinRepository;
 	string name;
 
 	// Interfaces

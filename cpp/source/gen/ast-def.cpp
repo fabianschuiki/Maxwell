@@ -84,13 +84,17 @@ void buildAST(Builder &node)
 		.attr("value", "string");
 	node("ArrayConstExpr")
 		.intf(graph).intf(type)
-		.child("exprs", "[@Type]");
+		.child("exprs", "[@Type]")
+		.attr("exprsType", "#type");
 	node("SetConstExpr")
 		.intf(graph).intf(type)
-		.child("exprs", "[@Type]");
+		.child("exprs", "[@Type]")
+		.attr("exprsType", "#type");
 	node("MapConstExpr")
 		.intf(graph).intf(type)
-		.child("pairs", "[MapConstExprPair]");
+		.child("pairs", "[MapConstExprPair]")
+		.attr("keysType", "#type")
+		.attr("valuesType", "#type");
 	node("MapConstExprPair")
 		.intf(graph)
 		.child("key", "@Type")

@@ -138,6 +138,25 @@ public:
 		return v;
 	}
 
+	void setExprsType(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kNilType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet) && !v->isKindOf(kQualifiedType) && !v->isKindOf(kSpecializedType) && !v->isKindOf(kUnionMappedType) && !v->isKindOf(kOneTupleMappedType) && !v->isKindOf(kCastType)) {
+			throw runtime_error("'exprsType' of " + id.str() + " needs to be of kind {GenericType, InvalidType, NilType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType, SpecializedType, UnionMappedType, OneTupleMappedType, CastType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
+		}
+		if (!equal(v, exprsType)) {
+			modify("exprsType");
+			exprsType = v;
+		}
+	}
+	const NodePtr& getExprsType(bool required = true)
+	{
+		const NodePtr& v = exprsType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have exprsType set to a non-null value.");
+		}
+		return v;
+	}
+
 	virtual string describe(int depth = -1)
 	{
 		stringstream str, b;
@@ -148,6 +167,7 @@ public:
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
 		if (!this->exprs.empty()) b << endl << "  \033[1mexprs\033[0m = " << indent(describeVector(this->exprs, depth-1));
+		if (this->exprsType) b << endl << "  \033[1mexprsType\033[0m = " << indent(this->exprsType->describe(depth-1));
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -161,6 +181,7 @@ public:
 		e.encode(this->requiredType);
 		e.encode(this->actualType);
 		e.encode(this->exprs);
+		e.encode(this->exprsType);
 	}
 
 	virtual void decode(Decoder& d)
@@ -170,6 +191,7 @@ public:
 		d.decode(this->requiredType);
 		d.decode(this->actualType);
 		d.decode(this->exprs);
+		d.decode(this->exprsType);
 	}
 
 	virtual void updateHierarchyOfChildren()
@@ -181,6 +203,7 @@ public:
 			char buf[32]; snprintf(buf, 31, "%i", i);
 			this->exprs[i]->updateHierarchy((id + "exprs") + buf, repository, this);
 		}
+		if (this->exprsType) this->exprsType->updateHierarchy(id + "exprsType", repository, this);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -214,6 +237,15 @@ public:
 						return a[idx];
 					} else {
 						return a[idx]->resolvePath(path.substr(dot + 1));
+					}
+				}
+				// exprsType.*
+				if (size >= 9 && path[5] == 'T' && path[6] == 'y' && path[7] == 'p' && path[8] == 'e') {
+					// exprsType
+					if (size == 9) {
+						return getExprsType();
+					} else if (path[9] == '.') {
+						return getExprsType()->resolvePath(path.substr(10));
 					}
 				}
 			}
@@ -264,6 +296,7 @@ public:
 		if (!equal(this->requiredType, other->requiredType)) return false;
 		if (!equal(this->actualType, other->actualType)) return false;
 		if (!equal(this->exprs, other->exprs)) return false;
+		if (!equal(this->exprsType, other->exprsType)) return false;
 		return true;
 	}
 
@@ -280,6 +313,7 @@ protected:
 	NodePtr requiredType;
 	NodePtr actualType;
 	NodeVector exprs;
+	NodePtr exprsType;
 
 	// Interfaces
 	GraphInterfaceImpl<SetConstExpr> interfaceGraph;

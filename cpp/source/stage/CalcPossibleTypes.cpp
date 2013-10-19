@@ -87,10 +87,13 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		}
 		UnionType::Ptr unionType(new UnionType);
 		unionType->setTypes(types);
+		NodePtr exprsType = algorithm::type::simplify(unionType);
+		ac->setExprsType(exprsType);
+
 		DefinedType::Ptr typeArray(new DefinedType);
 		typeArray->setDefinition(repository.getBuiltinType("Array"));
 		NodeVector specs(1);
-		specs[0] = algorithm::type::simplify(unionType);
+		specs[0] = exprsType;
 		SpecializedType::Ptr type(new SpecializedType);
 		type->setType(typeArray);
 		type->setSpecs(specs);

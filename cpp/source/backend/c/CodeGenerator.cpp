@@ -534,6 +534,46 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 		return ec;
 	}
 
+	if (const ArrayConstExpr::Ptr& ace = ArrayConstExpr::from(node))
+	{
+		// The type of constant arrays is Array[<element>]. Get access to the
+		// element type so we may properly declare the C structure.
+		// const SpecializedType::Ptr& specType = SpecializedType::needFrom(ace->getActualType());
+		// const NodePtr& elementType = specType->get;
+
+		// Generate the type for this constant array and pick a temporary variable name for it.
+		stringstream type;
+		type << "struct {\n";
+		type << "    int length;\n";
+		int length = ace->getExprs().size();
+		type << "    " << generateType(ace->getExprsType(), context) << "[" << length << "] elements;\n";
+		type << "}";
+
+		string name = makeTmpVar(context);
+
+		// Generate the statement that will create this array.
+		stringstream stmt;
+		stmt << type.str() << " " << name << " = {" << length << ", {";
+
+		const NodeVector& exprs = ace->getExprs();
+		bool isFirst = true;
+		for (NodeVector::const_iterator it = exprs.begin(); it != exprs.end(); it++) {
+			if (!isFirst) stmt << ", ";
+			isFirst = false;
+			stmt << generateExpr(*it, context).code;
+		}
+
+		stmt << "}};";
+
+		// Synthesize the statement an wrap a reference to it in a ExprCode structure.
+		context.stmts.push_back(stmt.str());
+		ExprCode ec;
+		ec.isRef = true;
+		ec.precedence = kPrimaryPrec;
+		ec.code = name;
+		return ec;
+	}
+
 	// If we get to this location, the expression could not be converted to C code.
 	throw std::runtime_error("Code for expression " + node->getClassName() + " cannot be generated.");
 }

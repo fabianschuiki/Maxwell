@@ -138,6 +138,44 @@ public:
 		return v;
 	}
 
+	void setKeysType(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kNilType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet) && !v->isKindOf(kQualifiedType) && !v->isKindOf(kSpecializedType) && !v->isKindOf(kUnionMappedType) && !v->isKindOf(kOneTupleMappedType) && !v->isKindOf(kCastType)) {
+			throw runtime_error("'keysType' of " + id.str() + " needs to be of kind {GenericType, InvalidType, NilType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType, SpecializedType, UnionMappedType, OneTupleMappedType, CastType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
+		}
+		if (!equal(v, keysType)) {
+			modify("keysType");
+			keysType = v;
+		}
+	}
+	const NodePtr& getKeysType(bool required = true)
+	{
+		const NodePtr& v = keysType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have keysType set to a non-null value.");
+		}
+		return v;
+	}
+
+	void setValuesType(const NodePtr& v)
+	{
+		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kNilType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet) && !v->isKindOf(kQualifiedType) && !v->isKindOf(kSpecializedType) && !v->isKindOf(kUnionMappedType) && !v->isKindOf(kOneTupleMappedType) && !v->isKindOf(kCastType)) {
+			throw runtime_error("'valuesType' of " + id.str() + " needs to be of kind {GenericType, InvalidType, NilType, DefinedType, UnionType, TupleType, FuncType, TypeSet, QualifiedType, SpecializedType, UnionMappedType, OneTupleMappedType, CastType} or implement interface {}, got " + v->getClassName() + " (" + v->getId().str() + ") instead.");
+		}
+		if (!equal(v, valuesType)) {
+			modify("valuesType");
+			valuesType = v;
+		}
+	}
+	const NodePtr& getValuesType(bool required = true)
+	{
+		const NodePtr& v = valuesType;
+		if (required && !v) {
+			throw runtime_error("Node " + getId().str() + " is required to have valuesType set to a non-null value.");
+		}
+		return v;
+	}
+
 	virtual string describe(int depth = -1)
 	{
 		stringstream str, b;
@@ -148,6 +186,8 @@ public:
 		if (this->requiredType) b << endl << "  \033[1mrequiredType\033[0m = " << indent(this->requiredType->describe(depth-1));
 		if (this->actualType) b << endl << "  \033[1mactualType\033[0m = " << indent(this->actualType->describe(depth-1));
 		if (!this->pairs.empty()) b << endl << "  \033[1mpairs\033[0m = " << indent(describeVector(this->pairs, depth-1));
+		if (this->keysType) b << endl << "  \033[1mkeysType\033[0m = " << indent(this->keysType->describe(depth-1));
+		if (this->valuesType) b << endl << "  \033[1mvaluesType\033[0m = " << indent(this->valuesType->describe(depth-1));
 		string bs = b.str();
 		if (!bs.empty()) str << bs << endl;
 		str << "}";
@@ -161,6 +201,8 @@ public:
 		e.encode(this->requiredType);
 		e.encode(this->actualType);
 		e.encode(this->pairs);
+		e.encode(this->keysType);
+		e.encode(this->valuesType);
 	}
 
 	virtual void decode(Decoder& d)
@@ -170,6 +212,8 @@ public:
 		d.decode(this->requiredType);
 		d.decode(this->actualType);
 		d.decode(this->pairs);
+		d.decode(this->keysType);
+		d.decode(this->valuesType);
 	}
 
 	virtual void updateHierarchyOfChildren()
@@ -181,6 +225,8 @@ public:
 			char buf[32]; snprintf(buf, 31, "%i", i);
 			this->pairs[i]->updateHierarchy((id + "pairs") + buf, repository, this);
 		}
+		if (this->keysType) this->keysType->updateHierarchy(id + "keysType", repository, this);
+		if (this->valuesType) this->valuesType->updateHierarchy(id + "valuesType", repository, this);
 	}
 
 	virtual const NodePtr& resolvePath(const string& path)
@@ -204,6 +250,15 @@ public:
 					return getGraphPrev();
 				} else if (path[9] == '.') {
 					return getGraphPrev()->resolvePath(path.substr(10));
+				}
+			}
+			// keysType.*
+			if (size >= 8 && path[0] == 'k' && path[1] == 'e' && path[2] == 'y' && path[3] == 's' && path[4] == 'T' && path[5] == 'y' && path[6] == 'p' && path[7] == 'e') {
+				// keysType
+				if (size == 8) {
+					return getKeysType();
+				} else if (path[8] == '.') {
+					return getKeysType()->resolvePath(path.substr(9));
 				}
 			}
 			// p.*
@@ -247,6 +302,15 @@ public:
 					return getRequiredType()->resolvePath(path.substr(13));
 				}
 			}
+			// valuesType.*
+			if (size >= 10 && path[0] == 'v' && path[1] == 'a' && path[2] == 'l' && path[3] == 'u' && path[4] == 'e' && path[5] == 's' && path[6] == 'T' && path[7] == 'y' && path[8] == 'p' && path[9] == 'e') {
+				// valuesType
+				if (size == 10) {
+					return getValuesType();
+				} else if (path[10] == '.') {
+					return getValuesType()->resolvePath(path.substr(11));
+				}
+			}
 		}
 		throw std::runtime_error("Node path '" + path + "' does not point to a node or array of nodes.");
 	}
@@ -267,6 +331,8 @@ public:
 		if (!equal(this->requiredType, other->requiredType)) return false;
 		if (!equal(this->actualType, other->actualType)) return false;
 		if (!equal(this->pairs, other->pairs)) return false;
+		if (!equal(this->keysType, other->keysType)) return false;
+		if (!equal(this->valuesType, other->valuesType)) return false;
 		return true;
 	}
 
@@ -283,6 +349,8 @@ protected:
 	NodePtr requiredType;
 	NodePtr actualType;
 	NodeVector pairs;
+	NodePtr keysType;
+	NodePtr valuesType;
 
 	// Interfaces
 	GraphInterfaceImpl<MapConstExpr> interfaceGraph;

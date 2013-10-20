@@ -1,0 +1,32 @@
+/* Copyright © 2013 Fabian Schuiki */
+
+/* This snippet of code describes the common use case of mapping a given type
+ * to an interface, in order to pass it on to another function. */
+
+type Vector value {
+	x Real;
+	y Real;
+}
+type Complex value {
+	r Real;
+	i Real;
+}
+
+func norm (v Vector) = sqrt(v.x^2 + v.y^2);
+func norm (c Complex) = sqrt(c.r^2 + c.i^2);
+
+type normable interface {
+	norm @ -> Real;
+}
+
+// Dummy function that simply uses the norm.
+func useNorm (n normable) = n.norm;
+
+func main
+{
+	var v Vector = ...;
+	var c Complex = ...;
+
+	var nv = useNorm(v);
+	var nc = useNorm(c);
+}

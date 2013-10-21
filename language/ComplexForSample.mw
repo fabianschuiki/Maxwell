@@ -1,0 +1,21 @@
+/* Copyright © 2013 Fabian Schuiki */
+
+/* This code snippet highlights the potential use of multi-variable for loops,
+ * in a way similar to those implemented in the Scala programming language. */
+
+func main
+{
+	var a Int = 0;
+
+	/* One flavor of for loop shall consist of an iteration body and a loop
+	 * body. The former configures what indices to visit, the latter what
+	 * operations to perform each cycle. */
+	for {
+		i in [0,1,2];
+		if (i == 1) skip;
+		j in [0,1,2,3];
+		if (j == 2) skip;
+	} {
+		a += i*j;
+	}
+}

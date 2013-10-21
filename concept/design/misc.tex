@@ -1,3 +1,14 @@
 \section{Miscellaneous}
 
 This section acts as a placeholder for random information.
+
+\subsection{Array Literals}
+
+An array literal is a constant, static array defined in source code. It is not intended to be modified and supports only a rather simplistic interface:
+
+\begin{itemize}
+  \item get (index Int) -> A
+  \item length -> Int
+\end{itemize}
+
+This corresponds to the \em{#const_array} interface, which declares a function to access individual elements, and a function to obtain the overall length of the array.

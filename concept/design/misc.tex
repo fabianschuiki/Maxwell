@@ -21,7 +21,8 @@ An iterator is a structure which walks through elements of a collection; i.e. an
 \begin{lstlisting}[float,caption=Iterator interface definition,label=iterator]
 type Iterator interface {
 	next (iterator * @) -> nil;
-	get (iterator * @) -> any;
+	get (iterator @) -> any;
+	end (iterator @) -> Bool;
 }
 \end{lstlisting}
 

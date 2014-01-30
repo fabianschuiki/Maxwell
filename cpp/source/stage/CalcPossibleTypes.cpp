@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright © 2013-2014 Fabian Schuiki */
 #include "stages.hpp"
 #include "algorithm/type.hpp"
 #include <iostream>
@@ -157,7 +157,10 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 	// For-expressions produce a nil type for now. Later on they maybe should return the last expression
 	// in the body for the last iteration step.
 	if (const ForExpr::Ptr& expr = ForExpr::from(node)) {
-		expr->setPossibleType(NodePtr(new NilType));
+		// expr->setPossibleType(NodePtr(new NilType));
+		const NodePtr& bodyBranch = expr->getBody();
+		addDependency(bodyBranch, "actualType");
+		expr->setPossibleType(bodyBranch->needType()->getActualType());
 	}
 
 

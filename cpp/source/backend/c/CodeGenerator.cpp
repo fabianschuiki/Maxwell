@@ -69,8 +69,28 @@ void CodeGenerator::run(const NodeId& id)
 
 void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node)
 {
-	// Generate the code for the body.
 	BlockContext bodyContext = BlockContext();
+	
+	// Generate the function input arguments.
+	stringstream argsCode;
+	const NodeVector& args = node->getIn();
+	for (NodeVector::const_iterator it = args.begin(); it != args.end(); it++) {
+		const FuncArg::Ptr& arg = FuncArg::needFrom(*it);
+
+		// Generate a C-flavored name for this argument.
+		string name = arg->getName() + "_arg";
+		bodyContext.vars[arg->getId()] = name;
+		bodyContext.usedSymbols.insert(name);
+
+		// Generate the code for this argument.
+		BlockContext c;
+		if (it != args.begin()) argsCode << ", ";
+		argsCode << generateType(arg->getActualType(), c) << " " << name;
+		if (!c.stmts.empty())
+			throw std::runtime_error("Function argument type generation should not spawn any statements.");
+	}
+
+	// Generate the code for the body.
 	ExprCode ec;
 	const NodePtr& body = node->getBody();
 
@@ -94,7 +114,7 @@ void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node)
 	}
 
 	stringstream bodyCode;
-	bodyCode << returnType << " " << name << "()\n{\n";
+	bodyCode << returnType << " " << name << "(" << argsCode.str() << ")\n{\n";
 	for (vector<string>::iterator it = bodyContext.stmts.begin(); it != bodyContext.stmts.end(); it++) {
 		bodyCode << "    " << indent(*it) << "\n";
 	}

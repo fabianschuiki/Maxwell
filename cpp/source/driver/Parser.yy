@@ -54,7 +54,7 @@ typedef std::vector<NodePtr> Nodes;
 
 %type <node> func_def func_arg type_def if_expr for_expr expr call_arg
 
-%type <node> primary_expr ifcase_expr ifcase_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair body_expr block_expr block_expr_expr macro_expr any_expr
+%type <node> primary_expr ifcase_expr ifcase_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair body_expr block_expr nonempty_block_expr block_expr_expr macro_expr any_expr
 %type <nodes> expr_list map_expr_pairs ifcase_expr_conds block_expr_exprs
 
 %type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg qualified_typeexpr qualified_typeexpr_qualifier specialized_typeexpr
@@ -295,6 +295,7 @@ primary_expr
       delete $2;
     }
   | ifcase_expr
+  | block_expr
   ;
 
 map_expr_pairs
@@ -391,7 +392,10 @@ block_expr
       BlockExpr *b = new BlockExpr;
       $$ = b;
     }
-  | LBRACE block_expr_exprs RBRACE {
+  | nonempty_block_expr
+  ;
+nonempty_block_expr
+  : LBRACE block_expr_exprs RBRACE {
       BlockExpr *b = new BlockExpr;
       b->setExprs(*$2);
       $$ = b;

@@ -70,7 +70,7 @@ void CodeGenerator::run(const NodeId& id)
 void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node)
 {
 	BlockContext bodyContext = BlockContext();
-	
+
 	// Generate the function input arguments.
 	stringstream argsCode;
 	const NodeVector& args = node->getIn();
@@ -78,7 +78,7 @@ void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node)
 		const FuncArg::Ptr& arg = FuncArg::needFrom(*it);
 
 		// Generate a C-flavored name for this argument.
-		string name = arg->getName() + "_arg";
+		string name = arg->getName() /*+ "_arg"*/;
 		bodyContext.vars[arg->getId()] = name;
 		bodyContext.usedSymbols.insert(name);
 
@@ -191,7 +191,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 	if (const VarDefExpr::Ptr& var = VarDefExpr::from(node))
 	{
 		// Generate a C-flavored name for this variable.
-		string name = var->getName() + "_var";
+		string name = var->getName() /*+ "_var"*/;
 		context.vars[var->getId()] = name;
 		context.usedSymbols.insert(name);
 
@@ -360,7 +360,22 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 
 		// Otherwise we haven't implemented things yet.
 		else {
-			throw std::runtime_error("Generating code for call to " + funcNode->getId().str() + " \"" + funcNode->needNamed()->getName() + "\" is not implemented.");
+			// throw std::runtime_error("Generating code for call to " + funcNode->getId().str() + " \"" + funcNode->needNamed()->getName() + "\" is not implemented.");
+			stringstream expr;
+			expr << funcNode->needNamed()->getName() << "(";
+			for (NodeVector::const_iterator it = args.begin(); it != args.end(); it++) {
+				CallArgInterface* arg = (*it)->needCallArg();
+				ExprCode ec = generateExpr(arg->getExpr(), context);
+				if (it != args.begin()) expr << ", ";
+				expr << precedenceWrapped(ec, kLowestPrec);
+			}
+			expr << ")";
+
+			ExprCode ec;
+			ec.precedence = kPrimaryPrec;
+			ec.code = expr.str();
+			ec.isRef = false;
+			return ec;
 		}
 	}
 

@@ -94,7 +94,8 @@ protected:
 		kAdditivePrec,
 		kRelationalPrec,
 		kEqualityPrec,
-		kAssignmentPrec
+		kAssignmentPrec,
+		kLowestPrec
 	};
 
 private:

@@ -1,9 +1,5 @@
-/* Copyright © 2013 Fabian Schuiki */
-
-/**
- * @file This program invokes the C backend on a node in the repository.
- */
-
+/* Copyright © 2013-2014 Fabian Schuiki */
+/** @file This program invokes the C backend on a node in the repository. */
 #include <iostream>
 #include <string>
 #include <ast/Repository.hpp>
@@ -13,6 +9,7 @@
 #include <cstdlib>
 #include <vector>
 #include <set>
+#include <fstream>
 
 using std::string;
 using std::cout;
@@ -39,7 +36,22 @@ int main(int argc, char *argv[])
 		backendc::CodeGenerator cg(repo, bendrepo);
 		for (int i = 0; i < ids.size(); i++) {
 			cout << "Generating code for \033[1m" << ids[i] << "\033[0m\n";
-			cg.run(ids[i]);
+			backendc::CodeGenerator::RootContext context;
+			cg.run(ids[i], context);
+
+			string name_h = (string)ids[i] + ".h";
+			string name_c = (string)ids[i] + ".c";
+			backendc::CodeGenerator::RootContext::Stmts::const_iterator it;
+			std::ofstream h(name_h.c_str());
+			std::ofstream c(name_c.c_str());
+			h << "#pragma once\n";
+			for (it = context.decls.begin(); it != context.decls.end(); it++) {
+				h << (*it).code << '\n';
+			}
+			c << "#include \"" << name_h << "\"\n";
+			for (it = context.defs.begin(); it != context.defs.end(); it++) {
+				c << '\n' << (*it).code << '\n';
+			}
 		}
 		
 		// Gather the generated code per source file.

@@ -42,12 +42,12 @@ CodeGenerator::CodeGenerator(ast::Repository& nr, backendc::Repository& br)
 /**
  * @brief Generates code for this node.
  */
-void CodeGenerator::run(const NodePtr& node)
+void CodeGenerator::run(const NodePtr& node, RootContext& context)
 {
 	if (const FuncDef::Ptr& func = FuncDef::from(node)) {
-		generateFuncDef(func);
+		generateFuncDef(func, context);
 	} else if (const TypeDef::Ptr& type = TypeDef::from(node)) {
-		generateTypeDef(type);
+		generateTypeDef(type, context);
 	} else {
 		stringstream s;
 		s << "Node " << node->getId() << " (" << node->getClassName() << ") cannot be compiled as a root node.";
@@ -61,13 +61,13 @@ void CodeGenerator::run(const NodePtr& node)
  * Looks up the node with the given id in the AST repository and calls run()
  * with that node as an argument.
  */
-void CodeGenerator::run(const NodeId& id)
+void CodeGenerator::run(const NodeId& id, RootContext& context)
 {
-	run(nodeRepository.getNode(id));
+	run(nodeRepository.getNode(id), context);
 }
 
 
-void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node)
+void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node, RootContext& context)
 {
 	BlockContext bodyContext = BlockContext();
 
@@ -113,8 +113,10 @@ void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node)
 			throw std::runtime_error("Return type generation for function should not spawn any statements.");
 	}
 
+	stringstream prototypeCode;
 	stringstream bodyCode;
-	bodyCode << returnType << " " << name << "(" << argsCode.str() << ")\n{\n";
+	prototypeCode << returnType << " " << name << "(" << argsCode.str() << ")";
+	bodyCode << prototypeCode.str() << "\n{\n";
 	for (vector<string>::iterator it = bodyContext.stmts.begin(); it != bodyContext.stmts.end(); it++) {
 		bodyCode << "    " << indent(*it) << "\n";
 	}
@@ -125,11 +127,15 @@ void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node)
 	}
 	bodyCode << "}";
 
+	// Add the generated code to the root context.
+	context.decls.insert(RootContext::Stmt(kFuncStage, prototypeCode.str() + ";"));
+	context.defs.insert(RootContext::Stmt(kFuncStage, bodyCode.str()));
+
 	cout << "Body of func \033[33;1m" << node->getName() << "\033[0m:\n" << dumpContext(bodyContext) << "\n";
 	cout << "Bare code: " << bodyCode.str() << "\n";
 }
 
-void CodeGenerator::generateTypeDef(const TypeDef::Ptr& node)
+void CodeGenerator::generateTypeDef(const TypeDef::Ptr& node, RootContext& context)
 {
 
 }

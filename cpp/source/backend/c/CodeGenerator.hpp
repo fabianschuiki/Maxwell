@@ -31,14 +31,37 @@ public:
 
 	CodeGenerator(ast::Repository& nr, backendc::Repository& br);
 
-	void run(const NodePtr& node);
-	void run(const NodeId& id);
+	struct RootContext {
+		struct Stmt {
+			int stage;
+			string code;
+			Stmt(int stage, const string& code): stage(stage), code(code) {}
+			bool operator< (const Stmt& b) const {
+				if (stage < b.stage) return true;
+				if (stage > b.stage) return false;
+				if (code < b.code) return true;
+				if (code > b.code) return false;
+				return false;
+			}
+		};
+		typedef set<Stmt> Stmts;
+		Stmts decls;
+		Stmts defs;
+	};
+
+	enum {
+		kTypeStage = 0,
+		kFuncStage
+	};
+
+	void run(const NodePtr& node, RootContext& context);
+	void run(const NodeId& id, RootContext& context);
 
 protected:
 	string indent(const string& in);
 
-	void generateFuncDef(const FuncDef::Ptr& node);
-	void generateTypeDef(const TypeDef::Ptr& node);
+	void generateFuncDef(const FuncDef::Ptr& node, RootContext& context);
+	void generateTypeDef(const TypeDef::Ptr& node, RootContext& context);
 
 	struct BlockContext {
 		typedef set<string> SymbolSet;

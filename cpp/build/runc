@@ -6,4 +6,4 @@ echo $NODES
 ./bendc $NODES
 CFILES=$(echo "$@" | sed 's/\.mw/\.c/g')
 NAME=$(echo "$@" | sed 's/\.mw.*//')
-gcc -o $NAME -ggdb -O3 $CFILES
+gcc -o $NAME -ggdb $CFILES

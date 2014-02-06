@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright © 2013-2014 Fabian Schuiki */
 #pragma once
 #include "SourceRepository.hpp"
 #include "NodeRepository.hpp"
@@ -36,6 +36,7 @@ public:
 	int registerSource(const string& s);
 	int unregisterSource(const string& s);
 	void unregisterSource(int i);
+	string getSourceName(int i);
 
 	// Dependency store.
 	void setDependenciesOfStage(const NodeId& id, const string& stage, const set<NodeId>& ids);

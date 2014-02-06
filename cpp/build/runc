@@ -1,0 +1,9 @@
+#!/bin/bash
+set +e
+NODES=$(./parse $@ | tail -n 1)
+echo $NODES
+./stage $NODES
+./bendc $NODES
+CFILES=$(echo "$@" | sed 's/\.mw/\.c/g')
+NAME=$(echo "$@" | sed 's/\.mw.*//')
+gcc -o $NAME -ggdb -O3 $CFILES

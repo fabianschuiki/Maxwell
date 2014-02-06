@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright © 2013-2014 Fabian Schuiki */
 #include "Repository.hpp"
 #include "nodes/interfaces.hpp"
 #include <stage/StageManager.hpp>
@@ -133,6 +133,14 @@ void Repository::unregisterSource(int i)
 	symbolRepo->removeExportedSymbol(i);
 	dependencyRepo->removeNode(i);
 	nodeFlagsRepo->removeFlags(i);
+}
+
+/**
+ * @brief Returns the name of the given source file.
+ */
+std::string Repository::getSourceName(int i)
+{
+	return sourceRepo->getSourceName(i);
 }
 
 /**

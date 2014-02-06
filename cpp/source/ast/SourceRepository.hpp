@@ -24,6 +24,7 @@ public:
 	typedef map<int, string> SourcesById;
 	const SourcesByName& getSourcesByName();
 	const SourcesById& getSourcesById();
+	const string& getSourceName(int id);
 
 	void flush();
 

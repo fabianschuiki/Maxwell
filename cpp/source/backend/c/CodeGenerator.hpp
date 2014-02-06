@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright © 2013-2014 Fabian Schuiki */
 #pragma once
 #include <ast/Node.hpp>
 #include <ast/Repository.hpp>

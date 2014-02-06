@@ -1,8 +1,9 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright © 2013-2014 Fabian Schuiki */
 #include "SourceRepository.hpp"
 #include <fstream>
 #include <stdexcept>
 #include <iostream>
+#include <sstream>
 
 using ast::SourceRepository;
 using std::string;
@@ -34,6 +35,23 @@ const SourceRepository::SourcesById& SourceRepository::getSourcesById()
 	if (!loaded) load();
 	return byId;
 }
+
+/**
+ * @brief Returns the name of the source file with the given ID, or throws an
+ * exception if no such file is known.
+ */
+const string& SourceRepository::getSourceName(int id)
+{
+	if (!loaded) load();
+	SourcesById::const_iterator it = byId.find(id);
+	if (it == byId.end()) {
+		std::stringstream s;
+		s << "No source file with ID " << id << " exists.";
+		throw std::runtime_error(s.str());
+	}
+	return it->second;
+}
+
 
 /**
  * @brief Flushes all changes to the persistent store on disk.

@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright © 2013-2014 Fabian Schuiki */
 #include "CodeGenerator.hpp"
 #include <ast/nodes/ast.hpp>
 #include <iostream>
@@ -131,8 +131,8 @@ void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node, RootContext& conte
 	context.decls.insert(RootContext::Stmt(kFuncStage, prototypeCode.str() + ";"));
 	context.defs.insert(RootContext::Stmt(kFuncStage, bodyCode.str()));
 
-	cout << "Body of func \033[33;1m" << node->getName() << "\033[0m:\n" << dumpContext(bodyContext) << "\n";
-	cout << "Bare code: " << bodyCode.str() << "\n";
+	// cout << "Body of func \033[33;1m" << node->getName() << "\033[0m:\n" << dumpContext(bodyContext) << "\n";
+	// cout << "Bare code: " << bodyCode.str() << "\n";
 }
 
 void CodeGenerator::generateTypeDef(const TypeDef::Ptr& node, RootContext& context)

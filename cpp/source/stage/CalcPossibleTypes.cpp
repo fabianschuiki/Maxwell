@@ -30,10 +30,17 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 	if (VariableInterface *var = node->asVariable()) {
 		if (const NodePtr& typeExpr = var->getTypeExpr(false)) {
 			addDependency(node, "typeExpr.evaluatedType");
-			var->setPossibleType(typeExpr->asTypeExpr()->getEvaluatedType());
+			var->setPossibleType(typeExpr->needTypeExpr()->getEvaluatedType());
 		} else {
 			addDependency(node, "typeExpr");
-			var->setPossibleType(NodePtr(new GenericType));
+			VarDefExpr::Ptr vardef;
+			NodePtr initialExpr;
+			if ((vardef = VarDefExpr::from(node)) && (initialExpr = vardef->getInitialExpr(false))) {
+				addDependency(node, "initialExpr.actualType");
+				var->setPossibleType(initialExpr->needType()->getActualType());
+			} else {
+				var->setPossibleType(NodePtr(new GenericType));
+			}
 		}
 	}
 

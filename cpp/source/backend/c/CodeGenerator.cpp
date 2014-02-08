@@ -137,7 +137,11 @@ void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node, RootContext& conte
 
 void CodeGenerator::generateTypeDef(const TypeDef::Ptr& node, RootContext& context)
 {
-
+	BlockContext ec;
+	stringstream s;
+	s << "typedef " << generateType(node->getType()->needTypeExpr()->getEvaluatedType(), ec);
+	s << " " << node->getName() << ";\n";
+	context.decls.insert(RootContext::Stmt(kTypeStage, s.str()));
 }
 
 CodeGenerator::ExprCode CodeGenerator::generateBlock(const BlockExpr::Ptr& node, BlockContext& context)
@@ -728,7 +732,8 @@ string CodeGenerator::generateType(const NodePtr& node, BlockContext& context)
 		// qualified type. Later on, we might want to change that to a point
 		// where these types may also be referred to by name.
 		if (const TypeDef::Ptr& td = TypeDef::from(def)) {
-			return generateType(td->getType()->needTypeExpr()->getEvaluatedType(), context);
+			return td->getName();
+			// return generateType(td->getType()->needTypeExpr()->getEvaluatedType(), context);
 		}
 	}
 

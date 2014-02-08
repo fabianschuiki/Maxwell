@@ -54,6 +54,7 @@ typedef enum {
 	kTupleTypeExprArg,
 	kTypeDef,
 	kTypeSet,
+	kTypelessVarDefExpr,
 	kUnaryOpExpr,
 	kUnionMappedType,
 	kUnionType,

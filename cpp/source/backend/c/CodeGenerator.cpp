@@ -219,6 +219,31 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 		return ec;
 	}
 
+	if (const TypelessVarDefExpr::Ptr& var = TypelessVarDefExpr::from(node))
+	{
+		// Generate a C-flavored name for this variable.
+		string name = var->getName() /*+ "_var"*/;
+		context.vars[var->getId()] = name;
+		context.usedSymbols.insert(name);
+
+		// Generate the statement that declares the variable.
+		stringstream stmt;
+		stmt << generateType(var->getActualType(), context) << " " << name;
+		if (const NodePtr& init = var->getInitialExpr()) {
+			ExprCode c = generateExpr(init, context);
+			stmt << " = " << precedenceWrapped(c, kAssignmentPrec);
+		}
+		stmt << ";";
+		context.stmts.push_back(stmt.str());
+
+		// Return the resulting ExprCode structure.
+		ExprCode ec;
+		ec.code = name;
+		ec.isRef = true;
+		ec.precedence = kPrimaryPrec;
+		return ec;
+	}
+
 	if (const NumberConstExpr::Ptr& num = NumberConstExpr::from(node)) {
 		ExprCode ec;
 		ec.code = num->getValue();

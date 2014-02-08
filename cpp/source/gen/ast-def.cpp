@@ -106,6 +106,9 @@ void buildAST(Builder &node)
 	node("VarDefExpr")
 		.intf(graph).intf(variable)
 		.child("initialExpr", "@Type");
+	node("TypelessVarDefExpr")
+		.intf(graph).intf(variable)
+		.child("initialExpr", "@Type");
 	node("CallExpr")
 		.intf(graph)
 		.attr("name", "string")

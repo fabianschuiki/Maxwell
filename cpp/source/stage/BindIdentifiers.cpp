@@ -40,6 +40,14 @@ void BindIdentifiers::process(const NodePtr& node)
 				}
 			}
 
+			// Bind to typeless variable definitions.
+			if (TypelessVarDefExpr *var = dynamic_cast<TypelessVarDefExpr*>(current.get())) {
+				if (var->getName() == name) {
+					target = current->getId();
+					break;
+				}
+			}
+
 			current = current->asGraph()->getGraphPrev(false);
 		}
 

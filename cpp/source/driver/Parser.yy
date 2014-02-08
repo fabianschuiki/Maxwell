@@ -106,6 +106,7 @@ typedef std::vector<NodePtr> Nodes;
 %token SEMICOLON ";"
 %token RIGHTARROW "right arrow ->"
 %token ASSIGN "assignment operator ="
+%token DEFASSIGN "typeless variable :="
 
 %destructor { delete $$; } IDENTIFIER NUMBER STRING_LITERAL MULTIPLICATIVE_OPERATOR ADDITIVE_OPERATOR RELATIONAL_OPERATOR OPERATOR
 
@@ -606,6 +607,13 @@ expr
   | var_expr { $$ = $<node>1; }
   | var_expr ASSIGN assignment_expr {
       $1->setInitialExpr(NodePtr($3));
+    }
+  | IDENTIFIER DEFASSIGN assignment_expr {
+      TypelessVarDefExpr *v = new TypelessVarDefExpr;
+      v->setName(*$1);
+      v->setInitialExpr(NodePtr($3));
+      $$ = v;
+      delete $1;
     }
   ;
 

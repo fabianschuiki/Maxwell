@@ -51,6 +51,7 @@
 #include "TupleTypeExprArg.hpp"
 #include "TypeDef.hpp"
 #include "TypeSet.hpp"
+#include "TypelessVarDefExpr.hpp"
 #include "UnaryOpExpr.hpp"
 #include "UnionMappedType.hpp"
 #include "UnionType.hpp"
@@ -360,6 +361,11 @@ public:
 					if (size >= 7 && name[4] == 'S' && name[5] == 'e' && name[6] == 't') {
 						// TypeSet
 						if (size == 7) return NodePtr(new TypeSet);
+					}
+					// TypelessVarDefExpr.*
+					if (size >= 18 && name[4] == 'l' && name[5] == 'e' && name[6] == 's' && name[7] == 's' && name[8] == 'V' && name[9] == 'a' && name[10] == 'r' && name[11] == 'D' && name[12] == 'e' && name[13] == 'f' && name[14] == 'E' && name[15] == 'x' && name[16] == 'p' && name[17] == 'r') {
+						// TypelessVarDefExpr
+						if (size == 18) return NodePtr(new TypelessVarDefExpr);
 					}
 				}
 			}

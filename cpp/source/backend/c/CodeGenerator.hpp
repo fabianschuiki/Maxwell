@@ -51,7 +51,8 @@ public:
 
 	enum {
 		kTypeStage = 0,
-		kFuncStage
+		kFuncStage,
+		kMainStage
 	};
 
 	void run(const NodePtr& node, RootContext& context);

@@ -11,6 +11,38 @@ using std::stringstream;
 using std::string;
 
 
+string makeValidName(const string& n)
+{
+	string o;
+	for (string::const_iterator itn = n.begin(); itn != n.end(); itn++) {
+		if ((*itn >= '0' && *itn <= '9') || (*itn >= 'a' && *itn <= 'z') || (*itn >= 'A' && *itn <= 'Z') || *itn == '_') {
+			o += *itn;
+		} else {
+			char buf[8];
+			o += 'x';
+			snprintf(buf, 8, "%02x", *itn);
+			o += buf[0];
+			o += buf[1];
+		}
+	}
+	return o;
+}
+
+string makeFuncName(const NodePtr& func)
+{
+	stringstream n;
+	string id = func->getId().str();
+	n << makeValidName(func->needNamed()->getName());
+	n << '_';
+	for (string::iterator it = id.begin(); it != id.end(); it++) {
+		if (*it == '.')
+			n << 'n';
+		else
+			n << *it;
+	}
+	return n.str();
+}
+
 string CodeGenerator::dumpContext(const BlockContext& ctx)
 {
 	stringstream s;
@@ -101,7 +133,7 @@ void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node, RootContext& conte
 	}
 
 	// Look up the C-flavored name and return type for this function.
-	string name = node->getName();
+	string name = makeFuncName(node);
 	const FuncType::Ptr& nodeType = FuncType::needFrom(node->getType());
 	string returnType;
 	if (nodeType->getOut()->isKindOf(kNilType)) {
@@ -131,6 +163,14 @@ void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node, RootContext& conte
 	context.decls.insert(RootContext::Stmt(kFuncStage, prototypeCode.str() + ";"));
 	context.defs.insert(RootContext::Stmt(kFuncStage, bodyCode.str()));
 
+	// If this is the main function, also create the int main() glue code.
+	if (node->getName() == "main") {
+		stringstream glue;
+		glue << "int main(int argc, char **argv) { ";
+		if (returnType != "void") glue << "return ";
+		glue << name << "(); }";
+		context.defs.insert(RootContext::Stmt(kMainStage, glue.str()));
+	}
 	// cout << "Body of func \033[33;1m" << node->getName() << "\033[0m:\n" << dumpContext(bodyContext) << "\n";
 	// cout << "Bare code: " << bodyCode.str() << "\n";
 }
@@ -313,7 +353,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 
 		// If the called function is a builtin function, generate specialized code.
 		if (const builtin::FuncDef::Ptr& bi = builtin::FuncDef::from(funcNode)) {
-			cout << "Generating code for builtin call to \"" << bi->getName() << "\" " << funcNode->getId() << "\n";
+			// cout << "Generating code for builtin call to \"" << bi->getName() << "\" " << funcNode->getId() << "\n";
 			const TupleType::Ptr& tupleIn = TupleType::needFrom(typeIn);
 			const string& name = bi->getName();
 
@@ -361,14 +401,14 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 
 		// If the called function is an implicit accessor, implement it directly.
 		else if (const ImplAccessor::Ptr& iac = ImplAccessor::from(funcNode)) {
-			cout << "Generating code for implicit accessor " << iac->getId() << " \"" << iac->getName() << "\"\n";
+			// cout << "Generating code for implicit accessor " << iac->getId() << " \"" << iac->getName() << "\"\n";
 
 			// If the name ends in "=", this is a setter, otherwise we're dealing with a getter.
 			string name = iac->getName();
 			bool isSetter = (name[name.length()-1] == '=');
 			if (isSetter)
 				name = name.substr(0, name.length()-1);
-			cout << "- " << name << ", setter = " << isSetter << "\n";
+			// cout << "- " << name << ", setter = " << isSetter << "\n";
 
 			// Generate the expression for accessing the requested field of the struct.
 			CallArgInterface* arg = args[0]->needCallArg();
@@ -397,7 +437,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 		else {
 			// throw std::runtime_error("Generating code for call to " + funcNode->getId().str() + " \"" + funcNode->needNamed()->getName() + "\" is not implemented.");
 			stringstream expr;
-			expr << funcNode->needNamed()->getName() << "(";
+			expr << makeFuncName(funcNode) << "(";
 			for (NodeVector::const_iterator it = args.begin(); it != args.end(); it++) {
 				CallArgInterface* arg = (*it)->needCallArg();
 				ExprCode ec = generateExpr(arg->getExpr(), context);
@@ -491,7 +531,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 			ExprCode ec_cond = generateExpr(cond->getCond(), context);
 			if (!isFirst) stmt << " else ";
 			stmt << "if (" << ec_cond.code << ") {\n";
-			
+
 			// Generate the code for the body of the branch.
 			BlockContext context_branch(&context);
 			context_branch.resVar = resVar;
@@ -616,7 +656,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 		type << "struct {\n";
 		type << "    int length;\n";
 		int length = ace->getExprs().size();
-		type << "    " << generateType(ace->getExprsType(), context) << "[" << length << "] elements;\n";
+		type << "    " << generateType(ace->getExprsType(), context) << " elements[" << length << "];\n";
 		type << "}";
 
 		string name = makeTmpVar(context);

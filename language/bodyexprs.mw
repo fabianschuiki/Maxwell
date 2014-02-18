@@ -1,0 +1,43 @@
+/* Copyright (c) 2014 Fabian Schuiki */
+
+// Regular body expression, evaluating to the last statement in the sequence.
+var x = { var i = 1; i + 2; }; // x = 3
+
+// Body expression with a predefined return variable, i.e. a variable which may
+// be modified inside the body and which will be used as resulting value.
+var x = r { r = 3; }; // x = 3
+var x = r Int { r = 3; } // x = 3
+
+// Body expression with multiple predefined return variables, yielding a tuple
+// return type.
+var x = (r,s) { r = 3; s = r + 1; }; // x = (3, 4)
+var x = (r Int, s Real) { r = 3; s = r + 1; }; // x = (3, 4.0)
+
+// A function may then be defined as a mapping from a tuple to an expression,
+// thus giving rise to the various return types implicitly. I.e. a function
+// never has input or output arguments, but simply maps one thing to another.
+func square x -> x*x // square.type = a -> a
+func fibonacci (x,y) -> x+y // fibonacci.type = (a,b) -> c
+func invsquare x -> r { r = x*x; r = 1/r; } // invsquare.type = a -> b
+func swapinc (x,y) -> (s,t) { s = y+1; t = x+1; } // swapinc.type = (a,b) -> (b,a)
+
+// A function definition simply consists of a name and an anonymous function
+// that is given a name. I.e. in its simplest terms, a function looks as
+// follows:
+x -> x*x; // simple function
+var a = x -> x*x (2); // a = 4; function call
+var f = x -> x*x; // f.type = a -> a
+
+// The language should support native function argument binding, i.e. fixing
+// certain arguments to a function as constants, thus generating a new function
+// with less arguments.
+func compose (a Int, b Int, c Int) -> r Int { ... }
+var f1 = compose; // f1.type = (a Int, b Int, c Int) -> r Int
+var f2 = compose.bind("a", 2); // f2 = (b Int, c Int) -> r Int
+var f3 = compose.bind("b", 5); // f3 = (a Int, c Int) -> r Int
+var f4 = f3.bind("a", 2).bind("c", 8); // f4 = () -> r Int
+
+// Performing a contextual call actually creates a bound function.
+var k = 123;
+k.compose(4,5);
+var f5 = k.compose; // f5 = (b Int, c Int) -> r Int

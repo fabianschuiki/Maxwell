@@ -27,3 +27,13 @@ type Iterator interface {
 \end{lstlisting}
 
 The language shall define an \emph{Iterator} interface as shown in listing \ref{iterator}. The \emph{next} function advances the iterator to the next element, or does nothing if the iterator went past the last element of its collection. The \emph{get} function provides access to the element the iterator is currently pointing at.
+
+
+\section{Sequential Expressions}
+
+Since everything is an expression in Maxwell, there are no statements. Blocks \lstinline|{ ... }| in classic C-like languages are statements, i.e. they describe a computational step and do not have a value. In Maxwell, blocks also have a return value, depending on the syntax used for their definition. The following possibilities exist:
+
+\begin{itemize}
+\item \emph{Implicit return value}. The basic C syntax for a block returns the last expression of the block as its value. \lstinline|{ expr0; expr1; ... exprn; } = exprn;|
+\item \emph{Explicit return value}. The block expression may be prefixed by a return variable name which may be assigned a value inside the block body. The variable may be used like any other variable or function argument, and will be returned as the block's value. \lstinline|r { expr0; r = expr1; expr2; } = r;|
+\end{itemize}

@@ -1,7 +1,9 @@
 PDFGEN = /usr/texbin/pdflatex
+CMD = ${PDFGEN} -output-directory=build -interaction=nonstopmode main.tex
 
 all: build
-	${PDFGEN} -output-directory=build -interaction=nonstopmode main.tex
+	${CMD}
+	${CMD}
 	cp build/main.pdf "Maxwell Language Design.pdf"
 
 build:

@@ -15,21 +15,21 @@
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
 
-% Configure the listings
-\definecolor{code_ln}{gray}{0.66}
-\definecolor{code_comment}{gray}{0.66}
-\definecolor{code_ident}{gray}{0.33}
-\definecolor{code_keyword}{rgb}{0.0, 0.5, 1.0}
-
 \lstset{
-	frame=tb,
-	language=C,
-	tabsize=2,
-	basicstyle=\footnotesize\ttfamily,
-	morekeywords={nil,any,func,type,value,object,interface,native,true,false,if,for,else,in,var,otherwise,defer,return},
-	numberstyle=\tiny\color{code_ln},
-	commentstyle=\color{code_comment}\textit,
-	keywordstyle=\color{code_keyword}\textbf
+  frame=single,
+  basicstyle=\small\ttfamily,
+  showspaces=false,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  breaklines=true,
+  showtabs=false,
+  language=C,
+  captionpos=b,
+  tabsize=2,
+  morekeywords={nil,any,func,type,value,object,interface,native,true,false,if,for,else,in,var,otherwise,defer,return},
+  commentstyle=\color[gray]{0.66},
+  keywordstyle=\color[rgb]{0.0, 0.33, 0.66},
+  rulecolor=\color[gray]{0.33}
 }
 
 \begin{document}
@@ -39,6 +39,8 @@
 
   \tableofcontents
 
+  \input{bodyexprs}
+  \input{functions}
   \input{misc}
 
   \newpage

@@ -2,25 +2,25 @@
 
 \subsection{Syntax}
 
-Functions represent the core concept of the Maxwell programming language. They map a set of input arguments to an output expression. This expression can be anything from a simple arithmetic operation to a complex algorithm. Unlike most members of the C family of languages, functions in Maxwell are anonymous and need to be assigned to a variable or given a name in order to be called. The syntax for a function definition looks as shown in listing \ref{lst:functions:def}.
+Functions represent the core concept of the Maxwell programming language. They map a set of input arguments to an output expression. This expression can be anything from a simple arithmetic operation to a complex algorithm. Unlike most members of the C family of languages, functions in Maxwell are anonymous and need to be assigned to a variable or given a name in order to be called. The syntax for a function definition looks as shown in listing \autoref{lst:functions:def}.
 
-\begin{lstlisting}[float, label=lst:functions:def, caption=Function definition syntax]
+\begin{lstlisting}[label=lst:functions:def, caption=Function definition syntax]
 -> expr // no arguments
 a0 -> expr // one argument
 (a1,a2) -> expr // multiple arguments
 \end{lstlisting}
 
-Functions are objects that may either be defined in global scope (as you would do in classic C), or that may be assigned to a variable which may be called later. The two possibilities are outlined in listing \ref{lst:functions:names}.
+Functions are objects that may either be defined in global scope (as you would do in classic C), or that may be assigned to a variable which may be called later. The two possibilities are outlined in listing \autoref{lst:functions:names}.
 
-\begin{lstlisting}[float, label=lst:functions:names, caption=Giving names to functions]
+\begin{lstlisting}[label=lst:functions:names, caption=Giving names to functions]
 square: x -> x*x;
 var f = x -> x*x;
 // callable as square(...) and f(...)
 \end{lstlisting}
 
-Note that the concept of return types the reader might be familiar with from the C language, arises from Maxwell's sequential expression. By using a sequential expression as the function's expression, any number of return types may be realized. Refer to the example in listing \ref{lst:functions:return}.
+Note that the concept of return types the reader might be familiar with from the C language, arises from Maxwell's sequential expression. By using a sequential expression as the function's expression, any number of return types may be realized. Refer to the example in listing \autoref{lst:functions:return}.
 
-\begin{lstlisting}[float, label=lst:functions:return, caption=Function return values]
+\begin{lstlisting}[label=lst:functions:return, caption=Function return values]
 square: x -> x*x
 fibonacci: (x,y) -> x+y
 invsquare: x -> r { r = x*x; r = 1/r; }
@@ -30,9 +30,9 @@ swapinc: (x,y) -> (s,t) { s = y+1; t = x+1; }
 
 \subsection{Bound Arguments}
 
-Maxwell shall support the notion of Bound Arguments. That is, certain arguments of a function may be set to a constant value, thus yielding a new function which lacks those arguments. This concept is similar to Haskell's \emph{currying}. This feature gives rise to contextual function calls (which C++ calls \emph{member function calls}) and encourages software design that relies on callback functions, as well as functional design in general. The concept is illustrated in an example in listing \ref{lst:functions:binding}.
+Maxwell shall support the notion of Bound Arguments. That is, certain arguments of a function may be set to a constant value, thus yielding a new function which lacks those arguments. This concept is similar to Haskell's \emph{currying}. This feature gives rise to contextual function calls (which C++ calls \emph{member function calls}) and encourages software design that relies on callback functions, as well as functional design in general. The concept is illustrated in an example in listing \autoref{lst:functions:binding}.
 
-\begin{lstlisting}[float, label=lst:functions:binding, caption=Example of function argument binding]
+\begin{lstlisting}[label=lst:functions:binding, caption=Example of function argument binding]
 add: (a Int, b Int) -> a+b;
 var increment = add.bind("b", 1);
 // add is a mapping (Int, Int) -> (Int)
@@ -45,9 +45,9 @@ var y = increment(1); // y = 2
 
 \subsection{Contextual Calls}
 
-Consider C++'s member functions. They are functions which have an implicit function argument representing the object they are called on. For example \lstinline{A a; B b; a.add(b);} is restructured to \lstinline{A::add(&a,b)}, implicitly passing \lstinline{a} as the first function argument. A similar concept is possible in Maxwell, yet in a more generic fashion. Typing \lstinline{var x = a.add(b);} in Maxwell encompasses an argument bind as well as a function call. The expression \lstinline{a.add} is restructured to \lstinline{add.bind(0,a)}, thus creating a new function which has its first argument bound to \lstinline{a}. Of course this expression by itself may already be assigned to a variable or given a name in order to call it later. Yet in this example the call expression \lstinline{...(b)} immediately calls the function and returns its result. See listing \ref{lst:functions:ctxcall} for an example.
+Consider C++'s member functions. They are functions which have an implicit function argument representing the object they are called on. For example \lstinline{A a; B b; a.add(b);} is restructured to \lstinline{A::add(&a,b)}, implicitly passing \lstinline{a} as the first function argument. A similar concept is possible in Maxwell, yet in a more generic fashion. Typing \lstinline{var x = a.add(b);} in Maxwell encompasses an argument bind as well as a function call. The expression \lstinline{a.add} is restructured to \lstinline{add.bind(0,a)}, thus creating a new function which has its first argument bound to \lstinline{a}. Of course this expression by itself may already be assigned to a variable or given a name in order to call it later. Yet in this example the call expression \lstinline{...(b)} immediately calls the function and returns its result. See listing \autoref{lst:functions:ctxcall} for an example.
 
-\begin{lstlisting}[float, label=lst:functions:ctxcall, caption=Contextual call examples]
+\begin{lstlisting}[label=lst:functions:ctxcall, caption=Contextual call examples]
 // The following are equivalent:
 a.add(b);
 add(a,b);

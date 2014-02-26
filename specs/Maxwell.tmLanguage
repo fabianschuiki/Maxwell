@@ -39,6 +39,12 @@
 			<string>variable.language.maxwell</string>
 		</dict>
 		<dict>
+			<key>match</key>
+			<string>[a-zA-Z0-9_\-]+\:</string>
+			<key>name</key>
+			<string>entity.name.function.maxwell</string>
+		</dict>
+		<dict>
 			<key>begin</key>
 			<string>"</string>
 			<key>beginCaptures</key>

@@ -5,7 +5,9 @@
 \usepackage[T1]{fontenc}
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{chngcntr}
 \usepackage{color}
+\usepackage{hyperref}
 
 % Configure the fancy headers
 \pagestyle{fancy}
@@ -24,25 +26,35 @@
   breaklines=true,
   showtabs=false,
   language=C,
-  captionpos=b,
+  captionpos=t,
   tabsize=2,
   morekeywords={nil,any,func,type,value,object,interface,native,true,false,if,for,else,in,var,otherwise,defer,return},
+  emph={Int,Real,Complex,String,Array,Map,Set},
+  emphstyle=\color[rgb]{0.33, 0.66, 1.0},
   commentstyle=\color[gray]{0.66},
   keywordstyle=\color[rgb]{0.0, 0.33, 0.66},
-  rulecolor=\color[gray]{0.33}
+  stringstyle=\color[rgb]{1.0, 0.5, 0.0},
+  numberstyle=\color[rgb]{1.0, 0.5, 0.0},
+  rulecolor=\color[gray]{0.66},
+  xleftmargin=0.25cm,
+  xrightmargin=0.25cm
 }
+
+\def\lstlistingautorefname{Listing}
 
 \begin{document}
   \title{Maxwell Language Design}
   \author{F. Schuiki (fschuiki@student.ethz.ch)}
   \maketitle
 
+  \counterwithin*{lstlisting}{section}
+  \renewcommand{\thelstlisting}{\thesection.\arabic{lstlisting}}
+
   \tableofcontents
 
   \input{bodyexprs}
   \input{functions}
-  \input{misc}
+  % \input{misc}
 
-  \newpage
   \lstlistoflistings
 \end{document}

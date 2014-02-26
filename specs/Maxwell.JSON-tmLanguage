@@ -16,6 +16,10 @@
             "match": "\\b(this)\\b", 
             "name": "variable.language.maxwell"
         },
+        {
+        	"match": "[a-zA-Z0-9_\\-]+\\:",
+        	"name": "entity.name.function.maxwell"
+        },
 
  		{
  			"begin": "\"",

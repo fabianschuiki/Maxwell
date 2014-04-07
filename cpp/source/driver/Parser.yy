@@ -54,7 +54,7 @@ typedef std::vector<NodePtr> Nodes;
 
 %type <node> func_def func_arg type_def if_expr for_expr expr call_arg
 
-%type <node> primary_expr ifcase_expr ifcase_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair body_expr block_expr nonempty_block_expr block_expr_expr macro_expr any_expr
+%type <node> primary_expr ifcase_expr ifcase_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair body_expr block_expr nonempty_block_expr block_expr_expr macro_expr any_expr func_expr
 %type <nodes> expr_list map_expr_pairs ifcase_expr_conds block_expr_exprs
 
 %type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg qualified_typeexpr qualified_typeexpr_qualifier specialized_typeexpr
@@ -107,6 +107,7 @@ typedef std::vector<NodePtr> Nodes;
 %token RIGHTARROW "right arrow ->"
 %token ASSIGN "assignment operator ="
 %token DEFASSIGN "typeless variable :="
+%token HASHTAG "#"
 
 %destructor { delete $$; } IDENTIFIER NUMBER STRING_LITERAL MULTIPLICATIVE_OPERATOR ADDITIVE_OPERATOR RELATIONAL_OPERATOR OPERATOR
 
@@ -195,10 +196,10 @@ func_def_name
 
 func_args_tuple
   : LPAREN RPAREN { $$ = new Nodes; }
-  | func_arg {
-      $$ = new Nodes;
-      $$->push_back(NodePtr($1));
-    }
+  // | func_arg {
+  //     $$ = new Nodes;
+  //     $$->push_back(NodePtr($1));
+  //   }
   | LPAREN func_args RPAREN {
       $$ = $2;
     }
@@ -384,8 +385,9 @@ for_expr
   ;
 
 body_expr
-  : block_expr
-  | expr SEMICOLON
+  // : block_expr
+  // | expr SEMICOLON
+  : primary_expr
   ;
 
 block_expr
@@ -576,9 +578,15 @@ or_expr
     }
   ;
 
-assignment_expr
+func_expr
   : or_expr
-  | assignment_expr ASSIGN or_expr {
+  | RIGHTARROW or_expr { $$ = $2; }
+  | func_args_tuple RIGHTARROW or_expr { $$ = $3; }
+  ;
+
+assignment_expr
+  : func_expr
+  | assignment_expr ASSIGN func_expr {
       AssignmentExpr *e = new AssignmentExpr;
       e->setLhs(NodePtr($1));
       e->setRhs(NodePtr($3));

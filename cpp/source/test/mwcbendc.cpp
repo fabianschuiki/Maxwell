@@ -49,7 +49,8 @@ int main(int argc, char *argv[])
 			sourceIds.insert(ids[i].source);
 		}
 		for (set<int>::iterator it = sourceIds.begin(); it != sourceIds.end(); it++) {
-			cout << "Packaging \033[1m" << *it << "\033[0m\n";
+			string name = repo.getSourceName(*it);
+			cout << "Packaging \033[1m" << *it << "\033[0m (" << name << ")\n";
 
 			backendc::CodeGenerator::RootContext context;
 			for (map<NodeId, backendc::CodeGenerator::RootContext>::iterator iu = contexts.begin(); iu != contexts.end(); iu++) {
@@ -57,7 +58,6 @@ int main(int argc, char *argv[])
 				context.defs.insert(iu->second.defs.begin(), iu->second.defs.end());
 			}
 
-			string name = repo.getSourceName(*it);
 			size_t colonpos = name.find_last_of('.');
 			if (colonpos != string::npos)
 				name = name.substr(0, colonpos);

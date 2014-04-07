@@ -121,6 +121,7 @@ symbol              {additive_op}|{multiplicative_op}|{relational_op}|{equality_
 "|"  return token::PIPE;
 "="  return token::ASSIGN;
 ":=" return token::DEFASSIGN;
+"#"  return token::HASHTAG;
 
 ({additive_op}{symbol}*|{symbol}*{additive_op})             storeToken; return token::ADDITIVE_OPERATOR;
 ({multiplicative_op}{symbol}*|{symbol}*{multiplicative_op}) storeToken; return token::MULTIPLICATIVE_OPERATOR;

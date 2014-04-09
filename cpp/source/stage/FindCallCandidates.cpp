@@ -34,11 +34,23 @@ void FindCallCandidates::process(const NodePtr& node)
 			nodes.push_back(n);
 		}
 
+		NodePtr current(node->asGraph()->getGraphPrev());
+		while (current) {
+			if (VariableInterface *var = current.get()->asVariable()) {
+				if (var->getName() == name) {
+					const NodePtr& type = var->getActualType(false);
+					if (!type || type->isKindOf(kFuncType)) {
+						nodes.push_back(current);
+					}
+				}
+			}
+			current = current->asGraph()->getGraphPrev(false);
+		}
+
 		// Wrap each node into a CallCandidate node.
 		NodeVector candidates;
 		for (NodeVector::iterator it = nodes.begin(); it != nodes.end(); it++) {
 			const NodePtr& funcNode = *it;
-			CallableInterface* func = funcNode->asCallable(); // always true due to the isKindOf(...) above
 			println(0, "Wrapping candidate " + funcNode->getId().str(), funcNode);
 
 			// Create the candidate object to hold the function.

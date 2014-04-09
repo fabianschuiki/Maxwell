@@ -22,8 +22,8 @@ class FuncExpr : public Node
 {
 public:
 	FuncExpr() : Node(),
-		interfaceType(this),
-		interfaceGraph(this) {}
+		interfaceGraph(this),
+		interfaceType(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -34,8 +34,8 @@ public:
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
-		if (i == kTypeInterface) return true;
 		if (i == kGraphInterface) return true;
+		if (i == kTypeInterface) return true;
 		return false;
 	}
 
@@ -305,8 +305,8 @@ public:
 	}
 
 	// Interfaces
-	virtual TypeInterface* asType() { return &this->interfaceType; }
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+	virtual TypeInterface* asType() { return &this->interfaceType; }
 
 	typedef boost::shared_ptr<FuncExpr> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<FuncExpr>(n); }
@@ -320,8 +320,8 @@ protected:
 	NodePtr expr;
 
 	// Interfaces
-	TypeInterfaceImpl<FuncExpr> interfaceType;
 	GraphInterfaceImpl<FuncExpr> interfaceGraph;
+	TypeInterfaceImpl<FuncExpr> interfaceType;
 };
 
 } // namespace ast

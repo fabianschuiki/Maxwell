@@ -69,7 +69,7 @@ void CodeGenerator::run(const NodeId& id, RootContext& context)
 
 void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node, RootContext& context)
 {
-	BlockContext bodyContext = BlockContext();
+	BlockContext bodyContext = BlockContext(&context);
 
 	// Generate the function input arguments.
 	stringstream argsCode;
@@ -83,7 +83,7 @@ void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node, RootContext& conte
 		bodyContext.usedSymbols.insert(name);
 
 		// Generate the code for this argument.
-		BlockContext c;
+		BlockContext c(&context);
 		if (it != args.begin()) argsCode << ", ";
 		argsCode << generateType(arg->getActualType(), c) << " " << name;
 		if (!c.stmts.empty())
@@ -107,7 +107,7 @@ void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node, RootContext& conte
 	if (nodeType->getOut()->isKindOf(kNilType)) {
 		returnType = "void";
 	} else {
-		BlockContext c;
+		BlockContext c(&context);
 		returnType = generateType(nodeType->getOut(), c);
 		if (!c.stmts.empty())
 			throw std::runtime_error("Return type generation for function should not spawn any statements.");
@@ -137,7 +137,7 @@ void CodeGenerator::generateFuncDef(const FuncDef::Ptr& node, RootContext& conte
 
 void CodeGenerator::generateTypeDef(const TypeDef::Ptr& node, RootContext& context)
 {
-	BlockContext ec;
+	BlockContext ec(&context);
 	stringstream s;
 	s << "typedef " << generateType(node->getType()->needTypeExpr()->getEvaluatedType(), ec);
 	s << " " << node->getName() << ";\n";
@@ -304,10 +304,15 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 		// Find the called function.
 		const CallCandidate::Ptr& candidate = CallCandidate::needFrom(call->getSelectedCallCandidate()); // throws if null
 		const NodePtr& funcNode = candidate->getFunc();
-		CallableInterface* func = funcNode->needCallable();
+		// CallableInterface* func = funcNode->needCallable();
 		const NodeVector& args = call->getCallArgs();
 
-		const FuncType::Ptr& type = FuncType::needFrom(func->getType());
+		// const FuncType::Ptr& type = FuncType::needFrom(func->getType());
+		FuncType::Ptr type;
+		if (CallableInterface* func = funcNode->asCallable())
+			type = FuncType::needFrom(func->getType());
+		else
+			type = FuncType::needFrom(funcNode->needType()->getActualType());
 		const NodePtr& typeIn  = type->getIn();
 		const NodePtr& typeOut = type->getOut();
 
@@ -644,6 +649,74 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 		return ec;
 	}
 
+	if (const FuncExpr::Ptr& func = FuncExpr::from(node)) {
+		BlockContext bodyContext(context.root);
+
+		// Generate the function input arguments.
+		stringstream argsCode;
+		const NodeVector& args = func->getArgs();
+		for (NodeVector::const_iterator it = args.begin(); it != args.end(); it++) {
+			const FuncArg::Ptr& arg = FuncArg::needFrom(*it);
+
+			// Generate a C-flavored name for this argument.
+			string name = arg->getName() /*+ "_arg"*/;
+			bodyContext.vars[arg->getId()] = name;
+			bodyContext.usedSymbols.insert(name);
+
+			// Generate the code for this argument.
+			BlockContext c(context.root);
+			if (it != args.begin()) argsCode << ", ";
+			argsCode << generateType(arg->getActualType(), c) << " " << name;
+			if (!c.stmts.empty())
+				throw std::runtime_error("Function argument type generation should not spawn any statements.");
+		}
+
+		// Generate the code for the body.
+		ExprCode ec;
+		const NodePtr& body = func->getExpr();
+
+		if (const BlockExpr::Ptr& block = BlockExpr::from(body)) {
+			ec = generateBlock(block, bodyContext);
+		} else {
+			ec = generateExpr(body, bodyContext);
+		}
+
+		// Look up the C-flavored name and return type for this function.
+		string name = "lambda_" + node->getId().str();
+		std::replace(name.begin(), name.end(), '.', '_');
+		const FuncType::Ptr& nodeType = FuncType::needFrom(func->getActualType());
+		string returnType;
+		if (nodeType->getOut()->isKindOf(kNilType)) {
+			returnType = "void";
+		} else {
+			BlockContext c(context.root);
+			returnType = generateType(nodeType->getOut(), c);
+			if (!c.stmts.empty())
+				throw std::runtime_error("Return type generation for function should not spawn any statements.");
+		}
+
+		stringstream prototypeCode;
+		stringstream bodyCode;
+		prototypeCode << returnType << " " << name << "(" << argsCode.str() << ")";
+		bodyCode << prototypeCode.str() << "\n{\n";
+		for (vector<string>::iterator it = bodyContext.stmts.begin(); it != bodyContext.stmts.end(); it++) {
+			bodyCode << "    " << indent(*it) << "\n";
+		}
+		bodyCode << "    return " << ec.code << ";\n";
+		bodyCode << "}";
+
+		// Add the generated code to the root context.
+		context.root->decls.insert(RootContext::Stmt(kFuncStage, prototypeCode.str() + ";"));
+		context.root->defs.insert(RootContext::Stmt(kFuncStage, bodyCode.str()));
+
+		// Synthesize an expression that obtains a pointer to the function.
+		ExprCode fec;
+		fec.isRef = true;
+		fec.precedence = kPrimaryPrec;
+		fec.code = "&"+name;
+		return fec;
+	}
+
 	// If we get to this location, the expression could not be converted to C code.
 	throw std::runtime_error("Code for expression " + node->getClassName() + " cannot be generated.");
 }
@@ -749,6 +822,51 @@ string CodeGenerator::generateType(const NodePtr& node, BlockContext& context)
 			s << "Code generation for tuple types with " << args.size() << " arguments not implemented.";
 			throw std::runtime_error(s.str());
 		}
+	}
+
+	if (const FuncType::Ptr& func = FuncType::from(node))
+	{
+		// return "/* " + func->describe() + " */";
+		const NodePtr& in = func->getIn();
+
+		// Generate the function arguments.
+		stringstream argsCode;
+		if (func->getIn()->isKindOf(kTupleType)) {
+			const NodeVector& args = TupleType::needFrom(func->getIn())->getArgs();
+			for (NodeVector::const_iterator it = args.begin(); it != args.end(); it++) {
+				const TupleTypeArg::Ptr& arg = TupleTypeArg::needFrom(*it);
+
+				// Generate the code for this argument.
+				BlockContext c(context.root);
+				if (it != args.begin()) argsCode << ", ";
+				argsCode << generateType(arg->getType(), c);
+				if (!c.stmts.empty())
+					throw std::runtime_error("Function argument type generation should not spawn any statements.");
+			}
+		} else if (!func->getIn()->isKindOf(kNilType)) {
+			stringstream s;
+			s << "FuncType " << func->getId() << " \"" << func->describe() << "\" must either have TupleType or NilType as input.";
+			throw std::runtime_error(s.str());
+		}
+
+		// Generate the return type.
+		string returnType;
+		if (func->getOut()->isKindOf(kNilType)) {
+			returnType = "void";
+		} else {
+			BlockContext c(context.root);
+			returnType = generateType(func->getOut(), c);
+			if (!c.stmts.empty())
+				throw std::runtime_error("Return type generation for function should not spawn any statements.");
+		}
+
+		string name = "funcptr_" + func->getId().str();
+		std::replace(name.begin(), name.end(), '.', '_');
+		stringstream r;
+		r << "typedef " << returnType << ' ' << "(*" << name << ")(" << argsCode.str() << ");";
+		assert(context.root);
+		context.root->decls.insert(RootContext::Stmt(kTypeStage, r.str()));
+		return name;
 	}
 
 	if (const QualifiedType::Ptr& qual = QualifiedType::from(node))

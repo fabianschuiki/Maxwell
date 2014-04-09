@@ -22,8 +22,8 @@ class NativeQualifier : public Node
 {
 public:
 	NativeQualifier() : Node(),
-		interfaceNamed(this),
-		interfaceGraph(this) {}
+		interfaceGraph(this),
+		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -34,8 +34,8 @@ public:
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
-		if (i == kNamedInterface) return true;
 		if (i == kGraphInterface) return true;
+		if (i == kNamedInterface) return true;
 		return false;
 	}
 
@@ -138,8 +138,8 @@ public:
 	}
 
 	// Interfaces
-	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
 	typedef boost::shared_ptr<NativeQualifier> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<NativeQualifier>(n); }
@@ -149,8 +149,8 @@ protected:
 	string name;
 
 	// Interfaces
-	NamedInterfaceImpl<NativeQualifier> interfaceNamed;
 	GraphInterfaceImpl<NativeQualifier> interfaceGraph;
+	NamedInterfaceImpl<NativeQualifier> interfaceNamed;
 };
 
 } // namespace ast

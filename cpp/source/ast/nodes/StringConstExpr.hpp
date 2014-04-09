@@ -22,8 +22,8 @@ class StringConstExpr : public Node
 {
 public:
 	StringConstExpr() : Node(),
-		interfaceType(this),
-		interfaceGraph(this) {}
+		interfaceGraph(this),
+		interfaceType(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -34,8 +34,8 @@ public:
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
-		if (i == kTypeInterface) return true;
 		if (i == kGraphInterface) return true;
+		if (i == kTypeInterface) return true;
 		return false;
 	}
 
@@ -240,8 +240,8 @@ public:
 	}
 
 	// Interfaces
-	virtual TypeInterface* asType() { return &this->interfaceType; }
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+	virtual TypeInterface* asType() { return &this->interfaceType; }
 
 	typedef boost::shared_ptr<StringConstExpr> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<StringConstExpr>(n); }
@@ -254,8 +254,8 @@ protected:
 	string value;
 
 	// Interfaces
-	TypeInterfaceImpl<StringConstExpr> interfaceType;
 	GraphInterfaceImpl<StringConstExpr> interfaceGraph;
+	TypeInterfaceImpl<StringConstExpr> interfaceType;
 };
 
 } // namespace ast

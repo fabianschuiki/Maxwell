@@ -22,10 +22,10 @@ class VarDefExpr : public Node
 {
 public:
 	VarDefExpr() : Node(),
+		interfaceGraph(this),
 		interfaceType(this),
 		interfaceVariable(this),
-		interfaceNamed(this),
-		interfaceGraph(this) {}
+		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -36,10 +36,10 @@ public:
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
+		if (i == kGraphInterface) return true;
 		if (i == kTypeInterface) return true;
 		if (i == kVariableInterface) return true;
 		if (i == kNamedInterface) return true;
-		if (i == kGraphInterface) return true;
 		return false;
 	}
 
@@ -318,10 +318,10 @@ public:
 	}
 
 	// Interfaces
+	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual TypeInterface* asType() { return &this->interfaceType; }
 	virtual VariableInterface* asVariable() { return &this->interfaceVariable; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
-	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 
 	typedef boost::shared_ptr<VarDefExpr> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<VarDefExpr>(n); }
@@ -336,10 +336,10 @@ protected:
 	NodePtr initialExpr;
 
 	// Interfaces
+	GraphInterfaceImpl<VarDefExpr> interfaceGraph;
 	TypeInterfaceImpl<VarDefExpr> interfaceType;
 	VariableInterfaceImpl<VarDefExpr> interfaceVariable;
 	NamedInterfaceImpl<VarDefExpr> interfaceNamed;
-	GraphInterfaceImpl<VarDefExpr> interfaceGraph;
 };
 
 } // namespace ast

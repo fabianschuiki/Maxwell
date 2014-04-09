@@ -192,7 +192,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 			const NodeVector& candidates = intf->getCallCandidates();
 			for (NodeVector::const_iterator it = candidates.begin(); it != candidates.end(); it++) {
 				const CallCandidate::Ptr& candidate = CallCandidate::needFrom(*it);
-					if (candidate->getFeasible()) {
+				if (candidate->getFeasible()) {
 					outTypes.push_back(candidate->getActualType());
 				}
 				addDependency(candidate, "feasible");
@@ -211,11 +211,21 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 
 	// Call candidates simply copy the function's return type.
 	if (const CallCandidate::Ptr& candidate = CallCandidate::from(node)) {
+		if (!candidate->getFeasible()) return;
+
 		const NodePtr& funcNode = candidate->getFunc();
-		CallableInterface* func = funcNode->needCallable();
-		const FuncType::Ptr& funcType = FuncType::needFrom(func->getType());
+		FuncType::Ptr funcType;
+		if (CallableInterface* func = funcNode->asCallable()) {
+			funcType = FuncType::needFrom(func->getType());
+			addDependency(funcNode, "type.out");
+		} else if (TypeInterface* type = funcNode->asType()) {
+			funcType = FuncType::needFrom(type->getActualType());
+			addDependency(funcNode, "actualType.out");
+		} else {
+			candidate->setFeasible(false);
+			return;
+		}
 		const TupleType::Ptr& outTuple = TupleType::from(funcType->getOut());
-		addDependency(funcNode, "type.out");
 
 		// If the output type of the function is not a tuple we reuse it directly.
 		// Otherwise we dissect the tuple. This step should become obsolete later on

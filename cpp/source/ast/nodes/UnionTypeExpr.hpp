@@ -22,8 +22,8 @@ class UnionTypeExpr : public Node
 {
 public:
 	UnionTypeExpr() : Node(),
-		interfaceTypeExpr(this),
-		interfaceGraph(this) {}
+		interfaceGraph(this),
+		interfaceTypeExpr(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -34,8 +34,8 @@ public:
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
-		if (i == kTypeExprInterface) return true;
 		if (i == kGraphInterface) return true;
+		if (i == kTypeExprInterface) return true;
 		return false;
 	}
 
@@ -203,8 +203,8 @@ public:
 	}
 
 	// Interfaces
-	virtual TypeExprInterface* asTypeExpr() { return &this->interfaceTypeExpr; }
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+	virtual TypeExprInterface* asTypeExpr() { return &this->interfaceTypeExpr; }
 
 	typedef boost::shared_ptr<UnionTypeExpr> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<UnionTypeExpr>(n); }
@@ -215,8 +215,8 @@ protected:
 	NodeVector types;
 
 	// Interfaces
-	TypeExprInterfaceImpl<UnionTypeExpr> interfaceTypeExpr;
 	GraphInterfaceImpl<UnionTypeExpr> interfaceGraph;
+	TypeExprInterfaceImpl<UnionTypeExpr> interfaceTypeExpr;
 };
 
 } // namespace ast

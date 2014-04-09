@@ -22,9 +22,9 @@ class IdentifierExpr : public Node
 {
 public:
 	IdentifierExpr() : Node(),
+		interfaceGraph(this),
 		interfaceType(this),
-		interfaceNamed(this),
-		interfaceGraph(this) {}
+		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -35,9 +35,9 @@ public:
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
+		if (i == kGraphInterface) return true;
 		if (i == kTypeInterface) return true;
 		if (i == kNamedInterface) return true;
-		if (i == kGraphInterface) return true;
 		return false;
 	}
 
@@ -282,9 +282,9 @@ public:
 	}
 
 	// Interfaces
+	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual TypeInterface* asType() { return &this->interfaceType; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
-	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 
 	typedef boost::shared_ptr<IdentifierExpr> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<IdentifierExpr>(n); }
@@ -298,9 +298,9 @@ protected:
 	NodeRef bindingTarget;
 
 	// Interfaces
+	GraphInterfaceImpl<IdentifierExpr> interfaceGraph;
 	TypeInterfaceImpl<IdentifierExpr> interfaceType;
 	NamedInterfaceImpl<IdentifierExpr> interfaceNamed;
-	GraphInterfaceImpl<IdentifierExpr> interfaceGraph;
 };
 
 } // namespace ast

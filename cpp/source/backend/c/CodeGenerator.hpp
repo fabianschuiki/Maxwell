@@ -66,24 +66,36 @@ protected:
 	struct BlockContext {
 		typedef set<string> SymbolSet;
 		typedef map<NodeId, string> VarMap;
+		typedef map<string, string> Typedefs;
 		typedef vector<string> Stmts;
 
+		RootContext *root;
 		BlockContext *parent;
 		SymbolSet usedSymbols;
 		VarMap vars;
 		Stmts stmts;
+		Typedefs typedefs;
 		int tmpIndex;
 		string resVar;
 
 		BlockContext() {
+			root = NULL;
 			parent = NULL;
 			tmpIndex = 0;
 		}
 
-		BlockContext(BlockContext* p) {
+		explicit BlockContext(RootContext* r) {
+			root = r;
+			parent = NULL;
+			tmpIndex = 0;
+		}
+
+		explicit BlockContext(BlockContext* p) {
 			vars = p->vars;
 			usedSymbols = p->usedSymbols;
+			typedefs = p->typedefs;
 			resVar = p->resVar;
+			root = p->root;
 			parent = p;
 			tmpIndex = p->tmpIndex;
 		}

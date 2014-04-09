@@ -54,14 +54,22 @@ void CalcRequiredTypes::process(const NodePtr& node)
 
 			for (NodeVector::const_iterator it = candidates.begin(); it != candidates.end(); it++) {
 				const CallCandidate::Ptr& candidate = CallCandidate::needFrom(*it);
+				if (!candidate->getFeasible()) continue;
+
+				// Fetch the FuncType either from the candidate's func or funcExpr.
+				FuncType::Ptr funcType;
 				const NodePtr& funcNode = candidate->getFunc();
-				CallableInterface* func = funcNode->needCallable();
-				const FuncType::Ptr& funcType = FuncType::needFrom(func->getType());
+				if (CallableInterface* func = funcNode->asCallable()) {
+					funcType = FuncType::needFrom(func->getType());
+					addDependency(funcNode, "type.in");
+				} else {
+					funcType = FuncType::needFrom(funcNode->needType()->getActualType());
+					addDependency(funcNode, "actualType.in");
+				}
 				const TupleType::Ptr& inTupleType = TupleType::from(funcType->getIn());
 
 				// Calculate the required types for each argument.
 				const NodeVector& args = candidate->getArgs();
-				addDependency(funcNode, "type.in");
 
 				for (int i = 0; i < args.size(); i++) {
 					NodePtr type;

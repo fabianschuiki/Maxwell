@@ -50,7 +50,7 @@ void buildAST(Builder &node)
 		.attr("name", "string")
 		.attr("expr", "&@Type");
 	node("CallCandidate")
-		.attr("func", "&@Callable")
+		.attr("func", "&@Callable|@Type")
 		.child("args", "[CallCandidateArg]")
 		.attr("feasible", "bool")
 		.attr("cost", "int")

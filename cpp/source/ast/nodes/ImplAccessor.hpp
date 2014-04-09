@@ -22,9 +22,9 @@ class ImplAccessor : public Node
 {
 public:
 	ImplAccessor() : Node(),
-		interfaceGraph(this),
 		interfaceCallable(this),
-		interfaceNamed(this) {}
+		interfaceNamed(this),
+		interfaceGraph(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -35,9 +35,9 @@ public:
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
-		if (i == kGraphInterface) return true;
 		if (i == kCallableInterface) return true;
 		if (i == kNamedInterface) return true;
+		if (i == kGraphInterface) return true;
 		return false;
 	}
 
@@ -176,9 +176,9 @@ public:
 	}
 
 	// Interfaces
-	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual CallableInterface* asCallable() { return &this->interfaceCallable; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
+	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 
 	typedef boost::shared_ptr<ImplAccessor> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<ImplAccessor>(n); }
@@ -189,9 +189,9 @@ protected:
 	NodePtr type;
 
 	// Interfaces
-	GraphInterfaceImpl<ImplAccessor> interfaceGraph;
 	CallableInterfaceImpl<ImplAccessor> interfaceCallable;
 	NamedInterfaceImpl<ImplAccessor> interfaceNamed;
+	GraphInterfaceImpl<ImplAccessor> interfaceGraph;
 };
 
 } // namespace ast

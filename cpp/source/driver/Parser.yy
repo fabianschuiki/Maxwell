@@ -15,6 +15,12 @@ typedef std::vector<NodePtr> Nodes;
 /* Require Bison 2.3 */
 %require "2.3"
 
+/* Generate a Generalized LR parser. This allows the parser to resolve more
+ * convoluted grammar rules that are not parsable with LR(1). See the Bison
+ * website at http://www.gnu.org/software/bison/manual/bison.html for more
+ * information. */
+%glr-parser
+
 /* Produce debug output. Disable this for the release version. */
 %debug
 
@@ -196,10 +202,10 @@ func_def_name
 
 func_args_tuple
   : LPAREN RPAREN { $$ = new Nodes; }
-  // | func_arg {
-  //     $$ = new Nodes;
-  //     $$->push_back(NodePtr($1));
-  //   }
+  | func_arg {
+      $$ = new Nodes;
+      $$->push_back(NodePtr($1));
+    }
   | LPAREN func_args RPAREN {
       $$ = $2;
     }
@@ -580,8 +586,18 @@ or_expr
 
 func_expr
   : or_expr
-  | RIGHTARROW or_expr { $$ = $2; }
-  | func_args_tuple RIGHTARROW or_expr { $$ = $3; }
+  | RIGHTARROW or_expr {
+      FuncExpr *e = new FuncExpr;
+      e->setExpr(NodePtr($2));
+      $$ = e;
+    }
+  | func_args_tuple RIGHTARROW or_expr {
+      FuncExpr *e = new FuncExpr;
+      e->setArgs(*$1);
+      e->setExpr(NodePtr($3));
+      delete $1;
+      $$ = e;
+    }
   ;
 
 assignment_expr

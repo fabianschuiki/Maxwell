@@ -22,9 +22,9 @@ class StructureQualifierMember : public Node
 {
 public:
 	StructureQualifierMember() : Node(),
-		interfaceGraph(this),
 		interfaceCallable(this),
-		interfaceNamed(this) {}
+		interfaceNamed(this),
+		interfaceGraph(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -35,9 +35,9 @@ public:
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
-		if (i == kGraphInterface) return true;
 		if (i == kCallableInterface) return true;
 		if (i == kNamedInterface) return true;
+		if (i == kGraphInterface) return true;
 		return false;
 	}
 
@@ -254,9 +254,9 @@ public:
 	}
 
 	// Interfaces
-	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual CallableInterface* asCallable() { return &this->interfaceCallable; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
+	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 
 	typedef boost::shared_ptr<StructureQualifierMember> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<StructureQualifierMember>(n); }
@@ -269,9 +269,9 @@ protected:
 	NodePtr implGetter;
 
 	// Interfaces
-	GraphInterfaceImpl<StructureQualifierMember> interfaceGraph;
 	CallableInterfaceImpl<StructureQualifierMember> interfaceCallable;
 	NamedInterfaceImpl<StructureQualifierMember> interfaceNamed;
+	GraphInterfaceImpl<StructureQualifierMember> interfaceGraph;
 };
 
 } // namespace ast

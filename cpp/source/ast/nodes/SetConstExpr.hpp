@@ -22,8 +22,8 @@ class SetConstExpr : public Node
 {
 public:
 	SetConstExpr() : Node(),
-		interfaceGraph(this),
-		interfaceType(this) {}
+		interfaceType(this),
+		interfaceGraph(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -34,8 +34,8 @@ public:
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
-		if (i == kGraphInterface) return true;
 		if (i == kTypeInterface) return true;
+		if (i == kGraphInterface) return true;
 		return false;
 	}
 
@@ -301,8 +301,8 @@ public:
 	}
 
 	// Interfaces
-	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual TypeInterface* asType() { return &this->interfaceType; }
+	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 
 	typedef boost::shared_ptr<SetConstExpr> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<SetConstExpr>(n); }
@@ -316,8 +316,8 @@ protected:
 	NodePtr exprsType;
 
 	// Interfaces
-	GraphInterfaceImpl<SetConstExpr> interfaceGraph;
 	TypeInterfaceImpl<SetConstExpr> interfaceType;
+	GraphInterfaceImpl<SetConstExpr> interfaceGraph;
 };
 
 } // namespace ast

@@ -19,6 +19,7 @@ typedef enum {
 	kForExpr,
 	kFuncArg,
 	kFuncDef,
+	kFuncExpr,
 	kFuncType,
 	kGenericType,
 	kIdentifierExpr,

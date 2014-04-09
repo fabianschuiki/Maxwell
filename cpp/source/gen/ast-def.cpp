@@ -162,6 +162,10 @@ void buildAST(Builder &node)
 	node("BlockExpr")
 		.intf(graph).intf(type)
 		.child("exprs", "[@Type]");
+	node("FuncExpr")
+		.intf(graph).intf(type)
+		.child("args", "[any]")
+		.child("expr", "@Type");
 
 	// Type Expressions
 	node("NamedTypeExpr")

@@ -16,6 +16,7 @@
 #include "ForExpr.hpp"
 #include "FuncArg.hpp"
 #include "FuncDef.hpp"
+#include "FuncExpr.hpp"
 #include "FuncType.hpp"
 #include "GenericType.hpp"
 #include "IdentifierExpr.hpp"
@@ -156,6 +157,11 @@ public:
 					if (size >= 7 && name[4] == 'D' && name[5] == 'e' && name[6] == 'f') {
 						// FuncDef
 						if (size == 7) return NodePtr(new FuncDef);
+					}
+					// FuncExpr.*
+					if (size >= 8 && name[4] == 'E' && name[5] == 'x' && name[6] == 'p' && name[7] == 'r') {
+						// FuncExpr
+						if (size == 8) return NodePtr(new FuncExpr);
 					}
 					// FuncType.*
 					if (size >= 8 && name[4] == 'T' && name[5] == 'y' && name[6] == 'p' && name[7] == 'e') {

@@ -243,6 +243,36 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		arg->setPossibleType(arg->getArg()->needCallArg()->getExpr()->needType()->getPossibleType());
 	}
 
+	if (const FuncExpr::Ptr& fe = FuncExpr::from(node)) {
+		addDependency(fe, "expr.actualType");
+		const NodeVector& args = fe->getArgs();
+		const NodePtr& expr = fe->getExpr();
+
+		// Assemble the input arguments.
+		NodePtr inType;
+		if (args.empty()) {
+			inType.reset(new NilType);
+		} else {
+			NodeVector tupleArgs;
+			for (NodeVector::const_iterator it = args.begin(); it != args.end(); it++) {
+				const FuncArg::Ptr& funcArg = FuncArg::from(*it);
+				TupleTypeArg::Ptr arg(new TupleTypeArg);
+				arg->setName(funcArg->getName());
+				arg->setType(funcArg->getPossibleType());
+				tupleArgs.push_back(arg);
+			}
+
+			TupleType::Ptr tuple(new TupleType);
+			tuple->setArgs(tupleArgs);
+			inType = tuple;
+		}
+
+		FuncType::Ptr type(new FuncType);
+		type->setIn(inType);
+		type->setOut(expr->needType()->getActualType());
+		fe->setPossibleType(type);
+	}
+
 
 	/*
 	 * Wrapping up.

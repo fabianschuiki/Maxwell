@@ -37,6 +37,13 @@ public:
 
 	virtual string getClassName() const { return "TypeSet"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new TypeSet);
+		Node::copy(this->types, c->types);
+		return c;
+	}
+
 	void setTypes(const NodeVector& v)
 	{
 		if (!equal(v, types)) {

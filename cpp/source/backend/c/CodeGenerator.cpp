@@ -336,6 +336,8 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 			// Binary operator
 			else if (args.size() == 2) {
 				int p = -1;
+				if (name == "||") p = kOrPrec;
+				if (name == "&&") p = kAndPrec;
 				if (name == "==" || name == "!=") p = kEqualityPrec;
 				if (name == ">" || name == "<" || name == ">=" || name == "<=") p = kRelationalPrec;
 				if (name == "+" || name == "-") p = kAdditivePrec;

@@ -43,6 +43,15 @@ public:
 
 	virtual string getClassName() const { return "CallExprArg"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new CallExprArg);
+		Node::copy(this->graphPrev, c->graphPrev);
+		Node::copy(this->name, c->name);
+		Node::copy(this->expr, c->expr);
+		return c;
+	}
+
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {

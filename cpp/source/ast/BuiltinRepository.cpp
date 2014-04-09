@@ -128,14 +128,24 @@ void BuiltinRepository::build()
 	const builtin::NumericType::Ptr& tBool = numericType("Bool");
 
 	funcDef("!", tBool, tBool);
+	funcDef("&&", tBool, tBool, tBool);
+	funcDef("||", tBool, tBool, tBool);
+
+	const char* equalityNames[] = {
+		"==", "!=", NULL
+	};
+	for (int i = 0; equalityNames[i]; i++) {
+		funcDef(equalityNames[i], tInt, tInt, tBool);
+		funcDef(equalityNames[i], tReal, tReal, tBool);
+		funcDef(equalityNames[i], tBool, tBool, tBool);
+	}
 
 	const char* comparisonNames[] = {
-		"==", "!=", ">", "<", ">=", "<=", NULL
+		">", "<", ">=", "<=", NULL
 	};
 	for (int i = 0; comparisonNames[i]; i++) {
 		funcDef(comparisonNames[i], tInt, tInt, tBool);
 		funcDef(comparisonNames[i], tReal, tReal, tBool);
-		funcDef(comparisonNames[i], tBool, tBool, tBool);
 	}
 
 	const char* mathBinaryNames[] = {

@@ -43,6 +43,17 @@ public:
 
 	virtual string getClassName() const { return "StructureQualifierMember"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new StructureQualifierMember);
+		Node::copy(this->graphPrev, c->graphPrev);
+		Node::copy(this->name, c->name);
+		Node::copy(this->type, c->type);
+		Node::copy(this->implSetter, c->implSetter);
+		Node::copy(this->implGetter, c->implGetter);
+		return c;
+	}
+
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {

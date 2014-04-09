@@ -37,6 +37,12 @@ public:
 
 	virtual string getClassName() const { return "NilType"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new NilType);
+		return c;
+	}
+
 	virtual string describe(int depth = -1)
 	{
 		stringstream str, b;

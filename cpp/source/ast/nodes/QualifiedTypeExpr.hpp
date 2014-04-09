@@ -41,6 +41,15 @@ public:
 
 	virtual string getClassName() const { return "QualifiedTypeExpr"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new QualifiedTypeExpr);
+		Node::copy(this->graphPrev, c->graphPrev);
+		Node::copy(this->evaluatedType, c->evaluatedType);
+		Node::copy(this->exprs, c->exprs);
+		return c;
+	}
+
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {

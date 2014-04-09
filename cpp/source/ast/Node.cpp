@@ -113,6 +113,30 @@ bool Node::equal(const NodeVector& a, const NodeVector& b)
 	return true;
 }
 
+void Node::copy(const NodePtr& s, NodePtr& d)
+{
+	if (s)
+		d = s->copy();
+	else
+		d.reset();
+}
+
+void Node::copy(const NodeVector& s, NodeVector& d)
+{
+	d.resize(s.size());
+	NodeVector::const_iterator is;
+	NodeVector::iterator id;
+	for (is = s.begin(), id = d.begin(); is != s.end() && id != d.end(); is++, id++) {
+		copy(*is, *id);
+	}
+}
+
+void Node::copy(const NodeRef& s, NodeRef& d)
+{
+	d.set(s.id);
+}
+
+
 
 
 /**

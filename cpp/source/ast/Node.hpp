@@ -20,6 +20,7 @@ class Decoder;
 class Repository;
 
 class Node;
+class NodeRef;
 typedef shared_ptr<Node> NodePtr;
 typedef vector<NodePtr> NodeVector;
 
@@ -38,6 +39,11 @@ public:
 	virtual bool isKindOf(Kind k) { return false; }
 	/// Overridden by subclasses to indicate what interfaces they implement.
 	virtual bool implements(Interface i) { return false; }
+
+	/// Overridden by subclasses to generate an exact copy of them.
+	virtual NodePtr copy() { return NodePtr(); }
+	/// Convenience helper function to create a copy of an object which is potentially null.
+	static NodePtr copy(const NodePtr& n) { return n ? n->copy() : NodePtr(); }
 
 	/// Returns a description of this node and all its subnodes for debugging purposes.
 	virtual string describe(int depth = -1) { return "Node"; }
@@ -86,6 +92,13 @@ protected:
 	static bool equal(const int& a, const int& b) { return a == b; }
 	static bool equal(const NodePtr& a, const NodePtr& b);
 	static bool equal(const NodeVector& a, const NodeVector& b);
+
+	static void copy(const string& s, string& d) { d = s; }
+	static void copy(const bool& s, bool& d) { d = s; }
+	static void copy(const int& s, int& d) { d = s; }
+	static void copy(const NodePtr& s, NodePtr& d);
+	static void copy(const NodeVector& s, NodeVector& d);
+	static void copy(const NodeRef& s, NodeRef& d);
 };
 
 /**

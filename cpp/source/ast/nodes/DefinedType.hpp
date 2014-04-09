@@ -37,6 +37,13 @@ public:
 
 	virtual string getClassName() const { return "DefinedType"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new DefinedType);
+		Node::copy(this->definition, c->definition);
+		return c;
+	}
+
 	void setDefinition(const NodePtr& v)
 	{
 		if (!v && definition) {

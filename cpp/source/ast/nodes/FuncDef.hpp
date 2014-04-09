@@ -43,6 +43,19 @@ public:
 
 	virtual string getClassName() const { return "FuncDef"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new FuncDef);
+		Node::copy(this->graphPrev, c->graphPrev);
+		Node::copy(this->name, c->name);
+		Node::copy(this->in, c->in);
+		Node::copy(this->out, c->out);
+		Node::copy(this->body, c->body);
+		Node::copy(this->type, c->type);
+		Node::copy(this->implOut, c->implOut);
+		return c;
+	}
+
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {

@@ -41,6 +41,14 @@ public:
 
 	virtual string getClassName() const { return "TupleTypeArg"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new TupleTypeArg);
+		Node::copy(this->name, c->name);
+		Node::copy(this->type, c->type);
+		return c;
+	}
+
 	void setName(const string& v)
 	{
 		if (!equal(v, name)) {

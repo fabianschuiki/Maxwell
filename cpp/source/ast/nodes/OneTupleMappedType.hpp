@@ -37,6 +37,13 @@ public:
 
 	virtual string getClassName() const { return "OneTupleMappedType"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new OneTupleMappedType);
+		Node::copy(this->tuple, c->tuple);
+		return c;
+	}
+
 	void setTuple(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kNilType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet) && !v->isKindOf(kQualifiedType) && !v->isKindOf(kSpecializedType) && !v->isKindOf(kUnionMappedType) && !v->isKindOf(kOneTupleMappedType) && !v->isKindOf(kCastType)) {

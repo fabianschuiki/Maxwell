@@ -129,6 +129,8 @@ protected:
 		kAdditivePrec,
 		kRelationalPrec,
 		kEqualityPrec,
+		kAndPrec,
+		kOrPrec,
 		kAssignmentPrec,
 		kLowestPrec
 	};

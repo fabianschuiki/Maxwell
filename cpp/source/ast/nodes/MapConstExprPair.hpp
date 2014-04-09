@@ -39,6 +39,15 @@ public:
 
 	virtual string getClassName() const { return "MapConstExprPair"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new MapConstExprPair);
+		Node::copy(this->graphPrev, c->graphPrev);
+		Node::copy(this->key, c->key);
+		Node::copy(this->value, c->value);
+		return c;
+	}
+
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {

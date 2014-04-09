@@ -41,6 +41,14 @@ public:
 
 	virtual string getClassName() const { return "CallArg"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new CallArg);
+		Node::copy(this->name, c->name);
+		Node::copy(this->expr, c->expr);
+		return c;
+	}
+
 	void setName(const string& v)
 	{
 		if (!equal(v, name)) {

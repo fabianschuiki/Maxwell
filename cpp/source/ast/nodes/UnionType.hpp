@@ -37,6 +37,13 @@ public:
 
 	virtual string getClassName() const { return "UnionType"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new UnionType);
+		Node::copy(this->types, c->types);
+		return c;
+	}
+
 	void setTypes(const NodeVector& v)
 	{
 		if (!equal(v, types)) {

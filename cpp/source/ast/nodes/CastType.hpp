@@ -37,6 +37,15 @@ public:
 
 	virtual string getClassName() const { return "CastType"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new CastType);
+		Node::copy(this->func, c->func);
+		Node::copy(this->in, c->in);
+		Node::copy(this->out, c->out);
+		return c;
+	}
+
 	void setFunc(const NodePtr& v)
 	{
 		if (v && !v->implements(kCallableInterface)) {

@@ -41,6 +41,17 @@ public:
 
 	virtual string getClassName() const { return "NumberConstExpr"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new NumberConstExpr);
+		Node::copy(this->graphPrev, c->graphPrev);
+		Node::copy(this->possibleType, c->possibleType);
+		Node::copy(this->requiredType, c->requiredType);
+		Node::copy(this->actualType, c->actualType);
+		Node::copy(this->value, c->value);
+		return c;
+	}
+
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {

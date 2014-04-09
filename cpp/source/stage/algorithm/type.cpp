@@ -170,6 +170,37 @@ bool equal(const SpecializedType::Ptr& a, const SpecializedType::Ptr& b)
 	return true;
 }
 
+/**
+ * Returns true if both sides of the function mapping are identical.
+ */
+bool equal(const FuncType::Ptr& a, const FuncType::Ptr& b)
+{
+	if (!equal(a->getIn(), b->getIn())) return false;
+	if (!equal(a->getOut(), b->getOut())) return false;
+	return true;
+}
+
+/**
+ * Returns true if both tuples have the same fields, in the same order, with
+ * the same names and same types.
+ */
+bool equal(const TupleType::Ptr& a, const TupleType::Ptr& b)
+{
+	const NodeVector& argsA = a->getArgs();
+	const NodeVector& argsB = b->getArgs();
+	if (argsA.size() != argsB.size())
+		return false;
+
+	for (NodeVector::const_iterator ia = argsA.begin(), ib = argsB.begin(); ia != argsA.end() && ib != argsB.end(); ia++, ib++) {
+		const TupleTypeArg::Ptr& argA = TupleTypeArg::from(*ia);
+		const TupleTypeArg::Ptr& argB = TupleTypeArg::from(*ib);
+		if (!argA || !argB) return false;
+		if (argA->getName() != argB->getName()) return false;
+		if (!equal(argA->getType(), argB->getType())) return false;
+	}
+	return true;
+}
+
 
 /**
  * Returns the intersection between the TypeSet and the other node. The other
@@ -260,6 +291,16 @@ bool equal(const NodePtr& a, const NodePtr& b)
 	SpecializedType::Ptr specTypeA = SpecializedType::from(a), specTypeB = SpecializedType::from(b);
 	if (specTypeA && specTypeB)
 		return equal(specTypeA, specTypeB);
+
+	// Treat function types.
+	FuncType::Ptr funcTypeA = FuncType::from(a), funcTypeB = FuncType::from(b);
+	if (funcTypeA && funcTypeB)
+		return equal(funcTypeA, funcTypeB);
+
+	// Treat tuple types.
+	TupleType::Ptr tupleTypeA = TupleType::from(a), tupleTypeB = TupleType::from(b);
+	if (tupleTypeA && tupleTypeB)
+		return equal(tupleTypeA, tupleTypeB);
 
 	return false;
 }

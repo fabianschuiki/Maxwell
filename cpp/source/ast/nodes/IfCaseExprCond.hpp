@@ -39,6 +39,15 @@ public:
 
 	virtual string getClassName() const { return "IfCaseExprCond"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new IfCaseExprCond);
+		Node::copy(this->expr, c->expr);
+		Node::copy(this->cond, c->cond);
+		Node::copy(this->graphPrev, c->graphPrev);
+		return c;
+	}
+
 	void setExpr(const NodePtr& v)
 	{
 		if (v && !v->implements(kTypeInterface)) {

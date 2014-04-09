@@ -41,6 +41,18 @@ public:
 
 	virtual string getClassName() const { return "IfCaseExpr"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new IfCaseExpr);
+		Node::copy(this->conds, c->conds);
+		Node::copy(this->otherwise, c->otherwise);
+		Node::copy(this->graphPrev, c->graphPrev);
+		Node::copy(this->possibleType, c->possibleType);
+		Node::copy(this->requiredType, c->requiredType);
+		Node::copy(this->actualType, c->actualType);
+		return c;
+	}
+
 	void setConds(const NodeVector& v)
 	{
 		if (!equal(v, conds)) {

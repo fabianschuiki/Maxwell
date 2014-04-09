@@ -43,6 +43,15 @@ public:
 
 	virtual string getClassName() const { return "ImplAccessor"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new ImplAccessor);
+		Node::copy(this->graphPrev, c->graphPrev);
+		Node::copy(this->name, c->name);
+		Node::copy(this->type, c->type);
+		return c;
+	}
+
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {

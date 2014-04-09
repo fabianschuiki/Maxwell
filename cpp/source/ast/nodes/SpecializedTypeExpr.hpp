@@ -41,6 +41,16 @@ public:
 
 	virtual string getClassName() const { return "SpecializedTypeExpr"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new SpecializedTypeExpr);
+		Node::copy(this->graphPrev, c->graphPrev);
+		Node::copy(this->evaluatedType, c->evaluatedType);
+		Node::copy(this->expr, c->expr);
+		Node::copy(this->specExprs, c->specExprs);
+		return c;
+	}
+
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {

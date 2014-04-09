@@ -37,6 +37,16 @@ public:
 
 	virtual string getClassName() const { return "QualifiedType"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new QualifiedType);
+		Node::copy(this->members, c->members);
+		Node::copy(this->funcs, c->funcs);
+		Node::copy(this->natives, c->natives);
+		Node::copy(this->ranges, c->ranges);
+		return c;
+	}
+
 	void setMembers(const NodeVector& v)
 	{
 		if (!equal(v, members)) {

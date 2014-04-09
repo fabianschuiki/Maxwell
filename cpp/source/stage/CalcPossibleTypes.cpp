@@ -135,7 +135,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		// Wrap the types up in a UnionType.
 		UnionType::Ptr unionType(new UnionType);
 		unionType->setTypes(types);
-		expr->setPossibleType(algorithm::type::simplify(unionType));
+		expr->setPossibleType(algorithm::type::simplify(unionType)->copy());
 	}
 
 	// Blocks in general "return" the same type/value as their last element, or nil if they are empty.
@@ -205,13 +205,13 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 			typeSet->setTypes(outTypes);
 
 			// Assign this type set as the call's possible type.
-			typeIntf->setPossibleType(algorithm::type::simplify(typeSet));
+			typeIntf->setPossibleType(algorithm::type::simplify(typeSet)->copy());
 		}
 	}
 
 	// Call candidates simply copy the function's return type.
 	if (const CallCandidate::Ptr& candidate = CallCandidate::from(node)) {
-		if (!candidate->getFeasible()) return;
+		// if (!candidate->getFeasible()) return;
 
 		const NodePtr& funcNode = candidate->getFunc();
 		FuncType::Ptr funcType;
@@ -231,7 +231,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		// Otherwise we dissect the tuple. This step should become obsolete later on
 		// when 1-tuples have an implicit conversion to their only field.
 		if (!outTuple) {
-			candidate->setPossibleType(funcType->getOut());
+			candidate->setPossibleType(funcType->getOut()->copy());
 		} else {
 			assert(outTuple->getArgs().size() > 0 && "Output tuple should have at least one field, or be nil otherwise.");
 
@@ -242,7 +242,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 			addDependency(funcNode, "type.out.args.0.type");
 			if (outTuple->getArgs().size() == 1) {
 				const TupleTypeArg::Ptr& funcOut0 = TupleTypeArg::needFrom(outTuple->getArgs()[0]);
-				candidate->setPossibleType(funcOut0->getType());
+				candidate->setPossibleType(funcOut0->getType()->copy());
 			}
 		}
 	}
@@ -250,7 +250,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 	// Call candidate arguments simply copy the function's argument type.
 	if (CallCandidateArg* arg = dynamic_cast<CallCandidateArg*>(node.get())) {
 		addDependency(arg, "arg.possibleType");
-		arg->setPossibleType(arg->getArg()->needCallArg()->getExpr()->needType()->getPossibleType());
+		arg->setPossibleType(arg->getArg()->needCallArg()->getExpr()->needType()->getPossibleType()->copy());
 	}
 
 	if (const FuncExpr::Ptr& fe = FuncExpr::from(node)) {
@@ -268,7 +268,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 				const FuncArg::Ptr& funcArg = FuncArg::from(*it);
 				TupleTypeArg::Ptr arg(new TupleTypeArg);
 				arg->setName(funcArg->getName());
-				arg->setType(funcArg->getPossibleType());
+				arg->setType(funcArg->getPossibleType()->copy());
 				tupleArgs.push_back(arg);
 			}
 
@@ -279,7 +279,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 
 		FuncType::Ptr type(new FuncType);
 		type->setIn(inType);
-		type->setOut(expr->needType()->getActualType());
+		type->setOut(expr->needType()->getActualType()->copy());
 		fe->setPossibleType(type);
 	}
 
@@ -288,7 +288,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 	 * Wrapping up.
 	 */
 
-	// In case no actualy type has been set yet, simply copy the possible type over.
+	// In case no actual type has been set yet, simply copy the possible type over.
 	if (TypeInterface *intf = node->asType()) {
 		if (!intf->getPossibleType(false)) {
 			throw std::runtime_error("No possibleType calculated for node " + node->getId().str() + " (a " + node->getClassName() + ").");
@@ -297,4 +297,5 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 			intf->setActualType(intf->getPossibleType());
 		}
 	}
+	node->updateHierarchyOfChildren();
 }

@@ -41,6 +41,16 @@ public:
 
 	virtual string getClassName() const { return "RangeQualifier"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new RangeQualifier);
+		Node::copy(this->graphPrev, c->graphPrev);
+		Node::copy(this->name, c->name);
+		Node::copy(this->min, c->min);
+		Node::copy(this->max, c->max);
+		return c;
+	}
+
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {

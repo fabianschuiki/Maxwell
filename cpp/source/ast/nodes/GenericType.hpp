@@ -37,6 +37,12 @@ public:
 
 	virtual string getClassName() const { return "GenericType"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new GenericType);
+		return c;
+	}
+
 	virtual string describe(int depth = -1)
 	{
 		stringstream str, b;

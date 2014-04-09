@@ -37,6 +37,14 @@ public:
 
 	virtual string getClassName() const { return "UnionMappedType"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new UnionMappedType);
+		Node::copy(this->in, c->in);
+		Node::copy(this->out, c->out);
+		return c;
+	}
+
 	void setIn(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kNilType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet) && !v->isKindOf(kQualifiedType) && !v->isKindOf(kSpecializedType) && !v->isKindOf(kUnionMappedType) && !v->isKindOf(kOneTupleMappedType) && !v->isKindOf(kCastType)) {

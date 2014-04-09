@@ -477,6 +477,15 @@ int main(int argc, char *argv[])
 		h << "\t}\n\n";
 		h << "\tvirtual string getClassName() const { return \"" << node.name << "\"; }\n\n";
 
+		// Generate the copy function.
+		h << "\tvirtual NodePtr copy()\n\t{\n";
+		h << "\t\tPtr c (new " << name << ");\n";
+		for (Node::Fields::iterator f = node.attributes.begin(); f != node.attributes.end(); f++) {
+			h << "\t\tNode::copy(this->" << (*f).name << ", c->" << (*f).name << ");\n";
+		}
+		h << "\t\treturn c;\n";
+		h << "\t}\n\n";
+
 		for (Node::Fields::iterator fit = node.attributes.begin(); fit != node.attributes.end(); fit++) {
 			Node::Field& f = *fit;
 			string ref = "const " + f.cpp_type + "&";

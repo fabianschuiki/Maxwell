@@ -41,6 +41,14 @@ public:
 
 	virtual string getClassName() const { return "NativeQualifier"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new NativeQualifier);
+		Node::copy(this->graphPrev, c->graphPrev);
+		Node::copy(this->name, c->name);
+		return c;
+	}
+
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {

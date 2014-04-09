@@ -41,6 +41,15 @@ public:
 
 	virtual string getClassName() const { return "UnionTypeExpr"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new UnionTypeExpr);
+		Node::copy(this->graphPrev, c->graphPrev);
+		Node::copy(this->evaluatedType, c->evaluatedType);
+		Node::copy(this->types, c->types);
+		return c;
+	}
+
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {

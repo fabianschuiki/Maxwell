@@ -41,6 +41,15 @@ public:
 
 	virtual string getClassName() const { return "TupleTypeExpr"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new TupleTypeExpr);
+		Node::copy(this->graphPrev, c->graphPrev);
+		Node::copy(this->evaluatedType, c->evaluatedType);
+		Node::copy(this->args, c->args);
+		return c;
+	}
+
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {

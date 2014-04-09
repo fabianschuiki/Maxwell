@@ -43,6 +43,23 @@ public:
 
 	virtual string getClassName() const { return "UnaryOpExpr"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new UnaryOpExpr);
+		Node::copy(this->graphPrev, c->graphPrev);
+		Node::copy(this->operatorName, c->operatorName);
+		Node::copy(this->postfix, c->postfix);
+		Node::copy(this->expr, c->expr);
+		Node::copy(this->callName, c->callName);
+		Node::copy(this->callArgs, c->callArgs);
+		Node::copy(this->callCandidates, c->callCandidates);
+		Node::copy(this->selectedCallCandidate, c->selectedCallCandidate);
+		Node::copy(this->possibleType, c->possibleType);
+		Node::copy(this->requiredType, c->requiredType);
+		Node::copy(this->actualType, c->actualType);
+		return c;
+	}
+
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {

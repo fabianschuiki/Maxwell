@@ -47,6 +47,22 @@ public:
 
 	virtual string getClassName() const { return "MemberAccessExpr"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new MemberAccessExpr);
+		Node::copy(this->graphPrev, c->graphPrev);
+		Node::copy(this->expr, c->expr);
+		Node::copy(this->name, c->name);
+		Node::copy(this->possibleType, c->possibleType);
+		Node::copy(this->requiredType, c->requiredType);
+		Node::copy(this->actualType, c->actualType);
+		Node::copy(this->callName, c->callName);
+		Node::copy(this->callArgs, c->callArgs);
+		Node::copy(this->callCandidates, c->callCandidates);
+		Node::copy(this->selectedCallCandidate, c->selectedCallCandidate);
+		return c;
+	}
+
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {

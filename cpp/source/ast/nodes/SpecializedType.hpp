@@ -37,6 +37,14 @@ public:
 
 	virtual string getClassName() const { return "SpecializedType"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new SpecializedType);
+		Node::copy(this->type, c->type);
+		Node::copy(this->specs, c->specs);
+		return c;
+	}
+
 	void setType(const NodePtr& v)
 	{
 		if (v && !v->isKindOf(kGenericType) && !v->isKindOf(kInvalidType) && !v->isKindOf(kNilType) && !v->isKindOf(kDefinedType) && !v->isKindOf(kUnionType) && !v->isKindOf(kTupleType) && !v->isKindOf(kFuncType) && !v->isKindOf(kTypeSet) && !v->isKindOf(kQualifiedType) && !v->isKindOf(kSpecializedType) && !v->isKindOf(kUnionMappedType) && !v->isKindOf(kOneTupleMappedType) && !v->isKindOf(kCastType)) {

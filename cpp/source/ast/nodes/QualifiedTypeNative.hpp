@@ -39,6 +39,13 @@ public:
 
 	virtual string getClassName() const { return "QualifiedTypeNative"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new QualifiedTypeNative);
+		Node::copy(this->name, c->name);
+		return c;
+	}
+
 	void setName(const string& v)
 	{
 		if (!equal(v, name)) {

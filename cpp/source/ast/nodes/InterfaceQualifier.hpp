@@ -39,6 +39,14 @@ public:
 
 	virtual string getClassName() const { return "InterfaceQualifier"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new InterfaceQualifier);
+		Node::copy(this->graphPrev, c->graphPrev);
+		Node::copy(this->stmts, c->stmts);
+		return c;
+	}
+
 	void setGraphPrev(const NodePtr& v)
 	{
 		if (!v && graphPrev) {

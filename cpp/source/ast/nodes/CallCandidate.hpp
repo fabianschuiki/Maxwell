@@ -41,6 +41,20 @@ public:
 
 	virtual string getClassName() const { return "CallCandidate"; }
 
+	virtual NodePtr copy()
+	{
+		Ptr c (new CallCandidate);
+		Node::copy(this->func, c->func);
+		Node::copy(this->args, c->args);
+		Node::copy(this->feasible, c->feasible);
+		Node::copy(this->cost, c->cost);
+		Node::copy(this->possibleType, c->possibleType);
+		Node::copy(this->requiredType, c->requiredType);
+		Node::copy(this->actualType, c->actualType);
+		Node::copy(this->graphPrev, c->graphPrev);
+		return c;
+	}
+
 	void setFunc(const NodePtr& v)
 	{
 		if (v && !v->implements(kCallableInterface) && !v->implements(kTypeInterface)) {

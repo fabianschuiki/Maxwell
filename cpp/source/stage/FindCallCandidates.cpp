@@ -1,5 +1,6 @@
 /* Copyright © 2013 Fabian Schuiki */
 #include "stages.hpp"
+#include "algorithm/type.hpp"
 #include <iostream>
 
 using namespace ast;
@@ -38,7 +39,7 @@ void FindCallCandidates::process(const NodePtr& node)
 		while (current) {
 			if (VariableInterface *var = current.get()->asVariable()) {
 				if (var->getName() == name) {
-					const NodePtr& type = var->getActualType(false);
+					const NodePtr& type = algorithm::type::resolve(var->getActualType(false));
 					if (!type || type->isKindOf(kFuncType)) {
 						nodes.push_back(current);
 					}

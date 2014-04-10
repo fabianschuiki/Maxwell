@@ -130,6 +130,15 @@ void EvalTypeExprs::process(const NodePtr& node)
 			node->updateHierarchyOfChildren();
 		}
 
+		if (const FuncTypeExpr::Ptr& expr = FuncTypeExpr::from(node))
+		{
+			FuncType::Ptr type(new FuncType);
+			type->setIn(expr->getIn()->needTypeExpr()->getEvaluatedType()->copy());
+			type->setOut(expr->getOut()->needTypeExpr()->getEvaluatedType()->copy());
+			intf->setEvaluatedType(type);
+			node->updateHierarchyOfChildren();
+		}
+
 		// Throw an error if we were unable to assign an evaluated type.
 		if (!intf->getEvaluatedType(false)) {
 			throw std::runtime_error("Could not evaluate type expression " + node->getId().str() + ".");

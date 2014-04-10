@@ -219,7 +219,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 			funcType = FuncType::needFrom(func->getType());
 			addDependency(funcNode, "type.out");
 		} else if (TypeInterface* type = funcNode->asType()) {
-			funcType = FuncType::needFrom(type->getActualType());
+			funcType = FuncType::needFrom(algorithm::type::resolve(type->getActualType()));
 			addDependency(funcNode, "actualType.out");
 		} else {
 			candidate->setFeasible(false);

@@ -18,6 +18,7 @@
 #include "FuncDef.hpp"
 #include "FuncExpr.hpp"
 #include "FuncType.hpp"
+#include "FuncTypeExpr.hpp"
 #include "GenericType.hpp"
 #include "IdentifierExpr.hpp"
 #include "IfCaseExpr.hpp"
@@ -167,6 +168,11 @@ public:
 					if (size >= 8 && name[4] == 'T' && name[5] == 'y' && name[6] == 'p' && name[7] == 'e') {
 						// FuncType
 						if (size == 8) return NodePtr(new FuncType);
+						// FuncTypeExpr.*
+						if (size >= 12 && name[8] == 'E' && name[9] == 'x' && name[10] == 'p' && name[11] == 'r') {
+							// FuncTypeExpr
+							if (size == 12) return NodePtr(new FuncTypeExpr);
+						}
 					}
 				}
 			}

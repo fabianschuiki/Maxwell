@@ -1,0 +1,24 @@
+/* Copyright © 2014 Fabian Schuiki */
+
+func mapper (f ((x: Int, y: Int)->Int), a Int, b Int) = {
+	f(a,b);
+}
+
+func main = {
+	// Input that chooses between the available mapping functions.
+	input := 1;
+
+	// The various mapping functions.
+	adder := (x Int, y Int) -> x+y;
+	multiplier := (x Int, y Int) -> x*y;
+	identity := (x Int, y Int) -> x;
+
+	// Pick a mapping.
+	picked_mapping := {
+		adder      if input == 0,
+		multiplier if input == 1,
+		identity   otherwise };
+
+	// Call the mapper with the selected mapping function.
+	mapper(picked_mapping, 2, 3);
+}

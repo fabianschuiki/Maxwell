@@ -63,7 +63,7 @@ typedef std::vector<NodePtr> Nodes;
 %type <node> primary_expr ifcase_expr ifcase_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair body_expr block_expr nonempty_block_expr block_expr_expr macro_expr any_expr func_expr
 %type <nodes> expr_list map_expr_pairs ifcase_expr_conds block_expr_exprs
 
-%type <node> typeexpr union_typeexpr nonunion_typeexpr tuple_typeexpr tuple_typeexpr_arg qualified_typeexpr qualified_typeexpr_qualifier specialized_typeexpr
+%type <node> typeexpr union_typeexpr tuple_typeexpr tuple_typeexpr_arg qualified_typeexpr qualified_typeexpr_qualifier specialized_typeexpr func_typeexpr post_func_typeexpr primary_typeexpr
 %type <nodes> func_args_tuple func_args union_typeexprs tuple_typeexpr_args call_args qualified_typeexpr_qualifiers specialized_typeexpr_specs
 
 %type <node> structure_qualifier structure_qualifier_stmt interface_qualifier interface_qualifier_stmt native_qualifier range_qualifier
@@ -228,7 +228,7 @@ func_arg
       $$ = a;
       delete $1;
     }
-  | IDENTIFIER typeexpr {
+  | IDENTIFIER post_func_typeexpr {
       FuncArg *a = new FuncArg;
       a->setName(*$1);
       a->setTypeExpr(NodePtr($2));
@@ -670,11 +670,10 @@ expr_list
  */
 
 typeexpr
-  : nonunion_typeexpr
-  | union_typeexpr
+  : qualified_typeexpr
   ;
 
-nonunion_typeexpr
+primary_typeexpr
   : IDENTIFIER {
       NamedTypeExpr *n = new NamedTypeExpr;
       n->setName(*$1);
@@ -684,90 +683,13 @@ nonunion_typeexpr
   | NIL {
       $$ = new NilTypeExpr;
     }
-  | tuple_typeexpr
-  | qualified_typeexpr
-  | specialized_typeexpr
-  ;
-
-/* Union Type Expression */
-union_typeexpr
-  : union_typeexprs {
-      UnionTypeExpr *t = new UnionTypeExpr;
-      t->setTypes(*$1);
-      $$ = t;
-      delete $1;
-    }
-  ;
-
-union_typeexprs
-  : nonunion_typeexpr PIPE nonunion_typeexpr {
-      $$ = new Nodes;
-      $$->push_back(NodePtr($1));
-      $$->push_back(NodePtr($3));
-    }
-  | union_typeexprs PIPE nonunion_typeexpr {
-      $1->push_back(NodePtr($3));
-    }
-  ;
-
-/* Tuple Type Expression */
-tuple_typeexpr
-  : LPAREN tuple_typeexpr_args RPAREN {
-      TupleTypeExpr *t = new TupleTypeExpr;
-      t->setArgs(*$2);
-      $$ = t;
-      delete $2;
-    }
-  ;
-
-tuple_typeexpr_args
-  : tuple_typeexpr_arg {
-      $$ = new Nodes;
-      $$->push_back(NodePtr($1));
-    }
-  | tuple_typeexpr_args COMMA tuple_typeexpr_arg {
-      $1->push_back(NodePtr($3));
-    }
-  ;
-
-tuple_typeexpr_arg
-  : typeexpr {
-      TupleTypeExprArg *t = new TupleTypeExprArg;
-      t->setExpr(NodePtr($1));
-      $$ = t;
-    }
-  | IDENTIFIER COLON typeexpr {
-      TupleTypeExprArg *t = new TupleTypeExprArg;
-      t->setName(*$1);
-      t->setExpr(NodePtr($3));
-      $$ = t;
-      delete $1;
-    }
-  ;
-
-/* Qualified Type Expr */
-qualified_typeexpr
-  : qualified_typeexpr_qualifiers {
-      QualifiedTypeExpr *q = new QualifiedTypeExpr;
-      q->setExprs(*$1);
-      $$ = q;
-      delete $1;
-    }
-  ;
-
-qualified_typeexpr_qualifiers
-  : qualified_typeexpr_qualifier {
-      $$ = new Nodes;
-      $$->push_back(NodePtr($1));
-    }
-  | qualified_typeexpr_qualifiers qualified_typeexpr_qualifier {
-      $1->push_back(NodePtr($2));
-    }
+  | LPAREN typeexpr RPAREN { $$ = $2; }
   ;
 
 /* Specialized Type Expr */
 specialized_typeexpr
-  : nonunion_typeexpr LBRACK specialized_typeexpr_specs RBRACK {
+  : primary_typeexpr
+  | primary_typeexpr LBRACK specialized_typeexpr_specs RBRACK {
       SpecializedTypeExpr *t = new SpecializedTypeExpr;
       t->setExpr(NodePtr($1));
       t->setSpecExprs(*$3);
@@ -782,6 +704,98 @@ specialized_typeexpr_specs
     }
   | specialized_typeexpr_specs COMMA typeexpr {
       $1->push_back(NodePtr($3));
+    }
+  ;
+
+/* Tuple Type Expression */
+tuple_typeexpr
+  : specialized_typeexpr
+  | LPAREN tuple_typeexpr_args RPAREN {
+      TupleTypeExpr *t = new TupleTypeExpr;
+      t->setArgs(*$2);
+      $$ = t;
+      delete $2;
+    }
+  ;
+
+tuple_typeexpr_args
+  : tuple_typeexpr_arg COMMA tuple_typeexpr_arg {
+      $$ = new Nodes;
+      $$->push_back(NodePtr($1));
+      $$->push_back(NodePtr($3));
+    }
+  | tuple_typeexpr_args COMMA tuple_typeexpr_arg {
+      $1->push_back(NodePtr($3));
+    }
+  ;
+
+tuple_typeexpr_arg
+  : union_typeexpr {
+      TupleTypeExprArg *t = new TupleTypeExprArg;
+      t->setExpr(NodePtr($1));
+      $$ = t;
+    }
+  | IDENTIFIER COLON union_typeexpr {
+      TupleTypeExprArg *t = new TupleTypeExprArg;
+      t->setName(*$1);
+      t->setExpr(NodePtr($3));
+      $$ = t;
+      delete $1;
+    }
+  ;
+
+/* Union Type Expression */
+union_typeexpr
+  : tuple_typeexpr
+  | union_typeexprs {
+      UnionTypeExpr *t = new UnionTypeExpr;
+      t->setTypes(*$1);
+      $$ = t;
+      delete $1;
+    }
+  ;
+
+union_typeexprs
+  : tuple_typeexpr PIPE tuple_typeexpr {
+      $$ = new Nodes;
+      $$->push_back(NodePtr($1));
+      $$->push_back(NodePtr($3));
+    }
+  | union_typeexprs PIPE tuple_typeexpr {
+      $1->push_back(NodePtr($3));
+    }
+  ;
+
+/* Function Type Expr */
+post_func_typeexpr : union_typeexpr;
+func_typeexpr
+  : post_func_typeexpr
+  | post_func_typeexpr RIGHTARROW post_func_typeexpr {
+      FuncTypeExpr *t = new FuncTypeExpr;
+      t->setIn(NodePtr($1));
+      t->setOut(NodePtr($3));
+      $$ = t;
+    }
+  ;
+
+/* Qualified Type Expr */
+qualified_typeexpr
+  : func_typeexpr
+  | qualified_typeexpr_qualifiers {
+      QualifiedTypeExpr *q = new QualifiedTypeExpr;
+      q->setExprs(*$1);
+      $$ = q;
+      delete $1;
+    }
+  ;
+
+qualified_typeexpr_qualifiers
+  : qualified_typeexpr_qualifier {
+      $$ = new Nodes;
+      $$->push_back(NodePtr($1));
+    }
+  | qualified_typeexpr_qualifiers qualified_typeexpr_qualifier {
+      $1->push_back(NodePtr($2));
     }
   ;
 

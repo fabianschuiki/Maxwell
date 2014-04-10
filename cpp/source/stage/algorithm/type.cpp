@@ -328,6 +328,19 @@ NodePtr intersect(const NodePtr& a, const NodePtr& b)
 	return NodePtr(new InvalidType);
 }
 
+/**
+ * @brief Resolves named types for their type definition.
+ *
+ * If r is a null pointer or not a named type, returns r.
+ */
+NodePtr resolve(const NodePtr& r)
+{
+	if (!r || !r->isKindOf(kDefinedType))
+		return r;
+	const TypeDef::Ptr& td = TypeDef::needFrom(DefinedType::needFrom(r)->getDefinition());
+	return resolve(td->getType()->needTypeExpr()->getEvaluatedType());
+}
+
 } // namespace type
 } // namespace algorithm
 } // namespace stage

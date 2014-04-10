@@ -63,7 +63,7 @@ void CalcRequiredTypes::process(const NodePtr& node)
 					funcType = FuncType::needFrom(func->getType());
 					addDependency(funcNode, "type.in");
 				} else {
-					funcType = FuncType::needFrom(funcNode->needType()->getActualType());
+					funcType = FuncType::needFrom(algorithm::type::resolve(funcNode->needType()->getActualType()));
 					addDependency(funcNode, "actualType.in");
 				}
 				const TupleType::Ptr& inTupleType = TupleType::from(funcType->getIn());

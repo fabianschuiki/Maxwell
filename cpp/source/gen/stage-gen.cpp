@@ -21,8 +21,9 @@ using std::string;
 int main(int argc, char *argv[])
 {
 	// Parse command line arguments.
-	boost::filesystem::path output(".");
-	if (argc >= 2) output = argv[1];
+	boost::filesystem::path input("."), output(".");
+	if (argc >= 2) input = argv[1];
+	if (argc >= 3) output = argv[2];
 
 	// Create the output directory if required.
 	if (!boost::filesystem::exists(output)) {
@@ -72,7 +73,7 @@ int main(int argc, char *argv[])
 		h << "\t" << *it << "(Repository& r) : Stage(r) {}\n";
 
 		// Custom header fields.
-		boost::filesystem::path cpath = output;
+		boost::filesystem::path cpath = input;
 		cpath /= *it + ".in.hpp";
 		ifstream fin(cpath.c_str());
 		if (fin.good()) {

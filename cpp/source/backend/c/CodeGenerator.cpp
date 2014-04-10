@@ -1,5 +1,6 @@
 /* Copyright © 2013-2014 Fabian Schuiki */
 #include "CodeGenerator.hpp"
+#include <stage/algorithm/type.hpp>
 #include <ast/nodes/ast.hpp>
 #include <iostream>
 #include <sstream>
@@ -312,7 +313,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 		if (CallableInterface* func = funcNode->asCallable())
 			type = FuncType::needFrom(func->getType());
 		else
-			type = FuncType::needFrom(funcNode->needType()->getActualType());
+			type = FuncType::needFrom(stage::algorithm::type::resolve(funcNode->needType()->getActualType()));
 		const NodePtr& typeIn  = type->getIn();
 		const NodePtr& typeOut = type->getOut();
 
@@ -686,7 +687,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 		// Look up the C-flavored name and return type for this function.
 		string name = "lambda_" + node->getId().str();
 		std::replace(name.begin(), name.end(), '.', '_');
-		const FuncType::Ptr& nodeType = FuncType::needFrom(func->getActualType());
+		const FuncType::Ptr& nodeType = FuncType::needFrom(stage::algorithm::type::resolve(func->getActualType()));
 		string returnType;
 		if (nodeType->getOut()->isKindOf(kNilType)) {
 			returnType = "void";

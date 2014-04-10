@@ -136,6 +136,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		UnionType::Ptr unionType(new UnionType);
 		unionType->setTypes(types);
 		expr->setPossibleType(algorithm::type::simplify(unionType)->copy());
+		expr->updateHierarchyOfChildren();
 	}
 
 	// Blocks in general "return" the same type/value as their last element, or nil if they are empty.
@@ -147,6 +148,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 			addDependency(last, "actualType");
 			block->setPossibleType(last->needType()->getActualType());
 		}
+		block->updateHierarchyOfChildren();
 	}
 
 	// If-expressions produce the union type of both branches.
@@ -167,15 +169,36 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		UnionType::Ptr unionType(new UnionType);
 		unionType->setTypes(types);
 		expr->setPossibleType(algorithm::type::simplify(unionType));
+		expr->updateHierarchyOfChildren();
 	}
 
-	// For-expressions produce a nil type for now. Later on they maybe should return the last expression
-	// in the body for the last iteration step.
+	// For-expressions produce the last value of their body.
 	if (const ForExpr::Ptr& expr = ForExpr::from(node)) {
 		// expr->setPossibleType(NodePtr(new NilType));
 		const NodePtr& bodyBranch = expr->getBody();
 		addDependency(bodyBranch, "actualType");
 		expr->setPossibleType(bodyBranch->needType()->getActualType());
+		expr->updateHierarchyOfChildren();
+	}
+
+	// Tuple expressions produce their corresponding TupleType.
+	if (const TupleExpr::Ptr& expr = TupleExpr::from(node)) {
+		const NodeVector& args = expr->getArgs();
+		NodeVector typeArgs;
+		typeArgs.reserve(args.size());
+		for (NodeVector::const_iterator ia = args.begin(); ia != args.end(); ia++) {
+			const TupleExprArg::Ptr& arg = TupleExprArg::needFrom(*ia);
+			TupleTypeArg::Ptr typeArg(new TupleTypeArg);
+			typeArg->setName(arg->getName(false));
+			typeArg->setType(arg->getExpr()->needType()->getActualType()->copy());
+			typeArgs.push_back(typeArg);
+			addDependency(arg, "expr.actualType");
+		}
+
+		TupleType::Ptr type(new TupleType);
+		type->setArgs(typeArgs);
+		expr->setPossibleType(type);
+		expr->updateHierarchyOfChildren();
 	}
 
 

@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright (c) 2013 Fabian Schuiki */
 
 %{
 #include <iostream>
@@ -60,8 +60,8 @@ typedef std::vector<NodePtr> Nodes;
 
 %type <node> func_def func_arg type_def if_expr for_expr expr call_arg
 
-%type <node> primary_expr ifcase_expr ifcase_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair body_expr block_expr nonempty_block_expr block_expr_expr macro_expr any_expr func_expr
-%type <nodes> expr_list map_expr_pairs ifcase_expr_conds block_expr_exprs
+%type <node> primary_expr tuple_expr tuple_expr_arg tuple_expr_arg_named ifcase_expr ifcase_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair body_expr block_expr nonempty_block_expr block_expr_expr macro_expr any_expr func_expr
+%type <nodes> expr_list map_expr_pairs ifcase_expr_conds block_expr_exprs tuple_expr_args
 
 %type <node> typeexpr union_typeexpr tuple_typeexpr tuple_typeexpr_arg qualified_typeexpr qualified_typeexpr_qualifier specialized_typeexpr func_typeexpr post_func_typeexpr primary_typeexpr
 %type <nodes> func_args_tuple func_args union_typeexprs tuple_typeexpr_args call_args qualified_typeexpr_qualifiers specialized_typeexpr_specs
@@ -304,6 +304,48 @@ primary_expr
     }
   | ifcase_expr
   | block_expr
+  | tuple_expr
+  ;
+
+/* Tuple Expressions */
+tuple_expr
+  : LPAREN tuple_expr_args RPAREN { 
+      TupleExpr *t = new TupleExpr;
+      t->setArgs(*$2);
+      delete $2;
+      $$ = t;
+    }
+  ;
+tuple_expr_args
+  : tuple_expr_arg_named {
+      $$ = new Nodes;
+      $$->push_back(NodePtr($1));
+    }
+  | tuple_expr_arg COMMA tuple_expr_arg {
+      $$ = new Nodes;
+      $$->push_back(NodePtr($1));
+      $$->push_back(NodePtr($3));
+    }
+  | tuple_expr_args COMMA tuple_expr_arg {
+      $1->push_back(NodePtr($3));
+    }
+  ;
+tuple_expr_arg_named
+  : IDENTIFIER COLON primary_expr {
+      TupleExprArg *a = new TupleExprArg;
+      a->setName(*$1);
+      a->setExpr(NodePtr($3));
+      delete $1;
+      $$ = a;
+    }
+  ;
+tuple_expr_arg
+  : tuple_expr_arg_named
+  | primary_expr {
+      TupleExprArg *a = new TupleExprArg;
+      a->setExpr(NodePtr($1));
+      $$ = a;
+    }
   ;
 
 map_expr_pairs

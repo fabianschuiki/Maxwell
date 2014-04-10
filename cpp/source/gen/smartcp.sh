@@ -14,21 +14,15 @@ for sf in $(echo "$1/*"); do
 	name=$(basename "$sf");
 	df="$2/$name"
 
-	if [ -e "$df" ]; then
-		dh=$(md5 -q "$df")
-	else
-		dh=""
-	fi
-
-	# echo "processing file $name"
-	if [ -z "$dh" ] || [ "$dh" != $(md5 -q "$sf") ]; then
+	if ! [ -e "$df" ] || ! diff -q "$sf" "$df" > /dev/null; then
+		echo "copying file $name"
 		NUM_COPIED=$(expr $NUM_COPIED + 1)
 		cp "$sf" "$df"
 	fi
 done;
 
 if [ $NUM_COPIED = 1 ]; then
-	echo "updated 1 file"
+	echo "copied 1 file"
 elif [ $NUM_COPIED -gt 1 ]; then
-	echo "updated $NUM_COPIED files"
+	echo "copied $NUM_COPIED files"
 fi

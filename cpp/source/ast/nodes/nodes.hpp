@@ -47,6 +47,8 @@
 #include "StringConstExpr.hpp"
 #include "StructureQualifier.hpp"
 #include "StructureQualifierMember.hpp"
+#include "TupleExpr.hpp"
+#include "TupleExprArg.hpp"
 #include "TupleType.hpp"
 #include "TupleTypeArg.hpp"
 #include "TupleTypeExpr.hpp"
@@ -342,23 +344,36 @@ public:
 			}
 			// T.*
 			if (size >= 1 && name[0] == 'T') {
-				// TupleType.*
-				if (size >= 9 && name[1] == 'u' && name[2] == 'p' && name[3] == 'l' && name[4] == 'e' && name[5] == 'T' && name[6] == 'y' && name[7] == 'p' && name[8] == 'e') {
-					// TupleType
-					if (size == 9) return NodePtr(new TupleType);
-					// TupleTypeArg.*
-					if (size >= 12 && name[9] == 'A' && name[10] == 'r' && name[11] == 'g') {
-						// TupleTypeArg
-						if (size == 12) return NodePtr(new TupleTypeArg);
+				// Tuple.*
+				if (size >= 5 && name[1] == 'u' && name[2] == 'p' && name[3] == 'l' && name[4] == 'e') {
+					// TupleExpr.*
+					if (size >= 9 && name[5] == 'E' && name[6] == 'x' && name[7] == 'p' && name[8] == 'r') {
+						// TupleExpr
+						if (size == 9) return NodePtr(new TupleExpr);
+						// TupleExprArg.*
+						if (size >= 12 && name[9] == 'A' && name[10] == 'r' && name[11] == 'g') {
+							// TupleExprArg
+							if (size == 12) return NodePtr(new TupleExprArg);
+						}
 					}
-					// TupleTypeExpr.*
-					if (size >= 13 && name[9] == 'E' && name[10] == 'x' && name[11] == 'p' && name[12] == 'r') {
-						// TupleTypeExpr
-						if (size == 13) return NodePtr(new TupleTypeExpr);
-						// TupleTypeExprArg.*
-						if (size >= 16 && name[13] == 'A' && name[14] == 'r' && name[15] == 'g') {
-							// TupleTypeExprArg
-							if (size == 16) return NodePtr(new TupleTypeExprArg);
+					// TupleType.*
+					if (size >= 9 && name[5] == 'T' && name[6] == 'y' && name[7] == 'p' && name[8] == 'e') {
+						// TupleType
+						if (size == 9) return NodePtr(new TupleType);
+						// TupleTypeArg.*
+						if (size >= 12 && name[9] == 'A' && name[10] == 'r' && name[11] == 'g') {
+							// TupleTypeArg
+							if (size == 12) return NodePtr(new TupleTypeArg);
+						}
+						// TupleTypeExpr.*
+						if (size >= 13 && name[9] == 'E' && name[10] == 'x' && name[11] == 'p' && name[12] == 'r') {
+							// TupleTypeExpr
+							if (size == 13) return NodePtr(new TupleTypeExpr);
+							// TupleTypeExprArg.*
+							if (size >= 16 && name[13] == 'A' && name[14] == 'r' && name[15] == 'g') {
+								// TupleTypeExprArg
+								if (size == 16) return NodePtr(new TupleTypeExprArg);
+							}
 						}
 					}
 				}

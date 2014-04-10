@@ -166,6 +166,13 @@ void buildAST(Builder &node)
 		.intf(graph).intf(type)
 		.child("args", "[any]")
 		.child("expr", "@Type");
+	node("TupleExpr")
+		.intf(graph).intf(type)
+		.child("args", "[TupleExprArg]");
+	node("TupleExprArg")
+		.intf(graph)
+		.attr("name", "string")
+		.child("expr", "@Type");
 
 	// Type Expressions
 	node("NamedTypeExpr")

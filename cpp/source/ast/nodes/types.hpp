@@ -50,6 +50,8 @@ typedef enum {
 	kStringConstExpr,
 	kStructureQualifier,
 	kStructureQualifierMember,
+	kTupleExpr,
+	kTupleExprArg,
 	kTupleType,
 	kTupleTypeArg,
 	kTupleTypeExpr,

@@ -60,7 +60,7 @@ typedef std::vector<NodePtr> Nodes;
 
 %type <node> func_def func_arg type_def if_expr for_expr expr call_arg
 
-%type <node> primary_expr tuple_expr tuple_expr_arg tuple_expr_arg_named ifcase_expr ifcase_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair body_expr block_expr nonempty_block_expr block_expr_expr macro_expr any_expr func_expr
+%type <node> primary_expr tuple_expr tuple_expr_arg tuple_expr_arg_named tuple_expr_arg_anonymous ifcase_expr ifcase_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair body_expr block_expr nonempty_block_expr block_expr_expr macro_expr any_expr func_expr
 %type <nodes> expr_list map_expr_pairs ifcase_expr_conds block_expr_exprs tuple_expr_args
 
 %type <node> typeexpr union_typeexpr tuple_typeexpr tuple_typeexpr_arg qualified_typeexpr qualified_typeexpr_qualifier specialized_typeexpr func_typeexpr post_func_typeexpr primary_typeexpr
@@ -76,44 +76,44 @@ typedef std::vector<NodePtr> Nodes;
 %type <structureQualifier> structure_qualifier_decl
 %type <rangeQualifier> range_qualifier_decl
 
-%token <string> IDENTIFIER "identifier"
-%token <string> NUMBER "number constant"
-%token <string> STRING_LITERAL "string constant"
+%token <string> IDENTIFIER
+%token <string> NUMBER
+%token <string> STRING_LITERAL
 %token <string> MULTIPLICATIVE_OPERATOR ADDITIVE_OPERATOR RELATIONAL_OPERATOR EQUALITY_OPERATOR AND_OPERATOR OR_OPERATOR OPERATOR
-%token <symbol> SYMBOL "symbol"
-%token END 0 "end of input"
+%token <symbol> SYMBOL
+%token END 0
 
-%token FUNC "func keyword"
-%token VAR "var keyword"
-%token TYPE "type keyword"
-%token UNARY "unary keyword"
-%token VALUE "value keyword"
-%token OBJECT "object keyword"
-%token INTERFACE "interface keyword"
-%token NATIVE "native keyword"
-%token RANGE "range keyword"
-%token IF "if keyword"
-%token ELSE "else keyword"
-%token FOR "for keyword"
-%token NIL "nil constant"
-%token INCASE "incase keyword"
-%token OTHERWISE "otherwise keyword"
+%token FUNC
+%token VAR
+%token TYPE
+%token UNARY
+%token VALUE
+%token OBJECT
+%token INTERFACE
+%token NATIVE
+%token RANGE
+%token IF
+%token ELSE
+%token FOR
+%token NIL
+%token INCASE
+%token OTHERWISE
 
-%token LPAREN "opening paranthesis ("
-%token RPAREN "closing paranthesis )"
-%token LBRACE "opening braces {"
-%token RBRACE "closing braces }"
-%token LBRACK "opening bracket ["
-%token RBRACK "closing bracket ]"
-%token PIPE "vertical pipe |"
-%token DOT "."
-%token COMMA ","
-%token COLON ":"
-%token SEMICOLON ";"
-%token RIGHTARROW "right arrow ->"
-%token ASSIGN "assignment operator ="
-%token DEFASSIGN "typeless variable :="
-%token HASHTAG "#"
+%token LPAREN
+%token RPAREN
+%token LBRACE
+%token RBRACE
+%token LBRACK
+%token RBRACK
+%token PIPE
+%token DOT
+%token COMMA
+%token COLON
+%token SEMICOLON
+%token RIGHTARROW
+%token ASSIGN
+%token DEFASSIGN
+%token HASHTAG
 
 %destructor { delete $$; } IDENTIFIER NUMBER STRING_LITERAL MULTIPLICATIVE_OPERATOR ADDITIVE_OPERATOR RELATIONAL_OPERATOR OPERATOR
 
@@ -321,7 +321,7 @@ tuple_expr_args
       $$ = new Nodes;
       $$->push_back(NodePtr($1));
     }
-  | tuple_expr_arg COMMA tuple_expr_arg {
+  | tuple_expr_arg_anonymous COMMA tuple_expr_arg {
       $$ = new Nodes;
       $$->push_back(NodePtr($1));
       $$->push_back(NodePtr($3));
@@ -339,14 +339,14 @@ tuple_expr_arg_named
       $$ = a;
     }
   ;
-tuple_expr_arg
-  : tuple_expr_arg_named
-  | primary_expr {
+tuple_expr_arg_anonymous
+  : primary_expr {
       TupleExprArg *a = new TupleExprArg;
       a->setExpr(NodePtr($1));
       $$ = a;
     }
   ;
+tuple_expr_arg : tuple_expr_arg_named | tuple_expr_arg_anonymous;
 
 map_expr_pairs
   : map_expr_pair {

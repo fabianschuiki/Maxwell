@@ -720,6 +720,24 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 		return fec;
 	}
 
+	if (const TupleExpr::Ptr& tuple = TupleExpr::from(node)) {
+		stringstream fields;
+		const NodeVector &args = tuple->getArgs();
+		for (NodeVector::const_iterator i = args.begin(); i != args.end(); i++) {
+			ExprCode ec = generateExpr(TupleExprArg::needFrom(*i)->getExpr(), context);
+			if (i != args.begin()) fields << ", ";
+			fields << precedenceWrapped(ec, kLowestPrec);
+		}
+
+		string typeName = generateType(tuple->getActualType(), context);
+
+		ExprCode ec;
+		ec.isRef = false;
+		ec.precedence = kPrimaryPrec;
+		ec.code = "(" + typeName + "){" + fields.str() + "}";
+		return ec;
+	}
+
 	// If we get to this location, the expression could not be converted to C code.
 	throw std::runtime_error("Code for expression " + node->getClassName() + " cannot be generated.");
 }
@@ -821,9 +839,13 @@ string CodeGenerator::generateType(const NodePtr& node, BlockContext& context)
 			const TupleTypeArg::Ptr& arg = TupleTypeArg::needFrom(args[0]);
 			return generateType(arg->getType(), context);
 		} else {
-			stringstream s;
-			s << "Code generation for tuple types with " << args.size() << " arguments not implemented.";
-			throw std::runtime_error(s.str());
+			RootContext *root = context.root;
+			root->decls.insert(RootContext::Stmt(kTypeStage, "whadup?"));
+			return "whadup";
+
+			// stringstream s;
+			// s << "Code generation for tuple types with " << args.size() << " arguments not implemented.";
+			// throw std::runtime_error(s.str());
 		}
 	}
 

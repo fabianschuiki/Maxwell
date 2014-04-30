@@ -195,7 +195,7 @@ bool equal(const TupleType::Ptr& a, const TupleType::Ptr& b)
 		const TupleTypeArg::Ptr& argA = TupleTypeArg::from(*ia);
 		const TupleTypeArg::Ptr& argB = TupleTypeArg::from(*ib);
 		if (!argA || !argB) return false;
-		if (argA->getName() != argB->getName()) return false;
+		if (argA->getName(false) != argB->getName(false)) return false;
 		if (!equal(argA->getType(), argB->getType())) return false;
 	}
 	return true;

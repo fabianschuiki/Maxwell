@@ -840,8 +840,26 @@ string CodeGenerator::generateType(const NodePtr& node, BlockContext& context)
 			return generateType(arg->getType(), context);
 		} else {
 			RootContext *root = context.root;
-			root->decls.insert(RootContext::Stmt(kTypeStage, "whadup?"));
-			return "whadup";
+			
+			stringstream body;
+			int n = 0;
+			for (NodeVector::const_iterator i = args.begin(); i != args.end(); i++) {
+				const TupleTypeArg::Ptr& arg = TupleTypeArg::needFrom(*i);
+				body << '\n' << generateType(arg->getType(), context) << ' ';
+				string name = arg->getName(false);
+				if (name.empty())
+					body << 'a' << n++;
+				else
+					body << name;
+				body << ";";
+			}
+
+			string name = "tuple_" + tup->getId().str();
+			std::replace(name.begin(), name.end(), '.', '_');
+
+			string decl = "typedef struct {" + indent(body.str()) + "\n} " + name + ";";
+			root->decls.insert(RootContext::Stmt(kTypeStage, decl));
+			return name;
 
 			// stringstream s;
 			// s << "Code generation for tuple types with " << args.size() << " arguments not implemented.";

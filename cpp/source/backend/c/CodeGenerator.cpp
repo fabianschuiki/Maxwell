@@ -807,6 +807,12 @@ string CodeGenerator::precedenceWrapped(const ExprCode& ec, int outer_prec)
  */
 string CodeGenerator::generateType(const NodePtr& node, BlockContext& context)
 {
+	RootContext::TypeSnippets::const_iterator i = context.root->types.find(TypeRef(node));
+	if (i != context.root->types.end()) {
+		std::cout << "found type " << i->first.ptr->describe() << " already generated\n";
+		return i->second.ref;
+	}
+
 	if (const DefinedType::Ptr& dt = DefinedType::from(node))
 	{
 		const NodePtr& def = dt->getDefinition();

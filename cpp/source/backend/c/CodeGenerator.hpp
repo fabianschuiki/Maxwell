@@ -1,5 +1,6 @@
 /* Copyright © 2013-2014 Fabian Schuiki */
 #pragma once
+#include "TypeSnippet.hpp"
 #include <ast/Node.hpp>
 #include <ast/Repository.hpp>
 #include <ast/nodes/ast.hpp>
@@ -47,6 +48,9 @@ public:
 		typedef set<Stmt> Stmts;
 		Stmts decls;
 		Stmts defs;
+
+		typedef map<TypeRef, TypeSnippet> TypeSnippets;
+		TypeSnippets types;
 	};
 
 	enum {

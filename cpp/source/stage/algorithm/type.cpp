@@ -306,6 +306,20 @@ bool equal(const NodePtr& a, const NodePtr& b)
 }
 
 /**
+ * @brief Establishes and ordering between types %a and %b.
+ *
+ * Returns 0 if both types are equal, -1 if type %a goes before type %b in the
+ * applied ordering mechanism, and +1 if type %a goes after type %b. Note that
+ * the ordering used is not considered relevant, but rather aims at
+ * establishing an order between types such that they may be used as indices
+ * into a maps and sets.
+ */
+int compare(const NodePtr& a, const NodePtr& b)
+{
+	return 0;
+}
+
+/**
  * @brief Tries to find the largest common type between types %a and %b.
  *
  * Returns an InvalidType if the intersect is impossible.

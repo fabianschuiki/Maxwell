@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 			cout << "Generating code for \033[1m" << ids[i] << "\033[0m\n";
 			cg.run(ids[i], contexts[ids[i]]);
 		}
-		
+
 		// Gather the generated code per source file.
 		set<int> sourceIds;
 		for (int i = 0; i < ids.size(); i++) {

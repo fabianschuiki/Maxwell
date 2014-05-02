@@ -1,22 +1,32 @@
 /* Copyright (c) 2014 Fabian Schuiki */
 #pragma once
-#include <stage/algorithm/type.hpp>
+#include <ast/Node.hpp>
+#include <map>
 #include <string>
+#include <vector>
 
 namespace backendc {
 
 struct TypeSnippet
 {
+	ast::NodePtr type;
 	std::string def;
 	std::string decl;
 	std::string ref;
 };
 
-struct TypeRef
+class TypeSnippetTable
 {
-	ast::NodePtr ptr;
-	TypeRef(const ast::NodePtr &p): ptr(p) {}
-	bool operator< (const TypeRef &t) const { return stage::algorithm::type::compare(ptr, t.ptr) < 0; }
+public:
+	const TypeSnippet* find(const ast::NodePtr& type) const;
+	void add(const TypeSnippet& snippet);
+	void clear();
+	bool empty();
+
+private:
+	typedef std::vector<TypeSnippet> SnippetVector;
+	typedef std::map<std::string, SnippetVector> SnippetTable;
+	SnippetTable table;
 };
 
 } // namespace backendc

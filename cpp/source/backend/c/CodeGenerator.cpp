@@ -807,10 +807,9 @@ string CodeGenerator::precedenceWrapped(const ExprCode& ec, int outer_prec)
  */
 string CodeGenerator::generateType(const NodePtr& node, BlockContext& context)
 {
-	RootContext::TypeSnippets::const_iterator i = context.root->types.find(TypeRef(node));
-	if (i != context.root->types.end()) {
-		std::cout << "found type " << i->first.ptr->describe() << " already generated\n";
-		return i->second.ref;
+	// Check whether a type snippet has already been generated for this type.
+	if (const TypeSnippet* snippet = context.root->types.find(node)) {
+		return snippet->ref;
 	}
 
 	if (const DefinedType::Ptr& dt = DefinedType::from(node))
@@ -846,7 +845,7 @@ string CodeGenerator::generateType(const NodePtr& node, BlockContext& context)
 			return generateType(arg->getType(), context);
 		} else {
 			RootContext *root = context.root;
-			
+
 			stringstream body;
 			int n = 0;
 			for (NodeVector::const_iterator i = args.begin(); i != args.end(); i++) {
@@ -860,12 +859,17 @@ string CodeGenerator::generateType(const NodePtr& node, BlockContext& context)
 				body << ";";
 			}
 
-			string name = "tuple_" + tup->getId().str();
-			std::replace(name.begin(), name.end(), '.', '_');
+			stringstream name;
+			name << "tuple" << tup->getId().source << 'k' << root->tupleIndex++;
 
-			string decl = "typedef struct {" + indent(body.str()) + "\n} " + name + ";";
+			string decl = "typedef struct {" + indent(body.str()) + "\n} " + name.str() + ";";
 			root->decls.insert(RootContext::Stmt(kTypeStage, decl));
-			return name;
+
+			TypeSnippet snippet;
+			snippet.type = node;
+			snippet.ref = name.str();
+			root->types.add(snippet);
+			return name.str();
 
 			// stringstream s;
 			// s << "Code generation for tuple types with " << args.size() << " arguments not implemented.";
@@ -909,13 +913,18 @@ string CodeGenerator::generateType(const NodePtr& node, BlockContext& context)
 				throw std::runtime_error("Return type generation for function should not spawn any statements.");
 		}
 
-		string name = "funcptr_" + func->getId().str();
-		std::replace(name.begin(), name.end(), '.', '_');
+		stringstream name;
+		name << "func" << func->getId().source << 'k' << context.root->funcIndex++;
 		stringstream r;
-		r << "typedef " << returnType << ' ' << "(*" << name << ")(" << argsCode.str() << ");";
+		r << "typedef " << returnType << ' ' << "(*" << name.str() << ")(" << argsCode.str() << ");";
 		assert(context.root);
 		context.root->decls.insert(RootContext::Stmt(kTypeStage, r.str()));
-		return name;
+
+		TypeSnippet snippet;
+		snippet.type = node;
+		snippet.ref = name.str();
+		context.root->types.add(snippet);
+		return name.str();
 	}
 
 	if (const QualifiedType::Ptr& qual = QualifiedType::from(node))

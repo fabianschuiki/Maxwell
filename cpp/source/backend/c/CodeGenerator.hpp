@@ -49,8 +49,11 @@ public:
 		Stmts decls;
 		Stmts defs;
 
-		typedef map<TypeRef, TypeSnippet> TypeSnippets;
-		TypeSnippets types;
+		TypeSnippetTable types;
+		int tupleIndex;
+		int funcIndex;
+
+		RootContext(): tupleIndex(1), funcIndex(1) {}
 	};
 
 	enum {
@@ -124,7 +127,7 @@ protected:
 
 	string precedenceWrapped(const string& s, int prec, int outer_prec);
 	string precedenceWrapped(const ExprCode& ec, int outer_prec);
-	
+
 	// Enumeration that simplifies precedence handling.
 	enum {
 		kPrimaryPrec = 0,

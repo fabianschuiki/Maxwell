@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <string>
-#include <common/base64.hpp>
+#include <base64.hpp>
 
 using std::cout;
 using std::string;

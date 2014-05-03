@@ -3,7 +3,7 @@
 #include "Coder.hpp"
 #include "nodes/nodes.hpp"
 #include <sstream>
-#include <common/base64.hpp>
+#include <base64.hpp>
 #include <stdexcept>
 
 using ast::Serializer;

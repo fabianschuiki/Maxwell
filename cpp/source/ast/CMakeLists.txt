@@ -12,3 +12,4 @@ add_library(ast
 )
 
 add_dependencies(ast ast-gen)
+target_link_libraries(ast base64)

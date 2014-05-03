@@ -24,5 +24,5 @@ add_library(driver ${CMAKE_CURRENT_BINARY_DIR}/Parser.cpp ${CMAKE_CURRENT_BINARY
 add_dependencies(driver ast-gen)
 
 # Add the test executable used to debug the parser.
-add_executable(test main.cpp)
-target_link_libraries(test driver ast ${Boost_LIBRARIES})
+add_executable(test-parser main.cpp)
+target_link_libraries(test-parser driver ast ${Boost_LIBRARIES} base64)

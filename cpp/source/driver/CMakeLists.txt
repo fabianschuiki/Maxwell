@@ -2,7 +2,7 @@ add_custom_command(
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Parser.yy
 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Parser.cpp ${CMAKE_CURRENT_BINARY_DIR}/Parser.hpp ${CMAKE_CURRENT_BINARY_DIR}/stack.hh ${CMAKE_CURRENT_BINARY_DIR}/position.hh ${CMAKE_CURRENT_BINARY_DIR}/location.hh ${CMAKE_CURRENT_BINARY_DIR}/Parser.output
 	COMMAND bison --report=all -d -o ${CMAKE_CURRENT_BINARY_DIR}/Parser.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Parser.yy
-	COMMAND gramdiag ${CMAKE_CURRENT_BINARY_DIR}/Parser.output || true > ${CMAKE_CURRENT_BINARY_DIR}/Parser.report
+	COMMAND gramdiag ${CMAKE_CURRENT_BINARY_DIR}/Parser.output > ${CMAKE_CURRENT_BINARY_DIR}/Parser.report || true
 	COMMENT "Generating Bison parser")
 
 add_custom_command(

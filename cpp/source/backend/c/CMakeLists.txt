@@ -3,4 +3,8 @@ add_library(backendc
 	CodeGenerator.cpp
 	TypeSnippet.cpp
 	Packager.cpp
+	Packager-collect.cpp
+	Packager-sort.cpp
+	Packager-group.cpp
+	Packager-compile.cpp
 )

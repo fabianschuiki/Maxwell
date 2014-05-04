@@ -1,4 +1,5 @@
 /* Copyright (c) 2014 Fabian Schuiki */
+#pragma once
 
 /** @file Includes sqlite3.h and adds an exception class that helps dealing
  * with sqlite3 errors in C++ code. */

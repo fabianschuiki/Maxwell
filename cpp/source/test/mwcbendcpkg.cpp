@@ -5,6 +5,7 @@
 
 #include <sqlite3.h>
 #include <backend/c/Packager.hpp>
+#include <fstream>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -41,6 +42,12 @@ int main(int argc, char *argv[])
 
 		// Close the database.
 		sqlite3_close(db);
+
+		// Dump the generated files.
+		for (std::map<std::string,std::string>::iterator i = pkg.files.begin(); i != pkg.files.end(); i++) {
+			std::ofstream f(i->first.c_str());
+			f << i->second;
+		}
 
 	} catch (std::exception &e) {
 		std::cerr << "*** \033[31;1mexception:\033[0m " << e.what() << "\n";

@@ -19,6 +19,14 @@ int main(int argc, char *argv[])
 	try {
 		int rc;
 
+		// Lookup the name of the main fragment from the arguments the user
+		// passed to the program.
+		if (argc < 2) {
+			std::cerr << "usage: " << argv[0] << " FRAGMENT-NAME\n";
+			return 2;
+		}
+		std::string name = argv[1];
+
 		// Open the database.
 		rc = sqlite3_open("mwcrepo/bendc.db", &db);
 		if (rc) {
@@ -29,7 +37,7 @@ int main(int argc, char *argv[])
 
 		// Call the packager on the database.
 		Packager pkg(db);
-		pkg.run("main_def");
+		pkg.run(name);
 
 		// Close the database.
 		sqlite3_close(db);

@@ -10,6 +10,9 @@
 #define DECL_EXPR(type) void generate##type(const ast::type::Ptr& node, ExprCode& out, Context& ctx)
 #define DECL_TYPE(type) void generate##type(const ast::type::Ptr& node, TypeCode& out)
 
+#define DECL_EXPR_INTF(type) void generate##type##Intf(ast::type##Interface* node, ExprCode& out, Context& ctx)
+#define DECL_TYPE_INTF(type) void generate##type##Intf(ast::type##Interface* node, TypeCode& out)
+
 
 namespace ast {
 	struct Node;
@@ -76,10 +79,19 @@ private:
 	DECL_ROOT(TypeDef);
 
 	// Declare nodes that can be compiled as expressions.
+	DECL_EXPR(AssignmentExpr);
 	DECL_EXPR(BlockExpr);
+	DECL_EXPR(FuncExpr);
+	DECL_EXPR(IdentifierExpr);
+	DECL_EXPR(NumberConstExpr);
+	DECL_EXPR(TupleExpr);
+	DECL_EXPR(TypelessVarDefExpr);
+	DECL_EXPR(VarDefExpr);
+	DECL_EXPR_INTF(Call);
 
 	// Declare nodes that can be compiled as types.
 	DECL_TYPE(DefinedType);
+	DECL_TYPE(FuncType);
 	DECL_TYPE(TupleType);
 };
 

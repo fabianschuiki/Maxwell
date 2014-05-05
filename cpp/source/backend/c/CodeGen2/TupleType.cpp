@@ -34,9 +34,9 @@ DEF_TYPE(TupleType)
 		// given to it by the author, or an indexed name.
 		string name = makeFriendly(arg->getName(false));
 		if (name.empty()) {
-			char buffer[16];
-			snprintf(buffer, 16, "v%i", n++);
-			body += buffer;
+			std::stringstream s;
+			s << "v" << n++;
+			body += s.str();
 		} else {
 			body += name;
 		}
@@ -48,9 +48,9 @@ DEF_TYPE(TupleType)
 	// Pick a name.
 	std::string name;
 	do {
-		char buffer[32];
-		snprintf(buffer, 32, "tuple%i", rand());
-		name = buffer;
+		std::stringstream s;
+		s << "tuple" << rand();
+		name = makeFriendly(s.str());
 	} while (!isRefUnused(name));
 
 

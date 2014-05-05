@@ -10,9 +10,17 @@ add_library(backendc
 	database.cpp
 	CodeGen2.cpp
 	code.cpp
+	CodeGen2/AssignmentExpr.cpp
 	CodeGen2/BlockExpr.cpp
+	CodeGen2/CallIntf.cpp
 	CodeGen2/DefinedType.cpp
 	CodeGen2/FuncDef.cpp
+	CodeGen2/FuncExpr.cpp
+	CodeGen2/FuncType.cpp
+	CodeGen2/IdentifierExpr.cpp
+	CodeGen2/NumberConstExpr.cpp
+	CodeGen2/TupleExpr.cpp
 	CodeGen2/TupleType.cpp
 	CodeGen2/TypeDef.cpp
+	CodeGen2/VarDefExpr.cpp
 )

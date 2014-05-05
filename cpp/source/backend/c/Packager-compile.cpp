@@ -24,11 +24,8 @@ static void compileGroup(Group* grp, std::string& output)
 		output += "#include \"" + (*k)->name + "\"\n";
 	}
 
-	// Empty line for visual separation. I can haz beautiez?
-	output += "\n";
-
 	// Insert the fragments.
-	bool wasOneline = true;
+	bool wasOneline = false;
 	for (std::vector<Fragment*>::iterator k = grp->frags.begin(); k != grp->frags.end(); k++) {
 		bool oneline = (*k)->code.find_first_of('\n') == std::string::npos;
 		if (!oneline || !wasOneline)

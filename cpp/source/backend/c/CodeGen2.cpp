@@ -12,6 +12,9 @@ using namespace backendc;
 #define REGISTER_EXPR(type) if (const ast::type::Ptr& n = ast::type::from(node)) { return generate##type(n, out, ctx); }
 #define REGISTER_TYPE(type) if (const ast::type::Ptr& n = ast::type::from(node)) { return generate##type(n, out); }
 
+#define REGISTER_EXPR_INTF(type) if (ast::type##Interface* n = node->as##type()) { return generate##type##Intf(n, out, ctx); }
+#define REGISTER_TYPE_INTF(type) if (ast::type##Interface* n = node->as##type()) { return generate##type##Intf(n, out); }
+
 
 CodeGen2::CodeGen2(Repository& repo, sqlite3* db): repo(repo), db(db)
 {
@@ -43,17 +46,25 @@ void CodeGen2::generateRoot(const NodePtr& node)
 
 	// Throw an exception if no code could be generated.
 	throw std::runtime_error(
-		"Unable to generate code as root for node " + node->getId().str() +
+		"Unable to generate root code for node " + node->getId().str() +
 		" (a " + node->getClassName() + ")");
 }
 
 void CodeGen2::generateExpr(const NodePtr& node, ExprCode& out, Context& ctx)
 {
+	REGISTER_EXPR(AssignmentExpr);
 	REGISTER_EXPR(BlockExpr);
+	REGISTER_EXPR(FuncExpr);
+	REGISTER_EXPR(IdentifierExpr);
+	REGISTER_EXPR(NumberConstExpr);
+	REGISTER_EXPR(TupleExpr);
+	REGISTER_EXPR(TypelessVarDefExpr);
+	REGISTER_EXPR(VarDefExpr);
+	REGISTER_EXPR_INTF(Call);
 
 	// Throw an exception if no code could be generated.
 	throw std::runtime_error(
-		"Unable to generate code as expression for node " + node->getId().str() +
+		"Unable to generate expression code for node " + node->getId().str() +
 		" (a " + node->getClassName() + ")");
 }
 
@@ -66,11 +77,12 @@ void CodeGen2::generateType(const NodePtr& node, TypeCode& out)
 
 	// Register the types.
 	REGISTER_TYPE(DefinedType);
+	REGISTER_TYPE(FuncType);
 	REGISTER_TYPE(TupleType);
 
 	// Throw an exception if no code could be generated.
 	throw std::runtime_error(
-		"Unable to generate code as type for node " + node->getId().str() +
+		"Unable to generate type code for node " + node->getId().str() +
 		" (a " + node->getClassName() + "), hash '" + out.hash + "'");
 }
 
@@ -155,5 +167,7 @@ std::string CodeGen2::makeTypeName(const ast::TypeDef::Ptr& node)
  * disallowed characters. */
 std::string CodeGen2::makeFriendly(const std::string& name)
 {
-	return name;
+	std::string result = name;
+	std::replace(result.begin(), result.end(), '.', '_');
+	return result;
 }

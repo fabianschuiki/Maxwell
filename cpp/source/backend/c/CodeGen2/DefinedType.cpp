@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 Fabian Schuiki */
+/* Copyright (c) 2013-2014 Fabian Schuiki */
 #include "detail.hpp"
 #include <ast/builtin/NumericType.hpp>
 
@@ -22,8 +22,9 @@ DEF_TYPE(DefinedType)
 	// Type definitions generate a typedef statement, which allows other parts
 	// of the code to simply use them by name.
 	if (const TypeDef::Ptr& td = TypeDef::from(def)) {
-		out.code = "%{" + td->getId().str() + "}";
-		out.deps.insert(td->getId().str());
+		std::string name = td->getId().str() + "_def";
+		out.code = "%{" + name + "}";
+		out.deps.insert(name);
 		return;
 	}
 }

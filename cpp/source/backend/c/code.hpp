@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+namespace ast { struct NodeId; }
+
 namespace backendc {
 
 std::string indent(const std::string& in);
@@ -24,9 +26,18 @@ struct Context
 {
 	std::vector<std::string> stmts;
 	std::set<std::string> usedSymbols;
-	std::map<std::string,std::string> vars;
+	std::map<ast::NodeId,std::string> vars;
+	std::string resultVar;
+	bool omitResultVar;
+
+	Context();
+	Context(const Context& parent);
 
 	std::string makeSymbol(const std::string& name);
+	std::string makeTempSymbol();
+
+private:
+	int tmpIndex;
 };
 
 /** A code fragment representing an expression. */

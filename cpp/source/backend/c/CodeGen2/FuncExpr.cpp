@@ -1,15 +1,12 @@
 /* Copyright (c) 2013-2014 Fabian Schuiki */
 #include "detail.hpp"
 
-DEF_ROOT(FuncDef)
+DEF_EXPR(FuncExpr)
 {
-	Context ctx;
-	ctx.omitResultVar = true;
-
 	// Generate the function arguments.
 	std::stringstream argsCode;
 	std::set<std::string> argsDeps; // fragments the arguments depend on
-	const NodeVector& args = node->getIn();
+	const NodeVector& args = node->getArgs();
 
 	for (NodeVector::const_iterator i = args.begin(); i != args.end(); i++) {
 		const FuncArg::Ptr& arg = FuncArg::needFrom(*i);
@@ -31,11 +28,11 @@ DEF_ROOT(FuncDef)
 
 	// Generate the code for the function body.
 	ExprCode ec;
-	generateExpr(node->getBody(), ec, ctx);
+	generateExpr(node->getExpr(), ec, ctx);
 
 
 	// Generate the return type of the function.
-	const FuncType::Ptr& nodeType = FuncType::needFrom(node->getType());
+	const FuncType::Ptr& nodeType = FuncType::needFrom(node->getActualType());
 	const NodePtr& outType = nodeType->getOut();
 	std::string returnType;
 
@@ -50,7 +47,8 @@ DEF_ROOT(FuncDef)
 
 
 	// Pick a name.
-	std::string name = makeFuncName(node);
+	std::string name = "lambda_" + makeFriendly(node->getId().str());
+
 
 	// Synthesize the declaration of the function.
 	Fragment decl;
@@ -69,12 +67,13 @@ DEF_ROOT(FuncDef)
 	for (std::vector<std::string>::const_iterator i = ctx.stmts.begin(); i != ctx.stmts.end(); i++) {
 		def.code += indent(*i) + "\n";
 	}
-	if (node->getImplOut())
+	if (returnType != "void")
 		def.code += "    return " + ec.code + ";\n";
 	else if (!ec.isRef)
 		def.code += "    " + ec.code + ";\n";
 
 	def.code += "}";
+
 
 	// Add the fragments to the database.
 	addFragment(decl);
@@ -92,4 +91,11 @@ DEF_ROOT(FuncDef)
 	for (std::set<std::string>::const_iterator i = ec.deps.begin(); i != ec.deps.end(); i++) {
 		addDependency(def.name, *i, true);
 	}
+
+
+	// Synthesize the output.
+	out.deps.insert(node->getId().str() + "_decl");
+	out.code = "&%{" + node->getId().str() + "_decl" + "}";
+	out.isRef = true;
+	out.precedence = kPrimaryPrec;
 }

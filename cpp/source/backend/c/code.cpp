@@ -1,23 +1,56 @@
 /* Copyright (c) 2014 Fabian Schuiki */
 #include "code.hpp"
+#include <ast/NodeId.hpp>
 #include <sstream>
 #include <stdexcept>
 using namespace backendc;
 
 
+Context::Context()
+{
+	tmpIndex = 0;
+	omitResultVar = false;
+}
+
+Context::Context(const Context& parent)
+{
+	usedSymbols = parent.usedSymbols;
+	vars = parent.vars;
+	tmpIndex = parent.tmpIndex;
+	omitResultVar = false;
+}
+
+
+/** Returns either the name passed to the function, or a slightly altered name
+ * if it is already in use. Useful for making sure that a name is unique within
+ * a context. Also adds the symbol to the list of used symbols. */
 std::string Context::makeSymbol(const std::string& name)
 {
-	if (!usedSymbols.count(name))
-		return name;
+	std::string result = name;
+	int i = 2;
 
-	for (int i = 2; i < 100000; i++) {
+	while (usedSymbols.count(result)) {
 		std::stringstream s;
-		s << name << i;
-		if (!usedSymbols.count(s.str()))
-			return s.str();
+		s << name << i++;
+		result = s.str();
 	}
 
-	throw std::runtime_error("Unable to find a symbol name for '" + name + "'");
+	usedSymbols.insert(result);
+	return result;
+}
+
+/** Returns the name for a temporary symbol and adds it to the symbol table.
+ * Useful for creating temporary variables and the like. */
+std::string Context::makeTempSymbol()
+{
+	std::string name;
+	do {
+		std::stringstream s;
+		s << "tmp" << tmpIndex++;
+		name = s.str();
+	} while (usedSymbols.count(name));
+	usedSymbols.insert(name);
+	return name;
 }
 
 

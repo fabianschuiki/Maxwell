@@ -5,6 +5,9 @@
 #include <string>
 
 namespace ast {
+
+class BuiltinRepository;
+
 namespace builtin {
 
 using std::string;
@@ -40,7 +43,7 @@ public:
 	// Interfaces
 	virtual CallableInterface* asCallable() { return &this->interfaceCallable; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
-	
+
 	typedef boost::shared_ptr<FuncDef> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<FuncDef>(n); }
 	template<typename T> static Ptr needFrom(const T& n) { Ptr r = boost::dynamic_pointer_cast<FuncDef>(n); if (!r) throw std::runtime_error("Node " + n->getId().str() + " cannot be dynamically casted to FuncDef."); return r; }

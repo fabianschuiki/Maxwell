@@ -2,13 +2,15 @@
 #include "CodeGen2.hpp"
 #include <ast/Node.hpp>
 #include <ast/Repository.hpp>
+#include <base64.hpp>
 #include "code.hpp"
 using namespace backendc;
 
 
+// Defines that make the handling of the different node types easier.
 #define REGISTER_ROOT(type) if (const ast::type::Ptr& n = ast::type::from(node)) { return generate##type(n); }
-#define REGISTER_EXPR(type) if (const ast::type::Ptr& n = ast::type::from(node)) { return generate##type(n, ctx); }
-#define REGISTER_TYPE(type) if (const ast::type::Ptr& n = ast::type::from(node)) { return generate##type(n); }
+#define REGISTER_EXPR(type) if (const ast::type::Ptr& n = ast::type::from(node)) { return generate##type(n, out, ctx); }
+#define REGISTER_TYPE(type) if (const ast::type::Ptr& n = ast::type::from(node)) { return generate##type(n, out); }
 
 
 CodeGen2::CodeGen2(Repository& repo, sqlite3* db): repo(repo), db(db)
@@ -18,6 +20,8 @@ CodeGen2::CodeGen2(Repository& repo, sqlite3* db): repo(repo), db(db)
 	insertDepStmt.prepare(db,
 		"REPLACE INTO dependencies (frag,name,after) VALUES ("
 			"(SELECT id FROM fragments WHERE name = ?),?,?)");
+	typeExistsStmt.prepare(db,
+		"SELECT id FROM fragments WHERE name = ?");
 }
 
 CodeGen2::~CodeGen2()
@@ -25,12 +29,12 @@ CodeGen2::~CodeGen2()
 }
 
 
-void CodeGen2::root(const NodeId& id)
+void CodeGen2::generateRoot(const NodeId& id)
 {
-	root(repo.getNode(id));
+	generateRoot(repo.getNode(id));
 }
 
-void CodeGen2::root(const NodePtr& node)
+void CodeGen2::generateRoot(const NodePtr& node)
 {
 	REGISTER_ROOT(FuncDef);
 	REGISTER_ROOT(TypeDef);
@@ -41,26 +45,58 @@ void CodeGen2::root(const NodePtr& node)
 		" (a " + node->getClassName() + ")");
 }
 
-void CodeGen2::expr(const NodePtr& node)
+void CodeGen2::generateExpr(const NodePtr& node, ExprCode& out, Context& ctx)
 {
+	REGISTER_EXPR(BlockExpr);
+
 	// Throw an exception if no code could be generated.
 	throw std::runtime_error(
 		"Unable to generate code as expression for node " + node->getId().str() +
 		" (a " + node->getClassName() + ")");
 }
 
-void CodeGen2::type(const NodePtr& node)
+void CodeGen2::generateType(const NodePtr& node, TypeCode& out)
 {
+	// Calculate the type's hash which will be used as its name in the
+	// database. The hash is used to coordinate lookupType() and the name
+	// assigned to a type upon generation.
+	out.hash = base64::encode(node->describe());
+
+	// Register the types.
+	REGISTER_TYPE(DefinedType);
+	REGISTER_TYPE(TupleType);
+
 	// Throw an exception if no code could be generated.
 	throw std::runtime_error(
 		"Unable to generate code as type for node " + node->getId().str() +
-		" (a " + node->getClassName() + ")");
+		" (a " + node->getClassName() + "), hash '" + out.hash + "'");
 }
 
 
 void CodeGen2::postprocess()
 {
 	std::cout << "postprocessing\n";
+}
+
+
+bool CodeGen2::lookupType(TypeCode& out)
+{
+	out.code = "%{" + out.hash + "}";
+	out.deps.insert(out.hash);
+
+	if (existingTypesCache.count(out.hash)) {
+		return true;
+	} else {
+		sqlite3_throw(bind_text(typeExistsStmt, 1, out.hash.c_str(), -1, SQLITE_STATIC));
+		bool exists = typeExistsStmt.step();
+		typeExistsStmt.reset();
+		if (exists) {
+			existingTypesCache.insert(out.hash);
+			return true;
+		}
+	}
+
+	return false;
 }
 
 
@@ -86,4 +122,19 @@ void CodeGen2::addDependency(const std::string& frag, const std::string& dep, bo
 	sqlite3_throw(bind_int(insertDepStmt, 3, after));
 	insertDepStmt.step();
 	insertDepStmt.reset();
+}
+
+/** Returns the unique name for the given function. It is unique within the
+ * current database, and multiple calls with the same node will yield the same
+ * name. */
+std::string CodeGen2::makeFuncName(const ast::FuncDef::Ptr& node)
+{
+	return node->getName();
+}
+
+/** Returns the unique name for the given type. It is unique within the current
+ * database, and multiple calls with the same node will yield the same name. */
+std::string CodeGen2::makeTypeName(const ast::TypeDef::Ptr& node)
+{
+	return node->getName();
 }

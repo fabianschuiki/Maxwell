@@ -1,6 +1,24 @@
 /* Copyright (c) 2014 Fabian Schuiki */
 #include "code.hpp"
+#include <sstream>
+#include <stdexcept>
 using namespace backendc;
+
+
+std::string Context::makeSymbol(const std::string& name)
+{
+	if (!usedSymbols.count(name))
+		return name;
+
+	for (int i = 2; i < 100000; i++) {
+		std::stringstream s;
+		s << name << i;
+		if (!usedSymbols.count(s.str()))
+			return s.str();
+	}
+
+	throw std::runtime_error("Unable to find a symbol name for '" + name + "'");
+}
 
 
 ExprCode::ExprCode()

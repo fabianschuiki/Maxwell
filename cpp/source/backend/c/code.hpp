@@ -1,6 +1,9 @@
 /* Copyright (c) 2014 Fabian Schuiki */
 #pragma once
+#include <map>
+#include <set>
 #include <string>
+#include <vector>
 
 namespace backendc {
 
@@ -14,13 +17,34 @@ struct Fragment
 	std::string group;
 };
 
+/** A code generator context, corresponding roughly to a C scope. This
+ * structure holds declared variables, used symbols and statements for a scope
+ * in the final C code. */
+struct Context
+{
+	std::vector<std::string> stmts;
+	std::set<std::string> usedSymbols;
+	std::map<std::string,std::string> vars;
+
+	std::string makeSymbol(const std::string& name);
+};
+
 /** A code fragment representing an expression. */
 struct ExprCode
 {
 	std::string code;
+	std::set<std::string> deps;
 	bool isRef;
 	int precedence;
 	ExprCode();
+};
+
+/** A code fragment representing a type. */
+struct TypeCode
+{
+	std::string code;
+	std::set<std::string> deps;
+	std::string hash;
 };
 
 

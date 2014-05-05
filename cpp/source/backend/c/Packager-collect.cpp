@@ -131,7 +131,7 @@ void Packager::collect(const std::string& name)
 			std::string fn(a,b);
 			l = fragments.find(fn);
 			if (l == fragments.end())
-				throw std::runtime_error("Fragment '" + i->first + "' has a placeholder referring to fragment '" + fn + "' which does not exist");
+				throw std::runtime_error("Fragment '" + i->first + "' has a placeholder referring to fragment %{" + fn + "} which does not exist");
 			after.append(l->second->ref);
 		}
 		after.append(current, next);

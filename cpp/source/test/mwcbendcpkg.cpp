@@ -4,6 +4,7 @@
  * base and set of nodes. */
 
 #include <sqlite3.h>
+#include <backend/c/database.hpp>
 #include <backend/c/Packager.hpp>
 #include <fstream>
 #include <iostream>
@@ -35,6 +36,10 @@ int main(int argc, char *argv[])
 			s << "Can't open database: %s" << sqlite3_errmsg(db);
 			throw std::runtime_error(s.str());
 		}
+		sqlite3_exec(db, "PRAGMA foreign_keys = ON", NULL, NULL, NULL);
+
+		// Make sure the database has the right schema.
+		database(db).prepareFragmentsSchema();
 
 		// Call the packager on the database.
 		Packager pkg(db);

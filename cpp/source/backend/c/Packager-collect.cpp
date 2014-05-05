@@ -17,11 +17,11 @@ void Packager::collect(const std::string& name)
 	// one that fetches all dependencies.
 	sqlite3_stmt *fragStmt, *depsStmt;
 
-	rc = sqlite3_prepare_v2(db, "SELECT rowid,code,ref,grp FROM fragments WHERE name = ?", -1, &fragStmt, NULL);
+	rc = sqlite3_prepare_v2(db, "SELECT id,code,ref,grp FROM fragments WHERE name = ?", -1, &fragStmt, NULL);
 	if (rc != SQLITE_OK)
 		throw sqlite3_exception(rc, "Unable to prepare fragment fetch statement");
 
-	rc = sqlite3_prepare_v2(db, "SELECT name,after FROM dependencies JOIN fragments ON fragments.rowid = depid WHERE fragid = ?", -1, &depsStmt, NULL);
+	rc = sqlite3_prepare_v2(db, "SELECT name,after FROM dependencies JOIN fragments ON fragments.id = depid WHERE fragid = ?", -1, &depsStmt, NULL);
 	if (rc != SQLITE_OK)
 		throw sqlite3_exception(rc, "Unable to prepare dependency fetch statement");
 
@@ -51,17 +51,17 @@ void Packager::collect(const std::string& name)
 		// Create the fragment from the table row.
 		Fragment *frag = new Fragment;
 		frag->name  = n;
-		frag->rowid = sqlite3_column_int64(fragStmt, 0);
+		frag->id    = sqlite3_column_int(fragStmt, 0);
 		frag->code  = (const char*)sqlite3_column_text(fragStmt, 1);
 		frag->ref   = (const char*)sqlite3_column_text(fragStmt, 2);
 		frag->group = (const char*)sqlite3_column_text(fragStmt, 3);
 		fragments[frag->name] = frag;
 
-		// Bind the fragment rowid to the first argument of the dependency
+		// Bind the fragment id to the first argument of the dependency
 		// statement.
-		rc = sqlite3_bind_int64(depsStmt, 1, frag->rowid);
+		rc = sqlite3_bind_int(depsStmt, 1, frag->id);
 		if (rc != SQLITE_OK)
-			throw sqlite3_exception(rc, "Unable to bind fragment rowid in dependency fetch statement");
+			throw sqlite3_exception(rc, "Unable to bind fragment id in dependency fetch statement");
 
 		// Fetch the dependencies from the database. This query may return an
 		// arbitrary number of names.

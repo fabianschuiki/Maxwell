@@ -7,4 +7,5 @@ add_library(backendc
 	Packager-sort.cpp
 	Packager-group.cpp
 	Packager-compile.cpp
+	database.cpp
 )

@@ -17,7 +17,7 @@ struct Dependency
 struct Fragment
 {
 	int order;
-	sqlite3_int64 rowid;
+	int id;
 	std::string name;
 	std::string code;
 	std::string ref;

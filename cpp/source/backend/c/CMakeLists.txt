@@ -8,4 +8,8 @@ add_library(backendc
 	Packager-group.cpp
 	Packager-compile.cpp
 	database.cpp
+	CodeGen2.cpp
+	code.cpp
+	CodeGen2/FuncDef.cpp
+	CodeGen2/TypeDef.cpp
 )

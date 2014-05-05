@@ -5,6 +5,8 @@
 #include <ast/Repository.hpp>
 #include <backend/c/Repository.hpp>
 #include <backend/c/CodeGenerator.hpp>
+#include <backend/c/CodeGen2.hpp>
+#include <backend/c/database.hpp>
 #include <stdexcept>
 #include <cstdlib>
 #include <vector>
@@ -12,6 +14,7 @@
 #include <map>
 #include <sstream>
 #include <fstream>
+#include <sqlite3.hpp>
 
 using std::string;
 using std::cout;
@@ -25,9 +28,22 @@ using std::map;
 
 int main(int argc, char *argv[])
 {
+	sqlite3* db = NULL;
 	try {
 		Repository repo("mwcrepo");
 		backendc::Repository bendrepo("mwcrepo");
+
+		// Open the database.
+		int rc = sqlite3_open("mwcrepo/bendc.db", &db);
+		if (rc) {
+			std::stringstream s;
+			s << "Can't open database: %s" << sqlite3_errmsg(db);
+			throw std::runtime_error(s.str());
+		}
+		sqlite3_exec(db, "PRAGMA foreign_keys = ON", NULL, NULL, NULL);
+
+		// Make sure the database has the right schema.
+		backendc::database(db).prepareFragmentsSchema();
 
 		// Read the node IDs from the input.
 		vector<NodeId> ids;
@@ -35,9 +51,14 @@ int main(int argc, char *argv[])
 			ids.push_back(NodeId(string(argv[i])));
 		}
 
+		// Run stuff through the fancy new CodeGen2.
+		cout << "Running CodeGen2\n";
+		backendc::CodeGen2 cg2(repo, db);
+		cg2.run(ids.begin(), ids.end());
+
 		// Process each of the nodes.
 		map<NodeId, backendc::CodeGenerator::RootContext> contexts;
-		backendc::CodeGenerator cg(repo, bendrepo);
+		backendc::CodeGenerator cg(repo, bendrepo, db);
 		for (int i = 0; i < ids.size(); i++) {
 			cout << "Generating code for \033[1m" << ids[i] << "\033[0m\n";
 			cg.run(ids[i], contexts[ids[i]]);
@@ -76,8 +97,12 @@ int main(int argc, char *argv[])
 			}
 		}
 
+		// Close the database.
+		sqlite3_close(db);
+
 	} catch (std::exception &e) {
 		cerr << "*** \033[31;1mexception:\033[0m " << e.what() << "\n";
+		if (db) sqlite3_close(db);
 		return 1;
 	}
 	return 0;

@@ -2,6 +2,8 @@
 #include "CodeGenerator.hpp"
 #include <stage/algorithm/type.hpp>
 #include <ast/nodes/ast.hpp>
+#include <base64.hpp>
+#include <sqlite3.hpp>
 #include <iostream>
 #include <sstream>
 
@@ -35,8 +37,8 @@ string CodeGenerator::dumpContext(const BlockContext& ctx)
 }
 
 
-CodeGenerator::CodeGenerator(ast::Repository& nr, backendc::Repository& br)
-	: nodeRepository(nr), backendRepository(br)
+CodeGenerator::CodeGenerator(ast::Repository& nr, backendc::Repository& br, sqlite3* db)
+	: nodeRepository(nr), backendRepository(br), db(db)
 {
 }
 
@@ -499,7 +501,7 @@ CodeGenerator::ExprCode CodeGenerator::generateExpr(const NodePtr& node, BlockCo
 			ExprCode ec_cond = generateExpr(cond->getCond(), context);
 			if (!isFirst) stmt << " else ";
 			stmt << "if (" << ec_cond.code << ") {\n";
-			
+
 			// Generate the code for the body of the branch.
 			BlockContext context_branch(&context);
 			context_branch.resVar = resVar;
@@ -812,6 +814,22 @@ string CodeGenerator::generateType(const NodePtr& node, BlockContext& context)
 		return snippet->ref;
 	}
 
+	// Calculate the hash for this type such that we may look it up in the
+	// fragment table of the database.
+	// std::string hash = base64::encode(node->describe());
+
+	// If no fragment for the given hash exists in the database, generate one.
+	// Otherwise simply return a reference to said fragment.
+	// sqlite3_statement stmt;
+	// stmt.prepare(db, "SELECT id FROM fragments where name = ?");
+	// sqlite3_bind_text(stmt, 1, hash.c_str(), -1, SQLITE_STATIC);
+	// if (stmt.step()) {
+	// 	std::cout << "found type in db: " << hash << '\n';
+	// 	return "%{" + hash + "}";
+	// } else {
+	// 	std::cout << "generating type in db: " << hash << '\n';
+	// }
+
 	if (const DefinedType::Ptr& dt = DefinedType::from(node))
 	{
 		const NodePtr& def = dt->getDefinition();
@@ -869,6 +887,15 @@ string CodeGenerator::generateType(const NodePtr& node, BlockContext& context)
 			snippet.type = node;
 			snippet.ref = name.str();
 			root->types.add(snippet);
+
+			// Insert the fragment into the database.
+			// sqlite3_statement stmt;
+			// stmt.prepare(db, "REPLACE INTO fragments (name,code,ref,grp) VALUES (?,?,?,'tuples.h')");
+			// sqlite3_bind_text(stmt, 1, hash.c_str(), -1, SQLITE_STATIC);
+			// sqlite3_bind_text(stmt, 2, decl.c_str(), -1, SQLITE_STATIC);
+			// sqlite3_bind_text(stmt, 3, name.str().c_str(), -1, SQLITE_STATIC);
+			// stmt.step();
+
 			return name.str();
 
 			// stringstream s;

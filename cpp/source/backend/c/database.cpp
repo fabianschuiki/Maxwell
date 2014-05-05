@@ -22,12 +22,11 @@ void database::prepareFragmentsSchema()
 		"grp varchar(128))", db);
 	runStmt("CREATE TABLE IF NOT EXISTS dependencies ("
 		"id integer primary key, "
-		"fragid integer not null, "
-		"depid integer not null, "
+		"frag integer not null, "
+		"name varchar(128) not null, "
 		"after boolean default 0 not null, "
-		"FOREIGN KEY (fragid) REFERENCES fragments(id) ON DELETE CASCADE, "
-		"FOREIGN KEY (depid) REFERENCES fragments(id))", db);
+		"FOREIGN KEY (frag) REFERENCES fragments(id) ON DELETE CASCADE)", db);
 	runStmt("CREATE UNIQUE INDEX IF NOT EXISTS fragments_name ON fragments (name)", db);
-	runStmt("CREATE INDEX IF NOT EXISTS dependencies_fragid ON dependencies (fragid)", db);
+	runStmt("CREATE INDEX IF NOT EXISTS dependencies_frag ON dependencies (frag)", db);
 	runStmt("COMMIT TRANSACTION", db);
 }

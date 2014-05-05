@@ -8,6 +8,8 @@
 #include <set>
 #include <map>
 
+struct sqlite3;
+
 namespace backendc {
 
 using namespace ast;
@@ -30,7 +32,7 @@ public:
 	ast::Repository& nodeRepository;
 	backendc::Repository& backendRepository;
 
-	CodeGenerator(ast::Repository& nr, backendc::Repository& br);
+	CodeGenerator(ast::Repository& nr, backendc::Repository& br, sqlite3* db);
 
 	struct RootContext {
 		struct Stmt {
@@ -65,6 +67,7 @@ public:
 	void run(const NodeId& id, RootContext& context);
 
 protected:
+	sqlite3* db;
 	string indent(const string& in);
 
 	void generateFuncDef(const FuncDef::Ptr& node, RootContext& context);

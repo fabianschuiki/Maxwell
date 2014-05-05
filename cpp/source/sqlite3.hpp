@@ -29,3 +29,41 @@ struct sqlite3_exception : public std::exception
 		return msg.c_str();
 	}
 };
+
+struct sqlite3_statement
+{
+	sqlite3_stmt* stmt;
+
+	sqlite3_statement(): stmt(NULL) {}
+	~sqlite3_statement() { if (stmt) sqlite3_finalize(stmt); stmt = NULL; }
+
+	void prepare(sqlite3* db, const char* zSql, int nByte = -1, const char** pzTail = NULL) {
+		int rc = sqlite3_prepare_v2(db, zSql, nByte, &stmt, pzTail);
+		if (rc != SQLITE_OK) {
+			std::stringstream s;
+			s << "Unable to prepare statement '" << zSql << "'";
+			throw sqlite3_exception(rc, s.str());
+		}
+	}
+
+	bool step() {
+		int rc = sqlite3_step(stmt);
+		if (rc == SQLITE_DONE)
+			return false;
+		if (rc == SQLITE_ROW)
+			return true;
+		throw sqlite3_exception(rc, "Unable to step statement");
+	}
+
+	void reset() {
+		int rc = sqlite3_reset(stmt);
+		if (rc != SQLITE_OK)
+			throw sqlite3_exception(rc, "Unable to reset statement");
+	}
+
+	operator sqlite3_stmt*() const { return stmt; }
+};
+
+/** Convenience define that calls sqlite3_<expr> and checks whether the result
+ * is SQLITE_OK, throwing an sqlite3_exception if it is not. */
+#define sqlite3_throw(expr) { int rc = sqlite3_##expr; if (rc != SQLITE_OK) throw sqlite3_exception(rc, "Unable to " #expr); }

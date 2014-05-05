@@ -21,7 +21,7 @@ void Packager::collect(const std::string& name)
 	if (rc != SQLITE_OK)
 		throw sqlite3_exception(rc, "Unable to prepare fragment fetch statement");
 
-	rc = sqlite3_prepare_v2(db, "SELECT name,after FROM dependencies JOIN fragments ON fragments.id = depid WHERE fragid = ?", -1, &depsStmt, NULL);
+	rc = sqlite3_prepare_v2(db, "SELECT name,after FROM dependencies WHERE frag = ?", -1, &depsStmt, NULL);
 	if (rc != SQLITE_OK)
 		throw sqlite3_exception(rc, "Unable to prepare dependency fetch statement");
 

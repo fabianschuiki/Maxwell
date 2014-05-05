@@ -4,11 +4,10 @@
 DEF_ROOT(FuncDef)
 {
 	Context ctx;
-	std::set<std::string> argsDeps; // fragments the arguments depend on
-	std::set<std::string> bodyDeps; // fragments the body depends on
 
 	// Generate the function arguments.
 	std::stringstream argsCode;
+	std::set<std::string> argsDeps; // fragments the arguments depend on
 	const NodeVector& args = node->getIn();
 
 	for (NodeVector::const_iterator i = args.begin(); i != args.end(); i++) {
@@ -33,7 +32,6 @@ DEF_ROOT(FuncDef)
 	// Generate the code for the function body.
 	ExprCode ec;
 	generateExpr(node->getBody(), ec, ctx);
-	bodyDeps.insert(ec.deps.begin(), ec.deps.end());
 
 
 	// Generate the return type of the function.
@@ -78,21 +76,7 @@ DEF_ROOT(FuncDef)
 
 	def.code += "}";
 
-
-	// std::string prototype = "void " + node->getName() + "()";
-	// std::string body = prototype + " { /* ... */ }";
-
-	// Fragment decl;
-	// decl.code  = prototype + ";";
-	// decl.ref   = node->getName();
-	// decl.group = "funcs.h";
-
-	// Fragment def;
-	// def.name  = node->getId().str() + "_def";
-	// def.code  = body;
-	// def.ref   = node->getName();
-	// def.group = "funcs.c";
-
+	// Add the fragments to the database.
 	addFragment(decl);
 	addFragment(def);
 	addDependency(decl.name, def.name, false); // declaration pulls in the definition somewhere in the code

@@ -27,6 +27,8 @@ void database::prepareFragmentsSchema()
 		"after boolean default 0 not null, "
 		"FOREIGN KEY (frag) REFERENCES fragments(id) ON DELETE CASCADE)", db);
 	runStmt("CREATE UNIQUE INDEX IF NOT EXISTS fragments_name ON fragments (name)", db);
+	runStmt("CREATE INDEX IF NOT EXISTS fragments_ref ON fragments (ref)", db);
 	runStmt("CREATE INDEX IF NOT EXISTS dependencies_frag ON dependencies (frag)", db);
+	runStmt("CREATE UNIQUE INDEX IF NOT EXISTS dependencies_frag_name ON dependencies (frag,name)", db);
 	runStmt("COMMIT TRANSACTION", db);
 }

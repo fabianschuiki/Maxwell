@@ -53,6 +53,7 @@ private:
 	sqlite3_statement insertFragStmt;
 	sqlite3_statement insertDepStmt;
 	sqlite3_statement typeExistsStmt;
+	sqlite3_statement refUnusedStmt;
 
 	void generateRoot(const NodeId& id);
 	void generateRoot(const NodePtr& node);
@@ -61,10 +62,12 @@ private:
 	void postprocess();
 
 	bool lookupType(TypeCode& out);
+	bool isRefUnused(const std::string& ref);
 
 	void addFragment(const Fragment& frag);
 	void addDependency(const std::string& frag, const std::string& dep, bool after);
 
+	std::string makeFriendly(const std::string& name);
 	std::string makeFuncName(const ast::FuncDef::Ptr& node);
 	std::string makeTypeName(const ast::TypeDef::Ptr& node);
 

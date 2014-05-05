@@ -22,6 +22,8 @@ CodeGen2::CodeGen2(Repository& repo, sqlite3* db): repo(repo), db(db)
 			"(SELECT id FROM fragments WHERE name = ?),?,?)");
 	typeExistsStmt.prepare(db,
 		"SELECT id FROM fragments WHERE name = ?");
+	refUnusedStmt.prepare(db,
+		"SELECT id FROM fragments WHERE ref = ?");
 }
 
 CodeGen2::~CodeGen2()
@@ -99,6 +101,16 @@ bool CodeGen2::lookupType(TypeCode& out)
 	return false;
 }
 
+/** Returns true if the given ref does not yet exist in the fragments database.
+ * Useful for determining whether a chosen name is unique. */
+bool CodeGen2::isRefUnused(const std::string& ref)
+{
+	sqlite3_throw(bind_text(refUnusedStmt, 1, ref.c_str(), -1, SQLITE_STATIC));
+	bool result = !refUnusedStmt.step();
+	refUnusedStmt.reset();
+	return result;
+}
+
 
 /** Adds a new fragment to the database. */
 void CodeGen2::addFragment(const Fragment& frag)
@@ -129,12 +141,19 @@ void CodeGen2::addDependency(const std::string& frag, const std::string& dep, bo
  * name. */
 std::string CodeGen2::makeFuncName(const ast::FuncDef::Ptr& node)
 {
-	return node->getName();
+	return makeFriendly(node->getName());
 }
 
 /** Returns the unique name for the given type. It is unique within the current
  * database, and multiple calls with the same node will yield the same name. */
 std::string CodeGen2::makeTypeName(const ast::TypeDef::Ptr& node)
 {
-	return node->getName();
+	return makeFriendly(node->getName());
+}
+
+/** Returns a C-friendly version of the given name, potentially replacing
+ * disallowed characters. */
+std::string CodeGen2::makeFriendly(const std::string& name)
+{
+	return name;
 }

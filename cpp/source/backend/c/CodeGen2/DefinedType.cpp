@@ -19,10 +19,11 @@ DEF_TYPE(DefinedType)
 		}
 	}
 
-	// Type definitions are resolved by directly generating code for their
-	// qualified type.
+	// Type definitions generate a typedef statement, which allows other parts
+	// of the code to simply use them by name.
 	if (const TypeDef::Ptr& td = TypeDef::from(def)) {
-		out.code = makeTypeName(td);
+		out.code = "%{" + td->getId().str() + "}";
+		out.deps.insert(td->getId().str());
 		return;
 	}
 }

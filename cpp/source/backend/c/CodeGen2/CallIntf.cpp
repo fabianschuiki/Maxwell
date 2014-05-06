@@ -107,8 +107,9 @@ DEF_EXPR_INTF(Call)
 	else {
 		std::string name;
 		if (funcNode->isKindOf(kFuncDef)) {
-			name = "%{" + funcNode->getId().str() + "_decl}";
+			name = funcNode->getId().str() + "_decl";
 			out.deps.insert(name);
+			name = "%{" + name + "}";
 		} else {
 			name = funcNode->needNamed()->getName();
 		}

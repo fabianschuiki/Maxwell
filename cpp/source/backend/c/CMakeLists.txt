@@ -14,10 +14,12 @@ add_library(backendc
 	CodeGen2/BlockExpr.cpp
 	CodeGen2/CallIntf.cpp
 	CodeGen2/DefinedType.cpp
+	CodeGen2/ForExpr.cpp
 	CodeGen2/FuncDef.cpp
 	CodeGen2/FuncExpr.cpp
 	CodeGen2/FuncType.cpp
 	CodeGen2/IdentifierExpr.cpp
+	CodeGen2/IfExpr.cpp
 	CodeGen2/NumberConstExpr.cpp
 	CodeGen2/TupleExpr.cpp
 	CodeGen2/TupleType.cpp

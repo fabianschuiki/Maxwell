@@ -27,8 +27,8 @@ struct Context
 	std::vector<std::string> stmts;
 	std::set<std::string> usedSymbols;
 	std::map<ast::NodeId,std::string> vars;
-	std::string resultVar;
-	bool omitResultVar;
+	// std::string resultVar;
+	// bool omitResultVar;
 
 	Context();
 	Context(const Context& parent);

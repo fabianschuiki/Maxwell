@@ -84,8 +84,11 @@ DEF_EXPR(IfExpr)
 			stmt += " {";
 		if (compactness < 2)
 			stmt += "\n";
-		for (std::vector<std::string>::const_iterator i = elseCtx.stmts.begin(); i != elseCtx.stmts.end(); i++)
-			stmt += indent(*i) + "\n";
+		for (std::vector<std::string>::const_iterator i = elseCtx.stmts.begin(); i != elseCtx.stmts.end(); i++) {
+			stmt += indent(*i);
+			if (compactness == 0)
+				stmt += "\n";
+		}
 		if (compactness == 0)
 			stmt += "}";
 	}

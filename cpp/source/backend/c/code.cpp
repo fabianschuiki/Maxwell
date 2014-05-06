@@ -9,7 +9,7 @@ using namespace backendc;
 Context::Context()
 {
 	tmpIndex = 0;
-	omitResultVar = false;
+	// omitResultVar = false;
 }
 
 Context::Context(const Context& parent)
@@ -17,7 +17,7 @@ Context::Context(const Context& parent)
 	usedSymbols = parent.usedSymbols;
 	vars = parent.vars;
 	tmpIndex = parent.tmpIndex;
-	omitResultVar = false;
+	// omitResultVar = false;
 }
 
 

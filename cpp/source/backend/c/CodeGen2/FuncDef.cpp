@@ -4,7 +4,7 @@
 DEF_ROOT(FuncDef)
 {
 	Context ctx;
-	ctx.omitResultVar = true;
+	// ctx.omitResultVar = true;
 
 	// Generate the function arguments.
 	std::stringstream argsCode;

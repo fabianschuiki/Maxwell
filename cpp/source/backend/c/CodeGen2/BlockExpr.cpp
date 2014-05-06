@@ -7,9 +7,9 @@ DEF_EXPR(BlockExpr)
 	// the context has a result variable configured already, we reuse that.
 	// This allows an IfExpr or ForExpr to store the result of each of their
 	// branches in one common variable.
-	std::string resultVar = ctx.resultVar;
+	std::string resultVar/* = ctx.resultVar*/;
 
-	if (resultVar.empty() && !ctx.omitResultVar) {
+	if (resultVar.empty()) {
 		TypeCode tc;
 		generateType(node->getActualType(), tc);
 		out.deps.insert(tc.deps.begin(), tc.deps.end());

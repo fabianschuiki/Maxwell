@@ -84,6 +84,7 @@ private:
 	DECL_EXPR(ForExpr);
 	DECL_EXPR(FuncExpr);
 	DECL_EXPR(IdentifierExpr);
+	DECL_EXPR(IfCaseExpr);
 	DECL_EXPR(IfExpr);
 	DECL_EXPR(NumberConstExpr);
 	DECL_EXPR(TupleExpr);

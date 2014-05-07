@@ -3,6 +3,8 @@
 
 DEF_EXPR(FuncExpr)
 {
+	Context bodyCtx(ctx);
+
 	// Generate the function arguments.
 	std::stringstream argsCode;
 	std::set<std::string> argsDeps; // fragments the arguments depend on
@@ -12,8 +14,8 @@ DEF_EXPR(FuncExpr)
 		const FuncArg::Ptr& arg = FuncArg::needFrom(*i);
 
 		// Generate a C-friendly name for this argument.
-		std::string name = ctx.makeSymbol(arg->getName());
-		ctx.vars[arg->getId()] = name;
+		std::string name = bodyCtx.makeSymbol(arg->getName());
+		bodyCtx.vars[arg->getId()] = name;
 
 		// Generate the code for this argument.
 		TypeCode tc;
@@ -28,7 +30,7 @@ DEF_EXPR(FuncExpr)
 
 	// Generate the code for the function body.
 	ExprCode ec;
-	generateExpr(node->getExpr(), ec, ctx);
+	generateExpr(node->getExpr(), ec, bodyCtx);
 
 
 	// Generate the return type of the function.
@@ -64,7 +66,7 @@ DEF_EXPR(FuncExpr)
 	def.group = "funcs.c";
 	def.code  = returnType + " " + name + "(" + argsCode.str() + ")\n{\n";
 
-	for (std::vector<std::string>::const_iterator i = ctx.stmts.begin(); i != ctx.stmts.end(); i++) {
+	for (std::vector<std::string>::const_iterator i = bodyCtx.stmts.begin(); i != bodyCtx.stmts.end(); i++) {
 		def.code += indent(*i) + "\n";
 	}
 	if (returnType != "void")

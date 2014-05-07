@@ -19,6 +19,7 @@ add_library(backendc
 	CodeGen2/FuncExpr.cpp
 	CodeGen2/FuncType.cpp
 	CodeGen2/IdentifierExpr.cpp
+	CodeGen2/IfCaseExpr.cpp
 	CodeGen2/IfExpr.cpp
 	CodeGen2/NumberConstExpr.cpp
 	CodeGen2/TupleExpr.cpp

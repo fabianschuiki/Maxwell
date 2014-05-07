@@ -22,9 +22,9 @@ class TupleExprArg : public Node
 {
 public:
 	TupleExprArg() : Node(),
-		interfaceGraph(this),
 		interfaceCallArg(this),
-		interfaceNamed(this) {}
+		interfaceNamed(this),
+		interfaceGraph(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -35,9 +35,9 @@ public:
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
-		if (i == kGraphInterface) return true;
 		if (i == kCallArgInterface) return true;
 		if (i == kNamedInterface) return true;
+		if (i == kGraphInterface) return true;
 		return false;
 	}
 
@@ -192,9 +192,9 @@ public:
 	}
 
 	// Interfaces
-	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual CallArgInterface* asCallArg() { return &this->interfaceCallArg; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
+	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 
 	typedef boost::shared_ptr<TupleExprArg> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<TupleExprArg>(n); }
@@ -205,9 +205,9 @@ protected:
 	NodePtr expr;
 
 	// Interfaces
-	GraphInterfaceImpl<TupleExprArg> interfaceGraph;
 	CallArgInterfaceImpl<TupleExprArg> interfaceCallArg;
 	NamedInterfaceImpl<TupleExprArg> interfaceNamed;
+	GraphInterfaceImpl<TupleExprArg> interfaceGraph;
 };
 
 } // namespace ast

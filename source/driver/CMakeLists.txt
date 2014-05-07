@@ -22,7 +22,3 @@ add_executable(gramdiag gramdiag.c)
 include_directories(AFTER ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 add_library(driver ${CMAKE_CURRENT_BINARY_DIR}/Parser.cpp ${CMAKE_CURRENT_BINARY_DIR}/Scanner.cpp Driver.cpp)
 add_dependencies(driver ast-gen)
-
-# Add the test executable used to debug the parser.
-add_executable(test-parser main.cpp)
-target_link_libraries(test-parser driver ast ${Boost_LIBRARIES} base64)

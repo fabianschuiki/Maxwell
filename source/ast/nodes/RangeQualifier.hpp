@@ -22,8 +22,8 @@ class RangeQualifier : public Node
 {
 public:
 	RangeQualifier() : Node(),
-		interfaceGraph(this),
-		interfaceNamed(this) {}
+		interfaceNamed(this),
+		interfaceGraph(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -34,8 +34,8 @@ public:
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
-		if (i == kGraphInterface) return true;
 		if (i == kNamedInterface) return true;
+		if (i == kGraphInterface) return true;
 		return false;
 	}
 
@@ -188,8 +188,8 @@ public:
 	}
 
 	// Interfaces
-	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
+	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 
 	typedef boost::shared_ptr<RangeQualifier> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<RangeQualifier>(n); }
@@ -201,8 +201,8 @@ protected:
 	string max;
 
 	// Interfaces
-	GraphInterfaceImpl<RangeQualifier> interfaceGraph;
 	NamedInterfaceImpl<RangeQualifier> interfaceNamed;
+	GraphInterfaceImpl<RangeQualifier> interfaceGraph;
 };
 
 } // namespace ast

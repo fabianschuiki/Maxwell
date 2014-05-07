@@ -17,3 +17,9 @@ target_link_libraries(mwcstage ast stage ${Boost_LIBRARIES})
 target_link_libraries(mwcdump ast ${Boost_LIBRARIES})
 target_link_libraries(mwcbendc ast backendc sqlite3 stage ${Boost_LIBRARIES})
 target_link_libraries(mwcbendcpkg ast backendc sqlite3 stage ${Boost_LIBRARIES})
+
+# Add unit tests if the corresponding boost library is found.
+if (Boost_UNIT_TEST_FRAMEWORK_FOUND)
+	add_executable(test-parser test-parser.cpp)
+	target_link_libraries(test-parser ast driver ${Boost_LIBRARIES} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+endif()

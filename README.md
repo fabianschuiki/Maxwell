@@ -1,5 +1,4 @@
-Maxwell Programming Language
-============================
+# Maxwell Programming Language
 
 Maxwell is a modern, high-level programming language that aims to combine the comfort and expressiveness of scripting languages with the power and efficiency of a compiled language. It aims to achieve the following goals:
 
@@ -15,22 +14,18 @@ Maxwell is a modern, high-level programming language that aims to combine the co
 - type inference
 
 
-How To Dive In
---------------
-**For the curious**: The document `concept/Ideas.html` contains random snippets of code and ideas.
+## How To Dive In
 
-Current development is happening in the `cpp` directory, where a C++ version of the compiler is taking shape. It currently uses *flex/bison* for tokenizing and parsing, although this will probably be replaced by a custom implementation.
+To get things up and running create a *build* directory, ask *cmake* to generate a build system for you, and build the compiler as follows:
 
-To get things up and running, create a *build* directory in *cpp* and build everything:
-
-    $ mkdir cpp/build
-    $ cd cpp/build
+    $ mkdir build
+    $ cd build
     $ cmake ..
     $ make
+    $ ln -s ../source/runc.sh runc
 
-As soon as you have some experimental Maxwell code written:
+The last command symlinks the `../source/runc.sh` script into your build directory so you can build things easily. This file calls the low-level plumbing commands that parse and process Maxwell source files, generate C code, and package the generated code into C source files. It then feeds this files to *gcc* to generate an executable.
 
-- `$ source/test/mwcparse <something.mw>` to parse the given file;
-- `$ source/test/mwcstage 1.1 1.2 1.3 ...` to analyze and process the given entities (usually starting at 1.1 to the number of root statements in your source file);
-- `$ source/test/mwcdump 1.1` to see the abstract syntax tree of entity 1.1 in the console, useful for visualizing what the compiler is actually doing;
-- `$ source/test/mwcbendc 1.1` to call the C backend on entity 1.1, generating C code for it.
+Take a look at the `tests` directory for some sample snippets of Maxwell code; or write your own if you feel like it. To compile your source run `./runc yourfile.mw`, which will compile your code to `a.out`. You might also be interested in the `*.{c|h}` files generated next to your source file, as they show you how the Maxwell compiler transforms your input to C code.
+
+**For the curious**: The document `language/Ideas.html` contains random snippets of code and ideas.

@@ -1,152 +1,104 @@
-/* Copyright © 2013-2014 Fabian Schuiki */
+/* Copyright (c) 2013-2014 Fabian Schuiki */
 #pragma once
-#include "TypeSnippet.hpp"
-#include <ast/Node.hpp>
-#include <ast/Repository.hpp>
-#include <ast/nodes/ast.hpp>
-#include <string>
-#include <set>
+#include <ast/nodes/nodes.hpp>
+#include <sqlite3.hpp>
+#include <boost/shared_ptr.hpp>
 #include <map>
+#include <set>
+#include <string>
 
-struct sqlite3;
+#define DECL_ROOT(type) void generate##type(const ast::type::Ptr& node)
+#define DECL_EXPR(type) void generate##type(const ast::type::Ptr& node, ExprCode& out, Context& ctx)
+#define DECL_TYPE(type) void generate##type(const ast::type::Ptr& node, TypeCode& out)
+
+#define DECL_EXPR_INTF(type) void generate##type##Intf(ast::type##Interface* node, ExprCode& out, Context& ctx)
+#define DECL_TYPE_INTF(type) void generate##type##Intf(ast::type##Interface* node, TypeCode& out)
+
+
+namespace ast {
+	struct Node;
+	struct NodeId;
+	struct Repository;
+}
 
 namespace backendc {
 
-using namespace ast;
-using std::set;
-using std::string;
-using std::map;
+struct Fragment;
+struct Context;
+struct ExprCode;
+struct TypeCode;
 
-class Repository;
-
-/**
- * @brief Converts an AST into C code.
- *
- * This class operates on nodes previously processed by the various stages
- * of the frontend. It generates compilable C code from these AST nodes and
- * throws exceptions whenever something could not be compiled.
- */
-class CodeGenerator
+struct CodeGenerator
 {
-public:
-	ast::Repository& nodeRepository;
-	backendc::Repository& backendRepository;
+	typedef ast::Repository Repository;
+	typedef ast::NodeId NodeId;
+	typedef boost::shared_ptr<ast::Node> NodePtr;
 
-	CodeGenerator(ast::Repository& nr, backendc::Repository& br, sqlite3* db);
+	CodeGenerator(Repository& repo, sqlite3* db);
+	~CodeGenerator();
 
-	struct RootContext {
-		struct Stmt {
-			int stage;
-			string code;
-			Stmt(int stage, const string& code): stage(stage), code(code) {}
-			bool operator< (const Stmt& b) const {
-				if (stage < b.stage) return true;
-				if (stage > b.stage) return false;
-				if (code < b.code) return true;
-				if (code > b.code) return false;
-				return false;
-			}
-		};
-		typedef set<Stmt> Stmts;
-		Stmts decls;
-		Stmts defs;
+	template<class T> void run(const T& t) {
+		generateRoot(t);
+		postprocess();
+	}
 
-		TypeSnippetTable types;
-		int tupleIndex;
-		int funcIndex;
+	template<class Iterator> void run(Iterator first, Iterator last) {
+		for (Iterator i = first; i != last; i++)
+			generateRoot(*i);
+		postprocess();
+	}
 
-		RootContext(): tupleIndex(1), funcIndex(1) {}
-	};
-
-	enum {
-		kTypeStage = 0,
-		kFuncStage
-	};
-
-	void run(const NodePtr& node, RootContext& context);
-	void run(const NodeId& id, RootContext& context);
-
-protected:
-	sqlite3* db;
-	string indent(const string& in);
-
-	void generateFuncDef(const FuncDef::Ptr& node, RootContext& context);
-	void generateTypeDef(const TypeDef::Ptr& node, RootContext& context);
-
-	struct BlockContext {
-		typedef set<string> SymbolSet;
-		typedef map<NodeId, string> VarMap;
-		typedef map<string, string> Typedefs;
-		typedef vector<string> Stmts;
-
-		RootContext *root;
-		BlockContext *parent;
-		SymbolSet usedSymbols;
-		VarMap vars;
-		Stmts stmts;
-		Typedefs typedefs;
-		int tmpIndex;
-		string resVar;
-
-		BlockContext() {
-			root = NULL;
-			parent = NULL;
-			tmpIndex = 0;
-		}
-
-		explicit BlockContext(RootContext* r) {
-			root = r;
-			parent = NULL;
-			tmpIndex = 0;
-		}
-
-		explicit BlockContext(BlockContext* p) {
-			vars = p->vars;
-			usedSymbols = p->usedSymbols;
-			typedefs = p->typedefs;
-			resVar = p->resVar;
-			root = p->root;
-			parent = p;
-			tmpIndex = p->tmpIndex;
-		}
-	};
-
-	struct ExprCode {
-		string code;
-		bool isRef;
-		int precedence;
-
-		ExprCode() {
-			isRef = false;
-			precedence = 0;
-		}
-	};
-
-	ExprCode generateBlock(const BlockExpr::Ptr& node, BlockContext& context);
-	ExprCode generateExpr(const NodePtr& node, BlockContext& context);
-	string generateType(const NodePtr& node, BlockContext& context);
-
-	string makeTmpVar(BlockContext& context);
-
-	string precedenceWrapped(const string& s, int prec, int outer_prec);
-	string precedenceWrapped(const ExprCode& ec, int outer_prec);
-
-	// Enumeration that simplifies precedence handling.
-	enum {
-		kPrimaryPrec = 0,
-		kPrefixPrec,
-		kMultiplicativePrec,
-		kAdditivePrec,
-		kRelationalPrec,
-		kEqualityPrec,
-		kAndPrec,
-		kOrPrec,
-		kAssignmentPrec,
-		kLowestPrec
-	};
+	std::map<NodeId,std::string> names;
 
 private:
-	string dumpContext(const BlockContext& ctx);
+	Repository& repo;
+	sqlite3* db;
+	std::set<std::string> existingTypesCache;
+
+	// sqlite statements
+	sqlite3_statement insertFragStmt;
+	sqlite3_statement insertDepStmt;
+	sqlite3_statement typeExistsStmt;
+	sqlite3_statement refUnusedStmt;
+
+	void generateRoot(const NodeId& id);
+	void generateRoot(const NodePtr& node);
+	void generateExpr(const NodePtr& node, ExprCode& out, Context& ctx);
+	void generateType(const NodePtr& node, TypeCode& out);
+	void postprocess();
+
+	bool lookupType(TypeCode& out);
+	bool isRefUnused(const std::string& ref);
+
+	void addFragment(const Fragment& frag);
+	void addDependency(const std::string& frag, const std::string& dep, bool after);
+
+	std::string makeFriendly(const std::string& name);
+	std::string makeFuncName(const ast::FuncDef::Ptr& node);
+	std::string makeTypeName(const ast::TypeDef::Ptr& node);
+
+	// Declare nodes that can be compiled as root.
+	DECL_ROOT(FuncDef);
+	DECL_ROOT(TypeDef);
+
+	// Declare nodes that can be compiled as expressions.
+	DECL_EXPR(AssignmentExpr);
+	DECL_EXPR(BlockExpr);
+	DECL_EXPR(ForExpr);
+	DECL_EXPR(FuncExpr);
+	DECL_EXPR(IdentifierExpr);
+	DECL_EXPR(IfCaseExpr);
+	DECL_EXPR(IfExpr);
+	DECL_EXPR(NumberConstExpr);
+	DECL_EXPR(TupleExpr);
+	DECL_EXPR(TypelessVarDefExpr);
+	DECL_EXPR(VarDefExpr);
+	DECL_EXPR_INTF(Call);
+
+	// Declare nodes that can be compiled as types.
+	DECL_TYPE(DefinedType);
+	DECL_TYPE(FuncType);
+	DECL_TYPE(TupleType);
 };
 
 } // namespace backendc

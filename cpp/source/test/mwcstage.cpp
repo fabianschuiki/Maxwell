@@ -61,9 +61,9 @@ int main(int argc, char *argv[])
 				const NodeId& id = ids[nextId];
 				try {
 					// Indicate stage backtracking.
-					if (prevStage > nextStage || (prevStage == nextStage && prevId > nextId)) {
-						cout << "Backtracking to \033[35;1m" << st.getName() << "\033[0m on " << id << "\n";
-					}
+					// if (prevStage > nextStage || (prevStage == nextStage && prevId > nextId)) {
+					// 	cout << "Backtracking to \033[35;1m" << st.getName() << "\033[0m on " << id << "\n";
+					// }
 					// cout << "Performing \033[36;1m" << st.getName() << "\033[0m on " << id << "\n";
 
 					// Perform operation and mark the stage as processed for this node.

@@ -2,7 +2,7 @@
 /** @file This program invokes the C backend on a list of nodes in the
  * repository. */
 #include <ast/Repository.hpp>
-#include <backend/c/CodeGen2.hpp>
+#include <backend/c/CodeGenerator.hpp>
 #include <backend/c/database.hpp>
 #include <sqlite3.hpp>
 #include <cstdlib>
@@ -43,10 +43,10 @@ int main(int argc, char *argv[])
 
 		// Run the code generator for the given node IDs. Then output the list
 		// files that were generated.
-		CodeGen2 cg2(repo, db);
-		cg2.run(ids.begin(), ids.end());
+		CodeGenerator cg(repo, db);
+		cg.run(ids.begin(), ids.end());
 
-		for (std::map<NodeId,std::string>::const_iterator i = cg2.names.begin(); i != cg2.names.end(); i++)
+		for (std::map<NodeId,std::string>::const_iterator i = cg.names.begin(); i != cg.names.end(); i++)
 			std::cout << i->second << '\n';
 
 		// Close the database.

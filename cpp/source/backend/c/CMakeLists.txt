@@ -1,29 +1,30 @@
 add_library(backendc
-	Repository.cpp
-	CodeGenerator.cpp
-	TypeSnippet.cpp
+	database.cpp
+	code.cpp
+
+	# Packager
 	Packager.cpp
 	Packager-collect.cpp
 	Packager-sort.cpp
 	Packager-group.cpp
 	Packager-compile.cpp
-	database.cpp
-	CodeGen2.cpp
-	code.cpp
-	CodeGen2/AssignmentExpr.cpp
-	CodeGen2/BlockExpr.cpp
-	CodeGen2/CallIntf.cpp
-	CodeGen2/DefinedType.cpp
-	CodeGen2/ForExpr.cpp
-	CodeGen2/FuncDef.cpp
-	CodeGen2/FuncExpr.cpp
-	CodeGen2/FuncType.cpp
-	CodeGen2/IdentifierExpr.cpp
-	CodeGen2/IfCaseExpr.cpp
-	CodeGen2/IfExpr.cpp
-	CodeGen2/NumberConstExpr.cpp
-	CodeGen2/TupleExpr.cpp
-	CodeGen2/TupleType.cpp
-	CodeGen2/TypeDef.cpp
-	CodeGen2/VarDefExpr.cpp
+	
+	# Code Generator
+	CodeGenerator.cpp
+	codegen/AssignmentExpr.cpp
+	codegen/BlockExpr.cpp
+	codegen/CallIntf.cpp
+	codegen/DefinedType.cpp
+	codegen/ForExpr.cpp
+	codegen/FuncDef.cpp
+	codegen/FuncExpr.cpp
+	codegen/FuncType.cpp
+	codegen/IdentifierExpr.cpp
+	codegen/IfCaseExpr.cpp
+	codegen/IfExpr.cpp
+	codegen/NumberConstExpr.cpp
+	codegen/TupleExpr.cpp
+	codegen/TupleType.cpp
+	codegen/TypeDef.cpp
+	codegen/VarDefExpr.cpp
 )

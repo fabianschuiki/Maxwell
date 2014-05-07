@@ -6,6 +6,6 @@
 # through gcc to produce a debuggable executable.
 
 set -e
-NODES=$(./parse $@ | tail -n 1)
-source/test/mwcstage $NODES
-source/test/mwcbendc $NODES | xargs source/test/mwcbendcpkg | grep "*.c" | xargs gcc -g
+NODES=$("source/test/mwcparse" $@ | tail -n 1)
+"source/test/mwcstage" $NODES
+"source/test/mwcbendc" $NODES | xargs "source/test/mwcbendcpkg" | grep ".*\.c" | xargs gcc -g

@@ -22,4 +22,8 @@ DEF_ROOT(TypeDef)
 	for (std::set<std::string>::const_iterator i = tc.deps.begin(); i != tc.deps.end(); i++) {
 		addDependency(def.name, *i, false);
 	}
+
+	// Keep the definition and declaration fragment names around for later
+	// stages.
+	names[node->getId()] = def.name;
 }

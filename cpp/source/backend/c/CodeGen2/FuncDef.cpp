@@ -92,4 +92,8 @@ DEF_ROOT(FuncDef)
 	for (std::set<std::string>::const_iterator i = ec.deps.begin(); i != ec.deps.end(); i++) {
 		addDependency(def.name, *i, true);
 	}
+
+	// Keep the definition and declaration fragment names around for later
+	// stages.
+	names[node->getId()] = def.name;
 }

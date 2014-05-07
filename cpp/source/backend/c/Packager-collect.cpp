@@ -9,7 +9,7 @@ using namespace backendc;
 
 /** Loads the fragment with the given name and all its dependencies recursively
  * from the database into the %fragments member. */
-void Packager::collect(const std::string& name)
+void Packager::collect(std::queue<std::string>& names)
 {
 	int rc;
 
@@ -24,11 +24,6 @@ void Packager::collect(const std::string& name)
 	rc = sqlite3_prepare_v2(db, "SELECT name,after FROM dependencies WHERE frag = ?", -1, &depsStmt, NULL);
 	if (rc != SQLITE_OK)
 		throw sqlite3_exception(rc, "Unable to prepare dependency fetch statement");
-
-	// Create the queue that holds the fragment names that need to be gathered
-	// from the database.
-	std::queue<std::string> names;
-	names.push(name);
 
 	// Fetch all fragments in the queue from the database, adding dependencies
 	// to the queue again to have them fetched as well.

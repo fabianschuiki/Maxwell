@@ -18,11 +18,3 @@ Packager::~Packager()
 		delete i->second;
 	fragments.clear();
 }
-
-void Packager::run(const std::string& name)
-{
-	collect(name);
-	sort();
-	group();
-	compile();
-}

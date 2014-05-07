@@ -56,6 +56,9 @@ int main(int argc, char *argv[])
 		backendc::CodeGen2 cg2(repo, db);
 		cg2.run(ids.begin(), ids.end());
 
+		for (std::map<NodeId,std::string>::const_iterator i = cg2.names.begin(); i != cg2.names.end(); i++)
+			std::cout << i->second << '\n';
+
 		// Process each of the nodes.
 		map<NodeId, backendc::CodeGenerator::RootContext> contexts;
 		backendc::CodeGenerator cg(repo, bendrepo, db);

@@ -21,13 +21,11 @@ int main(int argc, char *argv[])
 	try {
 		int rc;
 
-		// Lookup the name of the main fragment from the arguments the user
-		// passed to the program.
-		if (argc < 2) {
-			std::cerr << "usage: " << argv[0] << " FRAGMENT-NAME\n";
-			return 2;
-		}
-		std::string name = argv[1];
+		// Collect the requested fragment names.
+		std::vector<std::string> names;
+		names.reserve(argc-1);
+		for (int i = 1; i < argc; i++)
+			names.push_back(argv[i]);
 
 		// Open the database.
 		rc = sqlite3_open("mwcrepo/bendc.db", &db);
@@ -43,7 +41,7 @@ int main(int argc, char *argv[])
 
 		// Call the packager on the database.
 		Packager pkg(db);
-		pkg.run(name);
+		pkg.run(names.begin(), names.end());
 
 		// Close the database.
 		sqlite3_close(db);
@@ -52,6 +50,7 @@ int main(int argc, char *argv[])
 		for (std::map<std::string,std::string>::iterator i = pkg.files.begin(); i != pkg.files.end(); i++) {
 			std::ofstream f(i->first.c_str());
 			f << i->second;
+			std::cout << i->first << '\n';
 		}
 
 	} catch (std::exception &e) {

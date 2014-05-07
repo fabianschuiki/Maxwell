@@ -3,6 +3,7 @@
 #include <ast/nodes/nodes.hpp>
 #include <sqlite3.hpp>
 #include <boost/shared_ptr.hpp>
+#include <map>
 #include <set>
 #include <string>
 
@@ -46,6 +47,8 @@ struct CodeGen2
 			generateRoot(*i);
 		postprocess();
 	}
+
+	std::map<NodeId,std::string> names;
 
 private:
 	Repository& repo;

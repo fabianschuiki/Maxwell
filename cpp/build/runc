@@ -1,5 +1,0 @@
-#!/bin/bash
-set -e
-NODES=$(./parse $@ | tail -n 1)
-./stage $NODES
-./bendc $NODES | xargs ./bendcpkg | grep "*.c" | xargs gcc -g

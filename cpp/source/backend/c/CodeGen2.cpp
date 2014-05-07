@@ -92,7 +92,6 @@ void CodeGen2::generateType(const NodePtr& node, TypeCode& out)
 
 void CodeGen2::postprocess()
 {
-	std::cout << "postprocessing\n";
 }
 
 

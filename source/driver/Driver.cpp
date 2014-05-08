@@ -12,8 +12,9 @@ typedef std::vector<NodePtr> Nodes;
 
 using driver::Driver;
 
-Driver::Driver()
+Driver::Driver(int dl)
 {
+	debugLevel = dl;
 }
 
 bool Driver::parseStream(std::istream& in, const std::string& name)
@@ -22,6 +23,7 @@ bool Driver::parseStream(std::istream& in, const std::string& name)
 	Scanner scanner(&in);
 	this->lexer = &scanner;
 	Parser parser(*this);
+	parser.set_debug_level(debugLevel);
 	return (parser.parse() == 0);
 }
 

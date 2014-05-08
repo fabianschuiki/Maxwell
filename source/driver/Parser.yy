@@ -202,10 +202,6 @@ func_def_name
 
 func_args_tuple
   : LPAREN RPAREN { $$ = new Nodes; }
-  | func_arg {
-      $$ = new Nodes;
-      $$->push_back(NodePtr($1));
-    }
   | LPAREN func_args RPAREN {
       $$ = $2;
     }
@@ -228,10 +224,10 @@ func_arg
       $$ = a;
       delete $1;
     }
-  | IDENTIFIER post_func_typeexpr {
+  | IDENTIFIER COLON post_func_typeexpr {
       FuncArg *a = new FuncArg;
       a->setName(*$1);
-      a->setTypeExpr(NodePtr($2));
+      a->setTypeExpr(NodePtr($3));
       $$ = a;
       delete $1;
     }
@@ -628,16 +624,16 @@ or_expr
 
 func_expr
   : or_expr
-  | RIGHTARROW or_expr {
+  | FUNC RIGHTARROW or_expr {
       FuncExpr *e = new FuncExpr;
-      e->setExpr(NodePtr($2));
+      e->setExpr(NodePtr($3));
       $$ = e;
     }
-  | func_args_tuple RIGHTARROW or_expr {
+  | FUNC func_args_tuple RIGHTARROW or_expr {
       FuncExpr *e = new FuncExpr;
-      e->setArgs(*$1);
-      e->setExpr(NodePtr($3));
-      delete $1;
+      e->setArgs(*$2);
+      e->setExpr(NodePtr($4));
+      delete $2;
       $$ = e;
     }
   ;

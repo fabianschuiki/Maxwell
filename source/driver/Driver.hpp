@@ -17,10 +17,14 @@ public:
 	typedef boost::shared_ptr<ast::Node> NodePtr;
 	typedef std::vector<NodePtr> NodeVector;
 
-	Driver();
+	Driver(int dl = 0);
 
 	/// Stream name (file or input stream) used for error messages.
 	std::string streamname;
+
+	/** Debug level passed to Bison. A value above zero will cause the parser
+	 * to output a parse trace. */
+	int debugLevel;
 
 	/**
 	 * Routes the given input stream through the scanner and parser.

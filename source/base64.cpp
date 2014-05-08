@@ -7,7 +7,7 @@
 extern "C" {
 	#define base64 NibbleAndAHalf_base64
 	#define unbase64 NibbleAndAHalf_unbase64
-	#include "base64.h"
+	#include "thirdparty/base64.h"
 	#undef base64
 	#undef unbase64
 }

@@ -5,7 +5,7 @@
  * with sqlite3 errors in C++ code. */
 
 extern "C" {
-	#include "sqlite3.h"
+	#include "thirdparty/sqlite3.h"
 }
 
 #include <stdexcept>

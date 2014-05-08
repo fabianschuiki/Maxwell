@@ -1,5 +1,5 @@
 add_library(base64 base64.cpp)
-add_library(sqlite3 sqlite3.c)
+add_library(sqlite3 thirdparty/sqlite3.c)
 target_link_libraries(sqlite3 dl pthread)
 
 add_subdirectory(driver)

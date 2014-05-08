@@ -1,18 +1,22 @@
 /* Copyright © 2013 Fabian Schuiki */
-#include <string>
-#include <iostream>
 #include <boost/smart_ptr.hpp>
-#include <ast/nodes/ast.hpp>
+#include <iostream>
+#include <string>
+#include <vector>
+// #include <ast/nodes/ast.hpp>
+
+namespace ast { class Node; }
 
 namespace driver {
 
 using boost::shared_ptr;
-using ast::NodePtr;
-using ast::NodeVector;
 
 class Driver
 {
 public:
+	typedef boost::shared_ptr<ast::Node> NodePtr;
+	typedef std::vector<NodePtr> NodeVector;
+
 	Driver();
 
 	/// Stream name (file or input stream) used for error messages.
@@ -44,8 +48,7 @@ public:
 	 */
 	class Scanner* lexer;
 
-	typedef NodeVector Nodes;
-	Nodes nodes;
+	NodeVector nodes;
 
 	void add(const NodePtr& node);
 };

@@ -1,5 +1,6 @@
 /* Copyright © 2013 Fabian Schuiki */
 #include "Driver.hpp"
+#include <ast/nodes/ast.hpp>
 #include <vector>
 
 using namespace ast;

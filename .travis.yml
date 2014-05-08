@@ -4,7 +4,7 @@ compiler:
   - clang
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq libboost-dev libboost-test-dev libboost-system-dev libboost-filesytem-dev
+  - sudo apt-get install -qq libboost-dev libboost-test-dev libboost-system-dev libboost-filesystem-dev
 script:
   - mkdir build
   - cd build

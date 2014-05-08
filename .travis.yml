@@ -2,4 +2,12 @@ language: cpp
 compiler:
   - gcc
   - clang
-script: cmake . && make && make test
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq libboost-dev libboost-test-dev libboost-system-dev libboost-filesytem-dev
+script:
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+  - ctest

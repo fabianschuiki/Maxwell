@@ -2,7 +2,7 @@
 
 func main = {
 	// Define a mapping that will be used further down.
-	mapping := (x Int, y Int) -> {
+	mapping := func (x: Int, y: Int) -> {
 		x*y if (x == 1 && y == 3),
 		x otherwise
 	};

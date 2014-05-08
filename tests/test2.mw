@@ -1,10 +1,10 @@
 /* Copyright © 2014 Fabian Schuiki */
 
-func doAwesomeThings i Int = {
+func doAwesomeThings (i: Int) = {
 	if (i == 0) {
-		x Int -> x+1;
+		func (x: Int) -> x+1;
 	} else {
-		x Int -> x*x;
+		func (x: Int) -> x*x;
 	}
 }
 

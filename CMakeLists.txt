@@ -16,4 +16,5 @@ add_definitions(-DBOOST_TEST_DYN_LINK)
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(source)
 
+enable_testing()
 add_subdirectory(source)

@@ -8,4 +8,5 @@ before_install:
 script:
   - mkdir build
   - cd build
+  - export CTEST_OUTPUT_ON_FAILURE=1
   - cmake .. && make && ctest

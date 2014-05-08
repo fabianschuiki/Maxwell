@@ -13,6 +13,8 @@ Maxwell is a modern, high-level programming language that aims to combine the co
 - operator overloading
 - type inference
 
+The compiler is continuously built and tested: [![Build Status](https://travis-ci.org/fabianschuiki/Maxwell.svg?branch=master)](https://travis-ci.org/fabianschuiki/Maxwell)
+
 
 ## How To Dive In
 

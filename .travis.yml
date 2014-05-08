@@ -8,6 +8,4 @@ before_install:
 script:
   - mkdir build
   - cd build
-  - cmake ..
-  - make
-  - ctest
+  - cmake .. && make && ctest

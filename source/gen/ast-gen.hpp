@@ -31,6 +31,12 @@ public:
 	string parent;
 	string descriptionBody;
 
+	struct NameCompare {
+		bool operator() (const Node* a, const Node* b) const {
+			return a->name < b->name;
+		}
+	};
+
 	struct Field {
 		bool ref; // whether or not only a reference to the node should be generated
 		bool child;
@@ -47,7 +53,7 @@ public:
 	};
 	typedef list<Field> Fields;
 	typedef vector<Field*> Children;
-	typedef set<const Node*> Interfaces;
+	typedef set<const Node*, NameCompare> Interfaces;
 	Fields attributes;
 	Children children;
 	Interfaces interfaces;

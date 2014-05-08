@@ -23,10 +23,10 @@ class MemberAccessExpr : public Node
 public:
 	MemberAccessExpr() : Node(),
 		interfaceCall(this),
-		interfaceType(this),
 		interfaceCallArg(this),
+		interfaceGraph(this),
 		interfaceNamed(this),
-		interfaceGraph(this) {}
+		interfaceType(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -38,10 +38,10 @@ public:
 	{
 		if (Node::implements(i)) return true;
 		if (i == kCallInterface) return true;
-		if (i == kTypeInterface) return true;
 		if (i == kCallArgInterface) return true;
-		if (i == kNamedInterface) return true;
 		if (i == kGraphInterface) return true;
+		if (i == kNamedInterface) return true;
+		if (i == kTypeInterface) return true;
 		return false;
 	}
 
@@ -450,10 +450,10 @@ public:
 
 	// Interfaces
 	virtual CallInterface* asCall() { return &this->interfaceCall; }
-	virtual TypeInterface* asType() { return &this->interfaceType; }
 	virtual CallArgInterface* asCallArg() { return &this->interfaceCallArg; }
-	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
+	virtual TypeInterface* asType() { return &this->interfaceType; }
 
 	typedef boost::shared_ptr<MemberAccessExpr> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<MemberAccessExpr>(n); }
@@ -472,10 +472,10 @@ protected:
 
 	// Interfaces
 	CallInterfaceImpl<MemberAccessExpr> interfaceCall;
-	TypeInterfaceImpl<MemberAccessExpr> interfaceType;
 	CallArgInterfaceImpl<MemberAccessExpr> interfaceCallArg;
-	NamedInterfaceImpl<MemberAccessExpr> interfaceNamed;
 	GraphInterfaceImpl<MemberAccessExpr> interfaceGraph;
+	NamedInterfaceImpl<MemberAccessExpr> interfaceNamed;
+	TypeInterfaceImpl<MemberAccessExpr> interfaceType;
 };
 
 } // namespace ast

@@ -23,8 +23,8 @@ class UnaryOpExpr : public Node
 public:
 	UnaryOpExpr() : Node(),
 		interfaceCall(this),
-		interfaceType(this),
-		interfaceGraph(this) {}
+		interfaceGraph(this),
+		interfaceType(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -36,8 +36,8 @@ public:
 	{
 		if (Node::implements(i)) return true;
 		if (i == kCallInterface) return true;
-		if (i == kTypeInterface) return true;
 		if (i == kGraphInterface) return true;
+		if (i == kTypeInterface) return true;
 		return false;
 	}
 
@@ -464,8 +464,8 @@ public:
 
 	// Interfaces
 	virtual CallInterface* asCall() { return &this->interfaceCall; }
-	virtual TypeInterface* asType() { return &this->interfaceType; }
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+	virtual TypeInterface* asType() { return &this->interfaceType; }
 
 	typedef boost::shared_ptr<UnaryOpExpr> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<UnaryOpExpr>(n); }
@@ -485,8 +485,8 @@ protected:
 
 	// Interfaces
 	CallInterfaceImpl<UnaryOpExpr> interfaceCall;
-	TypeInterfaceImpl<UnaryOpExpr> interfaceType;
 	GraphInterfaceImpl<UnaryOpExpr> interfaceGraph;
+	TypeInterfaceImpl<UnaryOpExpr> interfaceType;
 };
 
 } // namespace ast

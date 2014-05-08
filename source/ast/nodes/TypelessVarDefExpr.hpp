@@ -22,10 +22,10 @@ class TypelessVarDefExpr : public Node
 {
 public:
 	TypelessVarDefExpr() : Node(),
-		interfaceType(this),
-		interfaceVariable(this),
+		interfaceGraph(this),
 		interfaceNamed(this),
-		interfaceGraph(this) {}
+		interfaceType(this),
+		interfaceVariable(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -36,10 +36,10 @@ public:
 	virtual bool implements(Interface i)
 	{
 		if (Node::implements(i)) return true;
+		if (i == kGraphInterface) return true;
+		if (i == kNamedInterface) return true;
 		if (i == kTypeInterface) return true;
 		if (i == kVariableInterface) return true;
-		if (i == kNamedInterface) return true;
-		if (i == kGraphInterface) return true;
 		return false;
 	}
 
@@ -331,10 +331,10 @@ public:
 	}
 
 	// Interfaces
+	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 	virtual TypeInterface* asType() { return &this->interfaceType; }
 	virtual VariableInterface* asVariable() { return &this->interfaceVariable; }
-	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
-	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 
 	typedef boost::shared_ptr<TypelessVarDefExpr> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<TypelessVarDefExpr>(n); }
@@ -349,10 +349,10 @@ protected:
 	NodePtr initialExpr;
 
 	// Interfaces
+	GraphInterfaceImpl<TypelessVarDefExpr> interfaceGraph;
+	NamedInterfaceImpl<TypelessVarDefExpr> interfaceNamed;
 	TypeInterfaceImpl<TypelessVarDefExpr> interfaceType;
 	VariableInterfaceImpl<TypelessVarDefExpr> interfaceVariable;
-	NamedInterfaceImpl<TypelessVarDefExpr> interfaceNamed;
-	GraphInterfaceImpl<TypelessVarDefExpr> interfaceGraph;
 };
 
 } // namespace ast

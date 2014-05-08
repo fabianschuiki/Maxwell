@@ -23,8 +23,8 @@ class FuncDef : public Node
 public:
 	FuncDef() : Node(),
 		interfaceCallable(this),
-		interfaceNamed(this),
-		interfaceGraph(this) {}
+		interfaceGraph(this),
+		interfaceNamed(this) {}
 
 	virtual bool isKindOf(Kind k)
 	{
@@ -36,8 +36,8 @@ public:
 	{
 		if (Node::implements(i)) return true;
 		if (i == kCallableInterface) return true;
-		if (i == kNamedInterface) return true;
 		if (i == kGraphInterface) return true;
+		if (i == kNamedInterface) return true;
 		return false;
 	}
 
@@ -332,8 +332,8 @@ public:
 
 	// Interfaces
 	virtual CallableInterface* asCallable() { return &this->interfaceCallable; }
-	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
+	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
 
 	typedef boost::shared_ptr<FuncDef> Ptr;
 	template<typename T> static Ptr from(const T& n) { return boost::dynamic_pointer_cast<FuncDef>(n); }
@@ -349,8 +349,8 @@ protected:
 
 	// Interfaces
 	CallableInterfaceImpl<FuncDef> interfaceCallable;
-	NamedInterfaceImpl<FuncDef> interfaceNamed;
 	GraphInterfaceImpl<FuncDef> interfaceGraph;
+	NamedInterfaceImpl<FuncDef> interfaceNamed;
 };
 
 } // namespace ast

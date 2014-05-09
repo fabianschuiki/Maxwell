@@ -28,6 +28,7 @@ typedef enum {
 	kIfCaseExprCond,
 	kIfExpr,
 	kImplAccessor,
+	kIndexOpExpr,
 	kInterfaceQualifier,
 	kInvalidType,
 	kMapConstExpr,

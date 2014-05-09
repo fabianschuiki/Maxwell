@@ -25,6 +25,7 @@
 #include "IfCaseExprCond.hpp"
 #include "IfExpr.hpp"
 #include "ImplAccessor.hpp"
+#include "IndexOpExpr.hpp"
 #include "InterfaceQualifier.hpp"
 #include "InvalidType.hpp"
 #include "MapConstExpr.hpp"
@@ -215,6 +216,11 @@ public:
 				}
 				// In.*
 				if (size >= 2 && name[1] == 'n') {
+					// IndexOpExpr.*
+					if (size >= 11 && name[2] == 'd' && name[3] == 'e' && name[4] == 'x' && name[5] == 'O' && name[6] == 'p' && name[7] == 'E' && name[8] == 'x' && name[9] == 'p' && name[10] == 'r') {
+						// IndexOpExpr
+						if (size == 11) return NodePtr(new IndexOpExpr);
+					}
 					// InterfaceQualifier.*
 					if (size >= 18 && name[2] == 't' && name[3] == 'e' && name[4] == 'r' && name[5] == 'f' && name[6] == 'a' && name[7] == 'c' && name[8] == 'e' && name[9] == 'Q' && name[10] == 'u' && name[11] == 'a' && name[12] == 'l' && name[13] == 'i' && name[14] == 'f' && name[15] == 'i' && name[16] == 'e' && name[17] == 'r') {
 						// InterfaceQualifier

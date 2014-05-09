@@ -173,6 +173,11 @@ void buildAST(Builder &node)
 		.intf(graph)
 		.attr("name", "string")
 		.child("expr", "@Type");
+	node("IndexOpExpr")
+		.intf(graph)
+		.child("indexee", "@Type")
+		.child("index", "@Type")
+		.intf(type);
 
 	// Type Expressions
 	node("NamedTypeExpr")

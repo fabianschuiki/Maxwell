@@ -510,6 +510,12 @@ postfix_expr
       delete $1;
       delete $3;
     }
+  | postfix_expr LBRACK expr RBRACK {
+      IndexOpExpr *i = new IndexOpExpr;
+      i->setIndexee(NodePtr($1));
+      i->setIndex(NodePtr($3));
+      $$ = i;
+    }
   ;
 
 call_args

@@ -89,6 +89,7 @@ private:
 	DECL_EXPR(IdentifierExpr);
 	DECL_EXPR(IfCaseExpr);
 	DECL_EXPR(IfExpr);
+	DECL_EXPR(IndexOpExpr);
 	DECL_EXPR(NumberConstExpr);
 	DECL_EXPR(TupleExpr);
 	DECL_EXPR(TypelessVarDefExpr);

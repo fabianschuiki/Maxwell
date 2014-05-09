@@ -1,0 +1,19 @@
+/* Copyright © 2014 Fabian Schuiki */
+
+func funnyBusiness (t: (Int,Int,Int)) = {
+	var r (Int,Int,Int);
+	for ({i := 0; n := 1;}; i < 3; {i = i+1; n = n+1;}) {
+		if (n == 3) {
+			n = 0;
+		}
+		r[i] = t[n];
+	}
+	r;
+}
+
+func main = {
+	t := (4,5,6);
+	for ({ sum := 0; i := 0; }; i < 3; i = i+1) {
+		sum = sum + funnyBusiness(t)[i];
+	}
+}

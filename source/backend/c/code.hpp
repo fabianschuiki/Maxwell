@@ -62,6 +62,7 @@ struct TypeCode
 /** Enumeration that simplifies precedence handling. */
 enum {
 	kPrimaryPrec = 0,
+	kPostfixPrec,
 	kPrefixPrec,
 	kMultiplicativePrec,
 	kAdditivePrec,

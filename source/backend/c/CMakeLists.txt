@@ -22,6 +22,7 @@ add_library(backendc
 	codegen/IdentifierExpr.cpp
 	codegen/IfCaseExpr.cpp
 	codegen/IfExpr.cpp
+	codegen/IndexOpExpr.cpp
 	codegen/NumberConstExpr.cpp
 	codegen/TupleExpr.cpp
 	codegen/TupleType.cpp

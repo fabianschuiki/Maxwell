@@ -3,10 +3,13 @@
 
 DEF_EXPR(AssignmentExpr)
 {
-	// Assigning to an identifier is fairly dull at the moment.
-	if (const IdentifierExpr::Ptr& lhs = IdentifierExpr::from(node->getLhs())) {
+	const NodePtr& lhs = node->getLhs();
+
+	// Assigning to an identifier or index operator is fairly dull at the
+	// moment.
+	if (lhs->isKindOf(kIdentifierExpr) || lhs->isKindOf(kIndexOpExpr)) {
 		ExprCode ec;
-		generateIdentifierExpr(lhs, ec, ctx);
+		generateExpr(lhs, ec, ctx);
 		out.deps.insert(ec.deps.begin(), ec.deps.end());
 
 		// Generate the code for the RHS of the assignment.
@@ -23,11 +26,11 @@ DEF_EXPR(AssignmentExpr)
 	// Assigning to a function call is handled by simply generating the call
 	// which has already been prepared for this setup: A '=' was added to its
 	// name and the arguments were extended by the assignment's RHS.
-	else if (const CallExpr::Ptr& lhs = CallExpr::from(node->getLhs())) {
+	else if (lhs->isKindOf(kCallExpr)) {
 		generateExpr(lhs, out, ctx);
 	}
 
 	else {
-		throw std::runtime_error("Only IdentifierExpr or CallExpr may be used as the lhs of an assignment, got " + node->getLhs()->getClassName() + " instead.");
+		throw std::runtime_error("Only IdentifierExpr or CallExpr may be used as the lhs of an assignment, got " + lhs->getClassName() + " instead.");
 	}
 }

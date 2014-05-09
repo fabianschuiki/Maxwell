@@ -201,6 +201,31 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		expr->updateHierarchyOfChildren();
 	}
 
+	// Index operator expressions are fairly convoluted, as they need to
+	// produce different types, depending on their indexee's type.
+	if (const IndexOpExpr::Ptr& expr = IndexOpExpr::from(node)) {
+		const NodePtr& indexee = expr->getIndexee();
+		const NodePtr& indexeeType = indexee->needType()->getActualType();
+
+		// Tuples produce one of their subtypes when accessed.
+		if (const TupleType::Ptr& type = TupleType::from(indexeeType)) {
+			NodeVector types;
+			types.reserve(type->getArgs().size());
+			for (NodeVector::const_iterator i = type->getArgs().begin(); i != type->getArgs().end(); i++) {
+				types.push_back(TupleTypeArg::needFrom(*i)->getType());
+			}
+
+			// Assign the simplified version of the type set as the index'
+			// possible types.
+			TypeSet::Ptr typeSet(new TypeSet);
+			typeSet->setTypes(types);
+			expr->setPossibleType(algorithm::type::simplify(typeSet)->copy());
+			expr->updateHierarchyOfChildren();
+		} else {
+			throw std::runtime_error("Index operator cannot be used on " + indexee->getId().str() + " (a " + indexee->getClassName() + ")");
+		}
+	}
+
 
 	/*
 	 * Call-related stuff.

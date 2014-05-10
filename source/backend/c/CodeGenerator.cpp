@@ -83,6 +83,7 @@ void CodeGenerator::generateType(const NodePtr& node, TypeCode& out)
 	REGISTER_TYPE(DefinedType);
 	REGISTER_TYPE(FuncType);
 	REGISTER_TYPE(TupleType);
+	REGISTER_TYPE(UnionType);
 
 	// Throw an exception if no code could be generated.
 	throw std::runtime_error(

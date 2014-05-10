@@ -27,5 +27,6 @@ add_library(backendc
 	codegen/TupleExpr.cpp
 	codegen/TupleType.cpp
 	codegen/TypeDef.cpp
+	codegen/UnionType.cpp
 	codegen/VarDefExpr.cpp
 )

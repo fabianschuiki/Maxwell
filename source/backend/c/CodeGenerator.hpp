@@ -100,6 +100,7 @@ private:
 	DECL_TYPE(DefinedType);
 	DECL_TYPE(FuncType);
 	DECL_TYPE(TupleType);
+	DECL_TYPE(UnionType);
 };
 
 } // namespace backendc

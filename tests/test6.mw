@@ -2,5 +2,6 @@
 
 func main = {
 	var x Int|Real = 0;
+	var k = { 0 if 0 == 0, 1.254123 otherwise };
 	0;
 }

@@ -1,0 +1,6 @@
+/* Copyright © 2014 Fabian Schuiki */
+
+func main = {
+	var x Int|Real = 0;
+	0;
+}

@@ -9,7 +9,7 @@ using namespace backendc;
 
 // Defines that make the handling of the different node types easier.
 #define REGISTER_ROOT(type) if (const ast::type::Ptr& n = ast::type::from(node)) { return generate##type(n); }
-#define REGISTER_EXPR(type) if (const ast::type::Ptr& n = ast::type::from(node)) { return generate##type(n, out, ctx); }
+#define REGISTER_EXPR(type) if (const ast::type::Ptr& n = ast::type::from(node)) { generate##type(n, out, ctx); goto done; }
 #define REGISTER_TYPE(type) if (const ast::type::Ptr& n = ast::type::from(node)) { return generate##type(n, out); }
 
 #define REGISTER_EXPR_INTF(type) if (ast::type##Interface* n = node->as##type()) { return generate##type##Intf(n, out, ctx); }
@@ -70,6 +70,10 @@ void CodeGenerator::generateExpr(const NodePtr& node, ExprCode& out, Context& ct
 	throw std::runtime_error(
 		"Unable to generate expression code for node " + node->getId().str() +
 		" (a " + node->getClassName() + ")");
+
+done:
+	// Upon completion, execution jumps here to generate mapped types.
+	generateMappedType(node->needType()->getActualType(), out, ctx);
 }
 
 void CodeGenerator::generateType(const NodePtr& node, TypeCode& out)
@@ -90,6 +94,14 @@ void CodeGenerator::generateType(const NodePtr& node, TypeCode& out)
 		"Unable to generate type code for node " + node->getId().str() +
 		" (a " + node->getClassName() + "), hash '" + out.hash + "'");
 }
+
+void CodeGenerator::generateMappedType(const NodePtr& node, ExprCode& out, Context& ctx)
+{
+	if (const ast::UnionMappedType::Ptr& type = ast::UnionMappedType::from(node)) {
+		generateUnionMappedType(type, out, ctx);
+	}
+}
+
 
 
 void CodeGenerator::postprocess()

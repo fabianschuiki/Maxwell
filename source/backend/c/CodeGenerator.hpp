@@ -65,6 +65,7 @@ private:
 	void generateRoot(const NodePtr& node);
 	void generateExpr(const NodePtr& node, ExprCode& out, Context& ctx);
 	void generateType(const NodePtr& node, TypeCode& out);
+	void generateMappedType(const NodePtr& node, ExprCode& out, Context& ctx);
 	void postprocess();
 
 	bool lookupType(TypeCode& out);
@@ -101,6 +102,9 @@ private:
 	DECL_TYPE(FuncType);
 	DECL_TYPE(TupleType);
 	DECL_TYPE(UnionType);
+
+	// Declare types that can be resolved.
+	void generateUnionMappedType(const ast::UnionMappedType::Ptr& node, ExprCode& out, Context& ctx);
 };
 
 } // namespace backendc

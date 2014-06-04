@@ -3,7 +3,7 @@
 /** @file This program invokes the packager of the C backend on a backend data-
  * base and set of nodes. */
 
-#include <sqlite3.h>
+#include <sqlite3.hpp>
 #include <backend/c/database.hpp>
 #include <backend/c/Packager.hpp>
 #include <fstream>

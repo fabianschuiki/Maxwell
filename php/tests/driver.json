@@ -1,0 +1,56 @@
+{
+	"name": "double",
+	"inputs": {
+		"class": "FunctionArgumentTuple",
+		"arguments": [{
+			"class": "FunctionArgument",
+			"name": "x",
+			"typeExpr": {
+				"class": "TypeExpr",
+				"expr": {
+					"class": "IdentifierExpr",
+					"name": "int"
+					}
+				}
+			}]
+		},
+	"outputs": {
+		"class": "FunctionArgumentTuple",
+		"arguments": [{
+			"class": "FunctionArgument",
+			"name": "y",
+			"typeExpr": {
+				"class": "TypeExpr",
+				"expr": {
+					"class": "IdentifierExpr",
+					"name": "real"
+					}
+				}
+			}]
+		},
+	"body": {
+		"class": "FunctionBody",
+		"stmts": [{
+			"class": "ExprStmt",
+			"expr": {
+				"class": "AssignmentExpr",
+				"lhs": {
+					"class": "IdentifierExpr",
+					"name": "y"
+					},
+				"rhs": {
+					"class": "BinaryOperatorExpr",
+					"operator": "*",
+					"lhs": {
+						"class": "IdentifierExpr",
+						"name": "x"
+						},
+					"rhs": {
+						"class": "ConstantExpr",
+						"value": "2"
+						}
+					}
+				}
+			}]
+		}
+}

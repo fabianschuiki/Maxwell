@@ -1,0 +1,15 @@
+/* Copyright © 2014 Fabian Schuiki */
+
+func main = {
+	// Define a mapping that will be used further down.
+	mapping := func (x: Int, y: Int) -> {
+		x*y if (x == 1 && y == 3),
+		x otherwise
+	};
+
+	// Iterate over a loop, applying the mapping as we go along.
+	r := 1;
+	for (i := 1; i <= 5; i = i+1) {
+		r = mapping(r,i);
+	}
+}

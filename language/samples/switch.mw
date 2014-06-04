@@ -1,0 +1,20 @@
+/** Switch statements in Maxwell */
+a, b int;
+
+switch (a) {
+	0: b = 0;
+	1: b = 1;
+	
+	12: {
+		b = 1126;
+		fmt.print("Hello");
+	}
+}
+
+//Inline switch.
+x ~ = (
+	"Hello" for x == 0,
+	"World" for x == 3,
+	42      for x == 9,
+	nil     otherwise
+);

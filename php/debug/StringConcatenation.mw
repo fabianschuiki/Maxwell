@@ -1,0 +1,14 @@
+/*
+ * Copyright © 2013 Fabian Schuiki
+ */
+package main
+import "util/String"
+import "util/Console"
+
+func main
+{
+	var String s1 = "Hello World";
+	var String s2 = "!!!";
+	var String s3 = concatenate(s1, s2);
+	println(s3);
+}

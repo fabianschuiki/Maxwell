@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<syntax name="language-root.maxwell">
+	<zones>
+		<!--
+			Comments
+			========
+		-->
+		<zone name="comment.line">
+			<starts-with>
+				<expression>//</expression>
+				<capture number="0" name="punctuation.definition.begin"/>
+			</starts-with>
+			<ends-with>$[\n\r]*</ends-with>
+		</zone>
+		<zone name="comment.block">
+			<starts-with>
+				<expression>/\*</expression>
+				<capture number="0" name="punctuation.definition.begin"/>
+			</starts-with>
+			<ends-with>
+				<expression>\*/</expression>
+				<capture number="0" name="punctuation.definition.end"/>
+			</ends-with>
+		</zone>
+		
+		<!--
+			Reserved Keywords
+			=================
+		-->
+		<!-- Keywords -->
+		<zone name="keyword.control">
+			<expression>\b(if|else(\s*if)?|for|where|switch|case|casesof|isa|otherwise|assume|return|package|import|external|var|new|typeclass|defer|env)\b</expression>
+		</zone>
+		
+		<!-- Built-in types -->
+		<zone name="keyword.storage.type">
+			<expression>\b(int|double|float|bool|string|func(tion)?|map|set|array|object|type|class)\b|(~)</expression>
+		</zone>
+		
+		<!--
+			Constants
+			=========
+		-->
+		<!-- Numeric Constants -->
+		<zone name="constant.numeric">
+		    <expression>\b([0-9]([0-9a-fA-F]|\+|-|\.)*)</expression>
+		</zone>
+		
+		<!-- Language Constants -->
+		<zone name="constant.language">
+			<expression>\b(true|false|nil)\b</expression>
+		</zone>
+		
+		<!-- Strings -->
+		<zone name="string.quoted.double">
+			<starts-with>
+				<expression>"</expression>
+				<capture number="0" name="punctuation.definition.begin"/>
+			</starts-with>
+			<ends-with>
+				<expression>"</expression>
+				<capture number="0" name="punctuation.definition.end"/>
+			</ends-with>
+			<subzones>
+				<include collection="character-escapes" />
+			</subzones>
+		</zone>
+		
+		<!-- Backticks -->
+		<zone name="string.quoted.backtick">
+			<starts-with>
+				<expression>`</expression>
+				<capture number="0" name="punctuation.definition.begin"/>
+			</starts-with>
+			<ends-with>
+				<expression>`</expression>
+				<capture number="0" name="punctuation.definition.end"/>
+			</ends-with>
+			<subzones>
+				<include collection="character-escapes" />
+			</subzones>
+		</zone>
+		
+	</zones>
+</syntax>

@@ -1,0 +1,25 @@
+/* Copyright © 2013 Fabian Schuiki */
+
+/* This snippet of Maxwell code highlights the use of by-reference function
+ * arguments which are required to declare functions that modify values. */
+
+type Vector value {
+	x Real;
+	y Real;
+}
+
+/* This function takes two vectors as an argument. The first is declared as
+ * "by reference", which will cause the variable passed into the function to
+ * be modified. */
+func = (a * Vector, b Vector) = {
+	a.x = b.x;
+	a.y = b.y;
+	a; // return vector a after the modification
+}
+
+func main
+{
+	var a = new Vector {0,0};
+	var b = new Vector {1,2};
+	a = b;
+}

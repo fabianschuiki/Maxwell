@@ -1,0 +1,210 @@
+{
+	"interfaces": {
+		"range": [
+			"\\Source\\Range range",
+			"\\Source\\Range humanRange"],
+		"binding": [
+			"ref bindingTarget"],
+		"type": [
+			"possibleType",
+			"requiredType",
+			"actualType"],
+		"root_code": [
+			"string indepDeclCode",
+			"string depDeclCode",
+			"string indepDefCode",
+			"string depDefCode"],
+		"expr_code": [
+			"string exprCode",
+			"string stmtsCode"],
+		"graph": [
+			"ref graphPrev"
+			],
+		"call": [
+			"string callName",
+			"CallArgumentTuple callArguments",
+			"array callCandidates",
+			"CallCandidate selectedCallCandidate"],
+		"assumer": ["array assumptions"]
+	},
+
+	"entities": {
+		"NullObject": {},
+		"IdentifierExpr": {
+			"extends": "Expr",
+			"main": ["@range", "string name"],
+			"graph": ["@graph"],
+			"binding": ["@binding"],
+			"type": ["@type", "string someText"],
+			"code": ["@expr_code"]},
+
+		"VariableDefinitionExpr": {
+			"extends": "Expr",
+			"tree": ["type", "initialExpr"],
+			"main": ["@range", "string name"],
+			"graph": ["@graph"],
+			"type": ["@type"],
+			"code": ["@expr_code"]},
+
+		"FunctionDefinition": {
+			"root": true,
+			"implements": ["\\AbstractFunction"],
+			"tree": ["FunctionArgumentTuple inputs", "FunctionArgumentTuple outputs", "FunctionBody body"],
+			"main": ["@range", "string name"],
+			"graph": ["@graph"],
+			"type": ["@type"],
+			"code": ["@root_code"],
+			"binding":[], "call":[], "assumer":[]},
+
+		"FunctionArgumentTuple": {
+			"implements": ["\\AbstractFunctionArgumentTuple"],
+			"tree": ["array arguments"],
+			"graph": ["@graph"],
+			"type": ["@type"]},
+
+		"FunctionArgument": {
+			"implements": ["\\AbstractFunctionArgument"],
+			"tree": ["type"],
+			"main": ["string name"],
+			"graph": ["@graph"],
+			"type": ["@type"]},
+
+		"FunctionBody": {
+			"tree": ["array stmts"]
+		},
+
+		"TypeDefinition": {
+			"root": true,
+			"tree": ["array types"],
+			"main": ["@range", "string name"],
+			"graph": ["@graph"],
+			"binding": [], "type": []},
+
+		"StructureType": {
+			"tree": ["array fields", "array inherits"],
+			"main": ["@range"],
+			"graph": ["@graph"]},
+		"StructureField": {
+			"tree": ["type"],
+			"main": ["string name"],
+			"graph": ["@graph"]},
+		"StructureInheritance": {
+			"tree": ["NamedType type"],
+			"main": ["string name"],
+			"graph": ["@graph"]},
+
+		"InterfaceType": {
+			"tree": ["array funcs"],
+			"main": ["@range"],
+			"graph": ["@graph"]},
+		"InterfaceFunction": {
+			"tree": ["array inputs", "array outputs"],
+			"main": ["string name"],
+			"graph": ["@graph"]},
+
+		"ExprStmt": {
+			"tree": ["Expr expr"],
+			"graph": ["@graph"]
+		},
+
+		"AssignmentExpr": {
+			"extends": "Expr",
+			"tree": ["Expr lhs", "Expr rhs"],
+			"graph": ["@graph"],
+			"type": ["@type"]},
+
+		"BinaryOperatorExpr": {
+			"extends": "Expr",
+			"tree": ["lhs", "rhs"],
+			"main": ["string operator"],
+			"graph": ["@graph"],
+			"call": ["@call"],
+			"type": ["@type"]},
+
+		"ConstantExpr": {
+			"extends": "Expr",
+			"main": ["string value"],
+			"graph": ["@graph"],
+			"type": ["@type"]},
+
+		"TypeExpr": {
+			"tree": ["Expr expr"],
+			"graph": ["@graph"],
+			"type": ["evaluatedType"]},
+
+		"CallExpr": {
+			"tree": ["array arguments"],
+			"main": ["string name"],
+			"call": ["@call"],
+			"type": ["@type"],
+			"graph": ["@graph"]},
+
+		"UnionTypeExpr": {
+			"extends": "Expr",
+			"tree": ["array typeExprs"],
+			"graph": ["@graph"]},
+
+		"AssumeStmt": {
+			"tree": ["target", "assumption"],
+			"graph": ["@graph"],
+			"assumer": ["@assumer"]},
+
+		"Assumption": {
+			"assumer": ["target", "assumption"]
+			},
+
+		"CallArgumentTuple": {
+			"call": ["array arguments"]},
+		"CallArgument": {
+			"call": ["expr", "string name"]},
+		"CallCandidate": {
+			"tree": ["array arguments"],
+			"call": [
+				"\\AbstractFunction func",
+				"bool feasible",
+				"numeric cost"],
+			"type": ["@type"]},
+		"CallCandidateArgument": {
+			"call": ["CallArgument argument"],
+			"type": ["@type"]},
+
+		"ConcreteType": {
+			"main": ["ref definition"]},
+		"NamedType": {
+			"main": ["string name"],
+			"binding": ["ref definition"],
+			"graph": ["@graph"]},
+		"FunctionType": {
+			"main": ["FunctionArgumentTupleType inputs", "FunctionArgumentTupleType outputs"],
+			"graph": ["@graph"]},
+		"FunctionArgumentTupleType": {
+			"main": ["array arguments"],
+			"graph": ["@graph"]},
+		"FunctionArgumentType": {
+			"main": ["string name", "type"],
+			"graph": ["@graph"]},
+		"TypeSet": {
+			"main": ["array types"],
+			"graph": ["@graph"]},
+		"GenericType": {},
+		"InvalidType": {},
+		"InterfacePlaceholderType": {},
+		"CastType": {
+			"main": [
+				"from",
+				"to",
+				"numeric cost",
+				"\\AbstractFunction func"
+			],
+			"graph": ["@graph"]},
+		"UnionType": {
+			"main": ["array types"],
+			"graph": ["@graph"]},
+		"InheritanceMappedType": {
+			"main": ["type", "struct", "inheritance"],
+			"graph": ["@graph"]},
+		"InterfaceMappedType": {
+			"main": ["from", "to", "interface"],
+			"graph": ["@graph"]}
+	}
+}

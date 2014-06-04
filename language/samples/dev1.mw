@@ -1,0 +1,62 @@
+type float2 = Vector2D<float>;
+type double2 = Vector2D<double>;
+
+class Vector2D
+{
+    double (x, y);
+    
+    @construct(double(x, y)) autoconstruct;
+    
+    dot (same v) => (same returnValueWhazzup)
+    {
+        returnValueWhazzup <- r;
+        alias r = returnValueWhazzup;
+        r.x = (x * v.x);
+        r.y = (y * v.y);
+        
+        returnValueWhazzup (
+            .x = (x * v.x);
+            .y = (y * v.y);
+        );
+        
+        returnValueWhazzup.(x, y) = (x * v.x, y * v.y);
+        
+        {x, y} returnValueWhazzup.@ = @ * v.@;
+        
+        obj.(
+            a = 56
+            b = 12
+            d.(
+                a = "A"
+                b = "B"
+            )
+        )
+        
+        (x, y) = (5, 10);
+        v.(x, y) = (10, 20);
+    }
+    
+    cross (same v) => (same r)
+    {
+        r.{x, y, z} = ({y, z, x} * v.{z, x, y} - {z, x, y} * v.{y, z, x});
+    }
+    
+    operator + := add;
+    operator * := dot;
+    
+    binary operator dot (same (a, b)) := a.dot(b);
+    
+    test
+    {
+        Vector2D (
+            v1(1, 2),
+            v2(3, 4)
+        );
+        
+        v3 := v1.dot(v2);
+        v3 := v1 dot v2;
+        
+        v4 := v1 + v2;
+        v4 := v1.add(v2);
+    }
+}

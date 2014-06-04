@@ -1,0 +1,43 @@
+/**
+ * Maxwell source file describing the concepts of Values and Objects.
+ * Copyright © 2012 Fabian Schuiki.
+ */
+
+func main
+{
+	/* The difference between values and objects is most easily explained by
+	 * considering how you would expect changes to affect them. */
+
+	/* VALUES */
+	var int x = 5;
+	var int y = x;
+	//You now expect y to be 5.
+	x = 9;
+	//You now expect x to be 9 and y to still be 5.
+
+	/* OBJECTS */
+	var Person p1 ("John Doe", 45);
+	var Person p2 = p1;
+	//You now expect p1 and p2 to be the same person, "John Doe".
+	p1.name = "Mark Doe";
+	//You now expect "John Doe" to be renamed to "Mark Doe", i.e. p1 and p2 are both "Mark Doe".
+	//Notice that you don't expect p2 to still be "John Doe".
+}
+
+/* A vector is most likely to be considered a value, i.e. an entity can be
+ * object-valued, but a vector itself is no entity that has an identity. If you
+ * copy a vector, the original and the copy are the same. */
+value Vector
+{
+	var int x;
+	var int y;
+}
+
+/* An object is most likely to be considered a physical entity, like a person
+ * or a car, something that has an identity. If you duplicate a car, the result
+ * won't be the same car as the original. */
+object Person
+{
+	var String name;
+	var int age;
+}

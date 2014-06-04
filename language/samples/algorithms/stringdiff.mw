@@ -1,0 +1,49 @@
+package stringdiff;
+
+/** Compares string b against string a and returns a list of operations that would be required to turn string b into a. */
+compare ({a, b} string) => (diffs array <Diff>, match double)
+{
+	//We need a map to keep track of the characters occuring in both strings.
+	characters map <char, int>;
+	
+	//Iterate over both strings, counting the characters in a positively and in b negatively.
+	for (a as c) characters[c]++;
+	for (b as c) characters[c]--;
+	
+	//Iterate over the two strings and find the actions necessary to fix b to match a.
+	ai, bi int;
+	position, inserts, removes int;
+	while (ai != a.length || bi != b.length) {
+		ac -> a[ai];
+		bc -> b[bi];
+		position++;
+		
+		//If the two characters are equal, skip ahead.
+		if (ac == bc) {
+			(ai, bi)++;
+			continue;
+		}
+		
+		//Synonyms for the character count.
+		nac -> characters[ac];
+		nbc -> characters[bc];
+		
+		//Check whether there are any characters left in the map.
+		anyLeft := (nac > 0 || nbc < 0);
+		
+		//If b is lacking 
+		if (nbc < 0 || (!anyLeft && ai == a.length)) {
+			diffs += DiffInsert(position, bc);
+			nbc++;
+			{bi, inserts}++;
+		}
+		else {
+			diffs += DiffRemove(position);
+			nac--;
+			{ai, removes}++;
+		}
+	}
+	
+	//Calculate the match which is basically the ratio of the total text length to the number of inserts and removes.
+	match = 1 - double(inserts + removes) / position;
+}

@@ -1,0 +1,36 @@
+Array
+(
+    [inputs] => Array
+        (
+            [arguments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => Array
+                                (
+                                    [definition] => @ref 0.3
+                                )
+
+                        )
+
+                )
+
+        )
+
+    [outputs] => Array
+        (
+            [arguments] => Array
+                (
+                )
+
+        )
+
+    [body] => Array
+        (
+            [stmts] => Array
+                (
+                )
+
+        )
+
+)

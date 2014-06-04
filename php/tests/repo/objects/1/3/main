@@ -1,0 +1,1 @@
+{"name":"debug","inputs":{"arguments":[]},"outputs":{"arguments":[]},"body":{"stmts":[{"expr":{"name":"x","type":{"name":"int"}}},{"expr":{"name":"y","type":{"name":"Foo"},"initialExpr":{"name":"x"}}}]}}

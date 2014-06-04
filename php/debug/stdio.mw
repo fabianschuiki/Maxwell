@@ -1,0 +1,4 @@
+/** This file tests using external C functions in Maxwell. */
+
+//native import <stdio.h>;
+native func putchar (int c) -> (int r);

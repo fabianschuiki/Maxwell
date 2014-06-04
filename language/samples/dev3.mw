@@ -1,0 +1,20 @@
+/** A simple webserver written in Maxwell. */
+package webserver;
+import os, http;
+
+//Main function instantiating the webserver.
+main {
+	//Create an instance of an HTTP listener.
+}
+
+//Function serving HTTP requests.
+serveRequest (in http.Request) => (out http.Response | err Error) {
+	if (in.path == "/hello") {
+		out.text = "World!";
+	} else if (in.path == "/error") {
+		err = new Error("Shit happens");
+	} else {
+		out.code = 404;
+		out.text = "The path " + in.path + " was not found on this server.";
+	}
+}

@@ -1,0 +1,13 @@
+/* Copyright © 2013 Fabian Schuiki */
+
+/* This snippet of code shows the use of array literals with multiple types,
+ * as well as converting these literals to a mutable array and adding new
+ * types. */
+
+func main
+{
+	var a = [0, 1.2, "hello"]; /* type is ConstArray[Int|Real|String] */
+	var b ArrayVector = a; /* type is ArrayVector[Int|Real|String] */
+	b.add(1);
+	var c = b[3];
+}

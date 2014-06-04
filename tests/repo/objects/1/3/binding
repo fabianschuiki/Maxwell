@@ -1,1 +1,0 @@
-{"inputs":{"arguments":[]},"outputs":{"arguments":[]},"body":{"stmts":[{"expr":{"type":{"definition":"@ref 0.3"},"initialExpr":[]}},{"expr":{"type":{"definition":"@ref 1.1"},"initialExpr":{"bindingTarget":"@ref 1.3.body.stmts.0.expr"}}}]}}

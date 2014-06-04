@@ -1,0 +1,26 @@
+Array
+(
+    [CalculatePossibleTypesStage] => Array
+        (
+            [0] => 1.2.inputs.arguments.0.type
+            [1] => 1.2.inputs.arguments.0.actualType
+            [2] => 1.2.inputs.arguments.0.possibleType
+            [3] => 1.2.inputs.actualType
+            [4] => 1.2.outputs.actualType
+            [5] => 1.2.inputs.possibleType
+            [6] => 1.2.outputs.possibleType
+        )
+
+    [CalculateActualTypesStage] => Array
+        (
+            [0] => 1.2.inputs.arguments.0.possibleType
+            [1] => 1.2.inputs.arguments.0.requiredType
+            [2] => 1.2.inputs.possibleType
+            [3] => 1.2.inputs.requiredType
+            [4] => 1.2.outputs.possibleType
+            [5] => 1.2.outputs.requiredType
+            [6] => 1.2.possibleType
+            [7] => 1.2.requiredType
+        )
+
+)

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings>
+	<language id="espresso.default.maxwell">
+		<root-zone>language-root.maxwell</root-zone>
+		<name>Maxwell</name>
+		<detectors>
+			<extension>maxwell</extension>
+			<extension>mw</extension>
+		</detectors>
+	</language>
+</settings>

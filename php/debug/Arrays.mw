@@ -1,0 +1,86 @@
+type FiniteCollection interface {
+	func count (@) -> (natural);
+	func empty (@) -> (bool);
+}
+
+func empty (FiniteCollection c) -> (bool e) {
+	e = (c.count() == 0);
+}
+
+type Array FiniteCollection, interface {
+	func set (@, natural, any);
+	func get (@, natural) -> (any);
+	func add (@, any);
+	func remove (@, any) -> (bool);
+	func remove (@, natural);
+}
+
+type Stack FiniteCollection, interface {
+	func push (@, any);
+	func pop (@) -> (any);
+}
+
+type Array.Vector object {
+	/** Classic C array where the elements are a continuous block of memory. */
+	var T Type;    // Type of element held by the container.
+	var size int;  // Number of elements that fit into the memory.
+	var count int; // Number of elements currently in the container.
+	var elements memory{T};
+}
+
+func count (Array.Vector a) -> (natural c) { c = a.@count; } // this also enables the use of empty()
+func size (Array.Vector a) -> (natural c) { c = a.@size; }
+func set (Array.Vector a, natural i, any e) { a.elements[i] = e; }
+func get (Array.Vector a, natural i) -> (any e) { e = a.elements[i]; }
+func resize (Array.Vector a, natural s) { a.elements.resize(s); a.size = s; }
+
+
+type Array.SingleLinkedList object {
+	var T Type;
+	var first Element|nil {T = T};
+
+	type Element object {
+		var T Type;
+		var next Element|nil {T = T}; // next element in the chain, or nil if this is the end of the chain
+		var value T; // value stored at this location
+	}
+}
+
+func count (Array.SingleLinkedList a) -> (natural c)
+{
+	var e = a.first;
+	c = 0;
+	for (e != nil) {
+		c++;
+		e = e.next;
+	}
+}
+
+func empty (Array.SingleLinkedList a) -> (bool e)
+{
+	/** More efficient approach than what FiniteCollection.empty does. */
+	e = (a.first == nil);
+}
+
+func add (Array.SingleLinkedList with {T = v.type} a, v)
+{
+	var e = new Array.SingleLinkedList.Element;
+	e.value = v; // this ties v's type to e.value's type which is tied to e.T
+	e.next = a.first; // this ties a.first.T to e.next.T
+	a.first = e; // this ties e.T to a.first.T
+
+	/* This function body yields the following type assumptions:
+	 * - $e = $a.first = $e.next
+	 * - $v = $e.value = e.T
+	 * - e.T = a.first.T = e.next.T = a.T = $e.value = $v
+	 *
+	 * Which leads to the following assumptions regarding the function parameters:
+	 * - a.T = $v
+	 */
+
+	// implicit:
+	constrain v.type = e.value.type;
+	constrain a.first.type = e.next.type;
+	constrain e.type = a.first.type;
+	constrain a.T = v.type;
+}

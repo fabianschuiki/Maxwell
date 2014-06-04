@@ -1,0 +1,61 @@
+body {
+	font-family: monospace;
+}
+
+div.scope > div {
+	margin-bottom: 1em;
+}
+div.scope > * > * > div.name {
+	font-weight: bold;
+	display:     inline-block;
+}
+
+div.indent {
+	margin-left:  1em;
+	padding-left: 1em;
+	border-left:  2px solid #ccc;
+}
+div.attrs {
+	margin-left: 1em;
+	display:     inline-block;
+	color:       #75507b;
+}
+
+div.func {
+	margin-bottom: 1em;
+}
+div.func > * > hr {
+	margin:     0.25em 0;
+	border:     none;
+	border-top: 1px dotted #ccc;
+}
+
+div.node {
+	margin-left:  1em;
+	padding-left: 1em;
+	border-left:  1px solid #ccc;
+}
+div.node > div.unbound {
+	margin-left: 1em;
+	display:     inline-block;
+	color:       #cc0000;
+}
+div.node > div.kind {
+	margin-left: 1em;
+	display:     inline-block;
+	color:       #999;
+}
+div.node > div.type {
+	margin-left: 1em;
+	display:     inline-block;
+	color:       #f57900;
+}
+div.node > div.type.specific {
+	color: #4e9a06;
+}
+div.node > div.type.constraint {
+	color: #3465a4;
+}
+div.node > div.type > span.uncon {
+	color: #999;
+}

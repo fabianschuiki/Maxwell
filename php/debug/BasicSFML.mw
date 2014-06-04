@@ -1,0 +1,17 @@
+/*
+ * Copyright © 2013 Fabian Schuiki
+ */
+package main
+import "util/String"
+import "util/Console"
+import "sfml/RenderWindow"
+
+func main
+{
+	var String s = "Hello SFML";
+	var RenderWindow w = create(cstr(s));
+
+	while (true) {
+		
+	}
+}

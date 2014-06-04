@@ -1,0 +1,14 @@
+package mwc;
+type Compiler : Application
+{
+	func main
+	{
+		var args = new cli.Arguments;
+		if (args.has("h", "help")) showUsage();
+	}
+
+	func showUsage
+	{
+		writeln("usage: mwc [OPTIONS] files ...");
+	}
+}

@@ -1,0 +1,16 @@
+/* Copyright © 2014 Fabian Schuiki */
+
+func doAwesomeThings (i: Int) = {
+	if (i == 0) {
+		func (x: Int) -> x+1;
+	} else {
+		func (x: Int) -> x*x;
+	}
+}
+
+func main = {
+	var f1 = doAwesomeThings(0);
+	var f2 = doAwesomeThings(1);
+
+	f1(8);
+}

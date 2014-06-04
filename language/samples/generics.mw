@@ -1,0 +1,16 @@
+/** GENERICS */
+//Maxwell supports generic types next to its powerful dynamic type.
+
+//The following specifies a type array which has a specializable type T:
+type array <T> { ... };
+
+//Types can have a default value, e.g.:
+type array <T = ~> { ... };
+
+//The former requires the specification of T when the type is used:
+a array <T: string>; //works
+b array; //does not work, as the compiler doesn't know what type T is.
+
+//The latter specifies a default type T, which allows it to be omitted:
+a array <T: string>; //works
+b array; //now also works, implicitly specifying b array <T: ~>

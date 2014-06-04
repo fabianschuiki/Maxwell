@@ -1,0 +1,60 @@
+\documentclass[a4paper, twoside, twocolumn]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{enumerate}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{chngcntr}
+\usepackage{color}
+\usepackage{hyperref}
+
+% Configure the fancy headers
+\pagestyle{fancy}
+\setlength{\headheight}{15pt}
+\fancyhead[RO,LE]{Maxwell Language Design}
+\fancyhead[RE,LO]{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\lstset{
+  frame=single,
+  basicstyle=\small\ttfamily,
+  showspaces=false,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  breaklines=true,
+  showtabs=false,
+  language=C,
+  captionpos=t,
+  tabsize=2,
+  morekeywords={nil,any,func,type,value,object,interface,native,true,false,if,for,else,in,var,otherwise,defer,return},
+  emph={Int,Real,Complex,String,Array,Map,Set},
+  emphstyle=\color[rgb]{0.33, 0.66, 1.0},
+  commentstyle=\color[gray]{0.66},
+  keywordstyle=\color[rgb]{0.0, 0.33, 0.66},
+  stringstyle=\color[rgb]{1.0, 0.5, 0.0},
+  numberstyle=\color[rgb]{1.0, 0.5, 0.0},
+  rulecolor=\color[gray]{0.66},
+  xleftmargin=0.25cm,
+  xrightmargin=0.25cm
+}
+
+\def\lstlistingautorefname{Listing}
+
+\begin{document}
+  \title{Maxwell Language Design}
+  \author{F. Schuiki (fschuiki@student.ethz.ch)}
+  \maketitle
+
+  \counterwithin*{lstlisting}{section}
+  \renewcommand{\thelstlisting}{\thesection.\arabic{lstlisting}}
+
+  \tableofcontents
+
+  \input{bodyexprs}
+  \input{functions}
+  % \input{misc}
+
+  \lstlistoflistings
+\end{document}

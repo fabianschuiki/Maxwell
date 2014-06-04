@@ -1,0 +1,49 @@
+/*
+ * Wrapper around standard C files.
+ */
+package util
+import "String"
+import "Console"
+
+external "stdio.h" {
+	func fopen ($const char* path, $const char* mode) -> ($FILE* f);
+	func fwrite ($const void* ptr, int size, int nitems, $FILE* f);
+	func fclose ($FILE* f);
+}
+
+/** Simple wrapper around C files. */
+type File
+{
+	var $FILE* fp;
+}
+
+/** Opens the given file. In the future, mode should change to be some sort of
+ * enum or constant. */
+func openFile (String path, String mode) -> (File f)
+{
+	var $FILE* fp = fopen(path.cstr(), mode.cstr());
+	if (fp) {
+	} else {
+		println(
+			"Unable to open file '"
+			.concatenate(path)
+			.concatenate("' with mode '")
+			.concatenate(mode)
+			.concatenate("'.")
+		);
+	}
+	f = new File;
+	f.fp = fp;
+}
+
+/** Writes the given string to the file. */
+func write (File f, String data)
+{
+	fwrite(($const void*)data.cstr(), 1, data.length(), f.fp);
+}
+
+/** Closes the file. The file is not valid for use anymore after this call. */
+func close (File f)
+{
+	fclose(f.fp);
+}

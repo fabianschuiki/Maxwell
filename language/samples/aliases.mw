@@ -1,0 +1,17 @@
+//Exhaustive variable names can be shortened using aliases.
+//Consider the following function which moves all elements of a pseudo-C array one index backward:
+longArrayName array;
+
+a -> longArrayName; //a is an alias for longArrayName.
+for (i := 0; i < a.length - 1; i++)
+	a[i] = a[i+1];
+
+
+/** Inline Aliases */
+//Inline aliases are introduce by the keyword where and have the least possible precedence.
+
+//Inline aliases allow the local use of aliases when they're not needed anywhere else.
+length := (v.x * v.x + v.y * v.y) where v = longVectorName;
+
+//Multiple aliases are also possible.
+dot := (a.x * b.x + a.y * b.y) where a = longVectorA, b = longVectorB;

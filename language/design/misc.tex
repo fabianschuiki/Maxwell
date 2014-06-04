@@ -1,0 +1,29 @@
+\section{Miscellaneous}
+
+This section acts as a placeholder for random information.
+
+\subsection{Array Literals}
+
+An array literal is a constant, static array defined in source code. It is not intended to be modified and supports only a rather simplistic interface:
+
+\begin{itemize}
+  \item get (index Int) -> A
+  \item length -> Int
+\end{itemize}
+
+This corresponds to the \emph{ConstArray} interface, which declares a function to access individual elements, and a function to obtain the overall length of the array.
+
+
+\subsection{Iterators}
+
+An iterator is a structure which walks through elements of a collection; i.e. an array, set, map or string. Walking through a linear collection such as a vector array is simple, as the elements may be accessed by a continuously increasing index. In case of more complex structures, such as sets or maps, stepping from one element to another is not as simple anymore. Iterators provide a way to abstract this operation, allowing each collection to implement their most efficient iteration technique.
+
+\begin{lstlisting}[float,caption=Iterator interface definition,label=iterator]
+type Iterator interface {
+	next (iterator * @) -> nil;
+	get (iterator @) -> any;
+	end (iterator @) -> Bool;
+}
+\end{lstlisting}
+
+The language shall define an \emph{Iterator} interface as shown in listing \ref{iterator}. The \emph{next} function advances the iterator to the next element, or does nothing if the iterator went past the last element of its collection. The \emph{get} function provides access to the element the iterator is currently pointing at.

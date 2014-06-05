@@ -129,7 +129,7 @@ void CalcRequiredTypes::process(const NodePtr& node)
 	// required type is passed through to the expressions transparently.
 	if (const IfCaseExpr::Ptr& expr = IfCaseExpr::from(node)) {
 
-		const NodePtr& requiredType = expr->getRequiredType();
+		const NodePtr& requiredType = expr->getActualType();
 		DefinedType::Ptr boolType(new DefinedType);
 		boolType->setDefinition(repository.getBuiltinType("Bool"));
 

@@ -9,8 +9,8 @@ class CallInterface
 public:
 	virtual Node* getNode() = 0;
 
-	virtual void setCallName(const string& v) = 0;
-	virtual const string& getCallName(bool required = true) = 0;
+	virtual void setCallName(const std::string& v) = 0;
+	virtual const std::string& getCallName(bool required = true) = 0;
 
 	virtual void setCallArgs(const NodeVector& v) = 0;
 	virtual const NodeVector& getCallArgs(bool required = true) = 0;
@@ -27,8 +27,8 @@ public:
 	Node* getNode() { return node; }
 	CallInterfaceImpl(T* node) : node(node) {}
 
-	const string& getCallName(bool required = true) { return node->getCallName(required); }
-	void setCallName(const string& v) { node->setCallName(v); }
+	const std::string& getCallName(bool required = true) { return node->getCallName(required); }
+	void setCallName(const std::string& v) { node->setCallName(v); }
 	const NodeVector& getCallArgs(bool required = true) { return node->getCallArgs(required); }
 	void setCallArgs(const NodeVector& v) { node->setCallArgs(v); }
 	const NodeVector& getCallCandidates(bool required = true) { return node->getCallCandidates(required); }
@@ -45,8 +45,8 @@ class CallArgInterface
 public:
 	virtual Node* getNode() = 0;
 
-	virtual void setName(const string& v) = 0;
-	virtual const string& getName(bool required = true) = 0;
+	virtual void setName(const std::string& v) = 0;
+	virtual const std::string& getName(bool required = true) = 0;
 
 	virtual void setExpr(const NodePtr& v) = 0;
 	virtual const NodePtr& getExpr(bool required = true) = 0;
@@ -57,8 +57,8 @@ public:
 	Node* getNode() { return node; }
 	CallArgInterfaceImpl(T* node) : node(node) {}
 
-	const string& getName(bool required = true) { return node->getName(required); }
-	void setName(const string& v) { node->setName(v); }
+	const std::string& getName(bool required = true) { return node->getName(required); }
+	void setName(const std::string& v) { node->setName(v); }
 	const NodePtr& getExpr(bool required = true) { return node->getExpr(required); }
 	void setExpr(const NodePtr& v) { node->setExpr(v); }
 
@@ -71,8 +71,8 @@ class CallableInterface
 public:
 	virtual Node* getNode() = 0;
 
-	virtual void setName(const string& v) = 0;
-	virtual const string& getName(bool required = true) = 0;
+	virtual void setName(const std::string& v) = 0;
+	virtual const std::string& getName(bool required = true) = 0;
 
 	virtual void setType(const NodePtr& v) = 0;
 	virtual const NodePtr& getType(bool required = true) = 0;
@@ -83,8 +83,8 @@ public:
 	Node* getNode() { return node; }
 	CallableInterfaceImpl(T* node) : node(node) {}
 
-	const string& getName(bool required = true) { return node->getName(required); }
-	void setName(const string& v) { node->setName(v); }
+	const std::string& getName(bool required = true) { return node->getName(required); }
+	void setName(const std::string& v) { node->setName(v); }
 	const NodePtr& getType(bool required = true) { return node->getType(required); }
 	void setType(const NodePtr& v) { node->setType(v); }
 
@@ -118,8 +118,8 @@ class NamedInterface
 public:
 	virtual Node* getNode() = 0;
 
-	virtual void setName(const string& v) = 0;
-	virtual const string& getName(bool required = true) = 0;
+	virtual void setName(const std::string& v) = 0;
+	virtual const std::string& getName(bool required = true) = 0;
 };
 template <typename T> class NamedInterfaceImpl : public NamedInterface
 {
@@ -127,8 +127,8 @@ public:
 	Node* getNode() { return node; }
 	NamedInterfaceImpl(T* node) : node(node) {}
 
-	const string& getName(bool required = true) { return node->getName(required); }
-	void setName(const string& v) { node->setName(v); }
+	const std::string& getName(bool required = true) { return node->getName(required); }
+	void setName(const std::string& v) { node->setName(v); }
 
 protected:
 	T* const node;
@@ -200,8 +200,8 @@ public:
 	virtual void setActualType(const NodePtr& v) = 0;
 	virtual const NodePtr& getActualType(bool required = true) = 0;
 
-	virtual void setName(const string& v) = 0;
-	virtual const string& getName(bool required = true) = 0;
+	virtual void setName(const std::string& v) = 0;
+	virtual const std::string& getName(bool required = true) = 0;
 
 	virtual void setTypeExpr(const NodePtr& v) = 0;
 	virtual const NodePtr& getTypeExpr(bool required = true) = 0;
@@ -218,8 +218,8 @@ public:
 	void setRequiredType(const NodePtr& v) { node->setRequiredType(v); }
 	const NodePtr& getActualType(bool required = true) { return node->getActualType(required); }
 	void setActualType(const NodePtr& v) { node->setActualType(v); }
-	const string& getName(bool required = true) { return node->getName(required); }
-	void setName(const string& v) { node->setName(v); }
+	const std::string& getName(bool required = true) { return node->getName(required); }
+	void setName(const std::string& v) { node->setName(v); }
 	const NodePtr& getTypeExpr(bool required = true) { return node->getTypeExpr(required); }
 	void setTypeExpr(const NodePtr& v) { node->setTypeExpr(v); }
 

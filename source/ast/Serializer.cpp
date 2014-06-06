@@ -12,7 +12,6 @@ using ast::NodePtr;
 using ast::NodeRef;
 using ast::NodeId;
 using ast::NodeVector;
-using ast::NodeFactory;
 using ast::Encoder;
 using ast::Decoder;
 using std::string;
@@ -113,7 +112,7 @@ public:
 				throw std::runtime_error("Node excepted to commence with an opening brace {, got '" + rd + "' instead.");
 			}
 
-			node = NodeFactory::make(className);
+			node = ast::makeNode(className);
 			node->decode(*this);
 
 			in >> rd;

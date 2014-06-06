@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright (c) 2013-2014 Fabian Schuiki */
 #pragma once
 
 #include <iostream>

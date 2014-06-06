@@ -65,7 +65,7 @@ DEF_EXPR_INTF(Call)
 
 		// Everything else is not supported.
 		else {
-			stringstream s;
+			std::stringstream s;
 			s << "Specialized code generation for builtin function " << funcNode->getId() << " not supported, as it takes " << args.size() << " input arguments instead of 1 or 2.";
 			throw std::runtime_error(s.str());
 		}
@@ -75,7 +75,7 @@ DEF_EXPR_INTF(Call)
 	else if (const ImplAccessor::Ptr& iac = ImplAccessor::from(funcNode)) {
 
 		// If the name ends in "=", this is a setter, otherwise we're dealing with a getter.
-		string name = iac->getName();
+		std::string name = iac->getName();
 		bool isSetter = (name[name.length()-1] == '=');
 		if (isSetter)
 			name = name.substr(0, name.length()-1);

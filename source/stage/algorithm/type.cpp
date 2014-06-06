@@ -341,6 +341,20 @@ NodePtr resolve(const NodePtr& r)
 	return resolve(td->getType()->needTypeExpr()->getEvaluatedType());
 }
 
+NodePtr ignoreMapped(const NodePtr& in)
+{
+	if (const UnionMappedType::Ptr& type = UnionMappedType::from(in))
+		return type->getIn();
+	return in;
+}
+
+NodePtr acceptMapped(const NodePtr& in)
+{
+	if (const UnionMappedType::Ptr& type = UnionMappedType::from(in))
+		return type->getOut();
+	return in;
+}
+
 } // namespace type
 } // namespace algorithm
 } // namespace stage

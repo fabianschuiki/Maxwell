@@ -124,12 +124,14 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		for (NodeVector::const_iterator it = conds.begin(); it != conds.end(); it++) {
 			const IfCaseExprCond::Ptr& cond = IfCaseExprCond::from(*it);
 			addDependency(cond, "expr.actualType");
-			types.push_back(cond->getExpr()->needType()->getActualType());
+			types.push_back(algorithm::type::ignoreMapped(
+				cond->getExpr()->needType()->getActualType()));
 		}
 		const NodePtr& othw = expr->getOtherwise(false);
 		if (othw) {
 			addDependency(othw, "actualType");
-			types.push_back(othw->needType()->getActualType());
+			types.push_back(algorithm::type::ignoreMapped(
+				othw->needType()->getActualType()));
 		}
 
 		// Wrap the types up in a UnionType.

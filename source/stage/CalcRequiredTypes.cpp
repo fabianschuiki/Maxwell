@@ -109,7 +109,7 @@ void CalcRequiredTypes::process(const NodePtr& node)
 
 	// Array, set and map literals allow us to pass on the type specialization as
 	// type requirements to the literal's individual expressions.
-	if (const ArrayConstExpr::Ptr& expr = ArrayConstExpr::from(node)) 
+	if (const ArrayConstExpr::Ptr& expr = ArrayConstExpr::from(node))
 	{
 		// Determine the first type of the array specialization.
 		NodePtr elementType;

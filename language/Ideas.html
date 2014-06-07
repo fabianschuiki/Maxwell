@@ -4,8 +4,124 @@
 	<title>Maxwell – Ideas</title>
 	<meta charset="utf-8"/>
 	<script src="http://code.jquery.com/jquery-1.6.2.min.js" type="text/javascript"></script>
-	<script src="include/include.js" type="text/javascript"></script>
-	<link rel="stylesheet" href="include/include.css" type="text/css" />
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("code").each(function(){
+				var code = $(this).html();
+
+				code = code.replace(/(^|[^=])(\"[^\"]*\")/g, "$1<span class=\"string\">$2</span>");
+				code = code.replace(/(#\w*)/g, "<span class=\"tag\">$1</span>");
+				code = code.replace(/([^\w])(\.?\d[\d\.]*)/g, "$1<span class=\"number\">$2</span>");
+				code = code.replace(/(var\s+|isa\s+)([\w|]+)/g, "$1<span class=\"type\">$2</span>");
+				code = code.replace(/(\w+)\(/g, "<span class=\"function\">$1</span>(");
+				code = code.replace(/(^|[^\w\"])(null|nil|true|false)([^\w\"]|$)/g, "$1<span class=\"constant\">$2</span>$3");
+				code = code.replace(/(^|[^\w\"])(var|if|else|isa|func|import|package|type|return|for|incase|otherwise|typeclass|interface|tag|where|or|throw|defer|error|value|object)([^\w\"]|$)/g, "$1<span class=\"keyword\">$2</span>$3");
+				code = code.replace(/(\/\/.*?$|\/\*.*?\*\/)/mg, "<span class=\"comment\">$1</span>");
+
+				$(this).html(code);
+			});
+		});
+	</script>
+	<style type="text/css">
+		@import url(http://yui.yahooapis.com/2.9.0/build/reset/reset-min.css);
+
+		/* Load the required fonts. */
+		@import url(http://fonts.googleapis.com/css?family=Lato:300,400,300italic,400italic);
+		@import url(http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic,700italic);
+
+		/* Basic body. */
+		body {
+			/*font-family: Ubuntu, sans-serif;
+			font-weight: 300;
+			font-size: 14px;
+			line-height: 1.3;*/
+			font: 300 14px/1.4 Lato, sans-serif;
+			padding: 2em;
+		}
+
+		code {
+			white-space: pre-wrap;
+			font: 14px/1.2 Ubuntu Mono, monospace;
+			background-color: #2e3436;
+			display: block;
+			padding: 0.75em 1em;
+			color: white;
+		}
+
+		em {
+			font-style: italic;
+		}
+
+		p > code {
+			display: inline;
+			padding: 0;
+			color: black;
+			background: none;
+		}
+
+		p {
+			margin: 1em 0;
+		}
+
+		strong {
+			font-weight: bolder;
+			color: #729fcf;
+		}
+
+		body :first-child {
+			margin-top: 0;
+		}
+
+		h1, h2, h3 {
+			margin-top: 2em;
+			margin-bottom: 1em;
+		}
+		h1 {
+			font-size: 2em;
+		}
+		h2 {
+			font-size: 1.5em;
+		}
+
+		code > .comment {
+			color: #888a85;
+		}
+		code > .keyword {
+			font-weight: bold;
+		}
+		code > .type {
+			color: #8ae234;
+			font-weight: bold;
+		}
+		code > .function {
+			color: #729fcf;
+		}
+		code > .number {
+			color: #ad7fa8;
+		}
+		code > .string {
+			color: #fcaf3e;
+		}
+		code > .constant {
+			color: #ad7fa8;
+		}
+		code > .tag {
+			color: #e9b96e;
+		}
+
+		p > code > .keyword,
+		p > code > .type,
+		p > code > .function {
+			color: black;
+		}
+
+		li {
+			list-style: circle; outside;
+			margin-left: 1.5em;
+		}
+		li li {
+		}
+	</style>
 </head>
 <body>
 
@@ -347,10 +463,10 @@ void main()
 {
 	var Person p = new Person;
 	p.name = "John Doe";
-	
+
 	var Person q = p;
 	q.age = 25;
-	
+
 	//p and q both represent the same Person, namely John Doe, age 25.
 }</code>
 
@@ -380,10 +496,10 @@ void main()
 {
 	var Vector v;
 	v.x = 1;
-	
+
 	var Vector w = v;
 	w.y = 2;
-	
+
 	//v is a vector (1,0), w a vector (1,2).
 }</code>
 
@@ -579,25 +695,25 @@ func + (a (Int,Int), b (Int,Int)) = (a[0] + b[0], a[1] + b[1]); // specialized
 {
 	var path;
 	var shader;
-	
+
 	func compile
 	{
 		//Open the file containing the shader code.
 		var f = File.open(path);
 		defer f.close();
-		
+
 		//Read the entire data.
 		var code = f.read();
 		var size = code.size;
-		
+
 		//Assign the code to the shader and compile.
 		glShaderSource(shader, 1, code, size);
 		glCompileShader(shader);
-		
+
 		//Check whether compilation went well.
 		var compiled;
 		glGetShaderiv(shader, GL_COMPILE_STATUS, compiled);
-		
+
 		//Throw an error if not.
 		if (!compiled) {
 			var l = 0;
@@ -606,7 +722,7 @@ func + (a (Int,Int), b (Int,Int)) = (a[0] + b[0], a[1] + b[1]); // specialized
 			glGetShaderInfoLog(shader, l, l, msg);
 			throw Error (msg);
 		}
-		
+
 		//In case we encounter an error.
 		error {
 			throw Error ("Unable to compile shader %{path.name}.");
@@ -651,12 +767,12 @@ f.read();</code>
 {
 	var f = File.open("test.txt");
 	defer f.close();
-	
+
 	if (f.size &lt; 100) {
 		throw Error ("File %{f.path} too small.");
 		//f.close() will be executed here
 	}
-	
+
 	return f.read(100);
 	//f.close() will be executed here
 }</code>
@@ -670,7 +786,7 @@ f.read();</code>
 	var x;
 	var y;
 	var otherStuff;
-	
+
 	func new
 	{
 		var same v;
@@ -679,7 +795,7 @@ f.read();</code>
 		v.otherStuff = nil;
 		return v;
 	}
-	
+
 	func new (x,y)
 	{
 		var same v = new(); //does basic initialization

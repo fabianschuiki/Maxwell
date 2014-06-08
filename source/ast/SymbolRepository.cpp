@@ -23,6 +23,13 @@ SymbolRepository::~SymbolRepository()
 	flush();
 }
 
+/// Returns all exported symbols in the repository.
+const SymbolRepository::ExportedSymbols& SymbolRepository::getExportedSymbols()
+{
+	if (!loaded) load();
+	return exportedSymbols;
+}
+
 /**
  * @brief Returns a map of symbols the given source exports.
  */
@@ -105,7 +112,7 @@ void SymbolRepository::load()
 			f.get();
 		if (f.eof()) break;
 		std::getline(f, n);
-		
+
 		NodeId id(i);
 		exportedSymbols[id.source][id] = n;
 	}

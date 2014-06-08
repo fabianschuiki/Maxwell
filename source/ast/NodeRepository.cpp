@@ -168,8 +168,10 @@ void NodeRepository::removeNode(int source)
 	for (Nodes::iterator it = nodes.begin(); it != nodes.end();) {
 		const NodeId& id = it->first;
 		it++; // required since we modify the map
-		modified.erase(id);
-		nodes.erase(id);
+			if (id.source == source) {
+			modified.erase(id);
+			nodes.erase(id);
+		}
 	}
 	boost::filesystem::path p = getPathForSource(source);
 	if (boost::filesystem::exists(p)) {

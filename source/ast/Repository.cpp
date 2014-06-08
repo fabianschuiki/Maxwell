@@ -184,8 +184,12 @@ Repository::ExternalNames Repository::getExternalNamesForNodeId(const NodeId& id
 {
 	ExternalNames nodes(builtinNodes);
 	// TODO: add the known nodes for that node
-	const SymbolRepository::Symbols& local = symbolRepo->getExportedSymbols(id.source);
-	nodes.insert(local.begin(), local.end());
+	// const SymbolRepository::Symbols& local = symbolRepo->getExportedSymbols(id.source);
+	// nodes.insert(local.begin(), local.end());
+	const SymbolRepository::ExportedSymbols& syms = symbolRepo->getExportedSymbols();
+	for (SymbolRepository::ExportedSymbols::const_iterator i = syms.begin(); i != syms.end(); i++) {
+		nodes.insert(i->second.begin(), i->second.end());
+	}
 	return nodes;
 }
 

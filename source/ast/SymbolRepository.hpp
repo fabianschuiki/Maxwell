@@ -22,6 +22,7 @@ public:
 
 	typedef map<NodeId, string> Symbols;
 	typedef map<int, Symbols> ExportedSymbols;
+	const ExportedSymbols& getExportedSymbols();
 	const Symbols& getExportedSymbols(int source);
 
 	void addExportedSymbol(const NodeId& id, const string& name);

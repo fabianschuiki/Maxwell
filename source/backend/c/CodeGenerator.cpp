@@ -183,7 +183,22 @@ std::string CodeGenerator::makeTypeName(const ast::TypeDef::Ptr& node)
  * disallowed characters. */
 std::string CodeGenerator::makeFriendly(const std::string& name)
 {
-	std::string result = name;
-	std::replace(result.begin(), result.end(), '.', '_');
+	std::string result;
+	if (!name.empty() && name[0] >= '0' && name [0] <= '9')
+		result += '_';
+	for (std::string::const_iterator i = name.begin(); i != name.end(); i++) {
+		if (*i == '.') {
+			result += '_';
+		} else if (
+			(*i >= 'a' && *i <= 'z') ||
+			(*i >= 'A' && *i <= 'Z') ||
+			(*i >= '0' && *i <= '9') || *i == '_') {
+			result += *i;
+		} else {
+			char buf[8];
+			snprintf(buf, 8, "c%02X", *i);
+			result += buf;
+		}
+	}
 	return result;
 }

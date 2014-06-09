@@ -186,18 +186,24 @@ std::string CodeGenerator::makeFriendly(const std::string& name)
 	std::string result;
 	if (!name.empty() && name[0] >= '0' && name [0] <= '9')
 		result += '_';
+	bool lastWasEscaped = false;
 	for (std::string::const_iterator i = name.begin(); i != name.end(); i++) {
 		if (*i == '.') {
 			result += '_';
+			lastWasEscaped = false;
 		} else if (
 			(*i >= 'a' && *i <= 'z') ||
 			(*i >= 'A' && *i <= 'Z') ||
 			(*i >= '0' && *i <= '9') || *i == '_') {
 			result += *i;
+			lastWasEscaped = false;
 		} else {
-			char buf[8];
-			snprintf(buf, 8, "c%02X", *i);
-			result += buf;
+			const static char hex[] = "0123456789ABCDEF";
+			if (!lastWasEscaped)
+				result += 'c';
+			result += hex[*i >> 4];
+			result += hex[*i & 0xf];
+			lastWasEscaped = true;
 		}
 	}
 	return result;

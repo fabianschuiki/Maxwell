@@ -5,5 +5,5 @@
 file(GLOB_RECURSE mw_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.mw)
 
 foreach(f ${mw_files})
-	add_test(parse-${f} ${CMAKE_BINARY_DIR}/source/test/mwcparse ${CMAKE_CURRENT_SOURCE_DIR}/${f})
+	add_test(parse-${f} ${CMAKE_BINARY_DIR}/maxwell/test/mwcparse ${CMAKE_CURRENT_SOURCE_DIR}/${f})
 endforeach()

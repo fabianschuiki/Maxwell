@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright (c) 2013 Fabian Schuiki */
 
 struct Vector {
 	float x;

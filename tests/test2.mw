@@ -1,4 +1,4 @@
-/* Copyright © 2014 Fabian Schuiki */
+/* Copyright (c) 2014 Fabian Schuiki */
 
 func doAwesomeThings (i: Int) = {
 	if (i == 0) {

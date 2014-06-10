@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright (c) 2013 Fabian Schuiki */
 
 /* This snippet of Maxwell code highlights the use of by-reference function
  * arguments which are required to declare functions that modify values. */

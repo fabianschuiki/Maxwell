@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright (c) 2013 Fabian Schuiki */
 
 /* This structure is automatically generated due to the use of the string
  * literal (1). Length refers to the length of the string, accounting for the

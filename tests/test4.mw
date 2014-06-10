@@ -1,4 +1,4 @@
-/* Copyright © 2014 Fabian Schuiki */
+/* Copyright (c) 2014 Fabian Schuiki */
 
 func mapper (f: ((x: Int, y: Int)->Int), a: Int, b: Int) = {
 	f(a,b);

@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright (c) 2013 Fabian Schuiki */
 
 /* This snippet of code describes the common use case of mapping a given type
  * to an interface, in order to pass it on to another function. */

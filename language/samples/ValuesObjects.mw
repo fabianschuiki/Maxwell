@@ -1,6 +1,6 @@
 /**
  * Maxwell source file describing the concepts of Values and Objects.
- * Copyright © 2012 Fabian Schuiki.
+ * Copyright (c) 2012 Fabian Schuiki.
  */
 
 func main

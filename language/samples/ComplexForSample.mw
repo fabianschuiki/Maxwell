@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright (c) 2013 Fabian Schuiki */
 
 /* This code snippet highlights the potential use of multi-variable for loops,
  * in a way similar to those implemented in the Scala programming language. */

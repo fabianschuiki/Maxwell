@@ -1,4 +1,4 @@
-/* Copyright © 2014 Fabian Schuiki */
+/* Copyright (c) 2014 Fabian Schuiki */
 
 func main = {
 	// Define a mapping that will be used further down.

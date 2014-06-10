@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright (c) 2013 Fabian Schuiki */
 
 /* This structure is automatically generated in the root scope due to the use
  * of the array literal. For constant arrays the length may actually be

@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright (c) 2013 Fabian Schuiki */
 
 /* This snippet of Maxwell source code outlines one of the tricky use cases of
  * union types. The compiler needs to dispatch the call to collide() in main

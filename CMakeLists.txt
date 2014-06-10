@@ -6,10 +6,10 @@ find_package(Boost COMPONENTS REQUIRED filesystem system)
 add_definitions(-DBOOST_TEST_DYN_LINK)
 
 include_directories(${Boost_INCLUDE_DIRS})
-include_directories(source)
+include_directories(.)
 
 enable_testing()
-add_subdirectory(source)
+add_subdirectory(maxwell)
 add_subdirectory(tests)
 
 # If Doxygen is available, add a target that compiles the documentation.

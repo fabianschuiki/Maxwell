@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright (c) 2013 Fabian Schuiki */
 
 /* This code snippet shows the use of constant array literals. Their structure
  * is very straightforward. */

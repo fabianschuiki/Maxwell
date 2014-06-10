@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright (c) 2013 Fabian Schuiki */
 
 /* Specialized and compiled for T=Int. Memory is a special builtin type that
  * allocates a memory region and prefixes it with a reference counter (if

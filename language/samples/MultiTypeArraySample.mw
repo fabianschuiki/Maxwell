@@ -1,4 +1,4 @@
-/* Copyright © 2013 Fabian Schuiki */
+/* Copyright (c) 2013 Fabian Schuiki */
 
 /* This snippet of code shows the use of array literals with multiple types,
  * as well as converting these literals to a mutable array and adding new

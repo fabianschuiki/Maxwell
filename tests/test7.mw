@@ -1,0 +1,16 @@
+/* Copyright (c) 2014 Fabian Schuiki */
+/* Some weird operators. */
+
+func ** (a: Int, b: Int) = {
+	c := 1;
+	for (i := 0; i < b; i = i+1) {
+		c = c * a;
+	}
+}
+
+func *-*--% (a: Int, b: Int) = { a*a + b*b; }
+
+func main = {
+	k := 4;
+	k ** 2;
+}

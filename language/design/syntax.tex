@@ -1,0 +1,23 @@
+\section{Syntax}
+
+This section describes the Maxwell language syntax in a modified Backus-Naur
+form that resembles regular expressions, where
+
+\begin{description}
+	\item[:] denotes a definition in the grammar, specifying a set of
+	      rules for a symbol;
+	\item[|] separates multiple rules in a definition;
+	\item["..."] denotes a terminal;
+	\item[(...)] groups parts of a rule;
+	\item[?] suffixes a symbol that is optional;
+	\item[*] suffixes a symbol that may appear any number of times,
+	      including never; and
+	\item[+] suffixes a symbol that must appear at least once.
+\end{description}
+
+% The actual grammar rules are split into separate files in the `syntax`
+% directory.
+\newenvironment{exdesc}{\begin{inparaenum}[\bfseries (a)]}{\end{inparaenum}}
+
+\input{syntax/definition.tex}
+\input{syntax/func_expr.tex}

@@ -1,0 +1,37 @@
+% Copyright (c) 2014 Fabian Schuiki
+\subsection{Definition}
+
+\begin{lstlisting}[language=EBNF]
+definition : name ":" expr
+\end{lstlisting}
+
+A \emph{definition} is an expression with a label assigned to it. The label
+allows other parts of the code to refer to the definition. Only definitions are
+exported out of packages and can be referenced from other code. Multiple
+definitions with the same label are allowed. When other code refers to that
+label it is the compiler's responsibility to choose the definition that matches
+the required type.
+
+\begin{description}
+\item[name] can be any valid name
+\item[expr] can be any valid expression and is evaluated at compile time until a
+            function, a type, or a constant value is obtained. If this is not
+            possible, the compiler will stop with an error.
+\end{description}
+
+\subsubsection{Examples}
+\begin{lstlisting}
+(a) A: func x -> x*x
+(b) B: func x,y -> x*y
+(c) C: type Int range 0 to 7
+(d) D: 123
+(e) E: A(2)
+\end{lstlisting}
+
+Where \begin{exdesc}
+	\item is a function with one argument,
+	\item is a function with two arguments,
+	\item is a type representing integers from 0 to 7,
+	\item is the integer constant 123, and
+	\item is the integer constant 4.
+\end{exdesc}

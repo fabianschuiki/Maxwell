@@ -1,13 +1,21 @@
-\documentclass[a4paper, twoside, twocolumn]{article}
+\documentclass[a4paper, twoside]{article}
 \usepackage[margin=2.5cm]{geometry}
-\usepackage{fancyhdr}
-\usepackage{enumerate}
 \usepackage[T1]{fontenc}
-\usepackage{graphicx}
-\usepackage{listings}
 \usepackage{chngcntr}
 \usepackage{color}
+\usepackage{dejavu}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage{listings}
+\usepackage{paralist}
+\usepackage{parskip}
+
+%\setlength{\parindent}{2em}
+%\setlength{\parskip}{1em}
+\renewcommand{\baselinestretch}{1.1}
+% \setlength{\baselineskip}{1em}
 
 % Configure the fancy headers
 \pagestyle{fancy}
@@ -17,44 +25,64 @@
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
 
-\lstset{
-  frame=single,
-  basicstyle=\small\ttfamily,
-  showspaces=false,
-  showstringspaces=false,
-  breakatwhitespace=true,
-  breaklines=true,
-  showtabs=false,
-  language=C,
-  captionpos=t,
-  tabsize=2,
-  morekeywords={nil,any,func,type,value,object,interface,native,true,false,if,for,else,in,var,otherwise,defer,return},
-  emph={Int,Real,Complex,String,Array,Map,Set},
-  emphstyle=\color[rgb]{0.33, 0.66, 1.0},
-  commentstyle=\color[gray]{0.66},
-  keywordstyle=\color[rgb]{0.0, 0.33, 0.66},
-  stringstyle=\color[rgb]{1.0, 0.5, 0.0},
-  numberstyle=\color[rgb]{1.0, 0.5, 0.0},
-  rulecolor=\color[gray]{0.66},
-  xleftmargin=0.25cm,
-  xrightmargin=0.25cm
-}
-
 \def\lstlistingautorefname{Listing}
 
+\lstdefinelanguage{Maxwell}{
+	breakatwhitespace=true,
+	breaklines=true,
+	morekeywords={nil,any,def,func,type,value,object,interface,native,true,false,if,for,else,in,var,otherwise,defer,return},
+	emph={Int,Real,Complex,String,Array,Map,Set},
+	morecomment=[l]{//},
+	morecomment=[s]{/*}{*/}
+}
+
+\lstdefinelanguage{EBNF}{
+	sensitive=false,
+	breaklines=true,
+	morecomment=[s]{'}{\ ,*,?,)},
+	morestring=[b]",
+	% moredelim=[is][keywordstyle]{|}{|}
+}
+
+\lstset{
+	frame=none,
+	language=Maxwell,
+	basicstyle=\small\ttfamily,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	captionpos=t,
+	tabsize=2,
+	emphstyle=\color[rgb]{0.33, 0.66, 1.0},
+	commentstyle=\color[gray]{0.66},
+	keywordstyle=\bfseries\color[rgb]{0.0, 0.33, 0.66},
+	stringstyle=\color[rgb]{1.0, 0.5, 0.0},
+	numberstyle=\color[rgb]{1.0, 0.5, 0.0},
+	rulecolor=\color[gray]{0.66},
+	xleftmargin=\parindent,
+	xrightmargin=\parindent
+}
+
+\lstnewenvironment{grammar}{\lstset{
+	language=EBNF
+}}{}
+
 \begin{document}
-  \title{Maxwell Language Design}
-  \author{F. Schuiki (fschuiki@student.ethz.ch)}
-  \maketitle
+	\title{Maxwell Language Design}
+	\author{F. Schuiki (fschuiki@student.ethz.ch)}
+	\maketitle
 
-  \counterwithin*{lstlisting}{section}
-  \renewcommand{\thelstlisting}{\thesection.\arabic{lstlisting}}
+	\counterwithin*{lstlisting}{section}
+	\renewcommand{\thelstlisting}{\thesection.\arabic{lstlisting}}
 
-  \tableofcontents
+	\tableofcontents
+	\clearpage
 
-  \input{bodyexprs}
-  \input{functions}
-  % \input{misc}
+	\input{bodyexprs}
+	\input{functions}
+	\input{syntax}
+	% \input{misc}
 
-  \lstlistoflistings
+	\clearpage
+	\lstlistoflistings
 \end{document}

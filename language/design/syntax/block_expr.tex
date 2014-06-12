@@ -1,0 +1,83 @@
+% Copyright (c) 2014 Fabian Schuiki
+\subsection{Block Expression}
+
+\begin{lstlisting}[language=EBNF]
+block_expr : block_ret? "{" (expr ";")* expr ";"? "}"
+block_ret  : ident
+           | "(" block_arg ("," block_arg)* ")"
+block_arg  : ident (":" type_expr)?
+\end{lstlisting}
+
+A \emph{block expression} is a sequence of expressions that are executed in the
+order that they appear. The expressions are separated by semicolons, the last of
+which is optional. The block may define one or more return variables that are
+joined into a tuple and returned as the resulting value of the block.
+
+\subsubsection{Behaviour}
+
+An \emph{empty} block results in \lstinline{nil}. A block \emph{without return
+variables} returns its very last expression. A block \emph{with one return
+variable} returns that variable. A block \emph{with multiple return variables}
+returns a tuple of these variables. Note that in the presence of return
+variables, the last expression in the block has no significance.
+
+If the block is a function body and contains one or more \emph{return
+expressions}, its type is expandeed to also include types of all return values,
+forming a union type if necessary.
+
+If the block is a loop body and contains one or more \emph{yield expressions},
+its type is expanded to also include the yield type, forming a union type if
+necessary. The yield type is the array of the union over all yield values.
+
+\subsubsection{Examples}
+
+\begin{lstlisting}
+// implicit return value
+(A) {}
+(B) { 123 }
+(C) { var x = 4; x*2; }
+
+// explicit return value
+(D) x { x = 123 }
+(E) (x,y) { x = 12; y = 34; }
+(F) (s: String) { s = "abc" }
+
+// return and yield
+(G) { return "abc"; return nil; 123 }
+(H) { yield "abc"; yield nil; 123 }
+(I) { yield "abc"; return nil; 123 }
+(J) (x,y) { x = 12; y = 34; return "abc"; yield nil; 123 }
+\end{lstlisting}
+
+Where \begin{exdesc}
+    \item returns nil;
+    \item returns the integer 123;
+    \item returns the integer 8;
+    %
+    \item returns an integer;
+    \item returns a tuple of integers;
+    \item explicitly states its return type;
+    %
+    \item is of type \lstinline{String|nil|Int};
+    \item is of type \lstinline{Array[String|nil]|Int};
+    \item is of type \lstinline{Array[String]|nil|Int}; and
+    \item is of type \lstinline{(Int,Int)|String|Array[nil]|Int}.
+\end{exdesc}
+
+\begin{lstlisting}
+// concrete example
+var r := for (f in files) {
+    if (f.exists?)
+        yield f.size;
+    else
+        return Error("file %{f} does not exist");
+}
+\end{lstlisting}
+
+In this case the block is the body of the for loop. It contains a yield
+expression with an integer value and a return expression with an Error value.
+Thus the variable r is of type \lstinline{Array[Int]|Error}. If all files exist
+the yield expression appends each file's size to the result of the for loop,
+assembling an array of integers in the process. However if a file does not
+exist, the block returns an error which discards all previous yields and aborts
+the loop.

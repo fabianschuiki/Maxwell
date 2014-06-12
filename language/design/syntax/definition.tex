@@ -5,19 +5,18 @@
 definition : name ":" expr
 \end{lstlisting}
 
+\begin{description}
+\item[expr] can be any valid expression and is evaluated at compile time until a
+            function, a type, or a constant value is obtained. If this is not
+            possible, the compiler will stop with an error.
+\end{description}
+
 A \emph{definition} is an expression with a label assigned to it. The label
 allows other parts of the code to refer to the definition. Only definitions are
 exported out of packages and can be referenced from other code. Multiple
 definitions with the same label are allowed. When other code refers to that
 label it is the compiler's responsibility to choose the definition that matches
 the required type.
-
-\begin{description}
-\item[name] can be any valid name
-\item[expr] can be any valid expression and is evaluated at compile time until a
-            function, a type, or a constant value is obtained. If this is not
-            possible, the compiler will stop with an error.
-\end{description}
 
 \subsubsection{Examples}
 \begin{lstlisting}

@@ -11,27 +11,22 @@
 \usepackage{listings}
 \usepackage{paralist}
 \usepackage{parskip}
+\usepackage{tabularx}
 
-%\setlength{\parindent}{2em}
-%\setlength{\parskip}{1em}
 \renewcommand{\baselinestretch}{1.1}
-% \setlength{\baselineskip}{1em}
 
 % Configure the fancy headers
 \pagestyle{fancy}
-\setlength{\headheight}{15pt}
 \fancyhead[RO,LE]{Maxwell Language Design}
 \fancyhead[RE,LO]{}
-\renewcommand{\headrulewidth}{0.4pt}
-\renewcommand{\footrulewidth}{0.4pt}
 
 \def\lstlistingautorefname{Listing}
 
 \lstdefinelanguage{Maxwell}{
 	breakatwhitespace=true,
 	breaklines=true,
-	morekeywords={nil,any,def,func,type,value,object,interface,native,true,false,if,for,else,in,var,otherwise,defer,return},
-	emph={Int,Real,Complex,String,Array,Map,Set},
+	morekeywords={any,def,func,type,value,object,interface,native,if,for,else,in,var,otherwise,defer,return,yield},
+	emph={Int,Real,Complex,String,Array,Map,Set,nil,true,false},
 	morecomment=[l]{//},
 	morecomment=[s]{/*}{*/}
 }
@@ -63,9 +58,6 @@
 	xrightmargin=\parindent
 }
 
-\lstnewenvironment{grammar}{\lstset{
-	language=EBNF
-}}{}
 
 \begin{document}
 	\title{Maxwell Language Design}

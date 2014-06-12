@@ -2,14 +2,21 @@
 \subsection{Function Expression}
 
 \begin{lstlisting}[language=EBNF]
-func_expr : "func" func_variant ("," func_variant)*
+func_expr    : "func" func_variant ("," func_variant)*
 func_variant : pattern_expr "->" expr
 \end{lstlisting}
 
-A \emph{function expression} is mapping from a pattern to a an expression. In
+A \emph{function expression} is a mapping from a pattern to a an expression. In
 terms of other languages, the pattern may be thought of as the arguments and the
 expression as the return value. A function may have multiple variants, each
-mapping a different pattern to an expression.
+of which maps different pattern to an expression --- much like function
+overloading in C++. The value of the expression is the resulting function object
+which is of function type (\lstinline{A -> B}).
+
+\begin{description}
+	\item[Value] The resulting function object.
+	\item[Type] Function type (\texttt{A -> B}).
+\end{description}
 
 \subsubsection{Examples}
 
@@ -21,6 +28,8 @@ mapping a different pattern to an expression.
 (e) func x -> { x*x; }
 (f) func x -> u,v { u = x; v = x*x; }
 (g) func Point(x,y) -> x*x+y*y
+(h) func 0 -> "zero",
+         x -> "anything"
 \end{lstlisting}
 
 Where \begin{exdesc}
@@ -32,7 +41,8 @@ Where \begin{exdesc}
 	\item maps the value x to a block expression that results in the square of
 	      x;
 	\item maps the value x to the tuple (u,v), where u is the same as x and v is
-	      the square of x; and
+	      the square of x;
 	\item maps a \lstinline{Point}, whose coordinates are captured as x and y,
-	      to the sum of its squared components.
+	      to the sum of its squared components; and
+	\item demonstrates a function with multiple variants.
 \end{exdesc}

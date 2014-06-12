@@ -23,39 +23,47 @@
 \def\lstlistingautorefname{Listing}
 
 \lstdefinelanguage{Maxwell}{
-	breakatwhitespace=true,
-	breaklines=true,
-	morekeywords={any,def,func,type,value,object,interface,native,if,for,else,in,var,otherwise,defer,return,yield},
-	emph={Int,Real,Complex,String,Array,Map,Set,nil,true,false},
-	morecomment=[l]{//},
-	morecomment=[s]{/*}{*/}
+	sensitive = true,
+	breakatwhitespace = true,
+	breaklines = true,
+	morekeywords = {any,def,func,type,value,object,interface,native,if,for,else,in,var,otherwise,defer,return,yield},
+	emph = {Int,Real,Complex,String,Array,Map,Set,nil,true,false},
+	morecomment = [l]{//},
+	morecomment = [s]{/*}{*/},
+	morestring  = [b]",
 }
 
 \lstdefinelanguage{EBNF}{
-	sensitive=false,
-	breaklines=true,
-	morecomment=[s]{'}{\ ,*,?,)},
-	morestring=[b]",
+	sensitive = false,
+	breakatwhitespace = true,
+	breaklines        = true,
+	morecomment  = [s]{'}{\ ,*,?,+,)},
+	morestring   = [b]",
+	% literate     = {:}{\keywordstyle :}1,
 	% moredelim=[is][keywordstyle]{|}{|}
 }
 
 \lstset{
-	frame=none,
-	language=Maxwell,
-	basicstyle=\small\ttfamily,
-	showspaces=false,
-	showstringspaces=false,
-	showtabs=false,
-	captionpos=t,
-	tabsize=2,
-	emphstyle=\color[rgb]{0.33, 0.66, 1.0},
-	commentstyle=\color[gray]{0.66},
-	keywordstyle=\bfseries\color[rgb]{0.0, 0.33, 0.66},
-	stringstyle=\color[rgb]{1.0, 0.5, 0.0},
-	numberstyle=\color[rgb]{1.0, 0.5, 0.0},
-	rulecolor=\color[gray]{0.66},
-	xleftmargin=\parindent,
-	xrightmargin=\parindent
+	language = Maxwell,
+	% whitespace
+	showspaces       = false,
+	showstringspaces = false,
+	showtabs         = false,
+	% layout
+	frame        = none,
+	captionpos   = t,
+	tabsize      = 2,
+	xleftmargin  = \parindent,
+	xrightmargin = \parindent,
+	numbers      = left,
+	% styles
+	basicstyle   = \small\ttfamily,
+	numberstyle  = \footnotesize,
+	commentstyle = \color[gray]{0.66},
+	emphstyle    = \itshape\color[rgb]{0.0, 0.33, 0.66},
+	keywordstyle = \bfseries\color[rgb]{0.0, 0.33, 0.66},
+	stringstyle  = \color[rgb]{0.0, 0.66, 0.33},
+	rulecolor    = \color[gray]{0.66},
 }
 
 

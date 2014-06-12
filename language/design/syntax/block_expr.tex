@@ -11,7 +11,9 @@ block_arg  : ident (":" type_expr)?
 A \emph{block expression} is a sequence of expressions that are executed in the
 order that they appear. The expressions are separated by semicolons, the last of
 which is optional. The block may define one or more return variables that are
-joined into a tuple and returned as the resulting value of the block.
+joined into a tuple and returned as the resulting value of the block. They
+behave like every other variable inside the block, allowing expressions to
+assign values to them.
 
 \subsubsection{Behaviour}
 
@@ -45,7 +47,7 @@ necessary. The yield type is the array of the union over all yield values.
 // return and yield
 (G) { return "abc"; return nil; 123 }
 (H) { yield "abc"; yield nil; 123 }
-(I) { yield "abc"; return nil; 123 }
+(I) { yield "abc"; return nil; 123 } { yield "abc"; return nil; 123 } { yield "abc"; return nil; 123 }
 (J) (x,y) { x = 12; y = 34; return "abc"; yield nil; 123 }
 \end{lstlisting}
 

@@ -1,0 +1,43 @@
+% Copyright (c) 2014 Fabian Schuiki
+\subsection{Literals}
+
+\begin{lstlisting}[language=EBNF]
+number_literal : /[0-9](\.?[0-9\u'])*/
+string_literal : /".*(?!\\)"/
+
+array_literal  : "[" expr ("," expr)* "]"
+set_literal    : "{" expr ("," expr)* "}"
+map_literal    : "{" primary_expr ":" expr ("," primary_expr ":" expr)* "}"
+\end{lstlisting}
+
+Literals represent values that may be statically derived at compile time.
+
+\begin{description}
+	\item[Number literals] start with a digit and may contain digits, periods,
+		apostrophes and any letter unicode character. The number format is not
+		part of the syntax, since it may be extended by the user.
+	\item[String literals] start and end with double quotes, and may contain
+		every unicode character. A backslash is used to escape double quotes.
+	\item[Array literals] start and end with brackets, and contain one or more
+		expressions.
+	\item[Set literals] start and end with braces, and contain one or more
+		expressions.
+	\item[Map literals] start and end with braces, and contain one or more
+		key-value-pairs, where the key is a primary expression and the value is
+		any expression.
+\end{description}
+
+There is no empty array, set or map literal since the empty set and map would be
+ambiguous and would collide with the empty block expression.
+
+\subsubsection{Examples}
+
+\begin{lstlisting}
+1234
+123'456.984
+"hello"
+"He said \"Hello\"!"
+[1,2,3,"four",true,nil]
+{1,2,3,"four",true,nil}
+{1: "one", "two": 2, nil: 492}
+\end{lstlisting}

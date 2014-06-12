@@ -1,0 +1,24 @@
+% Copyright (c) 2014 Fabian Schuiki
+\subsection{Primary Expression}
+
+\begin{lstlisting}[language=EBNF]
+primary_expr  : atomic_expr
+              | enclosed_expr
+
+atomic_expr   : ident
+              | number_literal
+              | string_literal
+
+enclosed_expr : "(" expr ")"
+              | tuple_expr
+              | array_literal
+              | set_literal
+              | map_literal
+\end{lstlisting}
+
+A \emph{primary expression} groups two types of expressions together: atomic
+expressions which consist only of one token, and enclosed expressions which
+consist of multiple tokens between two grouping symbols such as parentheses.
+This makes primary epxressions very easy to parse, since they either consist of
+only one token, or start with a symbol that is matched by another symbol at the
+end.

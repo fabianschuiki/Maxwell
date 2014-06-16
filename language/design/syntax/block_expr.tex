@@ -24,7 +24,7 @@ returns a tuple of these variables. Note that in the presence of return
 variables, the last expression in the block has no significance.
 
 If the block is a function body and contains one or more \emph{return
-expressions}, its type is expandeed to also include types of all return values,
+expressions}, its type is expanded to also include types of all return values,
 forming a union type if necessary.
 
 If the block is a loop body and contains one or more \emph{yield expressions},
@@ -47,7 +47,7 @@ necessary. The yield type is the array of the union over all yield values.
 // return and yield
 (G) { return "abc"; return nil; 123 }
 (H) { yield "abc"; yield nil; 123 }
-(I) { yield "abc"; return nil; 123 } { yield "abc"; return nil; 123 } { yield "abc"; return nil; 123 }
+(I) { yield "abc"; return nil; 123 }
 (J) (x,y) { x = 12; y = 34; return "abc"; yield nil; 123 }
 \end{lstlisting}
 
@@ -68,7 +68,7 @@ Where \begin{exdesc}
 
 \begin{lstlisting}
 // concrete example
-var r := for (f in files) {
+r := for (f in files) {
     if (f.exists?)
         yield f.size;
     else

@@ -1,5 +1,5 @@
 % Copyright (c) 2014 Fabian Schuiki
-\subsection{Definition}
+\section{Definition}
 
 \begin{lstlisting}[language=EBNF]
 definition : name ":" expr
@@ -18,7 +18,7 @@ definitions with the same label are allowed. When other code refers to that
 label it is the compiler's responsibility to choose the definition that matches
 the required type.
 
-\subsubsection{Examples}
+\subsection{Examples}
 \begin{lstlisting}
 (a) A: func x -> x*x
 (b) B: func x,y -> x*y
@@ -32,5 +32,5 @@ Where \begin{exdesc}
 	\item is a function with two arguments,
 	\item is a type representing integers from 0 to 7,
 	\item is the integer constant 123, and
-	\item is the integer constant 4.
-\end{exdesc}
+	\item is the integer constant 4
+\end{exdesc}.

@@ -1,5 +1,5 @@
 % Copyright (c) 2014 Fabian Schuiki
-\subsection{Block Expression}
+\section{Block Expression}
 
 \begin{lstlisting}[language=EBNF]
 block_expr : block_ret? "{" (expr ";")* expr ";"? "}"
@@ -15,7 +15,7 @@ joined into a tuple and returned as the resulting value of the block. They
 behave like every other variable inside the block, allowing expressions to
 assign values to them.
 
-\subsubsection{Behaviour}
+\subsection{Behaviour}
 
 An \emph{empty} block results in \lstinline{nil}. A block \emph{without return
 variables} returns its very last expression. A block \emph{with one return
@@ -31,7 +31,7 @@ If the block is a loop body and contains one or more \emph{yield expressions},
 its type is expanded to also include the yield type, forming a union type if
 necessary. The yield type is the array of the union over all yield values.
 
-\subsubsection{Examples}
+\subsection{Examples}
 
 \begin{lstlisting}
 // implicit return value

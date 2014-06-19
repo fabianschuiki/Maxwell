@@ -1,21 +1,41 @@
-\documentclass[a4paper, twoside]{article}
-\usepackage[margin=2.5cm]{geometry}
+\documentclass[twoside]{report}
+
+\usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{chngcntr}
+% \usepackage{chngcntr}
 \usepackage{color}
 \usepackage{dejavu}
 \usepackage{enumerate}
-\usepackage{fancyhdr}
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{listings}
 \usepackage{paralist}
-\usepackage{parskip}
-\usepackage{tabularx}
+\usepackage[parfill]{parskip}
+% \usepackage{tabularx}
+\usepackage{titlesec}
 
-\renewcommand{\baselinestretch}{1.1}
+% Setup the page geometry to be A4 with 2.5cm of margin.
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
 
-% Configure the fancy headers
+% Setup how breaks occur.
+\raggedbottom
+
+% \setlength{\emergencystretch}{3em}
+% \setlength{\parindent}{0cm}
+% \setlength{\parskip}{1em plus 0.2em minus 0.1em}
+
+% \renewcommand{\baselinestretch}{1.1}
+% \setlength{\parskip}{1em plus 1em minus 0.1em}
+% \setlength{\parindent}{0em}
+
+% \titlespacing{\section}{0em}{10em}{2em}
+% \titlespacing{\subsection}{0em}{2em plus 2em minus 0.1em}{1em plus 0.5em minus 0.1em}
+% \titlespacing{\subsection}{0em}{2em plus 2em minus 0.1em}{1em plus 0.5em}
+% \titlespacing{\subsection}{0em}{2em plus 0.2em minus 0.1em}{0em}
+
+% Setup the fance headers.
+\usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhead[RO,LE]{Maxwell Language Design}
 \fancyhead[RE,LO]{}
@@ -64,7 +84,9 @@
 	emphstyle    = \itshape\color[rgb]{0.0, 0.33, 0.66},
 	keywordstyle = \bfseries\color[rgb]{0.0, 0.33, 0.66},
 	stringstyle  = \color[rgb]{0.0, 0.66, 0.33},
-	rulecolor    = \color[gray]{0.66},
+	% colors
+	% backgroundcolor = \color[gray]{0.96},
+	rulecolor       = \color[gray]{0.66},
 }
 
 
@@ -73,8 +95,8 @@
 	\author{F. Schuiki (fschuiki@student.ethz.ch)}
 	\maketitle
 
-	\counterwithin*{lstlisting}{section}
-	\renewcommand{\thelstlisting}{\thesection.\arabic{lstlisting}}
+	% \counterwithin*{lstlisting}{section}
+	% \renewcommand{\thelstlisting}{\thesection.\arabic{lstlisting}}
 
 	\tableofcontents
 	\clearpage

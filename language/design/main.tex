@@ -10,9 +10,9 @@
 \usepackage{hyperref}
 \usepackage{listings}
 \usepackage{paralist}
-\usepackage[parfill]{parskip}
+% \usepackage{parskip}
 % \usepackage{tabularx}
-\usepackage{titlesec}
+% \usepackage{titlesec}
 
 % Setup the page geometry to be A4 with 2.5cm of margin.
 \usepackage{geometry}
@@ -39,6 +39,12 @@
 \pagestyle{fancy}
 \fancyhead[RO,LE]{Maxwell Language Design}
 \fancyhead[RE,LO]{}
+
+% Fix the issue where lstlistings right after section headings destroy the
+% spacing of subsequent headings.
+\makeatletter
+\g@addto@macro\lst@DeInit{\@nobreakfalse}{}{}
+\makeatother
 
 \def\lstlistingautorefname{Listing}
 
@@ -72,10 +78,10 @@
 	showtabs         = false,
 	% layout
 	frame        = none,
-	captionpos   = t,
+	captionpos   = b,
 	tabsize      = 2,
-	xleftmargin  = \parindent,
-	xrightmargin = \parindent,
+	xleftmargin  = 0pt,
+	xrightmargin = 0pt,
 	numbers      = left,
 	% styles
 	basicstyle   = \small\ttfamily,
@@ -85,10 +91,14 @@
 	keywordstyle = \bfseries\color[rgb]{0.0, 0.33, 0.66},
 	stringstyle  = \color[rgb]{0.0, 0.66, 0.33},
 	% colors
-	% backgroundcolor = \color[gray]{0.96},
+	backgroundcolor = \color[gray]{0.96},
 	rulecolor       = \color[gray]{0.66},
+	aboveskip = 0pt,
+	belowskip = 0pt,
 }
 
+\lstnewenvironment{grammar}{\lstset{language=EBNF}}{}
+\lstnewenvironment{mw}{\lstset{language=Maxwell}}{}
 
 \begin{document}
 	\title{Maxwell Language Design}

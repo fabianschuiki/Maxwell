@@ -1,7 +1,7 @@
 % Copyright (c) 2014 Fabian Schuiki
 \section{Primary Expression}
 
-\begin{lstlisting}[language=EBNF]
+\begin{verbatim}
 primary_expr  : atomic_expr
               | enclosed_expr
 
@@ -14,7 +14,7 @@ enclosed_expr : "(" expr ")"
               | array_literal
               | set_literal
               | map_literal
-\end{lstlisting}
+\end{verbatim}
 
 A \emph{primary expression} groups two types of expressions together: atomic
 expressions which consist only of one token, and enclosed expressions which

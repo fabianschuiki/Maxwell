@@ -1,12 +1,12 @@
 % Copyright (c) 2014 Fabian Schuiki
 \section{Block Expression}
 
-\begin{lstlisting}[language=EBNF]
+\begin{verbatim}
 block_expr : block_ret? "{" (expr ";")* expr ";"? "}"
 block_ret  : ident
            | "(" block_arg ("," block_arg)* ")"
 block_arg  : ident (":" type_expr)?
-\end{lstlisting}
+\end{verbatim}
 
 A \emph{block expression} is a sequence of expressions that are executed in the
 order that they appear. The expressions are separated by semicolons, the last of
@@ -17,7 +17,7 @@ assign values to them.
 
 \subsection{Behaviour}
 
-An \emph{empty} block results in \lstinline{nil}. A block \emph{without return
+An \emph{empty} block results in \texttt{nil}. A block \emph{without return
 variables} returns its very last expression. A block \emph{with one return
 variable} returns that variable. A block \emph{with multiple return variables}
 returns a tuple of these variables. Note that in the presence of return
@@ -33,7 +33,7 @@ necessary. The yield type is the array of the union over all yield values.
 
 \subsection{Examples}
 
-\begin{lstlisting}
+\begin{verbatim}
 // implicit return value
 (A) {}
 (B) { 123 }
@@ -49,7 +49,7 @@ necessary. The yield type is the array of the union over all yield values.
 (H) { yield "abc"; yield nil; 123 }
 (I) { yield "abc"; return nil; 123 }
 (J) (x,y) { x = 12; y = 34; return "abc"; yield nil; 123 }
-\end{lstlisting}
+\end{verbatim}
 
 Where \begin{exdesc}
     \item returns nil;
@@ -60,13 +60,13 @@ Where \begin{exdesc}
     \item returns a tuple of integers;
     \item explicitly states its return type;
     %
-    \item is of type \lstinline{String|nil|Int};
-    \item is of type \lstinline{Array[String|nil]|Int};
-    \item is of type \lstinline{Array[String]|nil|Int}; and
-    \item is of type \lstinline{(Int,Int)|String|Array[nil]|Int}.
+    \item is of type \texttt{String|nil|Int};
+    \item is of type \texttt{Array[String|nil]|Int};
+    \item is of type \texttt{Array[String]|nil|Int}; and
+    \item is of type \texttt{(Int,Int)|String|Array[nil]|Int}.
 \end{exdesc}
 
-\begin{lstlisting}
+\begin{verbatim}
 // concrete example
 r := for (f in files) {
     if (f.exists?)
@@ -74,11 +74,11 @@ r := for (f in files) {
     else
         return Error("file %{f} does not exist");
 }
-\end{lstlisting}
+\end{verbatim}
 
 In this case the block is the body of the for loop. It contains a yield
 expression with an integer value and a return expression with an Error value.
-Thus the variable r is of type \lstinline{Array[Int]|Error}. If all files exist
+Thus the variable r is of type \texttt{Array[Int]|Error}. If all files exist
 the yield expression appends each file's size to the result of the for loop,
 assembling an array of integers in the process. However if a file does not
 exist, the block returns an error which discards all previous yields and aborts

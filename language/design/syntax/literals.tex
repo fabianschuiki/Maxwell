@@ -1,14 +1,14 @@
 % Copyright (c) 2014 Fabian Schuiki
 \section{Literals}
 
-\begin{lstlisting}[language=EBNF]
+\begin{verbatim}
 number_literal : /[0-9](\.?[0-9\u'])*/
 string_literal : /".*(?!\\)"/
 
 array_literal  : "[" expr ("," expr)* "]"
 set_literal    : "{" expr ("," expr)* "}"
 map_literal    : "{" primary_expr ":" expr ("," primary_expr ":" expr)* "}"
-\end{lstlisting}
+\end{verbatim}
 
 Literals represent values that may be statically derived at compile time.
 
@@ -32,7 +32,7 @@ ambiguous and would collide with the empty block expression.
 
 \subsection{Examples}
 
-\begin{lstlisting}
+\begin{verbatim}
 1234
 123'456.984
 "hello"
@@ -40,4 +40,4 @@ ambiguous and would collide with the empty block expression.
 [1,2,3,"four",true,nil]
 {1,2,3,"four",true,nil}
 {1: "one", "two": 2, nil: 492}
-\end{lstlisting}
+\end{verbatim}

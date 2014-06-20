@@ -1,21 +1,21 @@
 % Copyright (c) 2014 Fabian Schuiki
 \section{Function Expression}
 
-\begin{lstlisting}[language=EBNF]
+\begin{verbatim}
 func_expr    : "func" func_variant ("," func_variant)*
 func_variant : pattern_expr "->" expr
-\end{lstlisting}
+\end{verbatim}
 
 A \emph{function expression} is a mapping from a pattern to a an expression. In
 terms of other languages, the pattern may be thought of as the arguments and the
 expression as the return value. A function may have multiple variants, each
 of which maps different pattern to an expression --- much like function
 overloading in C++. The value of the expression is the resulting function object
-which is of function type (\lstinline{A -> B}).
+which is of function %type (\lstinline{A -> B}).
 
 \subsection{Examples}
 
-\begin{lstlisting}
+\begin{verbatim}
 (a) func x -> x*x
 (b) func x,y -> x*y
 (c) func nil -> 1234
@@ -25,7 +25,7 @@ which is of function type (\lstinline{A -> B}).
 (g) func Point(x,y) -> x*x+y*y
 (h) func 0 -> "zero",
          x -> "anything"
-\end{lstlisting}
+\end{verbatim}
 
 Where \begin{exdesc}
 	\item is a function that maps the value x to its square;
@@ -37,7 +37,7 @@ Where \begin{exdesc}
 	      x;
 	\item maps the value x to the tuple (u,v), where u is the same as x and v is
 	      the square of x;
-	\item maps a \lstinline{Point}, whose coordinates are captured as x and y,
+	\item maps a \texttt{Point}, whose coordinates are captured as x and y,
 	      to the sum of its squared components; and
 	\item demonstrates a function with multiple variants.
 \end{exdesc}

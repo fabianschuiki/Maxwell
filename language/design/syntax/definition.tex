@@ -1,15 +1,15 @@
 % Copyright (c) 2014 Fabian Schuiki
 \section{Definition}
 
-\begin{lstlisting}[language=EBNF]
+\begin{verbatim}
 definition : name ":" expr
-\end{lstlisting}
+\end{verbatim}
 
-\begin{description}
-\item[expr] can be any valid expression and is evaluated at compile time until a
-            function, a type, or a constant value is obtained. If this is not
-            possible, the compiler will stop with an error.
-\end{description}
+% \begin{description}
+% \item[expr] can be any valid expression and is evaluated at compile time until a
+%             function, a type, or a constant value is obtained. If this is not
+%             possible, the compiler will stop with an error.
+% \end{description}
 
 A \emph{definition} is an expression with a label assigned to it. The label
 allows other parts of the code to refer to the definition. Only definitions are
@@ -19,13 +19,14 @@ label it is the compiler's responsibility to choose the definition that matches
 the required type.
 
 \subsection{Examples}
-\begin{lstlisting}
+
+\begin{verbatim}
 (a) A: func x -> x*x
 (b) B: func x,y -> x*y
 (c) C: type Int range 0 to 7
 (d) D: 123
 (e) E: A(2)
-\end{lstlisting}
+\end{verbatim}
 
 Where \begin{exdesc}
 	\item is a function with one argument,

@@ -1,0 +1,21 @@
+% Copyright (c) 2014 Fabian Schuiki
+\section{Tuple Expression}
+
+\begin{verbatim}
+tuple_expr : "(" tuple_arg ("," tuple_arg)+ ")"
+tuple_arg  : expr | ident ":" expr
+\end{verbatim}
+
+A tuple is an ordered group of two or more expressions. Each field may have an
+optional name and may be of an arbitrary type. It is possible to mix named and
+anonymous fields in a tuple. If a tuple is assigned to another tuple, the named
+fields are matched up first and the anonymous fields follow in the order that
+they are defined.
+
+\subsection{Examples}
+
+\begin{verbatim}
+(a) (1,2,3)
+(b) (one: 1, two: 2, three: 3)
+(c) (one: 1, 2, three: 3)
+\end{verbatim}

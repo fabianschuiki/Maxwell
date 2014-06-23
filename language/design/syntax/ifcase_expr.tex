@@ -1,0 +1,30 @@
+% Copyright (c) 2014 Fabian Schuiki
+\section{If-Case Expression}
+
+\begin{verbatim}
+ifcase_expr : "{" ifcase_cond ("," ifcase_cond)* ("," ifcase_othw)? "}"
+ifcase_cond : expr "if" expr
+ifcase_othw : expr "otherwise"
+\end{verbatim}
+
+An if-case expression is a variant of a regular if expression. It resembles the
+standard mathematical notation for distinguishing multiple cases for a variable
+or condition. The conditions are checked in the order that they appear, and the
+corresponding expression is evaluated and returned for the first condition that
+holds. If none hold, the expression of the \emph{otherwise} clause is returned,
+or \emph{nil} if none such exists.
+
+\subsection{Examples}
+
+\begin{verbatim}
+(a) { "none" if x == 0,
+      "some" otherwise }
+(b) { 0 if x == 0 }
+\end{verbatim}
+
+Where \begin{exdesc}
+\item is of type \emph{String}, and returns \verb|"none"| if x is 0,
+      \verb|"some"| otherwise; and
+\item is of type \emph{String|nil}, and returns 0 if x is 0, \emph{nil}
+      otherwise.
+\end{exdesc}

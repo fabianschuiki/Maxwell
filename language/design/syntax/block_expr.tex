@@ -35,20 +35,20 @@ necessary. The yield type is the array of the union over all yield values.
 
 \begin{verbatim}
 // implicit return value
-(A) {}
-(B) { 123 }
-(C) { var x = 4; x*2; }
+(a) {}
+(b) { 123 }
+(c) { var x = 4; x*2; }
 
 // explicit return value
-(D) x { x = 123 }
-(E) (x,y) { x = 12; y = 34; }
-(F) (s: String) { s = "abc" }
+(d) x { x = 123 }
+(e) (x,y) { x = 12; y = 34; }
+(f) (s: String) { s = "abc" }
 
 // return and yield
-(G) { return "abc"; return nil; 123 }
-(H) { yield "abc"; yield nil; 123 }
-(I) { yield "abc"; return nil; 123 }
-(J) (x,y) { x = 12; y = 34; return "abc"; yield nil; 123 }
+(g) { return "abc"; return nil; 123 }
+(h) { yield "abc"; yield nil; 123 }
+(i) { yield "abc"; return nil; 123 }
+(j) (x,y) { x = 12; y = 34; return "abc"; yield nil; 123 }
 \end{verbatim}
 
 Where \begin{exdesc}

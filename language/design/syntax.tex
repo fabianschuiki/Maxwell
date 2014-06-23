@@ -19,8 +19,24 @@ form that resembles regular expressions, where
 % directory.
 \newenvironment{exdesc}{\begin{inparaenum}[\bfseries (a)]}{\end{inparaenum}}
 
-\input{syntax/primary_expr.tex}
-\input{syntax/literals.tex}
 \input{syntax/definition.tex}
 \input{syntax/func_expr.tex}
+\input{syntax/primary_expr.tex}
+\input{syntax/literals.tex}
+\input{syntax/tuple_expr.tex}
+\input{syntax/ifcase_expr.tex}
+\input{syntax/blocktailed_expr.tex}
 \input{syntax/block_expr.tex}
+
+\section{Missing Grammar}
+
+The following rules are currently missing from this grammar specification and
+ought to be added in the future:
+
+\begin{itemize}
+\item \verb|expr|
+\item \verb|ident|
+\item \verb|name|
+\item \verb|pattern_expr|
+\item \verb|type_expr|
+\end{itemize}

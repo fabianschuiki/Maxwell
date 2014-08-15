@@ -15,6 +15,8 @@ Maxwell is a modern, high-level programming language that aims to combine the co
 
 The compiler is continuously built and tested: [![Build Status](https://travis-ci.org/fabianschuiki/Maxwell.svg?branch=master)](https://travis-ci.org/fabianschuiki/Maxwell)
 
+Maxwell uses [Semantic Versioning](http://semver.org).
+
 
 ## How To Dive In
 

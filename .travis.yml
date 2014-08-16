@@ -5,8 +5,9 @@ compiler:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq libboost-dev libboost-test-dev libboost-system-dev libboost-filesystem-dev
+  - sudo pip install cpp-coveralls
 script:
-  - mkdir build
-  - cd build
   - export CTEST_OUTPUT_ON_FAILURE=1
-  - cmake .. && make && ctest
+  - cmake -DENABLE_GCOV=ON .. && make && make test
+after_success:
+  - coveralls --exclude maxwell/gen --exclude maxwell/test --gcov-options '\-lp'

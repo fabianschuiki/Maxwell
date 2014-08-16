@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 2.8)
 project(Maxwell)
 
 # Add an option to enable gcov output.
-set(GCC_COVERAGE_COMPILE_FLAGS "-fprofile-arcs -ftest-coverage")
+set(GCC_COVERAGE_COMPILE_FLAGS "-O0 -fprofile-arcs -ftest-coverage")
 set(GCC_COVERAGE_LINKER_FLAGS  "-lgcov")
 
 option(ENABLE_GCOV "Enable gcov output" off)

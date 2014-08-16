@@ -1,5 +1,7 @@
 # Maxwell Programming Language
 
+[![Build Status](https://travis-ci.org/fabianschuiki/Maxwell.svg?branch=master)](https://travis-ci.org/fabianschuiki/Maxwell) [![Coverage Status](https://img.shields.io/coveralls/fabianschuiki/Maxwell.svg)](https://coveralls.io/r/fabianschuiki/Maxwell)
+
 Maxwell is a modern, high-level programming language that aims to combine the comfort and expressiveness of scripting languages with the power and efficiency of a compiled language. It aims to achieve the following goals:
 
 - embrace refactoring as a natural part of programming
@@ -12,8 +14,6 @@ Maxwell is a modern, high-level programming language that aims to combine the co
 - implicit interfaces
 - operator overloading
 - type inference
-
-The compiler is continuously built and tested: [![Build Status](https://travis-ci.org/fabianschuiki/Maxwell.svg?branch=master)](https://travis-ci.org/fabianschuiki/Maxwell)
 
 Maxwell uses [Semantic Versioning](http://semver.org).
 

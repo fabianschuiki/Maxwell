@@ -1,0 +1,14 @@
+func foo {
+	1 * 2;
+	1 + 2;
+	1 > 2;
+	1 == 2;
+	1 && 2;
+	1 || 2;
+	func -> x;
+	func (x: Int) -> x;
+	k = 5;
+	var z;
+	var z Int = 5;
+	l := 12;
+}

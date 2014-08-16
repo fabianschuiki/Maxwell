@@ -1,0 +1,23 @@
+type T Int
+type T nil
+type T (Int)
+type T Array[nil]
+type T Array[nil,nil]
+type T (Int,Int)
+type T (x: Int, y: Int)
+type T Array|Int|nil
+type T Int -> nil
+
+type T value {}
+type T object {
+	x;
+	x Int;
+}
+type T interface {}
+type T interface {
+	asdf
+	asdf
+}
+type T native size_t
+type T range something
+type T range something (1,2)

@@ -1,0 +1,17 @@
+func foo {
+	// if
+	if (x) { 1; }
+	if (x) {
+		1;
+	} else {
+		2;
+	}
+
+	// for
+	for (x) {
+		1;
+	}
+	for (x := 0; x < 2; x = x+1) {
+		2;
+	}
+}

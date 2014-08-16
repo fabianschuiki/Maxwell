@@ -1,0 +1,12 @@
+func foo {
+	k!;
+	x.add();
+	x.add(1);
+	x.add(name: 1);
+	x.add(1,2);
+	x.length;
+	foo();
+	foo(1);
+	stuff[123];
+	-x;
+}

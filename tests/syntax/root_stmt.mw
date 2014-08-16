@@ -1,4 +1,5 @@
 // func_def
+func foo () {}
 func foo -> (x: Int) {}
 func bar (x) -> (y: Int) {}
 func + {}

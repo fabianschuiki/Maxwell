@@ -1,0 +1,14 @@
+func foo {
+	ident;
+	(subexpr);
+	10234;
+	"hello";
+	[1,2,3];
+	{1,2,3};
+	{"test": 1, "gamma": 2, "lambda": 3};
+
+	{0 if x == 0, 1 otherwise};
+	{ 1; 2; };
+	(x: 1, y: 2);
+	(1,2);
+}

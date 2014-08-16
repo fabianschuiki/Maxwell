@@ -1,0 +1,9 @@
+// func_def
+func foo -> (x: Int) {}
+func bar (x) -> (y: Int) {}
+func + {}
+func unary - (x: Int) {}
+
+// type_def
+type Foo
+type Bar Int

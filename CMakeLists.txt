@@ -1,5 +1,25 @@
+# Copyright (c) 2014 Fabian Schuiki
+# Project configuration file for the Maxwell compiler
+
 cmake_minimum_required(VERSION 2.8)
 project(Maxwell)
+
+# Add an option to enable gcov output.
+set(GCC_COVERAGE_COMPILE_FLAGS "-fprofile-arcs -ftest-coverage")
+set(GCC_COVERAGE_LINKER_FLAGS  "-lgcov")
+
+option(ENABLE_GCOV "Enable gcov output" off)
+if (${ENABLE_GCOV})
+	set(CMAKE_BUILD_TYPE Debug)
+	list(APPEND CMAKE_C_FLAGS   ${GCC_COVERAGE_COMPILE_FLAGS})
+	list(APPEND CMAKE_CXX_FLAGS ${GCC_COVERAGE_COMPILE_FLAGS})
+	list(APPEND CMAKE_C_LINKER_FLAGS   ${GCC_COVERAGE_LINKER_FLAGS})
+	list(APPEND CMAKE_CXX_LINKER_FLAGS ${GCC_COVERAGE_LINKER_FLAGS})
+	message("## gcov output enabled")
+endif()
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+	message("## debug build")
+endif()
 
 find_package(Boost COMPONENTS unit_test_framework)
 find_package(Boost COMPONENTS REQUIRED filesystem system)

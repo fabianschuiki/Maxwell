@@ -5,8 +5,6 @@
 # for them.
 
 set -e
-DST=$(mktemp -d /tmp/mwc-stage-XXXXXX)
-
-cd "$DST"
+rm -rf mwcrepo
 NODES=$("@CMAKE_BINARY_DIR@/maxwell/test/mwcparse" $@ | tail -n 1)
 "@CMAKE_BINARY_DIR@/maxwell/test/mwcstage" $NODES

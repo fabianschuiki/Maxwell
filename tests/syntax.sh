@@ -5,7 +5,5 @@
 # compiler.
 
 set -e
-DST=$(mktemp -d /tmp/mwc-syntax-XXXXXX)
-
-cd "$DST"
+rm -rf mwcrepo
 "@CMAKE_BINARY_DIR@/maxwell/test/mwcparse" $@

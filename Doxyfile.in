@@ -13,13 +13,23 @@ STRIP_FROM_INC_PATH = @PROJECT_SOURCE_DIR@
 PROJECT_NAME = Maxwell
 PROJECT_BRIEF = "Modern, statically typed, duck typed, generic, imperative programming language, inspired by C++, Go, and Scala."
 
-# Enable Markdown support and use the README.md file as front page.
+# make the relations between functions visible
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION = YES
+
+# make constructors and destructors appear first
+SORT_MEMBER_DOCS = YES
+
+# reuse the README as the doc's front page
 MARKDOWN_SUPPORT = YES
 USE_MDFILE_AS_MAINPAGE = @PROJECT_SOURCE_DIR@/README.md
 
-# Use the first sentence in a documentation comment as brief description.
+# automatically use the first sentence as brief description
 JAVADOC_AUTOBRIEF = YES
 QT_AUTOBRIEF = YES
 
-# Show the source browser.
 SOURCE_BROWSER = YES
+
+# setup the output formats
+GENERATE_HTML = YES
+GENERATE_LATEX = NO

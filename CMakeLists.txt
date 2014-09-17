@@ -8,6 +8,13 @@ if (CMAKE_BUILD_TYPE)
 endif()
 
 
+# Enable C++11 support and enable all warnings.
+if (UNIX)
+	add_definitions(-Wall)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif()
+
+
 # Add the build type "gcov" that produces a debug build with gcov output
 # enabled. Useful for coverage analysis.
 set(GCC_COVERAGE_COMPILER_FLAGS "-O0 -fprofile-arcs -ftest-coverage")
@@ -31,12 +38,6 @@ mark_as_advanced(
 	CMAKE_CXX_FLAGS_GCOV
 	CMAKE_C_LINKER_FLAGS_GCOV
 	CMAKE_CXX_LINKER_FLAGS_GCOV)
-
-
-# Enable C++11 support and enable all warnings.
-if (UNIX)
-	add_definitions(-Wall -std=c++11)
-endif()
 
 
 find_package(Boost COMPONENTS unit_test_framework)

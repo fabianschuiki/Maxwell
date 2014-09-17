@@ -3,11 +3,14 @@ compiler:
   - gcc
   - clang
 before_install:
+  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+  - sudo add-apt-repository ppa:boost-latest/ppa -y
   - sudo apt-get update -qq
-  - sudo apt-get install -qq libboost-dev libboost-test-dev libboost-system-dev libboost-filesystem-dev
+  - sudo apt-get install -qq boost1.55
+  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; export CXX="g++-4.8" CC="gcc-4.8"; fi
   - sudo pip install cpp-coveralls
 script:
   - export CTEST_OUTPUT_ON_FAILURE=1
-  - cmake -DENABLE_GCOV=ON . && make && make test
+  - cmake -DCMAKE_BUILD_TYPE=gcov . && make && make test
 after_success:
-  - coveralls -e maxwell/gen -e maxwell/test -e maxwell/language -e thirdparty -e CMakeFiles -e maxwell/ast/nodes -e maxwell/driver/gramdiag.c -e maxwell/driver/Parser.cpp -e maxwell/driver/Parser.hpp -e maxwell/driver/Scanner.cpp -e maxwell/driver/position.hh -e maxwell/driver/stack.hh -e maxwell/driver/location.hh --gcov-options '\-lp'
+  - coveralls -e CMakeFiles -E ".*/test/.*" -e maxwell/gen -e maxwell/language -e thirdparty -e maxwell/ast/nodes -e maxwell/driver/gramdiag.c -e maxwell/driver/Parser.cpp -e maxwell/driver/Parser.hpp -e maxwell/driver/Scanner.cpp -e maxwell/driver/position.hh -e maxwell/driver/stack.hh -e maxwell/driver/location.hh --gcov-options '\-lp'

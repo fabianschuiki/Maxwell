@@ -1,25 +1,43 @@
 # Copyright (c) 2014 Fabian Schuiki
-# Project configuration file for the Maxwell compiler
-
+# Root project configuration for the Maxwell programming language.
 cmake_minimum_required(VERSION 2.8)
 project(Maxwell)
 
-# Add an option to enable gcov output.
-set(GCC_COVERAGE_COMPILE_FLAGS "-O0 -fprofile-arcs -ftest-coverage")
-set(GCC_COVERAGE_LINKER_FLAGS  "-lgcov")
+if (CMAKE_BUILD_TYPE)
+	message("## ${CMAKE_BUILD_TYPE} build")
+endif()
 
-option(ENABLE_GCOV "Enable gcov output" off)
-if (${ENABLE_GCOV})
-	set(CMAKE_BUILD_TYPE Debug)
-	list(APPEND CMAKE_C_FLAGS   ${GCC_COVERAGE_COMPILE_FLAGS})
-	list(APPEND CMAKE_CXX_FLAGS ${GCC_COVERAGE_COMPILE_FLAGS})
-	list(APPEND CMAKE_C_LINKER_FLAGS   ${GCC_COVERAGE_LINKER_FLAGS})
-	list(APPEND CMAKE_CXX_LINKER_FLAGS ${GCC_COVERAGE_LINKER_FLAGS})
-	message("## gcov output enabled")
+
+# Add the build type "gcov" that produces a debug build with gcov output
+# enabled. Useful for coverage analysis.
+set(GCC_COVERAGE_COMPILER_FLAGS "-O0 -fprofile-arcs -ftest-coverage")
+set(GCC_COVERAGE_LINKERR_FLAGS "-lgcov")
+
+set(CMAKE_C_FLAGS_GCOV
+	"${CMAKE_C_FLAGS_DEBUG} ${GCC_COVERAGE_COMPILER_FLAGS}"
+	CACHE STRING "Flags used by the compiler during gcov-enabled debug builds")
+set(CMAKE_CXX_FLAGS_GCOV
+	"${CMAKE_CXX_FLAGS_DEBUG} ${GCC_COVERAGE_COMPILER_FLAGS}"
+	CACHE STRING "Flags used by the compiler during gcov-enabled debug builds")
+set(CMAKE_C_LINKER_FLAGS_GCOV
+	"${CMAKE_C_LINKER_FLAGS_DEBUG} ${GCC_COVERAGE_LINKER_FLAGS}"
+	CACHE STRING "Flags used by the linker during gcov-enabled debug builds")
+set(CMAKE_CXX_LINKER_FLAGS_GCOV
+	"${CMAKE_CXX_LINKER_FLAGS_DEBUG} ${GCC_COVERAGE_LINKER_FLAGS}"
+	CACHE STRING "Flags used by the linker during gcov-enabled debug builds")
+
+mark_as_advanced(
+	CMAKE_C_FLAGS_GCOV
+	CMAKE_CXX_FLAGS_GCOV
+	CMAKE_C_LINKER_FLAGS_GCOV
+	CMAKE_CXX_LINKER_FLAGS_GCOV)
+
+
+# Enable C++11 support and enable all warnings.
+if (UNIX)
+	add_definitions(-Wall -std=c++11)
 endif()
-if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-	message("## debug build")
-endif()
+
 
 find_package(Boost COMPONENTS unit_test_framework)
 find_package(Boost COMPONENTS REQUIRED filesystem system)

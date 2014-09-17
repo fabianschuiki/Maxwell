@@ -10,4 +10,4 @@ script:
   - export CTEST_OUTPUT_ON_FAILURE=1
   - cmake -DENABLE_GCOV=ON . && make && make test
 after_success:
-  - coveralls -e maxwell/gen -e maxwell/test -e maxwell/language -e thirdparty -e CMakeFiles -e maxwell/driver/gramdiag.c -e maxwell/driver/Parser.cpp -e maxwell/driver/Parser.hpp -e maxwell/driver/Scanner.cpp -e maxwell/driver/position.hh -e maxwell/driver/stack.hh -e maxwell/driver/location.hh --gcov-options '\-lp'
+  - coveralls -e maxwell/gen -e maxwell/test -e maxwell/language -e thirdparty -e CMakeFiles -e maxwell/ast/nodes -e maxwell/driver/gramdiag.c -e maxwell/driver/Parser.cpp -e maxwell/driver/Parser.hpp -e maxwell/driver/Scanner.cpp -e maxwell/driver/position.hh -e maxwell/driver/stack.hh -e maxwell/driver/location.hh --gcov-options '\-lp'

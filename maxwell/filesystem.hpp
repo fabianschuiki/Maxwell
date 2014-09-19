@@ -1,10 +1,11 @@
 /* Copyright (c) 2014 Fabian Schuiki */
 #pragma once
+#include "maxwell/Buffer.hpp"
+#include "maxwell/types.hpp"
 #include <boost/filesystem.hpp>
 
 namespace maxwell {
 
-namespace filesystem = boost::filesystem;
 typedef boost::filesystem::path Path;
 
 
@@ -12,8 +13,13 @@ typedef boost::filesystem::path Path;
 /// file class and a mock file class.
 class File {
 public:
-	virtual std::istream& getInputStream() = 0;
-	virtual std::ostream& getOutputStream() = 0;
+	virtual const Path& getPath() const = 0;
+
+	virtual void read(std::vector<Byte>& dst) = 0;
+	virtual void write(const Buffer<const Byte>& src) = 0;
+	virtual void write(const std::vector<Byte>& src) {
+		write(Buffer<const Byte>(&src[0], &src[0] + src.size()));
+	}
 };
 
 

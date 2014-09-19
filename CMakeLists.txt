@@ -40,6 +40,12 @@ mark_as_advanced(
 	CMAKE_CXX_LINKER_FLAGS_GCOV)
 
 
+# Add a target to clear all gcov output files.
+add_custom_target(clean-gcov
+	find . -name '*.gcov' -or -name '*.gcda' | xargs rm
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+
 find_package(Boost COMPONENTS REQUIRED filesystem system unit_test_framework)
 add_definitions(-DBOOST_TEST_DYN_LINK)
 

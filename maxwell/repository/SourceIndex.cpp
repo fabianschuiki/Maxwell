@@ -27,9 +27,10 @@ bool SourceIndex::add(const Path& path) {
 		id = byId.rbegin()->first + 1;
 	}
 
-	const auto& info = byId.emplace(id, std::unique_ptr<SourceInfo>(
-		new SourceInfo(id, path, "<nohash>")));
-	byPath.emplace(path, info.first->second.get());
+	auto info = std::unique_ptr<SourceInfo>(new SourceInfo(
+		id, path, "<nohash>"));
+	byPath[path] = info.get();
+	byId[id] = std::move(info);
 
 	modified = true;
 	return true;

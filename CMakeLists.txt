@@ -40,8 +40,7 @@ mark_as_advanced(
 	CMAKE_CXX_LINKER_FLAGS_GCOV)
 
 
-find_package(Boost COMPONENTS unit_test_framework)
-find_package(Boost COMPONENTS REQUIRED filesystem system)
+find_package(Boost COMPONENTS REQUIRED filesystem system unit_test_framework)
 add_definitions(-DBOOST_TEST_DYN_LINK)
 
 include_directories(${Boost_INCLUDE_DIRS})
@@ -50,6 +49,7 @@ include_directories(.)
 enable_testing()
 add_subdirectory(maxwell)
 add_subdirectory(tests)
+add_subdirectory(test)
 
 # If Doxygen is available, add a target that compiles the documentation.
 find_package(Doxygen)

@@ -8,8 +8,8 @@ namespace repository {
 
 class SourceIndexInterface {
 public:
-	virtual const SourceInfoInterface& addFile(const Path& path) = 0;
-	virtual bool removeFile(const Path& path) = 0;
+	virtual bool addFile(const File& file) = 0;
+	virtual bool removeFile(const File& file) = 0;
 };
 
 } // namespace repository

@@ -14,8 +14,8 @@ public:
 	SourceIndex(const File& file): file(file) {}
 	~SourceIndex() {}
 
-	bool addFile(const Path& path);
-	bool removeFile(const Path& path);
+	bool add(const Path& path);
+	bool remove(const Path& path);
 };
 
 } // namespace repository

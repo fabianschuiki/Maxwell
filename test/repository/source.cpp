@@ -7,6 +7,8 @@ using namespace maxwell;
 using maxwell::repository::SourceIndex;
 
 BOOST_AUTO_TEST_CASE(repository_source_index) {
-	MockFile file;
+	MockFile file(".mwc/source/index");
 	SourceIndex idx(file);
+	idx.add("main.mw");
+	idx.add("base64/encode.mw");
 }

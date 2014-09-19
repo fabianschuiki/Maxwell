@@ -12,8 +12,8 @@ typedef boost::filesystem::path Path;
 /// file class and a mock file class.
 class File {
 public:
-	virtual std::istream getInputStream() = 0;
-	virtual std::ostream getOutputStream() = 0;
+	virtual std::istream& getInputStream() = 0;
+	virtual std::ostream& getOutputStream() = 0;
 };
 
 

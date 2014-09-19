@@ -18,6 +18,29 @@ Maxwell is a modern, high-level programming language that aims to combine the co
 Maxwell uses [Semantic Versioning](http://semver.org).
 
 
+## Design Guidelines
+
+- code is written in *C++11*
+- source files have suffix `.cpp`
+- header files have suffix `.hpp`
+- sources and headers live in the `/maxwell` directory
+- everything lives in the `maxwell` namespace
+- files may be grouped into directories for better readability and structure
+- files containing subnamespaces of `maxwell` must be placed in directories with the same name as the corresponding namespace (e.g. `maxwell::repository::interface` classes are to reside in the `maxwell/repository/interface` directory)
+- directory names are lowercase
+- includes are sorted by
+  - origin (Maxwell first, then third party, then standard headers)
+  - alphabet
+- `using ...` and `using namespace ...` only in sources, absolutely not in headers (except for rare cases where the directive is to apply to the entire code base)
+- type names are capitalized (e.g. *SourceRepository*)
+- function names are camel-cased and start with a verb (e.g. `addFileToRepository`)
+- variable names are camel-cased (e.g. `pendingFiles`)
+- accessor functions are named `set...` and `get...`
+- no underscores in type, function, or member names
+- `nullptr` instead of `0` or `NULL` for pointers
+- tests live in the `/test` directory (not interleaved with the source code)
+
+
 ## How To Dive In
 
 To get things up and running create a *build* directory, ask *cmake* to generate a build system for you, and build the compiler as follows:

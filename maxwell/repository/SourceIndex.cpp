@@ -16,6 +16,8 @@ SourceIndex::~SourceIndex() {
 		flush();
 }
 
+/// Adds the \a path to the source index.
+/// \return Returns true if the path was added, false if it was already present.
 bool SourceIndex::add(const Path& path) {
 
 	auto existing = byPath.find(path);
@@ -36,6 +38,9 @@ bool SourceIndex::add(const Path& path) {
 	return true;
 }
 
+/// Removes the \a path from the source index.
+/// \return Returns true if the path was found and removed, false if it was not
+/// part of the index to begin with.
 bool SourceIndex::remove(const Path& path) {
 
 	auto existing = byPath.find(path);
@@ -50,6 +55,9 @@ bool SourceIndex::remove(const Path& path) {
 	return true;
 }
 
+/// Writes the index to disk. You should rarely have to call this function
+/// directly, since the destructor of SourceIndex makes sure that it is flushed
+/// to disk eventually.
 void SourceIndex::flush() {
 	std::vector<Byte> data;
 	write(data);
@@ -57,11 +65,13 @@ void SourceIndex::flush() {
 	modified = false;
 }
 
-
+/// Reads the source index from the given \a input, which is expected to be a
+/// binary serialized version.
 void SourceIndex::read(const std::vector<Byte>& input) {
 
 }
 
+/// Writes the source index to the given \a output.
 void SourceIndex::write(std::vector<Byte>& output) {
 	const char* crappy = "Hello World";
 	output.insert(output.end(), crappy, crappy + strlen(crappy));

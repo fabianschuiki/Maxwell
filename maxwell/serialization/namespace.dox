@@ -1,0 +1,8 @@
+/**
+\namespace
+Facilities that allow for convenient and efficient binary serialization.
+The Encoder and Decoder interfaces provide an abstract means of reaading and
+writing binary data. The VectorEncoder class is provided to encode data into
+an std::vector that will resize as more data is serialized. The ArrayDecoder
+class is provided to easily decode data from a binary stream.
+*/

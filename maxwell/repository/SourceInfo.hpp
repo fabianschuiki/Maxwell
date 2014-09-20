@@ -8,17 +8,17 @@ namespace repository {
 
 /// A snippet of information stored in a SourceIndex.
 class SourceInfo {
-	const unsigned id;
+	const uint32_t id;
 	const Path path;
 	const std::string hash;
 
 public:
-	SourceInfo(unsigned id, const Path& path, const std::string& hash):
+	SourceInfo(uint32_t id, const Path& path, const std::string& hash):
 		id(id),
 		path(path),
 		hash(hash) {}
 
-	unsigned getId() const { return id; }
+	uint32_t getId() const { return id; }
 	const Path& getPath() const { return path; }
 	const std::string& getHash() const { return hash; }
 };

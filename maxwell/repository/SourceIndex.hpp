@@ -14,7 +14,7 @@ class SourceInfo;
 class SourceIndex {
 	File& file;
 
-	std::map<unsigned, std::unique_ptr<SourceInfo>> byId;
+	std::map<uint32_t, std::unique_ptr<SourceInfo>> byId;
 	std::map<Path, SourceInfo*> byPath;
 	bool modified;
 

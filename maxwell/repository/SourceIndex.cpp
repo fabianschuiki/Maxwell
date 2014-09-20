@@ -1,7 +1,10 @@
 /* Copyright (c) 2014 Fabian Schuiki */
 #include "maxwell/repository/SourceIndex.hpp"
 #include "maxwell/repository/SourceInfo.hpp"
+#include "maxwell/serialization/VectorEncoder.hpp"
 using namespace maxwell::repository;
+using maxwell::serialization::Encoder;
+using maxwell::serialization::VectorEncoder;
 
 
 SourceIndex::SourceIndex(File& file): file(file) {
@@ -24,7 +27,7 @@ bool SourceIndex::add(const Path& path) {
 	if (existing != byPath.end())
 		return false;
 
-	unsigned id = 1;
+	uint32_t id = 1;
 	if (!byId.empty()) {
 		id = byId.rbegin()->first + 1;
 	}
@@ -73,6 +76,13 @@ void SourceIndex::read(const std::vector<Byte>& input) {
 
 /// Writes the source index to the given \a output.
 void SourceIndex::write(std::vector<Byte>& output) {
-	const char* crappy = "Hello World";
-	output.insert(output.end(), crappy, crappy + strlen(crappy));
+	VectorEncoder venc(output);
+	Encoder& enc = venc;
+
+	for (auto i = byId.begin(); i != byId.end(); i++) {
+		const auto& v = i->second;
+		enc(v->getId());
+		enc(v->getPath().native());
+		enc(v->getHash());
+	}
 }

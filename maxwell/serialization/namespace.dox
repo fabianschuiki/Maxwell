@@ -1,5 +1,5 @@
 /**
-\namespace
+\namespace maxwell::serialization
 Facilities that allow for convenient and efficient binary serialization.
 The Encoder and Decoder interfaces provide an abstract means of reaading and
 writing binary data. The VectorEncoder class is provided to encode data into

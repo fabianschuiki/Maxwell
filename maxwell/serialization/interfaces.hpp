@@ -5,6 +5,12 @@
 #include <string>
 #include <vector>
 
+/// \file
+/// Encoder and decoder class interfaces. Objects that require serialization
+/// should accept these two interfaces. Code that requires an object to be
+/// serialized shall instantiate a concrete subclass of Encoder or Decoder and
+/// pass that to the object to be serialized.
+
 namespace maxwell {
 namespace serialization {
 

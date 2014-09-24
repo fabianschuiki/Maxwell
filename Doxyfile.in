@@ -33,3 +33,7 @@ SOURCE_BROWSER = YES
 # setup the output formats
 GENERATE_HTML = YES
 GENERATE_LATEX = NO
+
+# configure what we want to extract
+EXTRACT_PRIVATE = YES  # include private members
+EXTRACT_STATIC = YES   # include static members

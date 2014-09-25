@@ -1,5 +1,6 @@
 /* Copyright (c) 2014 Fabian Schuiki */
 #pragma once
+#include "maxwell/types.hpp"
 #include <cassert>
 
 /// \file
@@ -9,6 +10,10 @@
 /// throughout the code base.
 
 namespace maxwell {
+
+class SourceId;
+class SourceLocation;
+class SourceRange;
 
 /// A unique source ID. Each processed source file should be assigned a SourceId
 /// to keep track of locations inside the file.
@@ -25,16 +30,16 @@ public:
 	/// Returns true if this is a valid source id.
 	bool isValid() const { return id != 0; }
 	/// Returns true if this is an invalid source id.
-	bool isInavlid() const { return id == 0; }
+	bool isInvalid() const { return id == 0; }
 	/// Returns true if this is a valid source id.
 	operator bool() const { return id != 0; }
 
-	bool operator==(SourceId l) { return id == l.id; }
-	bool operator!=(SourceId l) { return id != l.id; }
-	bool operator<=(SourceId l) { return id <= l.id; }
-	bool operator>=(SourceId l) { return id >= l.id; }
-	bool operator< (SourceId l) { return id <  l.id; }
-	bool operator> (SourceId l) { return id >  l.id; }
+	bool operator==(SourceId l) const { return id == l.id; }
+	bool operator!=(SourceId l) const { return id != l.id; }
+	bool operator<=(SourceId l) const { return id <= l.id; }
+	bool operator>=(SourceId l) const { return id >= l.id; }
+	bool operator< (SourceId l) const { return id <  l.id; }
+	bool operator> (SourceId l) const { return id >  l.id; }
 
 	/// Returns an opaque ID describing this file ID.
 	uint32_t getId() const { return id; }
@@ -44,6 +49,8 @@ public:
 /// A location within a source file. May be used to track locations across
 /// multiple files.
 class SourceLocation {
+	friend class SourceRange;
+
 	/// Source file this location refers to.
 	SourceId sid;
 	/// Offset from the start of the source file.
@@ -74,19 +81,19 @@ public:
 	/// Shifts the location i positions towards the beginning.
 	SourceLocation& operator-=(int i) { pos -= i; return *this; }
 
-	bool operator==(SourceLocation l) { return sid == l.sid && id == l.id; }
-	bool operator!=(SourceLocation l) { return sid != l.sid || id != l.id; }
+	bool operator==(SourceLocation l) { return sid == l.sid && pos == l.pos; }
+	bool operator!=(SourceLocation l) { return sid != l.sid || pos != l.pos; }
 	bool operator<=(SourceLocation l) {
-		return sid < l.sid || (sid == l.sid && id <= l.id);
+		return sid < l.sid || (sid == l.sid && pos <= l.pos);
 	}
 	bool operator>=(SourceLocation l) {
-		return sid > l.sid || (sid == l.sid && id >= l.id);
+		return sid > l.sid || (sid == l.sid && pos >= l.pos);
 	}
 	bool operator<(SourceLocation l) {
-		return sid < l.sid || (sid == l.sid && id < l.id);
+		return sid < l.sid || (sid == l.sid && pos < l.pos);
 	}
 	bool operator>(SourceLocation l) {
-		return sid > l.sid || (sid == l.sid && id > l.id);
+		return sid > l.sid || (sid == l.sid && pos > l.pos);
 	}
 
 	/// Returns the source ID of the file this location refers to.
@@ -108,7 +115,7 @@ class SourceRange {
 
 public:
 	/// Creates an invalid source range.
-	SourceRange(): pos(0), length(0) {}
+	SourceRange(): pos(0), len(0) {}
 	/// Creates a source range starting at offset \a pos from the beginning of
 	/// source file \a sid, ending after a \a len positions.
 	SourceRange(SourceId sid, uint32_t pos, uint32_t len):

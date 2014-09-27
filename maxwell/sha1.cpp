@@ -18,13 +18,13 @@ static void hex(char *dst, const Byte* digest, const char* table) {
 std::string sha1hash::uhex() const {
 	char buffer[SHA1_DIGEST_SIZE*2];
 	hex(buffer, *this, uhex_table);
-	return buffer;
+	return std::string(buffer, buffer+sizeof(buffer));
 }
 
 std::string sha1hash::lhex() const {
 	char buffer[SHA1_DIGEST_SIZE*2];
 	hex(buffer, *this, lhex_table);
-	return buffer;
+	return std::string(buffer, buffer+sizeof(buffer));
 }
 
 

@@ -1,24 +1,101 @@
 /* Copyright (c) 2014 Fabian Schuiki */
 #include "maxwell/repository/FileSourceRepository.hpp"
+#include "maxwell/repository/Source.hpp"
 #include "maxwell/serialization/VectorEncoder.hpp"
+#include "maxwell/serialization/ArrayDecoder.hpp"
 
+using maxwell::sha1;
+using maxwell::sha1hash;
 using maxwell::filesystem::Path;
 using maxwell::serialization::VectorEncoder;
+using maxwell::serialization::ArrayDecoder;
 using maxwell::serialization::Encoder;
+using maxwell::serialization::Decoder;
 using maxwell::SourceId;
 using namespace maxwell::repository;
+
+namespace maxwell {
+namespace repository {
+
+class FileSource : public Source {
+public:
+	SourceId id;
+	Path path;
+	sha1hash hash;
+	sha1hash pathHash;
+
+	SourceId getId() const { return id; }
+	const Path& getPath() const { return path; }
+	const sha1hash& getHash() const { return hash; }
+};
+
+} // namespace repository
+} // namespace maxwell
+
+
+static void encode(Encoder& enc, SourceId sid) {
+	enc(sid.getId());
+}
+
+static void encode(Encoder& enc, const Path& path) {
+	enc(path.native());
+}
+
+static void encode(Encoder& enc, const sha1hash& hash) {
+	enc(hash, maxwell::SHA1_DIGEST_SIZE);
+}
+
+
+static void decode(Decoder& dec, SourceId& sid) {
+	uint32_t id;
+	dec(id);
+	sid = SourceId(id);
+}
+
+static void decode(Decoder& dec, Path& path) {
+	std::string str;
+	dec(str);
+	path = str;
+}
+
+static void decode(Decoder& dec, sha1hash& hash) {
+	Byte digest[maxwell::SHA1_DIGEST_SIZE];
+	dec(digest, sizeof(digest));
+	hash = sha1hash(digest);
+}
 
 
 FileSourceRepository::FileSourceRepository(const Directory& dir):
 	dir(dir),
-	needsFlush(false) {
+	needsFlush(false),
+	needsPurge(false) {
 
-	// Load stuff.
+	// Load the index file if it exists.
+	File& index = dir.getFile("index");
+	if (index.exists()) {
+		std::vector<Byte> indexData;
+		index.read(indexData);
+		ArrayDecoder indexDecoder(&indexData[0], indexData.size());
+		Decoder& dec = indexDecoder;
+
+		while (dec.remaining()) {
+			std::unique_ptr<FileSource> src(new FileSource);
+			decode(dec, src->id);
+			decode(dec, src->path);
+			decode(dec, src->hash);
+			src->pathHash = sha1(src->path.c_str());
+
+			sourcesByPath[src->path] = src.get();
+			sourcesById[src->id] = std::move(src);
+		}
+	}
 }
 
 FileSourceRepository::~FileSourceRepository() {
 	if (needsFlush)
 		flush();
+	if (needsPurge)
+		purge();
 }
 
 bool FileSourceRepository::add(const Path& path, const File& file) {
@@ -33,6 +110,7 @@ bool FileSourceRepository::add(const Path& path, const File& file) {
 	sha1hash pathHash = sha1(base);
 	sha1hash hash = base.update(&data[0], data.size());
 
+	// If the path is already present in the repository, update the file's hash.
 	auto it = sourcesByPath.find(path);
 	if (it != sourcesByPath.end()) {
 		if (it->second->hash == hash)
@@ -40,6 +118,7 @@ bool FileSourceRepository::add(const Path& path, const File& file) {
 		it->second->hash = hash;
 	}
 
+	// Otherwise, allocate a new source ID and create a new file entry.
 	else {
 		// Allocate the next SourceId.
 		SourceId sid(sourcesById.empty() ? 1 :
@@ -57,6 +136,11 @@ bool FileSourceRepository::add(const Path& path, const File& file) {
 		sourcesById[src->id] = std::move(src);
 	}
 
+	// In any case, if we've made it this far, the file needs to be copied into
+	// the repository's directory.
+	File& dst = dir.getFile(pathHash.lhex());
+	dst.write(data);
+
 	needsFlush = true;
 	return true;
 }
@@ -69,6 +153,7 @@ bool FileSourceRepository::remove(SourceId sid) {
 	sourcesByPath.erase(it->second->path);
 	sourcesById.erase(it);
 	needsFlush = true;
+	needsPurge = true;
 	return true;
 }
 
@@ -80,6 +165,7 @@ bool FileSourceRepository::remove(const Path& path) {
 	sourcesById.erase(it->second->id); // it->second is now invalid
 	sourcesByPath.erase(it);
 	needsFlush = true;
+	needsPurge = true;
 	return true;
 }
 
@@ -93,6 +179,7 @@ Path FileSourceRepository::getPath(SourceId sid) const {
 	return it != sourcesById.end() ? it->second->path : Path();
 }
 
+
 void FileSourceRepository::flush() const {
 
 	// Serialize the index.
@@ -103,14 +190,18 @@ void FileSourceRepository::flush() const {
 
 	for (auto& pair : sourcesById) {
 		auto& src = pair.second;
-		enc(src->getId().getId());
-		enc(src->getPath().native());
+		encode(enc, src->getId());
+		encode(enc, src->getPath());
+		encode(enc, src->getHash());
 	}
 
 	// Store the serialized data to disk.
 	needsFlush = false;
 	File& indexFile = dir.getFile("index");
 	indexFile.write(index);
-	std::cout << "flushed " << index.size() << "B to " << indexFile.getPath()
-		<< '\n';
+}
+
+void FileSourceRepository::purge() const {
+	// \todo Implement this to iterate over the repo's directory and remove all
+	// files that are neither the index nor a cache of any of the sources.
 }

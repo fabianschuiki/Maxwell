@@ -1,6 +1,7 @@
 /* Copyright (c) 2014 Fabian Schuiki */
 #pragma once
 #include "maxwell/filesystem/Directory.hpp"
+#include "maxwell/repository/Source.hpp"
 #include "maxwell/repository/SourceRepository.hpp"
 #include "maxwell/sha1.hpp"
 #include <map>
@@ -9,23 +10,7 @@
 namespace maxwell {
 namespace repository {
 
-class FileSourceRepository;
-
-class FileSource {
-public:
-	typedef maxwell::filesystem::Path Path;
-
-	SourceId getId() const { return id; }
-	const Path& getPath() const { return path; }
-
-private:
-	friend class FileSourceRepository;
-
-	SourceId id;
-	Path path;
-	sha1hash hash;
-	sha1hash pathHash;
-};
+class FileSource;
 
 /// A file-based implementation of the SourceRepository interface.
 class FileSourceRepository : public SourceRepository {
@@ -43,11 +28,13 @@ public:
 	Path getPath(SourceId sid) const;
 
 	void flush() const;
+	void purge() const;
 
 private:
 	const Directory& dir;
 
 	mutable bool needsFlush;
+	mutable bool needsPurge;
 	std::map<SourceId, std::unique_ptr<FileSource>> sourcesById;
 	std::map<Path, FileSource*> sourcesByPath;
 };

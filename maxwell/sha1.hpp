@@ -20,6 +20,11 @@ class sha1hash {
 	};
 
 public:
+	sha1hash() {}
+	sha1hash(const Byte* digest) {
+		std::copy((uint32_t*)digest, (uint32_t*)(digest+20), chunk);
+	}
+
 	operator const Byte*() const { return digest; }
 
 	bool operator==(const sha1hash& v) const {
@@ -43,7 +48,13 @@ class sha1 {
 public:
 	sha1() { reset(); }
 	sha1(const sha1& v) { *this = v; }
-	sha1(const Byte* data, size_t length) { reset(); update(data, length); }
+	sha1(sha1& v) { *this = v; } // otherwise templated c'tor is called
+
+	template<typename... Args>
+	sha1(Args&&... args) {
+		reset();
+		update(args...);
+	}
 
 	sha1& reset();
 	sha1& update(const Byte* data, size_t length);

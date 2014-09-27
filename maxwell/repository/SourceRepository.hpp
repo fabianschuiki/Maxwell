@@ -58,7 +58,12 @@ public:
 	/// to be removed.
 	virtual bool remove(const Path& path) = 0;
 
+	/// Returns the unique source ID of the file with the given \a path, or an
+	/// invalid source ID if the file does not exist in the repository.
 	virtual SourceId getSourceId(const Path& path) const = 0;
+
+	/// Returns the path of the file with the given source ID \a sid, or an
+	/// empty path if the file does not exist in the repository.
 	virtual Path getPath(SourceId sid) const = 0;
 
 	/// \todo Add accessor to individual files.

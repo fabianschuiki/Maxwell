@@ -8,28 +8,26 @@ namespace filesystem {
 /// A virtual file useful during testing.
 class MockFile : public File {
 	Path path;
-	std::vector<Byte> content;
 
 public:
-	MockFile(const Path& path): path(path) {}
-	MockFile(const Path& path, const Buffer<const Byte>& content): path(path) {
-		this->content.resize(content.getLength());
-		std::copy(content.getStart(), content.getEnd(), this->content.begin());
-	}
+	std::vector<Byte> content;
+	bool fexists;
+
+	MockFile(const Path& path): path(path), fexists(false) {}
 	~MockFile() {}
 
 	const Path& getPath() const { return path; }
-	Buffer<const Byte> getContent() const {
-		return Buffer<const Byte>(&content[0], &content[0] + content.size());
-	}
 
-	void read(std::vector<Byte>& dst) {
+	void read(std::vector<Byte>& dst) const {
 		dst = content;
 	}
 
 	void write(const Buffer<const Byte>& src) {
 		content.assign(src.getStart(), src.getEnd());
+		fexists = true;
 	}
+
+	bool exists() const { return fexists; }
 };
 
 } // namespace filesystem

@@ -43,6 +43,7 @@ class sha1 {
 public:
 	sha1() { reset(); }
 	sha1(const sha1& v) { *this = v; }
+	sha1(const Byte* data, size_t length) { reset(); update(data, length); }
 
 	sha1& reset();
 	sha1& update(const Byte* data, size_t length);
@@ -53,6 +54,8 @@ public:
 		while (*end != 0) end++;
 		return update((const Byte*)str, end-str);
 	}
+
+	operator sha1hash() { return finalize(); }
 };
 
 } // namespace maxwell

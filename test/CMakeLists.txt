@@ -1,7 +1,7 @@
 # Copyright (c) 2014 Fabian Schuiki
 set(SOURCE_DIR ${PROJECT_SOURCE_DIR}/maxwell)
 
-add_executable(test-repository-source repository/source.cpp ${SOURCE_DIR}/repository/FileSourceRepository.cpp)
+add_executable(test-repository-source repository/source.cpp ${SOURCE_DIR}/repository/FileSourceRepository.cpp ${SOURCE_DIR}/sha1.cpp)
 add_executable(test-serialization serialization.cpp)
 add_executable(test-location location.cpp)
 add_executable(test-sha1 sha1.cpp ${SOURCE_DIR}/sha1.cpp)

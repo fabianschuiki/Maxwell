@@ -5,7 +5,6 @@
 #include "maxwell/filesystem/Path.hpp"
 #include "maxwell/repository/FileSourceRepository.hpp"
 #include <boost/test/unit_test.hpp>
-// #include "maxwell/repository/SourceIndex.hpp"
 
 using maxwell::filesystem::MockDirectory;
 using maxwell::filesystem::MockFile;
@@ -37,6 +36,15 @@ BOOST_AUTO_TEST_CASE(repository_source) {
 	BOOST_CHECK_EQUAL(repo.getPath(sidb), Path("funcs.mw"));
 	BOOST_CHECK_EQUAL(repo.getPath(SourceId()), Path());
 
+	concrete.flush();
+
+	// Update one of the files with new mock content.
+	MockFile srcc("src/main.mw"); srcc.content.push_back(3);
+	BOOST_CHECK(repo.add("main.mw", srcc));
+	BOOST_CHECK(!repo.add("main.mw", srcc));
+
+	concrete.flush();
+
 	// Remove the mock files from the repository again.
 	BOOST_CHECK(repo.remove("main.mw"));
 	BOOST_CHECK(!repo.remove("main.mw"));
@@ -60,6 +68,6 @@ BOOST_AUTO_TEST_CASE(repository_source) {
 	// 	// idx.flush() called in destructor
 	// }
 
-	// auto stuff = file.getContent();
-	// std::cout << "file contains: " << std::string(stuff.getStart(), stuff.getEnd()) << '\n';
+	const auto& index = dir.files.find("index")->second.content;
+	std::cout << "file contains: " << std::string(index.begin(), index.end()) << '\n';
 }

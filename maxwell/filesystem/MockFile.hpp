@@ -1,10 +1,9 @@
 /* Copyright (c) 2014 Fabian Schuiki */
 #pragma once
-#include "maxwell/Buffer.hpp"
-#include "maxwell/filesystem.hpp"
-#include <sstream>
+#include "maxwell/filesystem/File.hpp"
 
 namespace maxwell {
+namespace filesystem {
 
 /// A virtual file useful during testing.
 class MockFile : public File {
@@ -33,4 +32,5 @@ public:
 	}
 };
 
+} // namespace filesystem
 } // namespace maxwell

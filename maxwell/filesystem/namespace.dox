@@ -1,0 +1,7 @@
+/**
+\namespace maxwell::filesystem
+Facilities that allow for convenient access to the filesystem. The interfaces
+File and Directory decouple classes accessing the filesystem from the actual
+specifics of the underlying implementation. They also allow the easy creation of
+mock files for unit testing.
+*/

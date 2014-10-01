@@ -1,6 +1,7 @@
 /* Copyright (c) 2014 Fabian Schuiki */
 #pragma once
 #include "maxwell/Buffer.hpp"
+#include "maxwell/filesystem/Node.hpp"
 #include "maxwell/filesystem/Path.hpp"
 #include "maxwell/types.hpp"
 #include <vector>
@@ -10,11 +11,8 @@ namespace filesystem {
 
 /// An abstract interface for a file resource. Most likely implemented by a disk
 /// file class and a mock file class.
-class File {
+class File : public Node {
 public:
-	/// Returns the path to the file.
-	virtual const Path& getPath() const = 0;
-
 	/// Reads the contents of the file into \a dst in the most efficient manner
 	/// implemented. The data is *appended* to \a dst.
 	virtual void read(std::vector<Byte>& dst) const = 0;
@@ -28,10 +26,6 @@ public:
 	virtual void write(const std::vector<Byte>& src) {
 		write(Buffer<const Byte>(&src[0], &src[0] + src.size()));
 	}
-
-	/// Returns whether the file exists or not. Directories may return files
-	/// that do not exist, but are created as soon as write() is called on them.
-	virtual bool exists() const = 0;
 };
 
 } // namespace filesystem

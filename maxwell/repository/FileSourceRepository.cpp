@@ -1,4 +1,5 @@
 /* Copyright (c) 2014 Fabian Schuiki */
+#include "maxwell/repository/FileSource.hpp"
 #include "maxwell/repository/FileSourceRepository.hpp"
 #include "maxwell/repository/Source.hpp"
 #include "maxwell/serialization/VectorEncoder.hpp"
@@ -14,25 +15,8 @@ using maxwell::serialization::Decoder;
 using maxwell::SourceId;
 using namespace maxwell::repository;
 
-namespace maxwell {
-namespace repository {
 
-class FileSource : public Source {
-public:
-	SourceId id;
-	Path path;
-	sha1hash hash;
-	sha1hash pathHash;
-
-	SourceId getId() const { return id; }
-	const Path& getPath() const { return path; }
-	const sha1hash& getHash() const { return hash; }
-};
-
-} // namespace repository
-} // namespace maxwell
-
-
+// Convenience functions to encode certain structures.
 static void encode(Encoder& enc, SourceId sid) {
 	enc(sid.getId());
 }
@@ -45,7 +29,7 @@ static void encode(Encoder& enc, const sha1hash& hash) {
 	enc(hash, maxwell::SHA1_DIGEST_SIZE);
 }
 
-
+// Convenience functions to decode certain structures.
 static void decode(Decoder& dec, SourceId& sid) {
 	uint32_t id;
 	dec(id);
@@ -86,6 +70,7 @@ FileSourceRepository::FileSourceRepository(const Directory& dir):
 			src->pathHash = sha1(src->path.c_str());
 
 			sourcesByPath[src->path] = src.get();
+			sourcesByPathHash[src->pathHash] = src.get();
 			sourcesById[src->id] = std::move(src);
 		}
 	}
@@ -133,6 +118,7 @@ bool FileSourceRepository::add(const Path& path, const File& file) {
 
 		// Store the file in the indices.
 		sourcesByPath[src->path] = src.get();
+		sourcesByPathHash[src->pathHash] = src.get();
 		sourcesById[src->id] = std::move(src);
 	}
 
@@ -151,6 +137,7 @@ bool FileSourceRepository::remove(SourceId sid) {
 		return false;
 
 	sourcesByPath.erase(it->second->path);
+	sourcesByPathHash.erase(it->second->pathHash);
 	sourcesById.erase(it);
 	needsFlush = true;
 	needsPurge = true;
@@ -162,6 +149,7 @@ bool FileSourceRepository::remove(const Path& path) {
 	if (it == sourcesByPath.end())
 		return false;
 
+	sourcesByPathHash.erase(it->second->pathHash);
 	sourcesById.erase(it->second->id); // it->second is now invalid
 	sourcesByPath.erase(it);
 	needsFlush = true;
@@ -180,6 +168,7 @@ Path FileSourceRepository::getPath(SourceId sid) const {
 }
 
 
+/// Serializes the file index and stores it to the direectory.
 void FileSourceRepository::flush() const {
 
 	// Serialize the index.
@@ -201,7 +190,18 @@ void FileSourceRepository::flush() const {
 	indexFile.write(index);
 }
 
+/// Removes all obsolete files from the directory. A file is obsolete if it is
+/// not the index file, and its name is not listed in the index as the path hash
+/// of one of the source files. Does not touch invisible files.
 void FileSourceRepository::purge() const {
-	// \todo Implement this to iterate over the repo's directory and remove all
-	// files that are neither the index nor a cache of any of the sources.
+	dir.eachFile([&](File& f){
+		auto name = f.getName();
+		if (name == "index" || name[0] == '.')
+			return;
+
+		sha1hash hash;
+		if (!sha1hash::fromhex(name, hash) || !sourcesByPathHash.count(hash)) {
+			f.unlink();
+		}
+	});
 }

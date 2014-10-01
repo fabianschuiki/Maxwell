@@ -10,13 +10,14 @@ class MockFile : public File {
 	Path path;
 
 public:
-	std::vector<Byte> content;
-	bool fexists;
+	mutable std::vector<Byte> content;
+	mutable bool fexists;
 
 	MockFile(const Path& path): path(path), fexists(false) {}
 	~MockFile() {}
 
 	const Path& getPath() const { return path; }
+	void unlink() const { fexists = false; }
 
 	void read(std::vector<Byte>& dst) const {
 		dst = content;

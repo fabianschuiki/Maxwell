@@ -12,6 +12,7 @@ using maxwell::filesystem::MockFile;
 using maxwell::filesystem::Path;
 using maxwell::repository::FileSourceRepository;
 using maxwell::repository::SourceRepository;
+using maxwell::sha1;
 using maxwell::SourceId;
 
 BOOST_AUTO_TEST_CASE(repository_source) {
@@ -42,15 +43,15 @@ BOOST_AUTO_TEST_CASE(repository_source) {
 		BOOST_CHECK_EQUAL(repo.getPath(SourceId()), Path());
 	}
 
-	std::cout << dir.getPath() << " contains:\n";
-	for (auto& pair : dir.files) {
-		std::cout << "  " << pair.first << " (" << pair.second.content.size() << " bytes)\n";
+	// Verify that the directory contains the appropriate files.
+	{
+		dir.cleanup();
+		auto files = dir.files;
+		BOOST_CHECK(files.erase("index"));
+		BOOST_CHECK(files.erase(sha1("main.mw").finalize().lhex()));
+		BOOST_CHECK(files.erase(sha1("funcs.mw").finalize().lhex()));
+		BOOST_CHECK(files.empty());
 	}
-
-	// std::ofstream fout("testindex");
-	// const auto& index = dir.files.find("index")->second.content;
-	// fout.write((const char*)&index[0], index.size());
-	// fout.close();
 
 	// Simulate a second program execution.
 	{
@@ -73,27 +74,11 @@ BOOST_AUTO_TEST_CASE(repository_source) {
 		BOOST_CHECK(!repo.remove(sidb));
 	}
 
-	std::cout << dir.getPath() << " contains:\n";
-	for (auto& pair : dir.files) {
-		std::cout << "  " << pair.first << " (" << pair.second.content.size() << " bytes)\n";
+	// Verify that all source files were removed, and only the index is left.
+	{
+		dir.cleanup();
+		auto files = dir.files;
+		BOOST_CHECK(files.erase("index"));
+		BOOST_CHECK(files.empty());
 	}
-
-	// MockFile file(".mwc/source/index", Buffer<const Byte>((const Byte*)"buggy stuff"));
-
-	// // Putting the following into a separate block causes the flush-on-destroy
-	// // of SourceIndex to trigger.
-	// {
-	// 	SourceIndex idx(file);
-	// 	BOOST_CHECK(idx.add("main.mw") == true);
-	// 	BOOST_CHECK(idx.add("main.mw") == false);
-	// 	BOOST_CHECK(idx.add("base64/encode.mw") == true);
-	// 	idx.flush();
-
-	// 	BOOST_CHECK(idx.remove("main.mw") == true);
-	// 	BOOST_CHECK(idx.remove("main.mw") == false);
-	// 	// idx.flush() called in destructor
-	// }
-
-	// const auto& index = dir.files.find("index")->second.content;
-	// std::cout << "file contains: " << std::string(index.begin(), index.end()) << '\n';
 }

@@ -35,6 +35,8 @@ public:
 	const Byte* bytes() const { return *this; }
 	std::string uhex() const;
 	std::string lhex() const;
+
+	static bool fromhex(const std::string& hex, sha1hash& out);
 };
 
 /// An implementation of the SHA1 hashing algorithm.

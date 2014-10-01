@@ -15,16 +15,48 @@ static void hex(char *dst, const Byte* digest, const char* table) {
 	}
 }
 
+/// Returns a string representation of the SHA1 hash in hexadecimal notation
+/// using upper case letters.
 std::string sha1hash::uhex() const {
 	char buffer[SHA1_DIGEST_SIZE*2];
 	hex(buffer, *this, uhex_table);
 	return std::string(buffer, buffer+sizeof(buffer));
 }
 
+/// Returns a string representation of the SHA1 hash in hexadecimal notation
+/// using lower case letters.
 std::string sha1hash::lhex() const {
 	char buffer[SHA1_DIGEST_SIZE*2];
 	hex(buffer, *this, lhex_table);
 	return std::string(buffer, buffer+sizeof(buffer));
+}
+
+/// Returns a SHA1 hash from the given hexadecimal notation, which may use
+/// either upper or lower case letters.
+bool sha1hash::fromhex(const std::string& hex, sha1hash& out) {
+	if (hex.length() != SHA1_DIGEST_SIZE*2)
+		return false;
+
+	auto hexval = [](char c) {
+		if (c >= '0' && c <= '9') {
+			return c - '0';
+		} else if (c >= 'a' && c <= 'f') {
+			return c - 'a';
+		} else if (c >= 'A' && c <= 'F') {
+			return c - 'A';
+		} else {
+			return -1;
+		}
+	};
+
+	for (unsigned i = 0; i < SHA1_DIGEST_SIZE; i++) {
+		auto vh = hexval(hex[i*2+0]);
+		auto vl = hexval(hex[i*2+1]);
+		if (vh == -1 || vl == -1)
+			return false;
+		out.digest[i] = vh << 4 | vl << 0;
+	}
+	return true;
 }
 
 

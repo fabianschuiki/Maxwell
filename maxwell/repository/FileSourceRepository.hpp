@@ -37,6 +37,7 @@ private:
 	mutable bool needsPurge;
 	std::map<SourceId, std::unique_ptr<FileSource>> sourcesById;
 	std::map<Path, FileSource*> sourcesByPath;
+	std::map<sha1hash, FileSource*> sourcesByPathHash;
 };
 
 } // namespace repository

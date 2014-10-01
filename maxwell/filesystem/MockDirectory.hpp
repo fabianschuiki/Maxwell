@@ -14,10 +14,13 @@ class MockDirectory : public Directory {
 public:
 	mutable std::map<std::string, MockFile> files;
 	mutable std::map<std::string, MockDirectory> directories;
+	mutable bool dexists;
 
-	MockDirectory(const Path& path): path(path) {}
+	MockDirectory(const Path& path): path(path), dexists(false) {}
 
 	const Path& getPath() const { return path; }
+	bool exists() const { return dexists; }
+	void unlink() const { dexists = false; }
 	Directory* copy() const { return new MockDirectory(path); }
 
 	File& getFile(const std::string& name) const {
@@ -38,6 +41,38 @@ public:
 		}
 		return it->second;
 	}
+
+	void eachFile(std::function<void(File&)> f) const {
+		for (auto& v : files) {
+			if (v.second.exists())
+				f(v.second);
+		}
+	}
+
+	void eachDirectory(std::function<void(Directory&)> f) const {
+		for (auto& v : directories) {
+			if (v.second.exists())
+				f(v.second);
+		}
+	}
+
+	/// Removes all files and directories which do not exist. This invalidates
+	/// all references to files and directories that might still be around.
+	void cleanup() {
+		for (auto i = files.begin(); i != files.end();) {
+			auto ic = i;
+			i++;
+			if (!ic->second.exists())
+				files.erase(ic);
+		}
+		for (auto i = directories.begin(); i != directories.end();) {
+			auto ic = i;
+			i++;
+			if (!ic->second.exists())
+				directories.erase(ic);
+		}
+	}
+
 };
 
 } // namespace filesystem

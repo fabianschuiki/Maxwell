@@ -194,6 +194,7 @@ void FileSourceRepository::flush() const {
 /// not the index file, and its name is not listed in the index as the path hash
 /// of one of the source files. Does not touch invisible files.
 void FileSourceRepository::purge() const {
+	needsPurge = false;
 	dir.eachFile([&](File& f){
 		auto name = f.getName();
 		if (name == "index" || name[0] == '.')

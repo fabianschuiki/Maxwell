@@ -11,7 +11,7 @@ namespace filesystem {
 class Node {
 public:
 	/// Returns the name of the file or directory.
-	virtual const std::string& getName() const {
+	virtual std::string getName() const {
 		return getPath().filename().string();
 	}
 

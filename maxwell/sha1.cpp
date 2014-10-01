@@ -60,6 +60,7 @@ bool sha1hash::fromhex(const std::string& hex, sha1hash& out) {
 }
 
 
+/// Resets the hash engine as if no data has been processed yet.
 sha1& sha1::reset() {
 	state[0] = 0x67452301;
 	state[1] = 0xefcdab89;
@@ -70,6 +71,7 @@ sha1& sha1::reset() {
 	return *this;
 }
 
+/// Processes the \a length bytes of \a data.
 sha1& sha1::update(const Byte* data, size_t length) {
 
 	Byte* bufptr = buffer + (count & 0x3f);
@@ -110,6 +112,7 @@ template<unsigned n> uint32_t rol(uint32_t v) {
 	return (v << n) | (v >> (32-n));
 }
 
+/// Used internally to process a 64 byte block of data.
 void sha1::transform(const Byte* data) {
 
 	// Copy the current state into some handy work variables.
@@ -167,6 +170,8 @@ void sha1::transform(const Byte* data) {
 	state[4] += e;
 }
 
+/// Wraps up and returns the final hash. Note that calling update() after
+/// finalize() yields a corrupted hash.
 sha1hash sha1::finalize() {
 
 	// Convert the count into a 64 bit big endian integer.

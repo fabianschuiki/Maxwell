@@ -1,0 +1,7 @@
+/**
+\namespace maxwell::repository
+Facilities for creating persistent storage for various types of information.
+This includes source files, parsed ASTs, intermediate build information, etc.
+The namespace provides abstract interfaces to be used in other parts of the
+code, as well as implementations of these interfaces.
+*/

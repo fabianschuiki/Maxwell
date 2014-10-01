@@ -49,6 +49,10 @@ static void decode(Decoder& dec, sha1hash& hash) {
 }
 
 
+/// Creates a new file-based source repository that maintains the given \a dir.
+/// Make sure the repository is the sole user of the given directory, as files
+/// are added and removed frequently, potentially removing files created by
+/// someone else.
 FileSourceRepository::FileSourceRepository(const Directory& dir):
 	dir(dir),
 	needsFlush(false),
@@ -76,6 +80,8 @@ FileSourceRepository::FileSourceRepository(const Directory& dir):
 	}
 }
 
+/// Destructs the repository. If the needsFlush flag is set, flush() is called.
+/// If the needsPurge flag is set, purge() is called.
 FileSourceRepository::~FileSourceRepository() {
 	if (needsFlush)
 		flush();
@@ -168,7 +174,7 @@ Path FileSourceRepository::getPath(SourceId sid) const {
 }
 
 
-/// Serializes the file index and stores it to the direectory.
+/// Serializes the file index and stores it to the directory.
 void FileSourceRepository::flush() const {
 
 	// Serialize the index.

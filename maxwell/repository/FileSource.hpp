@@ -7,7 +7,7 @@ namespace repository {
 
 class FileSourceRepository;
 
-/// File-based Implementation of the Source interface used in the
+/// A file-based Implementation of the Source interface used in the
 /// FileSourceRepository.
 class FileSource : public Source {
 	friend class FileSourceRepository;

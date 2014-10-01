@@ -30,7 +30,7 @@ void buildAST(Builder &node)
 		.intf(type)
 		.attr("name", "string")
 		.child("typeExpr", "#typeExpr");
-	Node& callArg = node("@CallArg") // everything that looks like a call argument (expr and optional name)
+	/*Node& callArg =*/ node("@CallArg") // everything that looks like a call argument (expr and optional name)
 		.attr("name", "string")
 		.attr("expr", "@Type");
 	Node& callable = node("@Callable") // everything that looks like a function that can be called

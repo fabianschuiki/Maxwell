@@ -63,7 +63,7 @@ void TupleType::decode(Decoder& d) {
 
 
 void TupleType::updateHierarchyOfChildren() {
-	for (int i = 0; i < this->args.size(); i++) {
+	for (unsigned i = 0; i < this->args.size(); i++) {
 		char buf[32]; snprintf(buf, 31, "%i", i);
 		this->args[i]->updateHierarchy((id + "args") + buf, repository, this);
 	}
@@ -81,7 +81,7 @@ const NodePtr& TupleType::resolvePath(const std::string& path) {
 			string idx_str = path.substr(5, dot);
 			int idx = atoi(idx_str.c_str());
 			const NodeVector& a = getArgs();
-			if (idx < 0 || idx >= a.size()) {
+			if (idx < 0 || idx >= (int)a.size()) {
 				throw std::runtime_error("Index into array '" + path.substr(0, 4) + "' is out of bounds.");
 			}
 			if (dot == string::npos) {

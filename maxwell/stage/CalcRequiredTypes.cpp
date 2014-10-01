@@ -41,7 +41,7 @@ void CalcRequiredTypes::process(const NodePtr& node)
 			// Assign the candidate's argument types to the corresponding call arguments.
 			const NodeVector& candidateArgs = selectedCandidate->getArgs();
 			const NodeVector& args = call->getCallArgs();
-			for (int i = 0; i < args.size(); i++) {
+			for (unsigned i = 0; i < args.size(); i++) {
 				CallArgInterface* arg = args[i]->needCallArg();
 				const NodePtr& type = candidateArgs[i]->needType()->getRequiredType();
 				arg->getExpr()->needType()->setRequiredType(type);
@@ -71,7 +71,7 @@ void CalcRequiredTypes::process(const NodePtr& node)
 				// Calculate the required types for each argument.
 				const NodeVector& args = candidate->getArgs();
 
-				for (int i = 0; i < args.size(); i++) {
+				for (unsigned i = 0; i < args.size(); i++) {
 					NodePtr type;
 					if (inTupleType && i < inTupleType->getArgs().size()) {
 						const TupleTypeArg::Ptr& funcArg = TupleTypeArg::needFrom(inTupleType->getArgs()[i]);
@@ -92,7 +92,7 @@ void CalcRequiredTypes::process(const NodePtr& node)
 			// For each call argument, use the inputTypes vector to find the set
 			// of required types this argument must adhere to.
 			const NodeVector& args = call->getCallArgs();
-			for (int i = 0; i < args.size(); i++) {
+			for (unsigned i = 0; i < args.size(); i++) {
 				CallArgInterface* arg = args[i]->needCallArg();
 				NodePtr type;
 				if (i < inputTypes.size()) {

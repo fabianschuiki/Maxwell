@@ -203,7 +203,7 @@ void SetConstExpr::updateHierarchyOfChildren() {
 	if (this->possibleType) this->possibleType->updateHierarchy(id + "possibleType", repository, this);
 	if (this->requiredType) this->requiredType->updateHierarchy(id + "requiredType", repository, this);
 	if (this->actualType) this->actualType->updateHierarchy(id + "actualType", repository, this);
-	for (int i = 0; i < this->exprs.size(); i++) {
+	for (unsigned i = 0; i < this->exprs.size(); i++) {
 		char buf[32]; snprintf(buf, 31, "%i", i);
 		this->exprs[i]->updateHierarchy((id + "exprs") + buf, repository, this);
 	}
@@ -233,7 +233,7 @@ const NodePtr& SetConstExpr::resolvePath(const std::string& path) {
 				string idx_str = path.substr(6, dot);
 				int idx = atoi(idx_str.c_str());
 				const NodeVector& a = getExprs();
-				if (idx < 0 || idx >= a.size()) {
+				if (idx < 0 || idx >= (int)a.size()) {
 					throw std::runtime_error("Index into array '" + path.substr(0, 5) + "' is out of bounds.");
 				}
 				if (dot == string::npos) {

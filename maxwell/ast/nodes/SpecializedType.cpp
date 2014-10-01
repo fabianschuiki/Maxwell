@@ -87,7 +87,7 @@ void SpecializedType::decode(Decoder& d) {
 
 void SpecializedType::updateHierarchyOfChildren() {
 	if (this->type) this->type->updateHierarchy(id + "type", repository, this);
-	for (int i = 0; i < this->specs.size(); i++) {
+	for (unsigned i = 0; i < this->specs.size(); i++) {
 		char buf[32]; snprintf(buf, 31, "%i", i);
 		this->specs[i]->updateHierarchy((id + "specs") + buf, repository, this);
 	}
@@ -107,7 +107,7 @@ const NodePtr& SpecializedType::resolvePath(const std::string& path) {
 				string idx_str = path.substr(6, dot);
 				int idx = atoi(idx_str.c_str());
 				const NodeVector& a = getSpecs();
-				if (idx < 0 || idx >= a.size()) {
+				if (idx < 0 || idx >= (int)a.size()) {
 					throw std::runtime_error("Index into array '" + path.substr(0, 5) + "' is out of bounds.");
 				}
 				if (dot == string::npos) {

@@ -59,7 +59,7 @@ DEF_EXPR(ForExpr)
 	ExprCode stepCode;
 	bool stepComplex = false;
 	if (step) {
-		int nums = bodyCtx.stmts.size();
+		unsigned nums = bodyCtx.stmts.size();
 		generateExpr(step, stepCode, bodyCtx);
 		out.deps.insert(stepCode.deps.begin(), stepCode.deps.end());
 		stepComplex = (nums != bodyCtx.stmts.size());

@@ -16,9 +16,9 @@
 
 
 namespace ast {
-	struct Node;
-	struct NodeId;
-	struct Repository;
+	class Node;
+	class NodeId;
+	class Repository;
 }
 
 namespace backendc {

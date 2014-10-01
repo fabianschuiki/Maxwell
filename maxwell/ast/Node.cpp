@@ -106,7 +106,7 @@ bool Node::equal(const NodeVector& a, const NodeVector& b)
 {
 	if (a.empty() != b.empty()) return false;
 	if (a.size() != b.size()) return false;
-	for (int i = 0; i < a.size(); i++) {
+	for (unsigned i = 0; i < a.size(); i++) {
 		if (!a[i]->equalTo(b[i]))
 			return false;
 	}

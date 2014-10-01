@@ -211,11 +211,11 @@ void FuncDef::decode(Decoder& d) {
 
 
 void FuncDef::updateHierarchyOfChildren() {
-	for (int i = 0; i < this->in.size(); i++) {
+	for (unsigned i = 0; i < this->in.size(); i++) {
 		char buf[32]; snprintf(buf, 31, "%i", i);
 		this->in[i]->updateHierarchy((id + "in") + buf, repository, this);
 	}
-	for (int i = 0; i < this->out.size(); i++) {
+	for (unsigned i = 0; i < this->out.size(); i++) {
 		char buf[32]; snprintf(buf, 31, "%i", i);
 		this->out[i]->updateHierarchy((id + "out") + buf, repository, this);
 	}
@@ -255,7 +255,7 @@ const NodePtr& FuncDef::resolvePath(const std::string& path) {
 				string idx_str = path.substr(3, dot);
 				int idx = atoi(idx_str.c_str());
 				const NodeVector& a = getIn();
-				if (idx < 0 || idx >= a.size()) {
+				if (idx < 0 || idx >= (int)a.size()) {
 					throw std::runtime_error("Index into array '" + path.substr(0, 2) + "' is out of bounds.");
 				}
 				if (dot == string::npos) {
@@ -275,7 +275,7 @@ const NodePtr& FuncDef::resolvePath(const std::string& path) {
 				string idx_str = path.substr(4, dot);
 				int idx = atoi(idx_str.c_str());
 				const NodeVector& a = getOut();
-				if (idx < 0 || idx >= a.size()) {
+				if (idx < 0 || idx >= (int)a.size()) {
 					throw std::runtime_error("Index into array '" + path.substr(0, 3) + "' is out of bounds.");
 				}
 				if (dot == string::npos) {

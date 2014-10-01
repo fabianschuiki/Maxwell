@@ -30,7 +30,7 @@ void EvalTypeExprs::process(const NodePtr& node)
 			node->updateHierarchyOfChildren();
 		}
 
-		if (const NilTypeExpr::Ptr& expr = NilTypeExpr::from(node)) {
+		if (node->isKindOf(kNilTypeExpr)) {
 			intf->setEvaluatedType(NodePtr(new NilType));
 			node->updateHierarchyOfChildren();
 		}
@@ -38,7 +38,7 @@ void EvalTypeExprs::process(const NodePtr& node)
 		if (const UnionTypeExpr::Ptr& expr = UnionTypeExpr::from(node)) {
 			const NodeVector& typeExprs = expr->getTypes();
 			NodeVector types(typeExprs.size());
-			for (int i = 0; i < typeExprs.size(); i++) {
+			for (unsigned i = 0; i < typeExprs.size(); i++) {
 				types[i] = typeExprs[i]->asTypeExpr()->getEvaluatedType();
 			}
 			UnionType::Ptr t(new UnionType);
@@ -68,17 +68,17 @@ void EvalTypeExprs::process(const NodePtr& node)
 						typeMembers.push_back(qtm);
 					}
 				}
-				else if (const InterfaceQualifier::Ptr& quali = InterfaceQualifier::from(*it)) {
-					// TODO: Ignored for now...
-				}
+				// else if (const InterfaceQualifier::Ptr& quali = InterfaceQualifier::from(*it)) {
+				// 	// TODO: Ignored for now...
+				// }
 				else if (const NativeQualifier::Ptr& quali = NativeQualifier::from(*it)) {
 					QualifiedTypeNative::Ptr qtn(new QualifiedTypeNative);
 					qtn->setName(quali->getName());
 					typeNatives.push_back(qtn);
 				}
-				else if (const RangeQualifier::Ptr& quali = RangeQualifier::from(*it)) {
-					// TODO: Ignored for now...
-				}
+				// else if (const RangeQualifier::Ptr& quali = RangeQualifier::from(*it)) {
+				// 	// TODO: Ignored for now...
+				// }
 			}
 
 			// Merge the list of qualifiers into a new instance of QualifiedType.
@@ -98,7 +98,7 @@ void EvalTypeExprs::process(const NodePtr& node)
 			// Gather a list of the evaluated types of all specExprs.
 			const NodeVector& specExprs = expr->getSpecExprs();
 			NodeVector types(specExprs.size());
-			for (int i = 0; i < specExprs.size(); i++) {
+			for (unsigned i = 0; i < specExprs.size(); i++) {
 				types[i] = specExprs[i]->needTypeExpr()->getEvaluatedType();
 			}
 
@@ -115,7 +115,7 @@ void EvalTypeExprs::process(const NodePtr& node)
 			// Gather the list of fields of this tuple type.
 			const NodeVector& exprArgs = expr->getArgs();
 			NodeVector args(exprArgs.size());
-			for (int i = 0; i < exprArgs.size(); i++) {
+			for (unsigned i = 0; i < exprArgs.size(); i++) {
 				const TupleTypeExprArg::Ptr& exprArg = TupleTypeExprArg::needFrom(exprArgs[i]);
 				TupleTypeArg::Ptr arg(new TupleTypeArg);
 				arg->setName(exprArg->getName(false));

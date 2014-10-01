@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace ast { struct NodeId; }
+namespace ast { class NodeId; }
 
 namespace backendc {
 

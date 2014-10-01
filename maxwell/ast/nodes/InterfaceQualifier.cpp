@@ -102,7 +102,7 @@ void InterfaceQualifier::decode(Decoder& d) {
 
 
 void InterfaceQualifier::updateHierarchyOfChildren() {
-	for (int i = 0; i < this->stmts.size(); i++) {
+	for (unsigned i = 0; i < this->stmts.size(); i++) {
 		char buf[32]; snprintf(buf, 31, "%i", i);
 		this->stmts[i]->updateHierarchy((id + "stmts") + buf, repository, this);
 	}
@@ -131,7 +131,7 @@ const NodePtr& InterfaceQualifier::resolvePath(const std::string& path) {
 				string idx_str = path.substr(6, dot);
 				int idx = atoi(idx_str.c_str());
 				const NodeVector& a = getStmts();
-				if (idx < 0 || idx >= a.size()) {
+				if (idx < 0 || idx >= (int)a.size()) {
 					throw std::runtime_error("Index into array '" + path.substr(0, 5) + "' is out of bounds.");
 				}
 				if (dot == string::npos) {

@@ -129,7 +129,7 @@ void UnionTypeExpr::decode(Decoder& d) {
 
 void UnionTypeExpr::updateHierarchyOfChildren() {
 	if (this->evaluatedType) this->evaluatedType->updateHierarchy(id + "evaluatedType", repository, this);
-	for (int i = 0; i < this->types.size(); i++) {
+	for (unsigned i = 0; i < this->types.size(); i++) {
 		char buf[32]; snprintf(buf, 31, "%i", i);
 		this->types[i]->updateHierarchy((id + "types") + buf, repository, this);
 	}
@@ -167,7 +167,7 @@ const NodePtr& UnionTypeExpr::resolvePath(const std::string& path) {
 				string idx_str = path.substr(6, dot);
 				int idx = atoi(idx_str.c_str());
 				const NodeVector& a = getTypes();
-				if (idx < 0 || idx >= a.size()) {
+				if (idx < 0 || idx >= (int)a.size()) {
 					throw std::runtime_error("Index into array '" + path.substr(0, 5) + "' is out of bounds.");
 				}
 				if (dot == string::npos) {

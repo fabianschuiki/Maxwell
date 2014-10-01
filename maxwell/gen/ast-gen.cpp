@@ -137,7 +137,7 @@ void generateFactoryBody(std::ostream& out, NodeNames names, int indent, string 
 					out << "size >= " << commonPrefix.size();
 				else
 					out << "true";
-				for (int i = basePrefix.size(); i < commonPrefix.size(); i++) {
+				for (unsigned i = basePrefix.size(); i < commonPrefix.size(); i++) {
 					out << " && name[" << i <<"] == '" << commonPrefix[i] << "'";
 				}
 				out << ") {\n";
@@ -239,7 +239,7 @@ void generateResolvePathBody(std::ostream& out, FieldNames names, const FieldNam
 					out << "size >= " << commonPrefix.size();
 				else
 					out << "true";
-				for (int i = basePrefix.size(); i < commonPrefix.size(); i++) {
+				for (unsigned i = basePrefix.size(); i < commonPrefix.size(); i++) {
 					out << " && path[" << i <<"] == '" << commonPrefix[i] << "'";
 				}
 				out << ") {\n";
@@ -265,7 +265,7 @@ void generateResolvePathBody(std::ostream& out, FieldNames names, const FieldNam
 					out << pad << "\t\tstring idx_str = path.substr(" << name.size() + 1 << ", dot);\n";
 					out << pad << "\t\tint idx = atoi(idx_str.c_str());\n";
 					out << pad << "\t\tconst NodeVector& a = get" << upper << "();\n";
-					out << pad << "\t\tif (idx < 0 || idx >= a.size()) {\n";
+					out << pad << "\t\tif (idx < 0 || idx >= (int)a.size()) {\n";
 					out << pad << "\t\t\tthrow std::runtime_error(\"Index into array '\" + path.substr(0, " << name.size() << ") + \"' is out of bounds.\");\n";
 					out << pad << "\t\t}\n";
 					out << pad << "\t\tif (dot == string::npos) {\n";
@@ -339,7 +339,7 @@ void makeInterfacesHeader(const boost::filesystem::path& output, const Builder& 
 		h << "template <typename T> class " << intf.intfName << "Impl : public " << intf.intfName << "\n{\npublic:\n";
 		h << "\tNode* getNode() { return node; }\n";
 		h << "\t" << intf.intfName << "Impl(T* node) : node(node) {}\n\n";
-		for (int i = 0; i < funcs.size(); i++) {
+		for (unsigned i = 0; i < funcs.size(); i++) {
 			InterfaceFunction& f = funcs[i];
 			h << "\t" << f.prototype << " { ";
 			if (f.ret) h << "return ";
@@ -598,19 +598,19 @@ int main(int argc, char *argv[])
 			vector<string> ifcomponents;
 			string allowedNodes;
 			string allowedInterfaces;
-			for (int i = 0; i < f.allowedNodes.size(); i++) {
+			for (unsigned i = 0; i < f.allowedNodes.size(); i++) {
 				ifcomponents.push_back("!v->isKindOf(k" + f.allowedNodes[i] + ")");
 				if (!allowedNodes.empty()) allowedNodes += ", ";
 				allowedNodes += f.allowedNodes[i];
 			}
-			for (int i = 0; i < f.allowedInterfaces.size(); i++) {
+			for (unsigned i = 0; i < f.allowedInterfaces.size(); i++) {
 				ifcomponents.push_back("!v->implements(k" + builder.interfaces[f.allowedInterfaces[i]].intfName + ")");
 				if (!allowedInterfaces.empty()) allowedInterfaces += ", ";
 				allowedInterfaces += f.allowedInterfaces[i];
 			}
 			if (!ifcomponents.empty()) {
 				s << "\tif (v";
-				for (int i = 0; i < ifcomponents.size(); i++) {
+				for (unsigned i = 0; i < ifcomponents.size(); i++) {
 					s << " && " << ifcomponents[i];
 				}
 				s << ") {\n";
@@ -699,7 +699,7 @@ int main(int argc, char *argv[])
 			if (f.isNode && !f.ref) {
 				s << "\tif (this->"<<f.name<<") this->"<<f.name<<"->updateHierarchy(id + \""<<f.name<<"\", repository, this);\n";
 			} else if (f.isArray) {
-				s << "\tfor (int i = 0; i < this->"<<f.name<<".size(); i++) {\n";
+				s << "\tfor (unsigned i = 0; i < this->"<<f.name<<".size(); i++) {\n";
 				s << "\t\tchar buf[32]; snprintf(buf, 31, \"%i\", i);\n";
 				s << "\t\tthis->"<<f.name<<"[i]->updateHierarchy((id + \""<<f.name<<"\") + buf, repository, this);\n";
 				s << "\t}\n";

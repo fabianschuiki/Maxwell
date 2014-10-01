@@ -15,7 +15,7 @@ using std::string;
 class NumericType : public BuiltinNode
 {
 public:
-	NumericType() : interfaceNamed(this), BuiltinNode() {}
+	NumericType() : interfaceNamed(this) {}
 	virtual string getClassName() const { return "BuiltinNumericType"; }
 	virtual const string& getName(bool required = true) const { return name; }
 	virtual void setName(const string& s) { throw std::runtime_error("Cannot set name of builtin type " + name + "."); }

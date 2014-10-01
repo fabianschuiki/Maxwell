@@ -14,12 +14,9 @@ DEF_EXPR_INTF(Call)
 		type = FuncType::needFrom(func->getType());
 	else
 		type = FuncType::needFrom(stage::algorithm::type::resolve(funcNode->needType()->getActualType()));
-	const NodePtr& typeIn  = type->getIn();
-	const NodePtr& typeOut = type->getOut();
 
 	// If the called function is a builtin function, generate specialized code.
 	if (const builtin::FuncDef::Ptr& bi = builtin::FuncDef::from(funcNode)) {
-		const TupleType::Ptr& tupleIn = TupleType::needFrom(typeIn);
 		const string& name = bi->getName();
 
 		// Unary operator

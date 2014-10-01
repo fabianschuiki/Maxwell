@@ -122,19 +122,19 @@ void QualifiedType::decode(Decoder& d) {
 
 
 void QualifiedType::updateHierarchyOfChildren() {
-	for (int i = 0; i < this->members.size(); i++) {
+	for (unsigned i = 0; i < this->members.size(); i++) {
 		char buf[32]; snprintf(buf, 31, "%i", i);
 		this->members[i]->updateHierarchy((id + "members") + buf, repository, this);
 	}
-	for (int i = 0; i < this->funcs.size(); i++) {
+	for (unsigned i = 0; i < this->funcs.size(); i++) {
 		char buf[32]; snprintf(buf, 31, "%i", i);
 		this->funcs[i]->updateHierarchy((id + "funcs") + buf, repository, this);
 	}
-	for (int i = 0; i < this->natives.size(); i++) {
+	for (unsigned i = 0; i < this->natives.size(); i++) {
 		char buf[32]; snprintf(buf, 31, "%i", i);
 		this->natives[i]->updateHierarchy((id + "natives") + buf, repository, this);
 	}
-	for (int i = 0; i < this->ranges.size(); i++) {
+	for (unsigned i = 0; i < this->ranges.size(); i++) {
 		char buf[32]; snprintf(buf, 31, "%i", i);
 		this->ranges[i]->updateHierarchy((id + "ranges") + buf, repository, this);
 	}
@@ -154,7 +154,7 @@ const NodePtr& QualifiedType::resolvePath(const std::string& path) {
 				string idx_str = path.substr(6, dot);
 				int idx = atoi(idx_str.c_str());
 				const NodeVector& a = getFuncs();
-				if (idx < 0 || idx >= a.size()) {
+				if (idx < 0 || idx >= (int)a.size()) {
 					throw std::runtime_error("Index into array '" + path.substr(0, 5) + "' is out of bounds.");
 				}
 				if (dot == string::npos) {
@@ -174,7 +174,7 @@ const NodePtr& QualifiedType::resolvePath(const std::string& path) {
 				string idx_str = path.substr(8, dot);
 				int idx = atoi(idx_str.c_str());
 				const NodeVector& a = getMembers();
-				if (idx < 0 || idx >= a.size()) {
+				if (idx < 0 || idx >= (int)a.size()) {
 					throw std::runtime_error("Index into array '" + path.substr(0, 7) + "' is out of bounds.");
 				}
 				if (dot == string::npos) {
@@ -194,7 +194,7 @@ const NodePtr& QualifiedType::resolvePath(const std::string& path) {
 				string idx_str = path.substr(8, dot);
 				int idx = atoi(idx_str.c_str());
 				const NodeVector& a = getNatives();
-				if (idx < 0 || idx >= a.size()) {
+				if (idx < 0 || idx >= (int)a.size()) {
 					throw std::runtime_error("Index into array '" + path.substr(0, 7) + "' is out of bounds.");
 				}
 				if (dot == string::npos) {
@@ -214,7 +214,7 @@ const NodePtr& QualifiedType::resolvePath(const std::string& path) {
 				string idx_str = path.substr(7, dot);
 				int idx = atoi(idx_str.c_str());
 				const NodeVector& a = getRanges();
-				if (idx < 0 || idx >= a.size()) {
+				if (idx < 0 || idx >= (int)a.size()) {
 					throw std::runtime_error("Index into array '" + path.substr(0, 6) + "' is out of bounds.");
 				}
 				if (dot == string::npos) {

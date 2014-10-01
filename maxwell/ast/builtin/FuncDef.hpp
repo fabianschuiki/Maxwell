@@ -17,8 +17,7 @@ class FuncDef : public BuiltinNode
 public:
 	FuncDef() :
 		interfaceNamed(this),
-		interfaceCallable(this),
-		BuiltinNode() {}
+		interfaceCallable(this) {}
 
 	const string& getName(bool required = true) const { return name; }
 	const NodePtr& getType(bool required = true) { return type; }

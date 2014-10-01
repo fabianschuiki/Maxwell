@@ -1,6 +1,6 @@
 /* Copyright (c) 2014 Fabian Schuiki */
-#include "maxwell/repository/FileSource.hpp"
-#include "maxwell/repository/FileSourceRepository.hpp"
+#include "maxwell/repository/file/FileSource.hpp"
+#include "maxwell/repository/file/FileSourceRepository.hpp"
 #include "maxwell/repository/Source.hpp"
 #include "maxwell/serialization/VectorEncoder.hpp"
 #include "maxwell/serialization/ArrayDecoder.hpp"

@@ -1,7 +1,7 @@
 /* Copyright (c) 2014 Fabian Schuiki */
 #pragma once
 #include "maxwell/filesystem/Directory.hpp"
-#include "maxwell/filesystem/MockFile.hpp"
+#include "maxwell/filesystem/mock/MockFile.hpp"
 #include <map>
 
 namespace maxwell {

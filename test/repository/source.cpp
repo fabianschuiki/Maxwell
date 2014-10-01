@@ -1,9 +1,9 @@
 /* Copyright (c) 2014 Fabian Schuiki */
 #define BOOST_TEST_MODULE repository_source_module
-#include "maxwell/filesystem/MockDirectory.hpp"
-#include "maxwell/filesystem/MockFile.hpp"
+#include "maxwell/filesystem/mock/MockDirectory.hpp"
+#include "maxwell/filesystem/mock/MockFile.hpp"
 #include "maxwell/filesystem/Path.hpp"
-#include "maxwell/repository/FileSourceRepository.hpp"
+#include "maxwell/repository/file/FileSourceRepository.hpp"
 #include <boost/test/unit_test.hpp>
 #include <fstream>
 

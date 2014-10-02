@@ -27,6 +27,11 @@ public:
 	SourceId getSourceId(const Path& path) const;
 	Path getPath(SourceId sid) const;
 
+	Source* getSource(SourceId sid) const;
+	Source* getSource(const Path& path) const;
+
+	void eachSource(std::function<void(const Source&)> fn) const;
+
 	void flush() const;
 	void purge() const;
 

@@ -66,8 +66,16 @@ public:
 	/// empty path if the file does not exist in the repository.
 	virtual Path getPath(SourceId sid) const = 0;
 
-	/// \todo Add accessor to individual files.
-	/// \todo Add iterator over all files.
+	/// Returns the source file with the given unique source ID \a sid, or
+	/// \c nullptr if none such exists.
+	virtual Source* getSource(SourceId sid) const = 0;
+	/// Returns the source file with the given \a path, or \c nullptr if none
+	/// such exists.
+	virtual Source* getSource(const Path& path) const = 0;
+
+	/// Calls the function \a fn for each source file maintained by this
+	/// repository.
+	virtual void eachSource(std::function<void(const Source&)> fn) const = 0;
 };
 
 } // namespace repository

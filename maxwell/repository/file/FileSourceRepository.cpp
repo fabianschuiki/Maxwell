@@ -163,6 +163,7 @@ bool FileSourceRepository::remove(const Path& path) {
 	return true;
 }
 
+
 SourceId FileSourceRepository::getSourceId(const Path& path) const {
 	auto it = sourcesByPath.find(path);
 	return it != sourcesByPath.end() ? it->second->id : SourceId();
@@ -171,6 +172,25 @@ SourceId FileSourceRepository::getSourceId(const Path& path) const {
 Path FileSourceRepository::getPath(SourceId sid) const {
 	auto it = sourcesById.find(sid);
 	return it != sourcesById.end() ? it->second->path : Path();
+}
+
+
+Source* FileSourceRepository::getSource(SourceId sid) const {
+	auto it = sourcesById.find(sid);
+	return it != sourcesById.end() ? it->second.get() : nullptr;
+}
+
+Source* FileSourceRepository::getSource(const Path& path) const {
+	auto it = sourcesByPath.find(path);
+	return it != sourcesByPath.end() ? it->second : nullptr;
+}
+
+
+void FileSourceRepository::eachSource(
+	std::function<void(const Source&)> fn) const {
+	for (auto& src : sourcesById) {
+		fn(*src.second);
+	}
 }
 
 

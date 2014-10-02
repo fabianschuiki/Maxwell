@@ -2,6 +2,7 @@
 #pragma once
 #include "maxwell/types.hpp"
 #include <algorithm>
+#include <functional>
 #include <string>
 
 namespace maxwell {

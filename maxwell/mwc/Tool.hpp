@@ -1,5 +1,6 @@
 /* Copyright (c) 2014 Fabian Schuiki */
 #pragma once
+#include <iostream>
 
 namespace maxwell {
 namespace mwc {
@@ -8,17 +9,13 @@ namespace mwc {
 /// some default setup before calling the subclass' main code. Use the TOOL_MAIN
 /// macro to generate the appropriate main function.
 class Tool {
-	int const argc;
-	char** const argv;
-
 protected:
 	virtual void run() = 0;
 
 public:
-	Tool(int argc, char** argv): argc(argc), argv(argv) {}
-
-	void main() {
-
+	int main(int argc, char** argv) {
+		run();
+		return 0;
 	}
 };
 

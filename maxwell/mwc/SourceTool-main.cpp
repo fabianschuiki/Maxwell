@@ -2,6 +2,6 @@
 #include "maxwell/mwc/SourceTool.hpp"
 using namespace maxwell::mwc;
 
-void SourceTool::run() {
-	std::cout << "hello!\n";
+int main(int argc, char** argv) {
+	return SourceTool(/* inject stuff here */).main(argc,argv);
 }

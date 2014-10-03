@@ -11,5 +11,5 @@ add_subdirectory(test)
 add_subdirectory(backend)
 
 # mwc-src
-add_executable(mwc-src mwc/SourceTool.cpp mwc/SourceTool-main.cpp)
+add_executable(mwc-src mwc/Tool.cpp mwc/SourceTool.cpp mwc/SourceTool-main.cpp)
 target_link_libraries(mwc-src ${Boost_LIBRARIES})

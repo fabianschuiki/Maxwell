@@ -5,8 +5,13 @@ namespace maxwell {
 namespace mwc {
 
 class SourceTool : public Tool {
+protected:
+	bool run();
+	void printUsage();
+
 public:
-	void run();
+	template<typename... Args>
+	SourceTool(Args&&... args): Tool(args...) {}
 };
 
 } // namespace mwc

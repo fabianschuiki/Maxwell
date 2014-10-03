@@ -1,6 +1,7 @@
 /* Copyright (c) 2014 Fabian Schuiki */
 #pragma once
-#include <iostream>
+#include <istream>
+#include <ostream>
 
 namespace maxwell {
 namespace mwc {
@@ -10,18 +11,23 @@ namespace mwc {
 /// macro to generate the appropriate main function.
 class Tool {
 protected:
-	virtual void run() = 0;
+	std::istream& in;
+	std::ostream& out;
+	std::ostream& err;
+
+	int argc;
+	char** argv;
+
+	/// Concrete tools implement their functionality in this function. Called
+	/// from the main() function of the Tool.
+	virtual bool run() = 0;
 
 public:
-	int main(int argc, char** argv) {
-		run();
-		return 0;
-	}
+	Tool();
+	Tool(std::istream& in, std::ostream& out, std::ostream& err);
+
+	int main(int argc, char** argv);
 };
 
 } // namespace mwc
 } // namespace maxwell
-
-#define MWC_TOOL_MAIN(classname) int main(int argc, char** argv) {\
-	return classname(argc, argv).main();\
-}

@@ -5,7 +5,7 @@ using namespace maxwell::filesystem;
 
 
 bool DiskFile::exists() const {
-	boost::filesystem::exists(path);
+	return boost::filesystem::exists(path);
 }
 
 void DiskFile::unlink() const {

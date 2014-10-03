@@ -72,7 +72,7 @@ bool SourceTool::run() {
 	// Setup the source repository.
 	Path sourceRepoPath = repo/"sources";
 	if (!boost::filesystem::exists(sourceRepoPath)) {
-		boost::filesystem::create_directory(sourceRepoPath);
+		boost::filesystem::create_directories(sourceRepoPath);
 	} else if (!boost::filesystem::is_directory(sourceRepoPath)) {
 		err << sourceRepoPath.native() << " exists but is not a directory\n";
 		return false;

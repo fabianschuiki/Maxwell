@@ -1,5 +1,6 @@
 /* Copyright (c) 2014 Fabian Schuiki */
 #pragma once
+#include "maxwell/filesystem/Path.hpp"
 #include <istream>
 #include <ostream>
 
@@ -10,10 +11,14 @@ namespace mwc {
 /// some default setup before calling the subclass' main code. Use the TOOL_MAIN
 /// macro to generate the appropriate main function.
 class Tool {
+public:
+	typedef maxwell::filesystem::Path Path;
+
 protected:
 	std::istream& in;
 	std::ostream& out;
 	std::ostream& err;
+	const Path currentPath;
 
 	int argc;
 	char** argv;
@@ -23,8 +28,9 @@ protected:
 	virtual bool run() = 0;
 
 public:
-	Tool();
-	Tool(std::istream& in, std::ostream& out, std::ostream& err);
+	Tool(const Path& pwd = boost::filesystem::current_path());
+	Tool(std::istream& in, std::ostream& out, std::ostream& err,
+		const Path& pwd = boost::filesystem::current_path());
 
 	int main(int argc, char** argv);
 };

@@ -5,15 +5,21 @@
 
 using namespace maxwell::mwc;
 
-Tool::Tool():
+Tool::Tool(const Path& pwd):
 	in(std::cin),
 	out(std::cout),
-	err(std::cerr) {}
+	err(std::cerr),
+	currentPath(pwd) {}
 
-Tool::Tool(std::istream& in, std::ostream& out, std::ostream& err):
+Tool::Tool(
+	std::istream& in,
+	std::ostream& out,
+	std::ostream& err,
+	const Path& pwd):
 	in(in),
 	out(out),
-	err(err) {}
+	err(err),
+	currentPath(pwd) {}
 
 int Tool::main(int argc, char** argv) {
 	try {

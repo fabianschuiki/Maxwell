@@ -18,6 +18,7 @@ public:
 
 	void read(std::vector<Byte>& dst) const;
 	void write(const Buffer<const Byte>& src);
+	time_t getModificationTime() const;
 };
 
 } // namespace filesystem

@@ -30,3 +30,6 @@ void DiskFile::write(const Buffer<const Byte>& src) {
 	}
 }
 
+time_t DiskFile::getModificationTime() const {
+	return boost::filesystem::last_write_time(path);
+}

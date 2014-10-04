@@ -21,7 +21,12 @@ File& DiskDirectory::getFile(const std::string& name) const {
 }
 
 Directory& DiskDirectory::getDirectory(const std::string& name) const {
-
+	auto it = directoryCache.find(name);
+	if (it != directoryCache.end())
+		return it->second;
+	auto r = directoryCache.insert(
+		std::make_pair(name, DiskDirectory(path/name)));
+	return r.first->second;
 }
 
 
@@ -36,5 +41,11 @@ void DiskDirectory::eachFile(std::function<void(File&)> fn) const {
 }
 
 void DiskDirectory::eachDirectory(std::function<void(Directory&)> fn) const {
-
+	boost::filesystem::directory_iterator it(path), end;
+	for (; it != end; ++it) {
+		if (boost::filesystem::is_directory(*it)) {
+			DiskDirectory d(*it);
+			fn(d);
+		}
+	}
 }

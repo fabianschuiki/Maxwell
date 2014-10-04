@@ -8,6 +8,7 @@
 using maxwell::sha1;
 using maxwell::sha1hash;
 using maxwell::filesystem::Path;
+using maxwell::filesystem::File;
 using maxwell::serialization::VectorEncoder;
 using maxwell::serialization::ArrayDecoder;
 using maxwell::serialization::Encoder;
@@ -49,6 +50,45 @@ static void decode(Decoder& dec, sha1hash& hash) {
 }
 
 
+/// Checks whether the given \a path and \a file differ from the given source
+/// file \a src. If the file is detected to be modified, the function returns
+/// true and sets \a mod to the file's modification date, \a hash to the file's
+/// content hash, \a pathHash to the hash of the file's path, and \a data to the
+/// contents of the file. \a src may be \c nullptr, in which case the function
+/// always returns true.
+static bool checkModified(
+	FileSource* src,
+	const Path& path,
+	const File& file,
+	time_t& mod,
+	sha1hash& hash,
+	sha1hash& pathHash,
+	std::vector<Byte>& data) {
+
+	// Check whether the modification time differs.
+	mod = file.getModificationTime();
+	if (src && src->getModificationTime() >= mod) {
+		return false;
+	}
+
+	// Calculate the hash of the file.
+	data.clear();
+	file.read(data);
+
+	sha1 base;
+	base.update(path.c_str());
+	pathHash = sha1(base);
+	hash = base.update(&data[0], data.size());
+
+	// If the path is already present in the repository, update the file's hash.
+	if (src && src->getHash() == hash) {
+		return false;
+	}
+
+	return true;
+}
+
+
 /// Creates a new file-based source repository that maintains the given \a dir.
 /// Make sure the repository is the sole user of the given directory, as files
 /// are added and removed frequently, potentially removing files created by
@@ -71,6 +111,7 @@ FileSourceRepository::FileSourceRepository(const Directory& dir):
 			decode(dec, src->id);
 			decode(dec, src->path);
 			decode(dec, src->hash);
+			dec(src->modificationTime);
 			src->pathHash = sha1(src->path.c_str());
 
 			sourcesByPath[src->path] = src.get();
@@ -91,22 +132,49 @@ FileSourceRepository::~FileSourceRepository() {
 
 bool FileSourceRepository::add(const Path& path, const File& file) {
 
-	// Calculate the hash of the file.
-	std::vector<Byte> data;
-	data.reserve(4*1024); // pre-allocate storage for speed
-	file.read(data);
+	// // Check whether the modification time differs.
+	// time_t mod = file.getModificationTime();
+	// auto it = sourcesByPath.find(path);
+	// if (it != sourcesByPath.end()) {
+	// 	if (it->second->modificationTime >= mod)
+	// 		return false;
+	// 	it->second->modificationTime = mod;
+	// 	needsFlush = true;
+	// }
 
-	sha1 base;
-	base.update(path.c_str());
-	sha1hash pathHash = sha1(base);
-	sha1hash hash = base.update(&data[0], data.size());
+	// // Calculate the hash of the file.
+	// std::vector<Byte> data;
+	// file.read(data);
 
-	// If the path is already present in the repository, update the file's hash.
+	// sha1 base;
+	// base.update(path.c_str());
+	// sha1hash pathHash = sha1(base);
+	// sha1hash hash = base.update(&data[0], data.size());
+
+	// // If the path is already present in the repository, update the file's hash.
+	// if (it != sourcesByPath.end()) {
+	// 	if (it->second->hash == hash)
+	// 		return false;
+	// 	it->second->hash = hash;
+	// }
+
+	// Find any existing records of the file and check whether it has been
+	// modified. mod, data, pathHash and hash are filled in the process and are
+	// valid if checkModified() returns true.
 	auto it = sourcesByPath.find(path);
-	if (it != sourcesByPath.end()) {
-		if (it->second->hash == hash)
-			return false;
-		it->second->hash = hash;
+	FileSource* src = (it != sourcesByPath.end() ? it->second : nullptr);
+	time_t mod;
+	std::vector<Byte> data;
+	sha1hash pathHash, hash;
+
+	if (!checkModified(src, path, file, mod, hash, pathHash, data))
+		return false;
+
+	// If a record already existed, simply update the file's hash and
+	// modification time.
+	if (src) {
+		src->hash = hash;
+		src->modificationTime = mod;
 	}
 
 	// Otherwise, allocate a new source ID and create a new file entry.
@@ -121,6 +189,7 @@ bool FileSourceRepository::add(const Path& path, const File& file) {
 		src->path = path;
 		src->pathHash = pathHash;
 		src->hash = hash;
+		src->modificationTime = mod;
 
 		// Store the file in the indices.
 		sourcesByPath[src->path] = src.get();
@@ -196,9 +265,42 @@ Source* FileSourceRepository::getSource(const Path& path) const {
 
 void FileSourceRepository::eachSource(
 	std::function<void(const Source&)> fn) const {
-	for (auto& src : sourcesById) {
+	auto copy = sourcesByPath; // make a copy in case fn modifies things
+	for (auto& src : copy) {
 		fn(*src.second);
 	}
+}
+
+
+bool FileSourceRepository::isModified(
+	const Path& path,
+	const File& file) const {
+
+	auto it = sourcesByPath.find(path);
+	if (it == sourcesByPath.end())
+		return true;
+
+	time_t mod;
+	std::vector<Byte> data;
+	sha1hash pathHash, hash;
+
+	return checkModified(it->second, path, file, mod, hash, pathHash, data);
+}
+
+bool FileSourceRepository::isModified(
+	SourceId sid,
+	const File& file) const {
+
+	auto it = sourcesById.find(sid);
+	if (it == sourcesById.end())
+		return true;
+
+	time_t mod;
+	std::vector<Byte> data;
+	sha1hash pathHash, hash;
+
+	return checkModified(it->second.get(), it->second->getPath(),
+		file, mod, hash, pathHash, data);
 }
 
 
@@ -213,9 +315,10 @@ void FileSourceRepository::flush() const {
 
 	for (auto& pair : sourcesById) {
 		auto& src = pair.second;
-		encode(enc, src->getId());
-		encode(enc, src->getPath());
-		encode(enc, src->getHash());
+		encode(enc, src->id);
+		encode(enc, src->path);
+		encode(enc, src->hash);
+		enc(src->modificationTime);
 	}
 
 	// Store the serialized data to disk.

@@ -26,6 +26,10 @@ public:
 	/// Returns the hash of the file's path and contents. The intention of this
 	/// hash is to detect changes to the source file.
 	virtual const sha1hash& getHash() const = 0;
+
+	/// Returns the modification time of the file when it was added to the
+	/// repository.
+	virtual time_t getModificationTime() const = 0;
 };
 
 } // namespace repository

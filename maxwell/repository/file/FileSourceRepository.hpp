@@ -33,6 +33,9 @@ public:
 
 	void eachSource(std::function<void(const Source&)> fn) const;
 
+	bool isModified(const Path& path, const File& file) const;
+	bool isModified(SourceId sid, const File& file) const;
+
 	void flush() const;
 	void purge() const;
 

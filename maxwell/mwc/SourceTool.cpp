@@ -21,6 +21,11 @@ static bool stroneof(const char* a, const char* b0, const char* b1) {
 
 bool SourceTool::run() {
 
+	bool supportColor = true;
+	const char* COLOR_CLEAR = supportColor ? "\033[0m" : "";
+	const char* COLOR_RED   = supportColor ? "\033[31m" : "";
+	const char* COLOR_GREEN = supportColor ? "\033[32m" : "";
+
 	Path repo;
 	if (argc > 0 && stroneof(*argv, "-r", "--repo")) {
 		--argc; ++argv;
@@ -150,6 +155,46 @@ bool SourceTool::run() {
 			});
 		}
 
+		else if (strcmp(cmd, "status") == 0) {
+			sourceRepo.eachSource([&](const Source& src){
+				auto p = normalizePath(repoDir/src.getPath());
+				if (boost::filesystem::is_regular_file(p)) {
+					if (sourceRepo.isModified(src.getPath(), DiskFile(p))) {
+						out << "modified: "
+							<< relativePath(p, currentPath).native()
+							<< '\n';
+					}
+				} else {
+					out << "deleted:  "
+						<< relativePath(p, currentPath).native() << '\n';
+				}
+			});
+		}
+
+		else if (strcmp(cmd, "update") == 0) {
+			bool verbose = false;
+			if (argc > 0 && stroneof(*argv, "-v", "--verbose")) {
+				--argc; ++argv;
+				verbose = true;
+			}
+			sourceRepo.eachSource([&](const Source& src){
+				auto p = normalizePath(repoDir/src.getPath());
+				if (boost::filesystem::is_regular_file(p)) {
+					bool added = sourceRepo.add(src.getPath(), DiskFile(p));
+					if (verbose && added) {
+						out << "updated "
+							<< relativePath(p,currentPath).native() << '\n';
+					}
+				} else {
+					bool removed = sourceRepo.remove(src.getPath());
+					if (verbose && removed) {
+						out << "removed "
+							<< relativePath(p,currentPath).native() << '\n';
+					}
+				}
+			});
+		}
+
 		else {
 			err << "unknown command '" << cmd << "'\n";
 			printUsage();
@@ -167,4 +212,6 @@ void SourceTool::printUsage() {
 	err << "usage: mwc-src [-r|--repo <repo>] add [-v|--verbose] <path>...\n";
 	err << "   or: mwc-src [-r|--repo <repo>] remove [--all] <path>...\n";
 	err << "   or: mwc-src [-r|--repo <repo>] list\n";
+	err << "   or: mwc-src [-r|--repo <repo>] status\n";
+	err << "   or: mwc-src [-r|--repo <repo>] update [-v|--verbose]\n";
 }

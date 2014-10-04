@@ -26,6 +26,9 @@ public:
 	virtual void write(const std::vector<Byte>& src) {
 		write(Buffer<const Byte>(&src[0], &src[0] + src.size()));
 	}
+
+	/// Returns the time at which the file was modified the last time.
+	virtual time_t getModificationTime() const = 0;
 };
 
 } // namespace filesystem

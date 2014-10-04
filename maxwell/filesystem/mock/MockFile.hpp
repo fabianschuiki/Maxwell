@@ -12,8 +12,9 @@ class MockFile : public File {
 public:
 	mutable std::vector<Byte> content;
 	mutable bool fexists;
+	mutable time_t modified;
 
-	MockFile(const Path& path): path(path), fexists(false) {}
+	MockFile(const Path& path): path(path), fexists(false), modified(0) {}
 	~MockFile() {}
 
 	const Path& getPath() const { return path; }
@@ -26,9 +27,11 @@ public:
 	void write(const Buffer<const Byte>& src) {
 		content.assign(src.getStart(), src.getEnd());
 		fexists = true;
+		modified = time(NULL);
 	}
 
 	bool exists() const { return fexists; }
+	time_t getModificationTime() const { return modified; }
 };
 
 } // namespace filesystem

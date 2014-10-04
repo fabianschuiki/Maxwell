@@ -79,6 +79,14 @@ public:
 	/// Calls the function \a fn for each source file maintained by this
 	/// repository.
 	virtual void eachSource(std::function<void(const Source&)> fn) const = 0;
+
+	/// Returns whether the given \a file differs from the one added to the
+	/// repository as \a path.
+	virtual bool isModified(const Path& path, const File& file) const = 0;
+
+	/// Returns whether the given \a file differs from the one in the repository
+	/// with the given source ID \a sid.
+	virtual bool isModified(SourceId sid, const File& file) const = 0;
 };
 
 } // namespace repository

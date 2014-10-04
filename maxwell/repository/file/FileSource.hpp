@@ -16,11 +16,13 @@ class FileSource : public Source {
 	Path path;
 	sha1hash hash;
 	sha1hash pathHash;
+	time_t modificationTime;
 
 public:
 	SourceId getId() const { return id; }
 	const Path& getPath() const { return path; }
 	const sha1hash& getHash() const { return hash; }
+	time_t getModificationTime() const { return modificationTime; }
 };
 
 } // namespace repository

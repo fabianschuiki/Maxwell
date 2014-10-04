@@ -6,36 +6,17 @@
 #include "maxwell/repository/file/FileSourceRepository.hpp"
 #include <cstring>
 #include <iostream>
-using maxwell::filesystem::Path;
 using maxwell::filesystem::DiskDirectory;
 using maxwell::filesystem::DiskFile;
+using maxwell::filesystem::normalizePath;
+using maxwell::filesystem::Path;
+using maxwell::filesystem::relativePath;
 using maxwell::repository::FileSourceRepository;
 using maxwell::repository::Source;
 using namespace maxwell::mwc;
 
 static bool stroneof(const char* a, const char* b0, const char* b1) {
 	return strcmp(a,b0) == 0 || strcmp(a,b1) == 0;
-}
-
-static Path makePathRelative(const Path& path, const Path& base) {
-	assert(path.is_absolute());
-	assert(base.is_absolute());
-	Path result;
-	auto pb = path.begin(), pe = path.end();
-	auto bb = base.begin(), be = base.end();
-	while (pb != pe && bb != be && *pb == *bb) {
-		++pb;
-		++bb;
-	}
-	while (bb != be) {
-		result /= "../";
-		++bb;
-	}
-	while (pb != pe) {
-		result /= *pb;
-		++pb;
-	}
-	return result;
 }
 
 bool SourceTool::run() {
@@ -68,6 +49,7 @@ bool SourceTool::run() {
 	if (repo.empty()) {
 		repo = currentPath/".mwc";
 	}
+	auto repoDir = repo.parent_path();
 
 	// Setup the source repository.
 	Path sourceRepoPath = repo/"sources";
@@ -86,23 +68,25 @@ bool SourceTool::run() {
 		argc--; argv++;
 		if (strcmp(cmd, "add") == 0) {
 			for (; argc > 0; argc--, argv++) {
-				Path path = currentPath/(*argv);
+				Path path = normalizePath(currentPath/(*argv));
 				if (!boost::filesystem::is_regular_file(path)) {
-					err << "skipping " << *argv << " (not a file)\n";
+					err << "skipped " << *argv << " (not a file)\n";
 					continue;
 				}
-				Path relative = makePathRelative(
-					boost::filesystem::canonical(path),
-					repo.parent_path());
+				Path relative = relativePath(path, repoDir);
 				sourceRepo.add(relative, DiskFile(path));
 			}
 		} else if (strcmp(cmd, "remove") == 0) {
-
+			for (; argc > 0; argc--, argv++) {
+				Path path = normalizePath(currentPath/(*argv));
+				Path relative = relativePath(path, repoDir);
+				if (!sourceRepo.remove(relative))
+					err << "skipped " << *argv << " (not in repository)\n";
+			}
 		} else if (strcmp(cmd, "list") == 0) {
 			sourceRepo.eachSource([&](const Source& src){
-				auto p = boost::filesystem::canonical(
-					repo.parent_path()/src.getPath());
-				out << makePathRelative(p, currentPath).native() << '\n';
+				auto p = normalizePath(repoDir/src.getPath());
+				out << relativePath(p, currentPath).native() << '\n';
 			});
 		} else {
 			err << "unknown command '" << cmd << "'\n";

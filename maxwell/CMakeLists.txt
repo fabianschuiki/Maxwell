@@ -14,6 +14,7 @@ add_subdirectory(backend)
 add_executable(mwc-src
 	filesystem/disk/DiskDirectory.cpp
 	filesystem/disk/DiskFile.cpp
+	filesystem/Path.cpp
 	repository/file/FileSourceRepository.cpp
 	sha1.cpp
 	mwc/SourceTool-main.cpp

@@ -1,0 +1,19 @@
+// [PackageDev] target_format: plist, ext: tmLanguage
+{
+	"name": "gcov",
+	"scopeName": "source.gcov",
+	"fileTypes": ["gcov"],
+	"patterns": [
+		{
+			"begin": "^\\s*-\\s*:",
+			"end": "$",
+			"name": "comment.gcov"
+		},
+		{
+			"begin": "^\\s*#+\\s*:",
+			"end": "$",
+			"name": "invalid.untouched.gcov"
+		}
+	],
+	"uuid": "228333b2-d640-4319-8fc5-4693fd593bac"
+}

@@ -132,32 +132,6 @@ FileSourceRepository::~FileSourceRepository() {
 
 bool FileSourceRepository::add(const Path& path, const File& file) {
 
-	// // Check whether the modification time differs.
-	// time_t mod = file.getModificationTime();
-	// auto it = sourcesByPath.find(path);
-	// if (it != sourcesByPath.end()) {
-	// 	if (it->second->modificationTime >= mod)
-	// 		return false;
-	// 	it->second->modificationTime = mod;
-	// 	needsFlush = true;
-	// }
-
-	// // Calculate the hash of the file.
-	// std::vector<Byte> data;
-	// file.read(data);
-
-	// sha1 base;
-	// base.update(path.c_str());
-	// sha1hash pathHash = sha1(base);
-	// sha1hash hash = base.update(&data[0], data.size());
-
-	// // If the path is already present in the repository, update the file's hash.
-	// if (it != sourcesByPath.end()) {
-	// 	if (it->second->hash == hash)
-	// 		return false;
-	// 	it->second->hash = hash;
-	// }
-
 	// Find any existing records of the file and check whether it has been
 	// modified. mod, data, pathHash and hash are filled in the process and are
 	// valid if checkModified() returns true.

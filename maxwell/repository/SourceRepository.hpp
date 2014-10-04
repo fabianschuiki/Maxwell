@@ -58,6 +58,9 @@ public:
 	/// to be removed.
 	virtual bool remove(const Path& path) = 0;
 
+	/// Removes all source files in the repository.
+	virtual void removeAll() = 0;
+
 	/// Returns the unique source ID of the file with the given \a path, or an
 	/// invalid source ID if the file does not exist in the repository.
 	virtual SourceId getSourceId(const Path& path) const = 0;

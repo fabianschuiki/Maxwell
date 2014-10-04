@@ -66,29 +66,91 @@ bool SourceTool::run() {
 	if (argc > 0) {
 		const char* cmd = *argv;
 		argc--; argv++;
+
 		if (strcmp(cmd, "add") == 0) {
+
+			// Check the verbosity flag.
+			bool verbose = false;
+			if (argc > 0 && stroneof(*argv, "-v", "--verbose")) {
+				--argc; ++argv;
+				verbose = true;
+			}
+
+			// Show a note if the user did not provide any arguments.
+			if (argc == 0) {
+				err << "Nothing specified, nothing added.\n";
+				err << "Maybe you wanted to say 'mwc-src add .'?\n";
+				return false;
+			}
+
+			// Process the arguments.
 			for (; argc > 0; argc--, argv++) {
 				Path path = normalizePath(currentPath/(*argv));
-				if (!boost::filesystem::is_regular_file(path)) {
-					err << "skipped " << *argv << " (not a file)\n";
+
+				// Add entire directories.
+				if (boost::filesystem::is_directory(path)) {
+					boost::filesystem::recursive_directory_iterator
+						it(path), end;
+					for (; it != end; ++it) {
+						Path p = *it;
+						if (p.extension() != ".mw")
+							continue;
+						bool added = sourceRepo.add(
+							relativePath(p, repoDir),
+							DiskFile(p));
+						if (verbose && added) {
+							out << "added "
+								<< relativePath(p, currentPath).native()
+								<< '\n';
+						}
+					}
+				}
+
+				// Add individual files.
+				else if (boost::filesystem::is_regular_file(path)) {
+					Path relative = relativePath(path, repoDir);
+					bool added = sourceRepo.add(relative, DiskFile(path));
+					if (verbose && added) {
+						out << "added "
+							<< relativePath(path, currentPath).native()
+							<< '\n';
+					}
+				}
+
+				// Complain about inexistent stuff.
+				else {
+					err << "skipped " << *argv << " (not found)\n";
 					continue;
 				}
-				Path relative = relativePath(path, repoDir);
-				sourceRepo.add(relative, DiskFile(path));
 			}
-		} else if (strcmp(cmd, "remove") == 0) {
-			for (; argc > 0; argc--, argv++) {
-				Path path = normalizePath(currentPath/(*argv));
-				Path relative = relativePath(path, repoDir);
-				if (!sourceRepo.remove(relative))
-					err << "skipped " << *argv << " (not in repository)\n";
+		}
+
+		else if (strcmp(cmd, "remove") == 0) {
+			if (argc == 0) {
+				err << "Nothing specified, nothing removed.\n";
+				return false;
 			}
-		} else if (strcmp(cmd, "list") == 0) {
+			if (argc > 0 && strcmp(*argv, "--all") == 0) {
+				--argc; ++argv;
+				sourceRepo.removeAll();
+			} else {
+				for (; argc > 0; argc--, argv++) {
+					Path path = normalizePath(currentPath/(*argv));
+					Path relative = relativePath(path, repoDir);
+					if (!sourceRepo.remove(relative))
+						err << "skipped " << *argv << " (not in repository)\n";
+				}
+			}
+		}
+
+		else if (strcmp(cmd, "list") == 0) {
 			sourceRepo.eachSource([&](const Source& src){
 				auto p = normalizePath(repoDir/src.getPath());
 				out << relativePath(p, currentPath).native() << '\n';
 			});
-		} else {
+		}
+
+		else {
 			err << "unknown command '" << cmd << "'\n";
 			printUsage();
 			return false;
@@ -102,7 +164,7 @@ bool SourceTool::run() {
 }
 
 void SourceTool::printUsage() {
-	err << "usage: mwc-src [-r|--repo <repo>] add <path>...\n";
-	err << "   or: mwc-src [-r|--repo <repo>] remove <path>...\n";
+	err << "usage: mwc-src [-r|--repo <repo>] add [-v|--verbose] <path>...\n";
+	err << "   or: mwc-src [-r|--repo <repo>] remove [--all] <path>...\n";
 	err << "   or: mwc-src [-r|--repo <repo>] list\n";
 }

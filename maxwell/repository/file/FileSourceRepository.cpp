@@ -163,6 +163,14 @@ bool FileSourceRepository::remove(const Path& path) {
 	return true;
 }
 
+void FileSourceRepository::removeAll() {
+	sourcesById.clear();
+	sourcesByPath.clear();
+	sourcesByPathHash.clear();
+	needsFlush = true;
+	needsPurge = true;
+}
+
 
 SourceId FileSourceRepository::getSourceId(const Path& path) const {
 	auto it = sourcesByPath.find(path);

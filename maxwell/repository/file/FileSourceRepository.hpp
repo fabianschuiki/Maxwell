@@ -23,6 +23,7 @@ public:
 	bool add(const Path& path, const File& file);
 	bool remove(SourceId sid);
 	bool remove(const Path& path);
+	void removeAll();
 
 	SourceId getSourceId(const Path& path) const;
 	Path getPath(SourceId sid) const;

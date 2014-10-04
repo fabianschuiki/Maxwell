@@ -14,4 +14,4 @@ script:
   - export CTEST_OUTPUT_ON_FAILURE=1
   - cmake -DCMAKE_BUILD_TYPE=gcov . && make && make test
 after_success:
-  - coveralls --gcov "$GCOV" --gcov-options '\-lp' -e CMakeFiles -E ".*/test/.*" -E ".*/mock/.*" -e maxwell/gen -e maxwell/language -e thirdparty -e maxwell/ast/nodes -e maxwell/driver/gramdiag.c -e maxwell/driver/Parser.cpp -e maxwell/driver/Parser.hpp -e maxwell/driver/Scanner.cpp -e maxwell/driver/position.hh -e maxwell/driver/stack.hh -e maxwell/driver/location.hh
+  - coveralls --gcov "$GCOV" --gcov-options '\-lp' -e CMakeFiles -E ".*/test/.*" -E ".*/mock/.*" -e maxwell/gen -e language -e thirdparty -e maxwell/ast/nodes -e maxwell/driver/gramdiag.c -e maxwell/driver/Parser.cpp -e maxwell/driver/Parser.hpp -e maxwell/driver/Scanner.cpp -e maxwell/driver/position.hh -e maxwell/driver/stack.hh -e maxwell/driver/location.hh

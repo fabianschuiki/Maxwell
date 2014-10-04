@@ -85,7 +85,7 @@ bool SourceTool::run() {
 			if (argc == 0) {
 				err << "Nothing specified, nothing added.\n";
 				err << "Maybe you wanted to say 'mwc-src add .'?\n";
-				return false;
+				return true;
 			}
 
 			// Process the arguments.
@@ -133,7 +133,7 @@ bool SourceTool::run() {
 		else if (strcmp(cmd, "remove") == 0) {
 			if (argc == 0) {
 				err << "Nothing specified, nothing removed.\n";
-				return false;
+				return true;
 			}
 			if (argc > 0 && strcmp(*argv, "--all") == 0) {
 				--argc; ++argv;

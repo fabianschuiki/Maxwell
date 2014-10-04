@@ -25,8 +25,8 @@ BOOST_AUTO_TEST_CASE(repository_source) {
 		SourceRepository &repo = concrete;
 
 		// Add mock files to the repository.
-		MockFile srca("src/main.mw");
-		MockFile srcb("src/funcs.mw");
+		MockFile srca("src/main.mw", 123);
+		MockFile srcb("src/funcs.mw", 123);
 		BOOST_CHECK(repo.add("main.mw", srca));
 		BOOST_CHECK(repo.add("funcs.mw", srcb));
 		BOOST_CHECK(!repo.add("main.mw", srca));
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(repository_source) {
 		BOOST_CHECK(repo.getSourceId("funcs.mw"));
 
 		// Update one of the files with new mock content.
-		MockFile srcc("src/main.mw"); srcc.content.push_back(3);
+		MockFile srcc("src/main.mw", 234); srcc.content.push_back(3);
 		BOOST_CHECK(repo.add("main.mw", srcc));
 		BOOST_CHECK(!repo.add("main.mw", srcc));
 

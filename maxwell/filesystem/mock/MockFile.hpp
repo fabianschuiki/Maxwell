@@ -14,7 +14,10 @@ public:
 	mutable bool fexists;
 	mutable time_t modified;
 
-	MockFile(const Path& path): path(path), fexists(false), modified(0) {}
+	MockFile(const Path& path, time_t modified = 0):
+		path(path),
+		fexists(false),
+		modified(modified) {}
 	~MockFile() {}
 
 	const Path& getPath() const { return path; }

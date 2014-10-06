@@ -25,9 +25,28 @@ int Tool::main(int argc, char** argv) {
 	try {
 		this->argc = argc-1;
 		this->argv = argv+1;
+
+		// Print the tool help if requested.
+		if (this->argc > 0 && (
+			strcmp(*this->argv, "-h") == 0 ||
+			strcmp(*this->argv, "--help") == 0)) {
+			printHelp();
+			return 0;
+		}
+
+		// Print the tool version if requested.
+		if (this->argc > 0 && strcmp(*this->argv, "--version") == 0) {
+			printVersion();
+			return 0;
+		}
+
 		return run() ? 0 : 1;
 	} catch (std::exception& e) {
 		err << e.what() << '\n';
 		return -1;
 	}
+}
+
+void Tool::printHelp() {
+	printUsage();
 }

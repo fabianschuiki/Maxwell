@@ -3,6 +3,10 @@ add_library(base64 base64.cpp)
 add_library(sqlite3 ${PROJECT_SOURCE_DIR}/thirdparty/sqlite3.c)
 target_link_libraries(sqlite3 dl pthread)
 
+# Create the configuration header.
+configure_file(config.hpp.in config.hpp)
+include_directories("${PROJECT_BINARY_DIR}")
+
 add_subdirectory(driver)
 add_subdirectory(gen)
 add_subdirectory(ast)

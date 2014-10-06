@@ -101,22 +101,33 @@ FileSourceRepository::FileSourceRepository(const Directory& dir):
 	// Load the index file if it exists.
 	File& index = dir.getFile("index");
 	if (index.exists()) {
-		std::vector<Byte> indexData;
-		index.read(indexData);
-		ArrayDecoder indexDecoder(&indexData[0], indexData.size());
-		Decoder& dec = indexDecoder;
+		try {
+			std::vector<Byte> indexData;
+			index.read(indexData);
+			ArrayDecoder indexDecoder(&indexData[0], indexData.size());
+			Decoder& dec = indexDecoder;
+			uint16_t version;
+			dec(version);
 
-		while (dec.remaining()) {
-			std::unique_ptr<FileSource> src(new FileSource);
-			decode(dec, src->id);
-			decode(dec, src->path);
-			decode(dec, src->hash);
-			dec(src->modificationTime);
-			src->pathHash = sha1(src->path.c_str());
+			while (dec.remaining()) {
+				std::unique_ptr<FileSource> src(new FileSource);
+				decode(dec, src->id);
+				decode(dec, src->path);
+				decode(dec, src->hash);
+				dec(src->modificationTime);
+				src->pathHash = sha1(src->path.c_str());
 
-			sourcesByPath[src->path] = src.get();
-			sourcesByPathHash[src->pathHash] = src.get();
-			sourcesById[src->id] = std::move(src);
+				sourcesByPath[src->path] = src.get();
+				sourcesByPathHash[src->pathHash] = src.get();
+				sourcesById[src->id] = std::move(src);
+			}
+		} catch (std::exception &e) {
+			sourcesById.clear();
+			sourcesByPath.clear();
+			sourcesByPathHash.clear();
+
+			throw std::runtime_error("corrupted source index "
+				+ index.getPath().native());
 		}
 	}
 }
@@ -286,6 +297,8 @@ void FileSourceRepository::flush() const {
 	index.reserve(4*1024); // pre-allocate storage for speed
 	VectorEncoder indexEncoder(index);
 	Encoder& enc = indexEncoder; // enables use of templates in Encoder
+	const uint16_t version = 2;
+	enc(version);
 
 	for (auto& pair : sourcesById) {
 		auto& src = pair.second;

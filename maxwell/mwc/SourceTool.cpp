@@ -1,4 +1,5 @@
 /* Copyright (c) 2014 Fabian Schuiki */
+#include "maxwell/config.hpp"
 #include "maxwell/filesystem/disk/DiskDirectory.hpp"
 #include "maxwell/filesystem/disk/DiskFile.hpp"
 #include "maxwell/filesystem/Path.hpp"
@@ -21,11 +22,12 @@ static bool stroneof(const char* a, const char* b0, const char* b1) {
 
 bool SourceTool::run() {
 
-	bool supportColor = true;
-	const char* COLOR_CLEAR = supportColor ? "\033[0m" : "";
-	const char* COLOR_RED   = supportColor ? "\033[31m" : "";
-	const char* COLOR_GREEN = supportColor ? "\033[32m" : "";
+	// bool supportColor = true;
+	// const char* COLOR_CLEAR = supportColor ? "\033[0m" : "";
+	// const char* COLOR_RED   = supportColor ? "\033[31m" : "";
+	// const char* COLOR_GREEN = supportColor ? "\033[32m" : "";
 
+	// Read the repository from the input arguments.
 	Path repo;
 	if (argc > 0 && stroneof(*argv, "-r", "--repo")) {
 		--argc; ++argv;
@@ -64,11 +66,12 @@ bool SourceTool::run() {
 		err << sourceRepoPath.native() << " exists but is not a directory\n";
 		return false;
 	}
-	DiskDirectory sourceRepoDir(sourceRepoPath);
-	FileSourceRepository sourceRepo(sourceRepoDir);
 
 	// Execute the commands.
 	if (argc > 0) {
+		DiskDirectory sourceRepoDir(sourceRepoPath);
+		FileSourceRepository sourceRepo(sourceRepoDir);
+
 		const char* cmd = *argv;
 		argc--; argv++;
 
@@ -214,4 +217,8 @@ void SourceTool::printUsage() {
 	err << "   or: mwc-src [-r|--repo <repo>] list\n";
 	err << "   or: mwc-src [-r|--repo <repo>] status\n";
 	err << "   or: mwc-src [-r|--repo <repo>] update [-v|--verbose]\n";
+}
+
+void SourceTool::printVersion() {
+	err << "mwc-src version " << VERSION_STRING << '\n';
 }

@@ -7,6 +7,11 @@ if (CMAKE_BUILD_TYPE)
 	message("## ${CMAKE_BUILD_TYPE} build")
 endif()
 
+# Project version.
+set(VERSION_MAJOR 0)
+set(VERSION_MINOR 1)
+set(VERSION_PATCH 0)
+
 
 # Enable C++11 support and enable all warnings.
 if (UNIX)

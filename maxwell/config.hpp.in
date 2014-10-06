@@ -1,0 +1,8 @@
+/* Copyright (c) 2014 Fabian Schuiki */
+#pragma once
+
+// Version of the project.
+const unsigned VERSION_MAJOR = @VERSION_MAJOR@;
+const unsigned VERSION_MINOR = @VERSION_MINOR@;
+const unsigned VERSION_PATCH = @VERSION_PATCH@;
+const char* VERSION_STRING = "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@";

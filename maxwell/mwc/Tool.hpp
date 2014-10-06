@@ -27,6 +27,10 @@ protected:
 	/// from the main() function of the Tool.
 	virtual bool run() = 0;
 
+	virtual void printUsage() = 0;
+	virtual void printHelp();
+	virtual void printVersion() = 0;
+
 public:
 	Tool(const Path& pwd = boost::filesystem::current_path());
 	Tool(std::istream& in, std::ostream& out, std::ostream& err,

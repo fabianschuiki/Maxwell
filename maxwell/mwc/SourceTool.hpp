@@ -8,6 +8,7 @@ class SourceTool : public Tool {
 protected:
 	bool run();
 	void printUsage();
+	void printVersion();
 
 public:
 	template<typename... Args>

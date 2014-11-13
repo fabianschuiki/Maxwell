@@ -21,9 +21,18 @@ namespace repository {
 /// - the node itself.
 ///
 /// The combination of source ID and node ID forms a node identifier unique
-/// across all source files (the node ID).
+/// across all source files (the node ID). The repository operates on an
+/// abstract node interface which needs to provide the information listed above.
+/// Thus it has no dependency on a specific node class, but can be made to deal
+/// with any class
+///
+/// The repository allows nodes to be added, removed, and looked up. It provides
+/// means to detect whether a source file or node have been modified. Source
+/// files and nodes may be iterated.
 class NodeRepository {
 public:
+	virtual bool add(const Source& src) = 0;
+	virtual bool remove(SourceId sid) = 0;
 };
 
 } // namespace repository

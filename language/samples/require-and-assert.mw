@@ -1,0 +1,26 @@
+square: x -> y {
+	require x = Int range(0,10);
+	require y = Int range(0,100);
+	y = x*x;
+}
+
+increase: x -> x + 1
+
+main: {
+	square(0);  // works
+	square(10); // works
+	square(20); // compiler error
+
+	a := square(2);
+	// works only with function specialization
+	b := square(a);
+	// alternative #1
+	b := if (a < 0 | a > 10) {
+		square(a)
+	} else {
+		a
+	}
+	// alternative #2
+	assert a >= 0 && a <= 10;
+	b := square(a);
+}

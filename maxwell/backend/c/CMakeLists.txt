@@ -8,7 +8,7 @@ add_library(backendc
 	Packager-sort.cpp
 	Packager-group.cpp
 	Packager-compile.cpp
-	
+
 	# Code Generator
 	CodeGenerator.cpp
 	codegen/AssignmentExpr.cpp
@@ -24,6 +24,7 @@ add_library(backendc
 	codegen/IfExpr.cpp
 	codegen/IndexOpExpr.cpp
 	codegen/NumberConstExpr.cpp
+	codegen/StringConstExpr.cpp
 	codegen/TupleExpr.cpp
 	codegen/TupleType.cpp
 	codegen/TypeDef.cpp

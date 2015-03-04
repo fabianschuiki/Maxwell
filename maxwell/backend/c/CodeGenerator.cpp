@@ -61,6 +61,7 @@ void CodeGenerator::generateExpr(const NodePtr& node, ExprCode& out, Context& ct
 	REGISTER_EXPR(IfExpr);
 	REGISTER_EXPR(IndexOpExpr);
 	REGISTER_EXPR(NumberConstExpr);
+	REGISTER_EXPR(StringConstExpr);
 	REGISTER_EXPR(TupleExpr);
 	REGISTER_EXPR(TypelessVarDefExpr);
 	REGISTER_EXPR(VarDefExpr);

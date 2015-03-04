@@ -14,6 +14,9 @@ DEF_TYPE(DefinedType)
 		} else if (num->getName() == "Real") {
 			out.code = "float";
 			return;
+		} else if (num->getName() == "String") {
+			out.code = "const char*";
+			return;
 		} else {
 			throw std::runtime_error("Code generation for builtin type " + num->getId().str() + " (" + num->getName() + ") not implemented.");
 		}

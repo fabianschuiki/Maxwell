@@ -74,6 +74,12 @@ void buildAST(Builder &node)
 		.intf(graph)
 		.attr("name", "string")
 		.child("type", "#typeExpr");
+	node("NativeFuncDef")
+		.intf(graph).intf(callable)
+		.attr("name", "string")
+		.child("in", "[FuncArg]")
+		.child("out", "[FuncArg]")
+		.child("type", "FuncType");
 
 	// Expressions
 	node("NumberConstExpr")

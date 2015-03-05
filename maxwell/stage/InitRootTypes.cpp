@@ -1,4 +1,4 @@
-/* Copyright (c) 2013 Fabian Schuiki */
+/* Copyright (c) 2013-2015 Fabian Schuiki */
 #include "maxwell/stage/stages.hpp"
 #include <iostream>
 
@@ -22,8 +22,7 @@ void InitRootTypes::process(const NodePtr& node)
 	}
 
 	// Assign types to functions.
-	if (const FuncDef::Ptr& def = FuncDef::from(node))
-	{
+	if (const FuncDef::Ptr& def = FuncDef::from(node)) {
 		NodePtr inType, outType;
 
 		// Create either a tuple for the in and out types if the function has
@@ -55,6 +54,43 @@ void InitRootTypes::process(const NodePtr& node)
 			outTuple->setArgs(outArgs);
 			outType = outTuple;
 		} else if (def->getOut().empty()) {
+			outType.reset(new NilType);
+		} else {
+			NodeVector outArgs;
+			wrapFuncArgs(outArgs, def->getOut());
+
+			TupleType::Ptr outTuple(new TupleType);
+			outTuple->setArgs(outArgs);
+			outType = outTuple;
+		}
+
+		// Wrap the two types in a FuncType node.
+		FuncType::Ptr func(new FuncType);
+		func->setIn(inType);
+		func->setOut(outType);
+
+		// Assign the FuncType to the function definition.
+		def->setType(func);
+	}
+
+	// Assign types to native functions.
+	if (const auto& def = NativeFuncDef::from(node)) {
+		NodePtr inType, outType;
+
+		// Create either a tuple for the in and out types if the function has
+		// input or output arguments, or nil if it doesn't.
+		if (def->getIn().empty()) {
+			inType.reset(new NilType);
+		} else {
+			NodeVector inArgs;
+			wrapFuncArgs(inArgs, def->getIn());
+
+			TupleType::Ptr inTuple(new TupleType);
+			inTuple->setArgs(inArgs);
+			inType = inTuple;
+		}
+
+		if (def->getOut().empty()) {
 			outType.reset(new NilType);
 		} else {
 			NodeVector outArgs;

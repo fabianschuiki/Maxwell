@@ -30,6 +30,7 @@
 #include "maxwell/ast/nodes/MapConstExprPair.hpp"
 #include "maxwell/ast/nodes/MemberAccessExpr.hpp"
 #include "maxwell/ast/nodes/NamedTypeExpr.hpp"
+#include "maxwell/ast/nodes/NativeFuncDef.hpp"
 #include "maxwell/ast/nodes/NativeQualifier.hpp"
 #include "maxwell/ast/nodes/NilType.hpp"
 #include "maxwell/ast/nodes/NilTypeExpr.hpp"

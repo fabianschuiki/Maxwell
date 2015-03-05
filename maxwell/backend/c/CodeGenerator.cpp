@@ -43,6 +43,8 @@ void CodeGenerator::generateRoot(const NodePtr& node)
 {
 	REGISTER_ROOT(FuncDef);
 	REGISTER_ROOT(TypeDef);
+	if (ast::NativeFuncDef::from(node))
+		return;
 
 	// Throw an exception if no code could be generated.
 	throw std::runtime_error(
@@ -89,6 +91,7 @@ void CodeGenerator::generateType(const NodePtr& node, TypeCode& out)
 	REGISTER_TYPE(FuncType);
 	REGISTER_TYPE(TupleType);
 	REGISTER_TYPE(UnionType);
+	REGISTER_TYPE(NilType);
 
 	// Throw an exception if no code could be generated.
 	throw std::runtime_error(

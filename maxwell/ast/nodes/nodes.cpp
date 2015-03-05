@@ -189,10 +189,18 @@ ast::NodePtr ast::makeNode(const std::string& name) {
 					// NamedTypeExpr
 					if (size == 13) return NodePtr(new NamedTypeExpr);
 				}
-				// NativeQualifier.*
-				if (size >= 15 && name[2] == 't' && name[3] == 'i' && name[4] == 'v' && name[5] == 'e' && name[6] == 'Q' && name[7] == 'u' && name[8] == 'a' && name[9] == 'l' && name[10] == 'i' && name[11] == 'f' && name[12] == 'i' && name[13] == 'e' && name[14] == 'r') {
-					// NativeQualifier
-					if (size == 15) return NodePtr(new NativeQualifier);
+				// Native.*
+				if (size >= 6 && name[2] == 't' && name[3] == 'i' && name[4] == 'v' && name[5] == 'e') {
+					// NativeFuncDef.*
+					if (size >= 13 && name[6] == 'F' && name[7] == 'u' && name[8] == 'n' && name[9] == 'c' && name[10] == 'D' && name[11] == 'e' && name[12] == 'f') {
+						// NativeFuncDef
+						if (size == 13) return NodePtr(new NativeFuncDef);
+					}
+					// NativeQualifier.*
+					if (size >= 15 && name[6] == 'Q' && name[7] == 'u' && name[8] == 'a' && name[9] == 'l' && name[10] == 'i' && name[11] == 'f' && name[12] == 'i' && name[13] == 'e' && name[14] == 'r') {
+						// NativeQualifier
+						if (size == 15) return NodePtr(new NativeQualifier);
+					}
 				}
 			}
 			// NilType.*

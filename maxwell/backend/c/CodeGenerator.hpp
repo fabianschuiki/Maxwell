@@ -103,6 +103,7 @@ private:
 	DECL_TYPE(FuncType);
 	DECL_TYPE(TupleType);
 	DECL_TYPE(UnionType);
+	DECL_TYPE(NilType);
 
 	// Declare types that can be resolved.
 	void generateUnionMappedType(const ast::UnionMappedType::Ptr& node, ExprCode& out, Context& ctx);

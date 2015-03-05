@@ -35,6 +35,7 @@ typedef enum {
 	kMapConstExprPair,
 	kMemberAccessExpr,
 	kNamedTypeExpr,
+	kNativeFuncDef,
 	kNativeQualifier,
 	kNilType,
 	kNilTypeExpr,

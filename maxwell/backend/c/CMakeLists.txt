@@ -10,7 +10,6 @@ add_library(backendc
 	Packager-compile.cpp
 
 	# Code Generator
-	CodeGenerator.cpp
 	codegen/AssignmentExpr.cpp
 	codegen/BlockExpr.cpp
 	codegen/CallIntf.cpp
@@ -23,6 +22,7 @@ add_library(backendc
 	codegen/IfCaseExpr.cpp
 	codegen/IfExpr.cpp
 	codegen/IndexOpExpr.cpp
+	codegen/NilType.cpp
 	codegen/NumberConstExpr.cpp
 	codegen/StringConstExpr.cpp
 	codegen/TupleExpr.cpp
@@ -31,4 +31,5 @@ add_library(backendc
 	codegen/UnionMappedType.cpp
 	codegen/UnionType.cpp
 	codegen/VarDefExpr.cpp
+	CodeGenerator.cpp
 )

@@ -1,4 +1,4 @@
-/* Copyright (c) 2013 Fabian Schuiki */
+/* Copyright (c) 2013-2015 Fabian Schuiki */
 
 %{
 #include <iostream>
@@ -58,16 +58,73 @@ typedef std::vector<NodePtr> Nodes;
     int symbol;
 }
 
-%type <node> func_def func_arg type_def if_expr for_expr expr call_arg
+%type <node>
+  additive_expr
+  and_expr
+  any_expr
+  assignment_expr
+  block_expr
+  block_expr_expr
+  body_expr
+  call_arg
+  equality_expr
+  expr
+  for_expr
+  func_arg
+  func_def
+  func_expr
+  func_typeexpr
+  if_expr
+  ifcase_expr
+  ifcase_expr_cond
+  interface_qualifier
+  interface_qualifier_stmt
+  macro_expr
+  map_expr_pair
+  multiplicative_expr
+  native_def
+  native_func_def
+  native_qualifier
+  nonempty_block_expr
+  or_expr
+  post_func_typeexpr
+  postfix_expr
+  prefix_expr
+  primary_expr
+  primary_typeexpr
+  qualified_typeexpr
+  qualified_typeexpr_qualifier
+  range_qualifier
+  relational_expr
+  specialized_typeexpr
+  structure_qualifier
+  structure_qualifier_stmt
+  tuple_expr
+  tuple_expr_arg
+  tuple_expr_arg_anonymous
+  tuple_expr_arg_named
+  tuple_typeexpr
+  tuple_typeexpr_arg
+  type_def
+  typeexpr
+  union_typeexpr
 
-%type <node> primary_expr tuple_expr tuple_expr_arg tuple_expr_arg_named tuple_expr_arg_anonymous ifcase_expr ifcase_expr_cond postfix_expr prefix_expr multiplicative_expr additive_expr relational_expr equality_expr and_expr or_expr assignment_expr map_expr_pair body_expr block_expr nonempty_block_expr block_expr_expr macro_expr any_expr func_expr
-%type <nodes> expr_list map_expr_pairs ifcase_expr_conds block_expr_exprs tuple_expr_args
-
-%type <node> typeexpr union_typeexpr tuple_typeexpr tuple_typeexpr_arg qualified_typeexpr qualified_typeexpr_qualifier specialized_typeexpr func_typeexpr post_func_typeexpr primary_typeexpr
-%type <nodes> func_args_tuple func_args union_typeexprs tuple_typeexpr_args call_args qualified_typeexpr_qualifiers specialized_typeexpr_specs
-
-%type <node> structure_qualifier structure_qualifier_stmt interface_qualifier interface_qualifier_stmt native_qualifier range_qualifier
-%type <nodes> structure_qualifier_stmts interface_qualifier_stmts
+%type <nodes>
+  block_expr_exprs
+  call_args
+  expr_list
+  func_args
+  func_args_tuple
+  ifcase_expr_conds
+  interface_qualifier_stmts
+  map_expr_pairs
+  native_def_list
+  qualified_typeexpr_qualifiers
+  specialized_typeexpr_specs
+  structure_qualifier_stmts
+  tuple_expr_args
+  tuple_typeexpr_args
+  union_typeexprs
 
 %type <varDefExpr> var_expr
 %type <string> any_operator
@@ -115,7 +172,14 @@ typedef std::vector<NodePtr> Nodes;
 %token DEFASSIGN
 %token HASHTAG
 
-%destructor { delete $$; } IDENTIFIER NUMBER STRING_LITERAL MULTIPLICATIVE_OPERATOR ADDITIVE_OPERATOR RELATIONAL_OPERATOR OPERATOR
+%destructor { delete $$; }
+  IDENTIFIER
+  NUMBER
+  STRING_LITERAL
+  MULTIPLICATIVE_OPERATOR
+  ADDITIVE_OPERATOR
+  RELATIONAL_OPERATOR
+  OPERATOR
 
 %start root
 
@@ -150,6 +214,7 @@ root_stmt : func_def {
           | type_def {
               driver.add(NodePtr($1));
             }
+          | native_defs
           ;
 
 /* Function Declaration*/
@@ -251,6 +316,61 @@ type_def_name
       delete $2;
     }
   ;
+
+
+/* Native Function Declaration */
+native_func_def
+  : FUNC IDENTIFIER func_args_tuple {
+      NativeFuncDef* d = new NativeFuncDef;
+      d->setName(*$2);
+      d->setIn(*$3);
+      delete $2;
+      delete $3;
+      $$ = d;
+    }
+  | FUNC IDENTIFIER func_args_tuple RIGHTARROW func_args_tuple {
+      NativeFuncDef* d = new NativeFuncDef;
+      d->setName(*$2);
+      d->setIn(*$3);
+      d->setOut(*$5);
+      delete $2;
+      delete $3;
+      delete $5;
+      $$ = d;
+    }
+  ;
+
+native_def
+  : native_func_def SEMICOLON
+  ;
+
+native_def_list
+  : native_def {
+      $$ = new Nodes;
+      $$->push_back(NodePtr($1));
+    }
+  | native_def_list native_def {
+      $$->push_back(NodePtr($2));
+    }
+  ;
+
+native_defs
+  : NATIVE IDENTIFIER native_def {
+      // $3->setLanguage(*$2);
+      delete $2;
+      driver.add(NodePtr($3));
+    }
+  | NATIVE IDENTIFIER LBRACE native_def_list RBRACE {
+      for (auto d : *$4) {
+        // d->setLanguage(*$2);
+        driver.add(NodePtr(d));
+      }
+      delete $2;
+      delete $4;
+    }
+  ;
+
+
 
 /*
  * ----------------------------------------------------------------------------

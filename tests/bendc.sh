@@ -5,7 +5,7 @@
 
 set -e
 rm -rf mwcrepo
-NODES=$("@CMAKE_BINARY_DIR@/maxwell/test/mwcparse" $@ | tail -n 1)
+NODES=$("@CMAKE_BINARY_DIR@/maxwell/test/mwcparse" "@CMAKE_SOURCE_DIR@/tests/standard.mw" $@ | tail -n 1)
 "@CMAKE_BINARY_DIR@/maxwell/test/mwcstage" $NODES
 FRAGMENTS=$("@CMAKE_BINARY_DIR@/maxwell/test/mwcbendc" $NODES)
 FILES=$("@CMAKE_BINARY_DIR@/maxwell/test/mwcbendcpkg" $FRAGMENTS | grep .c$)

@@ -1,9 +1,3 @@
-native c {
-	interface "stdio.h" {
-		func puts (s: String);
-	}
-}
-
 func main = {
 
 	k := 2; // pick a function to call

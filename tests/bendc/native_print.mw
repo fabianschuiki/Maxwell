@@ -1,0 +1,39 @@
+native c {
+	interface "stdio.h" {
+		func puts (s: String);
+	}
+}
+
+func main = {
+
+	k := 2; // pick a function to call
+
+	f1 := func (s: String, n: Int) -> {
+		puts(s);
+		puts(s);
+		2;
+	};
+
+	f2 := func (s: String, n: Int) -> {
+		for (i := 0; i < n; i = i + 1) {
+			puts(s);
+			0;
+		}
+		n;
+	};
+
+	f3 := func (s: String, n: Int) -> {
+		puts("Nothing!");
+		0;
+	};
+
+	f := {
+		f1 if k == 0,
+		f2 if k == 1,
+		f3 otherwise
+	};
+
+	r := f("Whadup", 5);
+	puts("done");
+	r;
+}

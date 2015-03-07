@@ -1,0 +1,25 @@
+native c {
+	interface "stdio.h" {
+		func puts (s: String);
+		func printf (s: String, f: Real);
+		func printf (s: String, f0: Real, f1: Real);
+	}
+	interface "math.h" {
+		func sqrt (f: Real) -> (o: Real);
+	}
+}
+
+func main = {
+	// declare a lambda expression that prints a square root and returns it
+	print_sqrt := func (v: Real) -> {
+		w := sqrt(v);
+		printf("sqrt(%f) = %f\n", v, w);
+		w;
+	};
+
+	for (i := 0; i < 16; i = i+1) {
+		print_sqrt(i * 1.0);
+	}
+
+	0;
+}

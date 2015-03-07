@@ -9,4 +9,4 @@ NODES=$("@CMAKE_BINARY_DIR@/maxwell/test/mwcparse" $@ | tail -n 1)
 "@CMAKE_BINARY_DIR@/maxwell/test/mwcstage" $NODES
 FRAGMENTS=$("@CMAKE_BINARY_DIR@/maxwell/test/mwcbendc" $NODES)
 FILES=$("@CMAKE_BINARY_DIR@/maxwell/test/mwcbendcpkg" $FRAGMENTS | grep .c$)
-@CMAKE_C_COMPILER@ $FILES
+@CMAKE_C_COMPILER@ -lm $FILES

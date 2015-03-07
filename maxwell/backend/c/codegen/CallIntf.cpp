@@ -24,7 +24,7 @@ DEF_EXPR_INTF(Call)
 			CallArgInterface* arg = args[0]->needCallArg();
 			ExprCode ec_arg;
 			generateExpr(arg->getExpr(), ec_arg, ctx);
-			out.deps.insert(ec_arg.deps.begin(), ec_arg.deps.end());
+			out += ec_arg;
 
 			// Synthesize the output.
 			out.precedence = kPrefixPrec;
@@ -51,8 +51,8 @@ DEF_EXPR_INTF(Call)
 			ExprCode ec_lhs, ec_rhs;
 			generateExpr(arg_lhs->getExpr(), ec_lhs, ctx);
 			generateExpr(arg_rhs->getExpr(), ec_rhs, ctx);
-			out.deps.insert(ec_lhs.deps.begin(), ec_lhs.deps.end());
-			out.deps.insert(ec_rhs.deps.begin(), ec_rhs.deps.end());
+			out += ec_lhs;
+			out += ec_rhs;
 
 			// Synthesize the output.
 			out.code = precedenceWrap(ec_lhs, p) + " " + name + " " + precedenceWrap(ec_rhs, p);
@@ -81,14 +81,14 @@ DEF_EXPR_INTF(Call)
 		CallArgInterface* arg = args[0]->needCallArg();
 		ExprCode ec_arg;
 		generateExpr(arg->getExpr(), ec_arg, ctx);
-		out.deps.insert(ec_arg.deps.begin(), ec_arg.deps.end());
+		out += ec_arg;
 
 		// Generate the accessor code.
 		if (isSetter) {
 			CallArgInterface* val = args[1]->needCallArg();
 			ExprCode ec_val;
 			generateExpr(val->getExpr(), ec_val, ctx);
-			out.deps.insert(ec_val.deps.begin(), ec_val.deps.end());
+			out += ec_val;
 
 			out.precedence = kAssignmentPrec;
 			out.code = ec_arg.code + "." + name + " = " + precedenceWrap(ec_val, kAssignmentPrec);
@@ -107,6 +107,10 @@ DEF_EXPR_INTF(Call)
 			name = funcNode->getId().str() + "_decl";
 			out.deps.insert(name);
 			name = "%{" + name + "}";
+		} else if (auto nf = NativeFuncDef::from(funcNode)) {
+			name = nf->getName();
+			const auto& d = nf->getDependencies();
+			out.incs.insert(d.begin(), d.end());
 		} else {
 			name = funcNode->needNamed()->getName();
 		}
@@ -120,7 +124,7 @@ DEF_EXPR_INTF(Call)
 
 			ExprCode ec;
 			generateExpr(arg->getExpr(), ec, ctx);
-			out.deps.insert(ec.deps.begin(), ec.deps.end());
+			out += ec;
 			out.code += precedenceWrap(ec, kLowestPrec);
 		}
 		out.code += ")";

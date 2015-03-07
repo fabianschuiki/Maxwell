@@ -48,6 +48,7 @@ typedef std::vector<NodePtr> Nodes;
 %union {
     Node *node;
     std::string *string;
+    std::vector<std::string> *strings;
     Nodes *nodes;
     VarDefExpr *varDefExpr;
     FuncDef *funcDef;
@@ -82,7 +83,6 @@ typedef std::vector<NodePtr> Nodes;
   macro_expr
   map_expr_pair
   multiplicative_expr
-  native_def
   native_func_def
   native_qualifier
   nonempty_block_expr
@@ -118,7 +118,9 @@ typedef std::vector<NodePtr> Nodes;
   ifcase_expr_conds
   interface_qualifier_stmts
   map_expr_pairs
-  native_def_list
+  native_def
+  native_defs
+  native_block
   qualified_typeexpr_qualifiers
   specialized_typeexpr_specs
   structure_qualifier_stmts
@@ -128,6 +130,7 @@ typedef std::vector<NodePtr> Nodes;
 
 %type <varDefExpr> var_expr
 %type <string> any_operator
+%type <strings> native_deps
 %type <funcDef> func_def_name func_def_signature
 %type <typeDef> type_def_name
 %type <structureQualifier> structure_qualifier_decl
@@ -214,7 +217,7 @@ root_stmt : func_def {
           | type_def {
               driver.add(NodePtr($1));
             }
-          | native_defs
+          | native_stmt
           ;
 
 /* Function Declaration*/
@@ -341,32 +344,61 @@ native_func_def
   ;
 
 native_def
-  : native_func_def SEMICOLON
-  ;
-
-native_def_list
-  : native_def {
+  : native_func_def SEMICOLON {
       $$ = new Nodes;
       $$->push_back(NodePtr($1));
     }
-  | native_def_list native_def {
-      $$->push_back(NodePtr($2));
+  | INTERFACE native_deps native_block {
+      for (const auto& d : *$3) {
+        auto ni = d->needNative();
+        auto deps = ni->getDependencies();
+        deps.insert(deps.end(), $2->begin(), $2->end());
+        ni->setDependencies(deps);
+        // d->addDependencies($2->begin(), $2->end());
+      }
+      for (auto s : *$2) {
+        std::cout << "dep " << s << '\n';
+      }
+      delete $2;
+      $$ = $3;
+    }
+  ;
+
+native_deps
+  : STRING_LITERAL {
+      $$ = new std::vector<std::string>;
+      $$->push_back(*$1);
+      delete $1;
+    }
+  | native_deps COMMA STRING_LITERAL {
+      $$->push_back(*$3);
+      delete $3;
     }
   ;
 
 native_defs
-  : NATIVE IDENTIFIER native_def {
-      // $3->setLanguage(*$2);
+  : native_def
+  | native_defs native_def {
+      $$->insert($$->end(), $2->begin(), $2->end());
       delete $2;
-      driver.add(NodePtr($3));
     }
-  | NATIVE IDENTIFIER LBRACE native_def_list RBRACE {
-      for (auto d : *$4) {
+  ;
+
+native_block
+  : native_def
+  | LBRACE native_defs RBRACE {
+      $$ = $2;
+    }
+  ;
+
+native_stmt
+  : NATIVE IDENTIFIER native_block {
+      for (auto d : *$3) {
         // d->setLanguage(*$2);
         driver.add(NodePtr(d));
       }
       delete $2;
-      delete $4;
+      delete $3;
     }
   ;
 

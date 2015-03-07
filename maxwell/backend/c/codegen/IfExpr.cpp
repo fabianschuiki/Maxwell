@@ -14,7 +14,7 @@ DEF_EXPR(IfExpr)
 	if (resultVar.empty()) {
 		TypeCode tc;
 		generateType(node->getActualType(), tc);
-		out.deps.insert(tc.deps.begin(), tc.deps.end());
+		out += tc;
 
 		resultVar = ctx.makeTempSymbol();
 		ctx.stmts.push_back(tc.code + " " + resultVar + ";");
@@ -27,13 +27,13 @@ DEF_EXPR(IfExpr)
 	// Generate the code for the condition expression.
 	ExprCode condCode;
 	generateExpr(node->getCond(), condCode, ctx);
-	out.deps.insert(condCode.deps.begin(), condCode.deps.end());
+	out += condCode;
 
 	// Generate the code for the main expression.
 	Context bodyCtx(ctx);
 	ExprCode bodyCode;
 	generateExpr(node->getBody(), bodyCode, bodyCtx);
-	out.deps.insert(bodyCode.deps.begin(), bodyCode.deps.end());
+	out += bodyCode;
 
 	if (resultVar != bodyCode.code)
 		bodyCtx.stmts.push_back(resultVar + " = " + precedenceWrap(bodyCode, kAssignmentPrec) + ";");
@@ -46,7 +46,7 @@ DEF_EXPR(IfExpr)
 	ExprCode elseCode;
 	if (elseExpr) {
 		generateExpr(elseExpr, elseCode, elseCtx);
-		out.deps.insert(elseCode.deps.begin(), elseCode.deps.end());
+		out += elseCode;
 
 		if (resultVar != elseCode.code)
 			elseCtx.stmts.push_back(resultVar + " = " + precedenceWrap(elseCode, kAssignmentPrec) + ";");

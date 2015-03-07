@@ -38,6 +38,9 @@ void buildAST(Builder &node)
 		// .attr("in", "[@CallableArg]")
 		// .attr("out", "[@CallableArg]")
 		.attr("type", "FuncType");
+	Node& native = node("@Native")
+		.attr("language", "string")
+		.attr("dependencies", "[string]");
 	// Node& callableArg = node("@CallableArg")
 	// 	.intf(type)
 	// 	.attr("name", "string");
@@ -75,7 +78,7 @@ void buildAST(Builder &node)
 		.attr("name", "string")
 		.child("type", "#typeExpr");
 	node("NativeFuncDef")
-		.intf(graph).intf(callable)
+		.intf(graph).intf(callable).intf(native)
 		.attr("name", "string")
 		.child("in", "[FuncArg]")
 		.child("out", "[FuncArg]")

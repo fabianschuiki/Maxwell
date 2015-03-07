@@ -1,4 +1,4 @@
-/* Copyright (c) 2013 Fabian Schuiki */
+/* Copyright (c) 2013-2015 Fabian Schuiki */
 #include "maxwell/ast/Node.hpp"
 #include "maxwell/ast/Repository.hpp"
 #include <stdexcept>
@@ -77,8 +77,8 @@ string Node::indent(const string& in)
 /**
  * @brief Helper function that describes a NodeVector.
  */
-string Node::describeVector(const NodeVector& nodes, int depth)
-{
+std::string
+Node::describeVector (const NodeVector& nodes, int depth) {
 	if (depth == 0) {
 		return "[…]";
 	}
@@ -89,6 +89,24 @@ string Node::describeVector(const NodeVector& nodes, int depth)
 	}
 	if (!nodes.empty())
 		out << "\n";
+	out << "]";
+	return out.str();
+}
+
+/// Helper function that describes a vector of strings.
+std::string
+Node::describeVector (
+	const std::vector<std::string>& strings,
+	int depth
+) {
+	std::stringstream out;
+	out << "[";
+	bool first = true;
+	for (const auto& s : strings) {
+		if (!first) out << ", ";
+		out << s;
+		first = false;
+	}
 	out << "]";
 	return out.str();
 }

@@ -45,6 +45,7 @@ public:
 		string cpp_type;
 		bool isString;
 		bool isArray;
+		bool isNodeArray;
 		bool isNode;
 		bool isBool;
 		bool isInt;

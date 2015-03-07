@@ -12,7 +12,7 @@ DEF_EXPR(BlockExpr)
 	if (resultVar.empty()) {
 		TypeCode tc;
 		generateType(node->getActualType(), tc);
-		out.deps.insert(tc.deps.begin(), tc.deps.end());
+		out += tc;
 
 		resultVar = ctx.makeTempSymbol();
 		ctx.stmts.push_back(tc.code + " " + resultVar + ";");
@@ -29,7 +29,7 @@ DEF_EXPR(BlockExpr)
 	for (NodeVector::const_iterator i = exprs.begin(); i != exprs.end(); i++) {
 		ExprCode ec;
 		generateExpr(*i, ec, ctx);
-		out.deps.insert(ec.deps.begin(), ec.deps.end());
+		out += ec;
 
 		// If this is the last expression in the block, assign its value to the
 		// result variable. Note that in case the expression is simply
@@ -43,7 +43,7 @@ DEF_EXPR(BlockExpr)
 				out.code = ec.code;
 				out.isRef = ec.isRef;
 				out.precedence = ec.precedence;
-				out.deps.insert(ec.deps.begin(), ec.deps.end());
+				out += ec;
 			}
 		}
 

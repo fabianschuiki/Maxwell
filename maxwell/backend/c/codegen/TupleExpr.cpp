@@ -21,14 +21,14 @@ DEF_EXPR(TupleExpr)
 		ExprCode ec;
 		generateExpr(arg->getExpr(), ec, ctx);
 		body += precedenceWrap(ec, kLowestPrec);
-		out.deps.insert(ec.deps.begin(), ec.deps.end());
+		out += ec;
 	}
 
 
 	// Generate the code for the tuple type.
 	TypeCode tc;
 	generateType(node->getActualType(), tc);
-	out.deps.insert(tc.deps.begin(), tc.deps.end());
+	out += tc;
 
 
 	// Synthesize the output.

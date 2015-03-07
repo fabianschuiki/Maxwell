@@ -28,6 +28,12 @@ public:
 	void setGraphPrev(const NodeId& v);
 	const NodePtr& getGraphPrev(bool required = true);
 
+	void setLanguage(const std::string& v);
+	const std::string& getLanguage(bool required = true);
+
+	void setDependencies(const std::vector<std::string>& v);
+	const std::vector<std::string>& getDependencies(bool required = true);
+
 	void setName(const std::string& v);
 	const std::string& getName(bool required = true);
 
@@ -53,6 +59,7 @@ public:
 	virtual CallableInterface* asCallable() { return &this->interfaceCallable; }
 	virtual GraphInterface* asGraph() { return &this->interfaceGraph; }
 	virtual NamedInterface* asNamed() { return &this->interfaceNamed; }
+	virtual NativeInterface* asNative() { return &this->interfaceNative; }
 
 	// shared_ptr convenience
 	typedef boost::shared_ptr<NativeFuncDef> Ptr;
@@ -66,6 +73,8 @@ public:
 
 protected:
 	NodeRef graphPrev;
+	std::string language;
+	std::vector<std::string> dependencies;
 	std::string name;
 	NodeVector in;
 	NodeVector out;
@@ -75,6 +84,7 @@ protected:
 	CallableInterfaceImpl<NativeFuncDef> interfaceCallable;
 	GraphInterfaceImpl<NativeFuncDef> interfaceGraph;
 	NamedInterfaceImpl<NativeFuncDef> interfaceNamed;
+	NativeInterfaceImpl<NativeFuncDef> interfaceNative;
 };
 
 } // namespace ast

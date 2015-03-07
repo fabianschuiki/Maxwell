@@ -135,6 +135,32 @@ protected:
 	T* const node;
 };
 
+class NativeInterface
+{
+public:
+	virtual Node* getNode() = 0;
+
+	virtual void setLanguage(const std::string& v) = 0;
+	virtual const std::string& getLanguage(bool required = true) = 0;
+
+	virtual void setDependencies(const std::vector<std::string>& v) = 0;
+	virtual const std::vector<std::string>& getDependencies(bool required = true) = 0;
+};
+template <typename T> class NativeInterfaceImpl : public NativeInterface
+{
+public:
+	Node* getNode() { return node; }
+	NativeInterfaceImpl(T* node) : node(node) {}
+
+	const std::string& getLanguage(bool required = true) { return node->getLanguage(required); }
+	void setLanguage(const std::string& v) { node->setLanguage(v); }
+	const std::vector<std::string>& getDependencies(bool required = true) { return node->getDependencies(required); }
+	void setDependencies(const std::vector<std::string>& v) { node->setDependencies(v); }
+
+protected:
+	T* const node;
+};
+
 class TypeInterface
 {
 public:

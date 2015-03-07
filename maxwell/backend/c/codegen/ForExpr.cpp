@@ -13,7 +13,7 @@ DEF_EXPR(ForExpr)
 	if (resultVar.empty()) {
 		TypeCode tc;
 		generateType(node->getActualType(), tc);
-		out.deps.insert(tc.deps.begin(), tc.deps.end());
+		out += tc;
 
 		resultVar = ctx.makeTempSymbol();
 		ctx.stmts.push_back(tc.code + " " + resultVar + ";");
@@ -27,7 +27,7 @@ DEF_EXPR(ForExpr)
 	ExprCode initCode;
 	if (init) {
 		generateExpr(init, initCode, ctx);
-		out.deps.insert(initCode.deps.begin(), initCode.deps.end());
+		out += initCode;
 	}
 
 	// Generate the code for the condition expression inside the loop body's
@@ -37,7 +37,7 @@ DEF_EXPR(ForExpr)
 	Context bodyCtx(ctx);
 	ExprCode condCode;
 	generateExpr(cond, condCode, bodyCtx);
-	out.deps.insert(condCode.deps.begin(), condCode.deps.end());
+	out += condCode;
 	bool condComplex = !bodyCtx.stmts.empty();
 	if (condComplex)
 		bodyCtx.stmts.push_back("if (!" + precedenceWrap(condCode, kPrefixPrec) + ") break;");
@@ -45,7 +45,7 @@ DEF_EXPR(ForExpr)
 	// Generate the code for the loop body.
 	ExprCode bodyCode;
 	generateExpr(node->getBody(), bodyCode, bodyCtx);
-	out.deps.insert(bodyCode.deps.begin(), bodyCode.deps.end());
+	out += bodyCode;
 
 	if (resultVar != bodyCode.code)
 		bodyCtx.stmts.push_back(resultVar + " = " + precedenceWrap(bodyCode, kAssignmentPrec) + ";");
@@ -61,7 +61,7 @@ DEF_EXPR(ForExpr)
 	if (step) {
 		unsigned nums = bodyCtx.stmts.size();
 		generateExpr(step, stepCode, bodyCtx);
-		out.deps.insert(stepCode.deps.begin(), stepCode.deps.end());
+		out += stepCode;
 		stepComplex = (nums != bodyCtx.stmts.size());
 		if (stepComplex && !stepCode.isRef)
 			bodyCtx.stmts.push_back(stepCode.code + ";");

@@ -50,6 +50,7 @@ void Packager::group()
 					used.insert(gn);
 				}
 			}
+			i->second->incs.insert((*k)->incs.begin(), (*k)->incs.end());
 		}
 
 		std::sort(i->second->frags.begin(), i->second->frags.end(), sortFragment);

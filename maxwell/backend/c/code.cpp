@@ -96,3 +96,25 @@ std::string backendc::precedenceWrap(const ExprCode& ec, int outer_prec)
 {
 	return precedenceWrap(ec.code, ec.precedence, outer_prec);
 }
+
+
+/// Adds the dependencies and includes of \a b to \a a.
+ExprCode& backendc::operator+= (ExprCode& a, const ExprCode& b) {
+	a.deps.insert(b.deps.begin(), b.deps.end());
+	a.incs.insert(b.incs.begin(), b.incs.end());
+	return a;
+}
+
+/// Adds the dependencies and includes of \a b to \a a.
+ExprCode& backendc::operator+= (ExprCode& a, const TypeCode& b) {
+	a.deps.insert(b.deps.begin(), b.deps.end());
+	a.incs.insert(b.incs.begin(), b.incs.end());
+	return a;
+}
+
+/// Adds the dependencies and includes of \a b to \a a.
+TypeCode& backendc::operator+= (TypeCode& a, const TypeCode& b) {
+	a.deps.insert(b.deps.begin(), b.deps.end());
+	a.incs.insert(b.incs.begin(), b.incs.end());
+	return a;
+}

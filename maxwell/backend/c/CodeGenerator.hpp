@@ -58,6 +58,7 @@ private:
 	// sqlite statements
 	sqlite3_statement insertFragStmt;
 	sqlite3_statement insertDepStmt;
+	sqlite3_statement insertIncStmt;
 	sqlite3_statement typeExistsStmt;
 	sqlite3_statement refUnusedStmt;
 
@@ -73,6 +74,7 @@ private:
 
 	void addFragment(const Fragment& frag);
 	void addDependency(const std::string& frag, const std::string& dep, bool after);
+	void addInclude(const std::string& frag, const std::string& inc);
 
 	std::string makeFriendly(const std::string& name);
 	std::string makeFuncName(const ast::FuncDef::Ptr& node);

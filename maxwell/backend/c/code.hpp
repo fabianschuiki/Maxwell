@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 Fabian Schuiki */
+/* Copyright (c) 2014-2015 Fabian Schuiki */
 #pragma once
 #include <map>
 #include <set>
@@ -45,6 +45,7 @@ struct ExprCode
 {
 	std::string code;
 	std::set<std::string> deps;
+	std::set<std::string> incs;
 	bool isRef;
 	int precedence;
 	ExprCode();
@@ -55,9 +56,13 @@ struct TypeCode
 {
 	std::string code;
 	std::set<std::string> deps;
+	std::set<std::string> incs;
 	std::string hash;
 };
 
+ExprCode& operator+= (ExprCode& a, const ExprCode& b);
+ExprCode& operator+= (ExprCode& a, const TypeCode& b);
+TypeCode& operator+= (TypeCode& a, const TypeCode& b);
 
 /** Enumeration that simplifies precedence handling. */
 enum {

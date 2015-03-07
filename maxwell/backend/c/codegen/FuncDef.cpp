@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2014 Fabian Schuiki */
+/* Copyright (c) 2013-2015 Fabian Schuiki */
 #include "maxwell/backend/c/codegen/detail.hpp"
 
 DEF_ROOT(FuncDef)
@@ -89,8 +89,11 @@ DEF_ROOT(FuncDef)
 	}
 
 	// The dependencies of the body only contribute to the definition.
-	for (std::set<std::string>::const_iterator i = ec.deps.begin(); i != ec.deps.end(); i++) {
-		addDependency(def.name, *i, true);
+	for (const auto& d : ec.deps) {
+		addDependency(def.name, d, true);
+	}
+	for (const auto& i : ec.incs) {
+		addInclude(def.name, i);
 	}
 
 	// Keep the definition and declaration fragment names around for later

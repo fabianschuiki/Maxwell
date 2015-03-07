@@ -26,9 +26,16 @@ void database::prepareFragmentsSchema()
 		"name varchar(128) not null, "
 		"after boolean default 0 not null, "
 		"FOREIGN KEY (frag) REFERENCES fragments(id) ON DELETE CASCADE)", db);
+	runStmt("CREATE TABLE IF NOT EXISTS includes ("
+		"id integer primary key, "
+		"frag integer not null, "
+		"name varchar(128) not null, "
+		"FOREIGN KEY (frag) REFERENCES fragments(id) ON DELETE CASCADE)", db);
 	runStmt("CREATE UNIQUE INDEX IF NOT EXISTS fragments_name ON fragments (name)", db);
 	runStmt("CREATE INDEX IF NOT EXISTS fragments_ref ON fragments (ref)", db);
 	runStmt("CREATE INDEX IF NOT EXISTS dependencies_frag ON dependencies (frag)", db);
+	runStmt("CREATE INDEX IF NOT EXISTS includes_frag ON includes (frag)", db);
 	runStmt("CREATE UNIQUE INDEX IF NOT EXISTS dependencies_frag_name ON dependencies (frag,name)", db);
+	runStmt("CREATE UNIQUE INDEX IF NOT EXISTS includes_frag_name ON includes (frag,name)", db);
 	runStmt("COMMIT TRANSACTION", db);
 }

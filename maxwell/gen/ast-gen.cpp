@@ -24,6 +24,7 @@ Node::Field Node::makeField(string name, string type, bool child)
 	f.type = type;
 	f.isString = false;
 	f.isArray = false;
+	f.isNodeArray = false;
 	f.isNode = false;
 	f.isBool = false;
 	f.isInt = false;
@@ -36,8 +37,12 @@ Node::Field Node::makeField(string name, string type, bool child)
 	} else if (type == "int") {
 		f.isInt = true;
 		f.cpp_type = "int";
+	} else if (type == "[string]") {
+		f.isArray = true;
+		f.cpp_type = "std::vector<std::string>";
 	} else if (type.size() > 2 && type[0] == '[') {
 		f.isArray = true;
+		f.isNodeArray = true;
 		f.cpp_type = "NodeVector";
 	} else {
 		f.isNode = true;
@@ -698,7 +703,7 @@ int main(int argc, char *argv[])
 			Node::Field& f = *fit;
 			if (f.isNode && !f.ref) {
 				s << "\tif (this->"<<f.name<<") this->"<<f.name<<"->updateHierarchy(id + \""<<f.name<<"\", repository, this);\n";
-			} else if (f.isArray) {
+			} else if (f.isNodeArray) {
 				s << "\tfor (unsigned i = 0; i < this->"<<f.name<<".size(); i++) {\n";
 				s << "\t\tchar buf[32]; snprintf(buf, 31, \"%i\", i);\n";
 				s << "\t\tthis->"<<f.name<<"[i]->updateHierarchy((id + \""<<f.name<<"\") + buf, repository, this);\n";
@@ -714,7 +719,7 @@ int main(int argc, char *argv[])
 			Node::Field& f = *fit;
 			if (f.isNode) {
 				fields.insert(f.name);
-			} else if (f.isArray) {
+			} else if (f.isNodeArray) {
 				fields.insert(f.name);
 				arrayFields.insert(f.name);
 			}

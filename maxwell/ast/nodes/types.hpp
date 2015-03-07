@@ -75,6 +75,7 @@ typedef enum {
 	kCallableInterface,
 	kGraphInterface,
 	kNamedInterface,
+	kNativeInterface,
 	kTypeInterface,
 	kTypeExprInterface,
 	kVariableInterface

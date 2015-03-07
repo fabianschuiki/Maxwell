@@ -10,7 +10,7 @@ DEF_EXPR(VarDefExpr)
 	// Generate the code for the variable type.
 	TypeCode tc;
 	generateType(node->getActualType(), tc);
-	out.deps.insert(tc.deps.begin(), tc.deps.end());
+	out += tc;
 	std::string decl = tc.code + " " + name;
 
 	// Generate the code for the initial value.
@@ -18,7 +18,7 @@ DEF_EXPR(VarDefExpr)
 	const NodePtr& initial = node->getInitialExpr(false);
 	if (initial) {
 		generateExpr(initial, ec, ctx);
-		out.deps.insert(ec.deps.begin(), ec.deps.end());
+		out += ec;
 		decl += " = " + precedenceWrap(ec, kAssignmentPrec);
 	}
 	decl += ";";
@@ -39,13 +39,13 @@ DEF_EXPR(TypelessVarDefExpr)
 	// Generate the code for the variable type.
 	TypeCode tc;
 	generateType(node->getActualType(), tc);
-	out.deps.insert(tc.deps.begin(), tc.deps.end());
+	out += tc;
 	std::string decl = tc.code + " " + name;
 
 	// Generate the code for the initial value.
 	ExprCode ec;
 	generateExpr(node->getInitialExpr(), ec, ctx);
-	out.deps.insert(ec.deps.begin(), ec.deps.end());
+	out += ec;
 	decl += " = " + precedenceWrap(ec, kAssignmentPrec);
 	decl += ";";
 

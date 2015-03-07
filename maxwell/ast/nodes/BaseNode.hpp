@@ -10,6 +10,7 @@ class CallArgInterface;
 class CallableInterface;
 class GraphInterface;
 class NamedInterface;
+class NativeInterface;
 class TypeInterface;
 class TypeExprInterface;
 class VariableInterface;
@@ -29,6 +30,8 @@ public:
 	GraphInterface* needGraph() { GraphInterface* i = asGraph(); if (i) return i; throw std::runtime_error("Node " + getId().str() + " (a " + getClassName() + ") does not implement Graph interface."); }
 	virtual NamedInterface* asNamed() { return NULL; }
 	NamedInterface* needNamed() { NamedInterface* i = asNamed(); if (i) return i; throw std::runtime_error("Node " + getId().str() + " (a " + getClassName() + ") does not implement Named interface."); }
+	virtual NativeInterface* asNative() { return NULL; }
+	NativeInterface* needNative() { NativeInterface* i = asNative(); if (i) return i; throw std::runtime_error("Node " + getId().str() + " (a " + getClassName() + ") does not implement Native interface."); }
 	virtual TypeInterface* asType() { return NULL; }
 	TypeInterface* needType() { TypeInterface* i = asType(); if (i) return i; throw std::runtime_error("Node " + getId().str() + " (a " + getClassName() + ") does not implement Type interface."); }
 	virtual TypeExprInterface* asTypeExpr() { return NULL; }

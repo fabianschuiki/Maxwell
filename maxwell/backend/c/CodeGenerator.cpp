@@ -23,6 +23,9 @@ CodeGenerator::CodeGenerator(Repository& repo, sqlite3* db): repo(repo), db(db)
 	insertDepStmt.prepare(db,
 		"REPLACE INTO dependencies (frag,name,after) VALUES ("
 			"(SELECT id FROM fragments WHERE name = ?),?,?)");
+	insertIncStmt.prepare(db,
+		"REPLACE INTO includes (frag,name) VALUES ("
+			"(SELECT id FROM fragments WHERE name = ?),?)");
 	typeExistsStmt.prepare(db,
 		"SELECT id FROM fragments WHERE name = ?");
 	refUnusedStmt.prepare(db,
@@ -159,14 +162,34 @@ void CodeGenerator::addFragment(const Fragment& frag)
  * %frag depends on the fragment named %dep. Note that the name %frag is
  * resolved to a fragment ID, which is only possible if %frag actually exists
  * in the database. */
-void CodeGenerator::addDependency(const std::string& frag, const std::string& dep, bool after)
-{
+void
+CodeGenerator::addDependency(
+	const std::string& frag,
+	const std::string& dep,
+	bool after) {
+
 	sqlite3_throw(bind_text(insertDepStmt, 1, frag.c_str(), -1, SQLITE_STATIC));
 	sqlite3_throw(bind_text(insertDepStmt, 2, dep.c_str(), -1, SQLITE_STATIC));
 	sqlite3_throw(bind_int(insertDepStmt, 3, after));
 	insertDepStmt.step();
 	insertDepStmt.reset();
 }
+
+/// Adds a new include to the database, indicating that the fragment named %frag
+/// requires the file \a dep to be included. Note that the name %frag is
+/// resolved to a fragment ID, which is only possible if %frag actually exists
+/// in the database.
+void
+CodeGenerator::addInclude(
+	const std::string& frag,
+	const std::string& inc) {
+
+	sqlite3_throw(bind_text(insertIncStmt, 1, frag.c_str(), -1, SQLITE_STATIC));
+	sqlite3_throw(bind_text(insertIncStmt, 2, inc.c_str(), -1, SQLITE_STATIC));
+	insertIncStmt.step();
+	insertIncStmt.reset();
+}
+
 
 /** Returns the unique name for the given function. It is unique within the
  * current database, and multiple calls with the same node will yield the same

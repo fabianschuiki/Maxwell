@@ -9,7 +9,7 @@ DEF_EXPR(IfCaseExpr)
 	if (resultVar.empty()) {
 		TypeCode tc;
 		generateType(node->getActualType(), tc);
-		out.deps.insert(tc.deps.begin(), tc.deps.end());
+		out += tc;
 
 		resultVar = ctx.makeTempSymbol();
 		ctx.stmts.push_back(tc.code + " " + resultVar + ";");
@@ -29,13 +29,13 @@ DEF_EXPR(IfCaseExpr)
 		// Generate the code for the condition expression.
 		ExprCode condCode;
 		generateExpr(cond->getCond(), condCode, ctx);
-		out.deps.insert(condCode.deps.begin(), condCode.deps.end());
+		out += condCode;
 
 		// Generate the code for the condition body.
 		Context bodyCtx(ctx);
 		ExprCode bodyCode;
 		generateExpr(cond->getExpr(), bodyCode, bodyCtx);
-		out.deps.insert(bodyCode.deps.begin(), bodyCode.deps.end());
+		out += bodyCode;
 
 		if (resultVar != bodyCode.code)
 			bodyCtx.stmts.push_back(resultVar + " = " + precedenceWrap(bodyCode, kAssignmentPrec) + ";");
@@ -57,7 +57,7 @@ DEF_EXPR(IfCaseExpr)
 		Context bodyCtx(ctx);
 		ExprCode bodyCode;
 		generateExpr(otherwise, bodyCode, bodyCtx);
-		out.deps.insert(bodyCode.deps.begin(), bodyCode.deps.end());
+		out += bodyCode;
 
 		if (resultVar != bodyCode.code)
 			bodyCtx.stmts.push_back(resultVar + " = " + precedenceWrap(bodyCode, kAssignmentPrec) + ";");

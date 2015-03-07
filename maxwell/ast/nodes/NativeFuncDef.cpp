@@ -11,7 +11,8 @@ using ast::NodeVector;
 NativeFuncDef::NativeFuncDef() : Node(),
 	interfaceCallable(this),
 	interfaceGraph(this),
-	interfaceNamed(this) {}
+	interfaceNamed(this),
+	interfaceNative(this) {}
 
 bool NativeFuncDef::isKindOf(Kind k) {
 	if (Node::isKindOf(k)) return true;
@@ -23,12 +24,15 @@ bool NativeFuncDef::implements(Interface i) {
 	if (i == kCallableInterface) return true;
 	if (i == kGraphInterface) return true;
 	if (i == kNamedInterface) return true;
+	if (i == kNativeInterface) return true;
 	return false;
 }
 
 NodePtr NativeFuncDef::copy() {
 	Ptr c (new NativeFuncDef);
 	Node::copy(this->graphPrev, c->graphPrev);
+	Node::copy(this->language, c->language);
+	Node::copy(this->dependencies, c->dependencies);
 	Node::copy(this->name, c->name);
 	Node::copy(this->in, c->in);
 	Node::copy(this->out, c->out);
@@ -40,6 +44,8 @@ bool NativeFuncDef::equalTo(const NodePtr& o) {
 	const shared_ptr<NativeFuncDef>& other = boost::dynamic_pointer_cast<NativeFuncDef>(o);
 	if (!other) return false;
 	if (!equal(this->graphPrev, other->graphPrev)) return false;
+	if (!equal(this->language, other->language)) return false;
+	if (!equal(this->dependencies, other->dependencies)) return false;
 	if (!equal(this->name, other->name)) return false;
 	if (!equal(this->in, other->in)) return false;
 	if (!equal(this->out, other->out)) return false;
@@ -52,6 +58,8 @@ std::string NativeFuncDef::describe(int depth) {
 	if (depth == 0) return "NativeFuncDef{…}";
 	str << "NativeFuncDef{";
 	if (this->graphPrev) b << "\n  \033[1mgraphPrev\033[0m = \033[36m" << this->graphPrev.id << "\033[0m";
+	if (!this->language.empty()) b << "\n  \033[1mlanguage\033[0m = \033[33m\"" << this->language << "\"\033[0m";
+	if (!this->dependencies.empty()) b << "\n  \033[1mdependencies\033[0m = " << indent(describeVector(this->dependencies, depth-1));
 	if (!this->name.empty()) b << "\n  \033[1mname\033[0m = \033[33m\"" << this->name << "\"\033[0m";
 	if (!this->in.empty()) b << "\n  \033[1min\033[0m = " << indent(describeVector(this->in, depth-1));
 	if (!this->out.empty()) b << "\n  \033[1mout\033[0m = " << indent(describeVector(this->out, depth-1));
@@ -86,6 +94,35 @@ const NodePtr& NativeFuncDef::getGraphPrev(bool required) {
 	if (required && !v) {
 		throw std::runtime_error("Node " + getId().str() + " is required to have graphPrev set to a non-null value.");
 	}
+	return v;
+}
+
+
+void NativeFuncDef::setLanguage(const std::string& v) {
+	if (!equal(v, language)) {
+		modify("language");
+		language = v;
+	}
+}
+
+const std::string& NativeFuncDef::getLanguage(bool required) {
+	const std::string& v = language;
+	if (required && v.empty()) {
+		throw std::runtime_error("Node " + getId().str() + " is required to have a non-empty string language set.");
+	}
+	return v;
+}
+
+
+void NativeFuncDef::setDependencies(const std::vector<std::string>& v) {
+	if (!equal(v, dependencies)) {
+		modify("dependencies");
+		dependencies = v;
+	}
+}
+
+const std::vector<std::string>& NativeFuncDef::getDependencies(bool required) {
+	const std::vector<std::string>& v = dependencies;
 	return v;
 }
 
@@ -153,6 +190,8 @@ const NodePtr& NativeFuncDef::getType(bool required) {
 
 void NativeFuncDef::encode(Encoder& e) {
 	e.encode(this->graphPrev);
+	e.encode(this->language);
+	e.encode(this->dependencies);
 	e.encode(this->name);
 	e.encode(this->in);
 	e.encode(this->out);
@@ -161,6 +200,8 @@ void NativeFuncDef::encode(Encoder& e) {
 
 void NativeFuncDef::decode(Decoder& d) {
 	d.decode(this->graphPrev);
+	d.decode(this->language);
+	d.decode(this->dependencies);
 	d.decode(this->name);
 	d.decode(this->in);
 	d.decode(this->out);

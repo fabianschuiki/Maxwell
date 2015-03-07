@@ -8,21 +8,21 @@ DEF_EXPR(IndexOpExpr)
 	// significantly easier.
 	TypeCode tc;
 	generateType(node->getActualType(), tc);
-	out.deps.insert(tc.deps.begin(), tc.deps.end());
+	out += tc;
 
 	// Generate the code for the indexee and the index.
 	ExprCode indexeeCode, indexCode;
 	generateExpr(node->getIndexee(), indexeeCode, ctx);
 	generateExpr(node->getIndex(), indexCode, ctx);
-	out.deps.insert(indexeeCode.deps.begin(), indexeeCode.deps.end());
-	out.deps.insert(indexCode.deps.begin(), indexCode.deps.end());
+	out += indexeeCode;
+	out += indexCode;
 
 	// If the indexee is not just a reference to another statement, we have to
 	// store its value in an intermediate variable.
 	if (!indexeeCode.isRef) {
 		TypeCode tc;
 		generateType(node->getIndexee()->needType()->getActualType(), tc);
-		out.deps.insert(tc.deps.begin(), tc.deps.end());
+		out += tc;
 
 		std::string varName = ctx.makeTempSymbol();
 		ctx.stmts.push_back(tc.code + " " + varName + " = " + precedenceWrap(indexeeCode, kAssignmentPrec) + ";");

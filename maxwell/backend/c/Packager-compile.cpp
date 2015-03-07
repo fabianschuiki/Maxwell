@@ -24,6 +24,11 @@ static void compileGroup(Group* grp, std::string& output)
 		output += "#include \"" + (*k)->name + "\"\n";
 	}
 
+	// Include the includes this group depends on.
+	for (const auto& inc : grp->incs) {
+		output += "#include " + inc + "\n";
+	}
+
 	// Insert the fragments.
 	bool wasOneline = false;
 	for (std::vector<Fragment*>::iterator k = grp->frags.begin(); k != grp->frags.end(); k++) {

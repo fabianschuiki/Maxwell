@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 Fabian Schuiki */
+/* Copyright (c) 2014-2015 Fabian Schuiki */
 #include "maxwell/backend/c/Packager.hpp"
 #include "maxwell/backend/c/Packager-detail.hpp"
 #include <algorithm>
@@ -15,7 +15,7 @@ void Packager::collect(std::queue<std::string>& names)
 
 	// Prepare a SQL statement that fetches a fragment from the database, and
 	// one that fetches all dependencies.
-	sqlite3_stmt *fragStmt, *depsStmt;
+	sqlite3_stmt *fragStmt, *depsStmt, *incsStmt;
 
 	rc = sqlite3_prepare_v2(db, "SELECT id,code,ref,grp FROM fragments WHERE name = ?", -1, &fragStmt, NULL);
 	if (rc != SQLITE_OK)
@@ -24,6 +24,10 @@ void Packager::collect(std::queue<std::string>& names)
 	rc = sqlite3_prepare_v2(db, "SELECT name,after FROM dependencies WHERE frag = ?", -1, &depsStmt, NULL);
 	if (rc != SQLITE_OK)
 		throw sqlite3_exception(rc, "Unable to prepare dependency fetch statement");
+
+	rc = sqlite3_prepare_v2(db, "SELECT name FROM includes WHERE frag = ?", -1, &incsStmt, NULL);
+	if (rc != SQLITE_OK)
+		throw sqlite3_exception(rc, "Unable to prepare include fetch statement");
 
 	// Fetch all fragments in the queue from the database, adding dependencies
 	// to the queue again to have them fetched as well.
@@ -52,14 +56,12 @@ void Packager::collect(std::queue<std::string>& names)
 		frag->group = (const char*)sqlite3_column_text(fragStmt, 3);
 		fragments[frag->name] = frag;
 
-		// Bind the fragment id to the first argument of the dependency
-		// statement.
+		// Fetch the dependencies from the database. This query may return an
+		// arbitrary number of names.
 		rc = sqlite3_bind_int(depsStmt, 1, frag->id);
 		if (rc != SQLITE_OK)
 			throw sqlite3_exception(rc, "Unable to bind fragment id in dependency fetch statement");
 
-		// Fetch the dependencies from the database. This query may return an
-		// arbitrary number of names.
 		while ((rc = sqlite3_step(depsStmt)) == SQLITE_ROW) {
 			Dependency dep;
 			dep.name  = (const char*)sqlite3_column_text(depsStmt, 0);
@@ -71,7 +73,19 @@ void Packager::collect(std::queue<std::string>& names)
 		if (rc != SQLITE_DONE)
 			throw sqlite3_exception(rc, "Unable to step dependency fetch statement");
 
-		// Reset the statements such that it may be reused in the next loop
+		// Fetch the includes from the database and add them to the fragment.
+		rc = sqlite3_bind_int(incsStmt, 1, frag->id);
+		if (rc != SQLITE_OK)
+			throw sqlite3_exception(rc, "Unable to bind fragment id in dependency fetch statement");
+
+		while ((rc = sqlite3_step(incsStmt)) == SQLITE_ROW) {
+			std::string inc = (const char*)sqlite3_column_text(incsStmt, 0);
+			frag->incs.push_back(inc);
+		}
+		if (rc != SQLITE_DONE)
+			throw sqlite3_exception(rc, "Unable to step include fetch statement");
+
+		// Reset the statements such that they may be reused in the next loop
 		// iteration.
 		rc = sqlite3_reset(fragStmt);
 		if (rc != SQLITE_OK)
@@ -80,6 +94,10 @@ void Packager::collect(std::queue<std::string>& names)
 		rc = sqlite3_reset(depsStmt);
 		if (rc != SQLITE_OK)
 			throw sqlite3_exception(rc, "Unable to reset dependency fetch statement");
+
+		rc = sqlite3_reset(incsStmt);
+		if (rc != SQLITE_OK)
+			throw sqlite3_exception(rc, "Unable to reset include fetch statement");
 
 		names.pop();
 	}
@@ -92,6 +110,10 @@ void Packager::collect(std::queue<std::string>& names)
 	rc = sqlite3_finalize(depsStmt);
 	if (rc != SQLITE_OK)
 		throw sqlite3_exception(rc, "Unable to finalize dependency fetch statement");
+
+	rc = sqlite3_finalize(incsStmt);
+	if (rc != SQLITE_OK)
+		throw sqlite3_exception(rc, "Unable to finalize include fetch statement");
 
 	// Resolve the frag pointer in each Dependency entry. This allows faster
 	// operation of the subsequent algorithms. Also replace all placeholders in

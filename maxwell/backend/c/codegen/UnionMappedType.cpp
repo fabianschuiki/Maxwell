@@ -12,7 +12,7 @@ void CodeGenerator::generateUnionMappedType(const ast::UnionMappedType::Ptr& typ
 	// Generate the code for the desired output type.
 	TypeCode tc;
 	generateType(type->getOut(), tc);
-	out.deps.insert(tc.deps.begin(), tc.deps.end());
+	out += tc;
 
 	// Wrap the existing code inside an inline constructor for the UnionType's
 	// struct.

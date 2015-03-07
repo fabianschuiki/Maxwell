@@ -86,14 +86,17 @@ protected:
 	string indent(const string& in);
 
 	string describeVector(const vector<shared_ptr<Node> >& nodes, int depth = -1);
+	string describeVector(const vector<string>& strings, int depth = -1);
 
 	static bool equal(const string& a, const string& b) { return a == b; }
+	static bool equal(const vector<string>& a, const vector<string>& b) { return a == b; }
 	static bool equal(const bool& a, const bool& b) { return a == b; }
 	static bool equal(const int& a, const int& b) { return a == b; }
 	static bool equal(const NodePtr& a, const NodePtr& b);
 	static bool equal(const NodeVector& a, const NodeVector& b);
 
 	static void copy(const string& s, string& d) { d = s; }
+	static void copy(const vector<string>& s, vector<string>& d) { d = s; }
 	static void copy(const bool& s, bool& d) { d = s; }
 	static void copy(const int& s, int& d) { d = s; }
 	static void copy(const NodePtr& s, NodePtr& d);

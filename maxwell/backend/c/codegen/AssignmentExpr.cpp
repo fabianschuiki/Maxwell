@@ -10,12 +10,12 @@ DEF_EXPR(AssignmentExpr)
 	if (lhs->isKindOf(kIdentifierExpr) || lhs->isKindOf(kIndexOpExpr)) {
 		ExprCode ec;
 		generateExpr(lhs, ec, ctx);
-		out.deps.insert(ec.deps.begin(), ec.deps.end());
+		out += ec;
 
 		// Generate the code for the RHS of the assignment.
 		ExprCode rhs;
 		generateExpr(node->getRhs(), rhs, ctx);
-		out.deps.insert(rhs.deps.begin(), rhs.deps.end());
+		out += rhs;
 
 		// Synthesize the output.
 		out.code = ec.code + " = " + precedenceWrap(rhs, kAssignmentPrec);

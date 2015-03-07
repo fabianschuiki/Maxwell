@@ -1,4 +1,4 @@
-/* Copyright (c) 2013 Fabian Schuiki */
+/* Copyright (c) 2013-2015 Fabian Schuiki */
 #include "maxwell/base64.hpp"
 #include "maxwell/ast/Coder.hpp"
 #include "maxwell/ast/nodes/nodes.hpp"
@@ -20,18 +20,14 @@ using std::ostream;
 using std::istream;
 using boost::shared_ptr;
 
-/**
- * Concrete implementation of the Encoder interface. An instance of this class
- * is created upon serialization and handed down the tree for serializing.
- */
-class EncoderImpl : public Encoder
-{
+/// Concrete implementation of the Encoder interface. An instance of this class
+/// is created upon serialization and handed down the tree for serializing.
+class EncoderImpl : public Encoder {
 public:
-	ostream& out;
-	EncoderImpl(ostream& o) : out(o) {}
+	std::ostream& out;
+	EncoderImpl(std::ostream& o) : out(o) {}
 
-	virtual void encode(const NodePtr& node)
-	{
+	virtual void encode(const NodePtr& node) {
 		if (node) {
 			out << node->getClassName() << " { ";
 			node->encode(*this);
@@ -41,8 +37,7 @@ public:
 		}
 	}
 
-	virtual void encode(const NodeRef& node)
-	{
+	virtual void encode(const NodeRef& node) {
 		if (node) {
 			out << node.id << " ";
 		} else {
@@ -50,8 +45,7 @@ public:
 		}
 	}
 
-	virtual void encode(const string& str)
-	{
+	virtual void encode(const std::string& str) {
 		if (str.empty()) {
 			out << "$ ";
 		} else {
@@ -59,18 +53,33 @@ public:
 		}
 	}
 
-	virtual void encode(const bool& b)
-	{
+	virtual void encode(const std::vector<std::string>& strs) {
+		if (strs.empty()) {
+			out << "[] ";
+		} else {
+			out << "[ ";
+			bool first = true;
+			for (const auto& s : strs) {
+				if (first) {
+					first = false;
+				} else {
+					out << ", ";
+				}
+				encode(s);
+			}
+			out << "] ";
+		}
+	}
+
+	virtual void encode(const bool& b) {
 		out << (b ? "1 " : "0 ");
 	}
 
-	virtual void encode(const int& i)
-	{
+	virtual void encode(const int& i) {
 		out << i << ' ';
 	}
 
-	virtual void encode(const NodeVector& nodes)
-	{
+	virtual void encode(const NodeVector& nodes) {
 		if (nodes.empty()) {
 			out << "[] ";
 		} else {
@@ -99,8 +108,7 @@ public:
 	istream& in;
 	DecoderImpl(istream& i) : in(i) {}
 
-	virtual void decode(NodePtr& node)
-	{
+	virtual void decode(NodePtr& node) {
 		string className;
 		in >> className;
 		if (className == "@") {
@@ -122,8 +130,7 @@ public:
 		}
 	}
 
-	virtual void decode(NodeRef& node)
-	{
+	virtual void decode(NodeRef& node) {
 		string rd;
 		in >> rd;
 		if (rd == "@") {
@@ -133,8 +140,7 @@ public:
 		}
 	}
 
-	virtual void decode(string& str)
-	{
+	virtual void decode(string& str) {
 		string rd;
 		in >> rd;
 		if (rd == "$") {
@@ -144,8 +150,28 @@ public:
 		}
 	}
 
-	virtual void decode(bool& b)
-	{
+	virtual void decode(std::vector<std::string>& strs) {
+		string rd;
+		in >> rd;
+		if (rd == "[]") {
+			strs.clear();
+		} else {
+			if (rd != "[") {
+				throw std::runtime_error("Vector of strings expected to commence with an opening bracket [, got '" + rd + "' instead.");
+			}
+			do {
+				std::string str;
+				decode(str);
+				strs.push_back(str);
+				in >> rd;
+			} while (rd == ",");
+			if (rd != "]") {
+				throw std::runtime_error("Vector of strings expected to terminate with a closing bracket ], got '" + rd + "' instead.");
+			}
+		}
+	}
+
+	virtual void decode(bool& b) {
 		string rd;
 		in >> rd;
 		if (rd == "0") {
@@ -157,13 +183,11 @@ public:
 		}
 	}
 
-	virtual void decode(int& i)
-	{
+	virtual void decode(int& i) {
 		in >> i;
 	}
 
-	virtual void decode(NodeVector& nodes)
-	{
+	virtual void decode(NodeVector& nodes) {
 		string rd;
 		in >> rd;
 		if (rd == "[]") {
@@ -224,7 +248,7 @@ NodePtr Serializer::decode(istream& in)
  * Simply calls decode() with a string stream and the node, then returns the
  * generated node.
  */
-NodePtr Serializer::decode(const string& str)
+NodePtr Serializer::decode(const std::string& str)
 {
 	stringstream s(str);
 	return decode(s);

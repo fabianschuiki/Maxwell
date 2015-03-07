@@ -386,6 +386,9 @@ native_defs
 
 native_block
   : native_def
+  | LBRACE RBRACE {
+      $$ = new Nodes;
+    }
   | LBRACE native_defs RBRACE {
       $$ = $2;
     }

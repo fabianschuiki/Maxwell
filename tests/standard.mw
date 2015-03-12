@@ -41,6 +41,7 @@ native c {
 		// int      getchar_unlocked(void);
 		// int      getopt(int, char * const[], const char); (LEGACY)
 		// char    *gets(char *);
+		func gets (_: String) -> (_: String);
 		// int      getw(FILE *);
 		// int      pclose(FILE *);
 		// void     perror(const char *);

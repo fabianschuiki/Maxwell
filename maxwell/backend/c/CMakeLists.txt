@@ -22,6 +22,8 @@ add_library(backendc
 	codegen/IfCaseExpr.cpp
 	codegen/IfExpr.cpp
 	codegen/IndexOpExpr.cpp
+	codegen/NativeType.cpp
+	codegen/NativeTypeDef.cpp
 	codegen/NilType.cpp
 	codegen/NumberConstExpr.cpp
 	codegen/StringConstExpr.cpp

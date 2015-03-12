@@ -139,6 +139,13 @@ void EvalTypeExprs::process(const NodePtr& node)
 			node->updateHierarchyOfChildren();
 		}
 
+		if (const auto& expr = NativeTypeExpr::from(node)) {
+			NativeType::Ptr type(new NativeType);
+			type->setSegments(expr->getSegments());
+			intf->setEvaluatedType(type);
+			node->updateHierarchyOfChildren();
+		}
+
 		// Throw an error if we were unable to assign an evaluated type.
 		if (!intf->getEvaluatedType(false)) {
 			throw std::runtime_error("Could not evaluate type expression " + node->getId().str() + ".");

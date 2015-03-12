@@ -84,6 +84,8 @@ typedef std::vector<NodePtr> Nodes;
   map_expr_pair
   multiplicative_expr
   native_func_def
+  native_type_def
+  native_type_def_expr
   native_qualifier
   nonempty_block_expr
   or_expr
@@ -129,17 +131,28 @@ typedef std::vector<NodePtr> Nodes;
   union_typeexprs
 
 %type <varDefExpr> var_expr
-%type <string> any_operator
-%type <strings> native_deps
+%type <string>
+  any_operator
+  native_type_def_segment
+%type <strings>
+  native_deps
+  native_type_def_segments
 %type <funcDef> func_def_name func_def_signature
 %type <typeDef> type_def_name
 %type <structureQualifier> structure_qualifier_decl
 %type <rangeQualifier> range_qualifier_decl
 
-%token <string> IDENTIFIER
-%token <string> NUMBER
-%token <string> STRING_LITERAL
-%token <string> MULTIPLICATIVE_OPERATOR ADDITIVE_OPERATOR RELATIONAL_OPERATOR EQUALITY_OPERATOR AND_OPERATOR OR_OPERATOR OPERATOR
+%token <string>
+  ADDITIVE_OPERATOR
+  AND_OPERATOR
+  EQUALITY_OPERATOR
+  IDENTIFIER
+  MULTIPLICATIVE_OPERATOR
+  NUMBER
+  OPERATOR
+  OR_OPERATOR
+  RELATIONAL_OPERATOR
+  STRING_LITERAL
 %token <symbol> SYMBOL
 %token END 0
 
@@ -343,8 +356,50 @@ native_func_def
     }
   ;
 
+/* Native Type Declaration */
+native_type_def_segment
+  : IDENTIFIER
+  | MULTIPLICATIVE_OPERATOR
+  ;
+
+native_type_def_segments
+  : native_type_def_segment {
+      $$ = new std::vector<std::string>;
+      $$->push_back(*$1);
+    }
+  | native_type_def_segments native_type_def_segment {
+      $$->push_back(*$2);
+      delete $2;
+    }
+  ;
+
+native_type_def_expr
+  : native_type_def_segments {
+      auto t = new NativeTypeExpr;
+      t->setSegments(*$1);
+      delete $1;
+      $$ = t;
+    }
+  ;
+
+native_type_def
+  : TYPE IDENTIFIER native_type_def_expr {
+      NativeTypeDef* d = new NativeTypeDef;
+      d->setName(*$2);
+      d->setType(NodePtr($3));
+      delete $2;
+      $$ = d;
+    }
+  ;
+
+
+/* Native Statements */
 native_def
   : native_func_def SEMICOLON {
+      $$ = new Nodes;
+      $$->push_back(NodePtr($1));
+    }
+  | native_type_def SEMICOLON {
       $$ = new Nodes;
       $$->push_back(NodePtr($1));
     }

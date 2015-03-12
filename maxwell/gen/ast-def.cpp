@@ -8,8 +8,8 @@
 void buildAST(Builder &node)
 {
 	// Groups
-	node.groups["type"] = "GenericType|InvalidType|NilType|DefinedType|UnionType|TupleType|FuncType|TypeSet|QualifiedType|SpecializedType|UnionMappedType|OneTupleMappedType|CastType";
-	node.groups["typeExpr"] = "NamedTypeExpr|NilTypeExpr|UnionTypeExpr|TupleTypeExpr|QualifiedTypeExpr|SpecializedTypeExpr|FuncTypeExpr";
+	node.groups["type"] = "GenericType|InvalidType|NilType|DefinedType|UnionType|TupleType|FuncType|TypeSet|QualifiedType|SpecializedType|UnionMappedType|OneTupleMappedType|CastType|NativeType";
+	node.groups["typeExpr"] = "NamedTypeExpr|NilTypeExpr|UnionTypeExpr|TupleTypeExpr|QualifiedTypeExpr|SpecializedTypeExpr|FuncTypeExpr|NativeTypeExpr";
 	node.groups["qualifier"] = "StructureQualifier|InterfaceQualifier|NativeQualifier|RangeQualifier";
 
 	// Interfaces
@@ -83,6 +83,10 @@ void buildAST(Builder &node)
 		.child("in", "[FuncArg]")
 		.child("out", "[FuncArg]")
 		.child("type", "FuncType");
+	node("NativeTypeDef")
+		.intf(graph).intf(native)
+		.attr("name", "string")
+		.child("type", "#typeExpr");
 
 	// Expressions
 	node("NumberConstExpr")
@@ -216,6 +220,9 @@ void buildAST(Builder &node)
 		.intf(graph).intf(typeExpr)
 		.child("in", "#typeExpr")
 		.child("out", "#typeExpr");
+	node("NativeTypeExpr")
+		.intf(graph).intf(typeExpr)
+		.attr("segments", "[string]");
 
 	// Type Qualifiers
 	node("StructureQualifier")
@@ -328,4 +335,7 @@ void buildAST(Builder &node)
 		.child("in", "#type")
 		.child("out", "#type")
 		.describe("str << out->describe(depth-1) << '(' << func.id << '<' << in->describe(depth-1) << ')';");
+	node("NativeType")
+		.attr("segments", "[string]")
+		.describe("str << describeVector(segments);");
 }

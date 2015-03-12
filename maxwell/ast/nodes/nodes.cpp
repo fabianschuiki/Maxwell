@@ -201,6 +201,21 @@ ast::NodePtr ast::makeNode(const std::string& name) {
 						// NativeQualifier
 						if (size == 15) return NodePtr(new NativeQualifier);
 					}
+					// NativeType.*
+					if (size >= 10 && name[6] == 'T' && name[7] == 'y' && name[8] == 'p' && name[9] == 'e') {
+						// NativeType
+						if (size == 10) return NodePtr(new NativeType);
+						// NativeTypeDef.*
+						if (size >= 13 && name[10] == 'D' && name[11] == 'e' && name[12] == 'f') {
+							// NativeTypeDef
+							if (size == 13) return NodePtr(new NativeTypeDef);
+						}
+						// NativeTypeExpr.*
+						if (size >= 14 && name[10] == 'E' && name[11] == 'x' && name[12] == 'p' && name[13] == 'r') {
+							// NativeTypeExpr
+							if (size == 14) return NodePtr(new NativeTypeExpr);
+						}
+					}
 				}
 			}
 			// NilType.*

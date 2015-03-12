@@ -18,7 +18,9 @@ DEF_TYPE(DefinedType)
 			out.code = "const char*";
 			return;
 		} else {
-			throw std::runtime_error("Code generation for builtin type " + num->getId().str() + " (" + num->getName() + ") not implemented.");
+			throw std::runtime_error("Code generation for builtin type " +
+				num->getId().str() + " (" + num->getName() +
+				") not implemented.");
 		}
 	}
 
@@ -30,4 +32,17 @@ DEF_TYPE(DefinedType)
 		out.deps.insert(name);
 		return;
 	}
+
+	// Native type definitions generate a typedef statement, which allows other
+	// parts of the code to simply use them by name.
+	if (const auto& td = NativeTypeDef::from(def)) {
+		std::string name = td->getId().str() + "_def";
+		out.code = "%{" + name + "}";
+		out.deps.insert(name);
+		return;
+	}
+
+	throw std::runtime_error("Reference code generation for defined type " +
+		def->getId().str() + " (a " + def->getClassName() +
+		") not implemented.");
 }

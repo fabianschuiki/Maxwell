@@ -79,10 +79,12 @@ private:
 	std::string makeFriendly(const std::string& name);
 	std::string makeFuncName(const ast::FuncDef::Ptr& node);
 	std::string makeTypeName(const ast::TypeDef::Ptr& node);
+	std::string makeNativeTypeName(const ast::NativeTypeDef::Ptr& node);
 
 	// Declare nodes that can be compiled as root.
 	DECL_ROOT(FuncDef);
 	DECL_ROOT(TypeDef);
+	DECL_ROOT(NativeTypeDef);
 
 	// Declare nodes that can be compiled as expressions.
 	DECL_EXPR(AssignmentExpr);
@@ -106,6 +108,7 @@ private:
 	DECL_TYPE(TupleType);
 	DECL_TYPE(UnionType);
 	DECL_TYPE(NilType);
+	DECL_TYPE(NativeType);
 
 	// Declare types that can be resolved.
 	void generateUnionMappedType(const ast::UnionMappedType::Ptr& node, ExprCode& out, Context& ctx);

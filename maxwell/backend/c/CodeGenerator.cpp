@@ -46,8 +46,8 @@ void CodeGenerator::generateRoot(const NodePtr& node)
 {
 	REGISTER_ROOT(FuncDef);
 	REGISTER_ROOT(TypeDef);
-	if (ast::NativeFuncDef::from(node))
-		return;
+	REGISTER_ROOT(NativeTypeDef);
+	if (ast::NativeFuncDef::from(node)) return;
 
 	// Throw an exception if no code could be generated.
 	throw std::runtime_error(
@@ -95,6 +95,7 @@ void CodeGenerator::generateType(const NodePtr& node, TypeCode& out)
 	REGISTER_TYPE(TupleType);
 	REGISTER_TYPE(UnionType);
 	REGISTER_TYPE(NilType);
+	REGISTER_TYPE(NativeType);
 
 	// Throw an exception if no code could be generated.
 	throw std::runtime_error(
@@ -202,6 +203,11 @@ std::string CodeGenerator::makeFuncName(const ast::FuncDef::Ptr& node)
 /** Returns the unique name for the given type. It is unique within the current
  * database, and multiple calls with the same node will yield the same name. */
 std::string CodeGenerator::makeTypeName(const ast::TypeDef::Ptr& node)
+{
+	return makeFriendly(node->getName());
+}
+
+std::string CodeGenerator::makeNativeTypeName(const ast::NativeTypeDef::Ptr& node)
 {
 	return makeFriendly(node->getName());
 }

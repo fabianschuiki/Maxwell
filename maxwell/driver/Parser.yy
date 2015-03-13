@@ -511,6 +511,10 @@ primary_expr
   | ifcase_expr
   | block_expr
   | tuple_expr
+  | HASHTAG LPAREN typeexpr RPAREN primary_expr {
+      $$ = $5;
+      delete $3;
+    }
   ;
 
 /* Tuple Expressions */

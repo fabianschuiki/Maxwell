@@ -22,7 +22,7 @@ DEF_ROOT(NativeTypeDef)
 	for (const auto& i : tc.deps) {
 		addDependency(def.name, i, false);
 	}
-	for (const auto& i : tc.incs) {
+	for (const auto& i : node->getDependencies()) {
 		addInclude(def.name, i);
 	}
 

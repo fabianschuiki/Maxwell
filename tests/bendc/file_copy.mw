@@ -1,0 +1,28 @@
+/* Copyright (c) 2015 Fabian Schuiki */
+
+native c interface "stdlib.h" {
+	func malloc (_: Int) -> (_: stdio_vp);
+	func free (_: stdio_vp);
+}
+
+func main = {
+
+	f := fopen("input.txt", "r");
+
+	fseek(f, 0, 2);
+	length := ftell(f);
+	fseek(f, 0, 0);
+
+	m := malloc(length);
+	fread(m, 1, length, f);
+	fclose(f);
+
+	h := fopen("output.txt", "w");
+	fwrite(m, 1, length, f);
+	fclose(h);
+
+	free(m);
+
+	puts("file copied");
+	0;
+}

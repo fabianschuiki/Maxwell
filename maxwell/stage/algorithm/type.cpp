@@ -337,7 +337,12 @@ NodePtr resolve(const NodePtr& r)
 {
 	if (!r || !r->isKindOf(kDefinedType))
 		return r;
-	const TypeDef::Ptr& td = TypeDef::needFrom(DefinedType::needFrom(r)->getDefinition());
+
+	const auto& def = DefinedType::needFrom(r)->getDefinition();
+	if (const auto& ntd = NativeTypeDef::from(def))
+		return resolve(ntd->getType()->needTypeExpr()->getEvaluatedType());
+
+	const auto& td = TypeDef::needFrom(def);
 	return resolve(td->getType()->needTypeExpr()->getEvaluatedType());
 }
 

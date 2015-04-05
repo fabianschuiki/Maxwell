@@ -57,6 +57,7 @@ native c {
 		func fwrite (_: stdio_vp, _: Int, _: Int, _: stdio_file) -> (_: Int);
 		// int      getc(FILE *);
 		// int      getchar(void);
+		func getchar () -> (_: Int);
 		// int      getc_unlocked(FILE *);
 		// int      getchar_unlocked(void);
 		// int      getopt(int, char * const[], const char); (LEGACY)

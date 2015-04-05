@@ -17,25 +17,43 @@ DEF_EXPR(IndexOpExpr)
 	out += indexeeCode;
 	out += indexCode;
 
-	// If the indexee is not just a reference to another statement, we have to
-	// store its value in an intermediate variable.
-	if (!indexeeCode.isRef) {
-		TypeCode tc;
-		generateType(node->getIndexee()->needType()->getActualType(), tc);
-		out += tc;
+	const auto& it = stage::algorithm::type::resolve(
+		node->getIndexee()->needType()->getActualType());
 
-		std::string varName = ctx.makeTempSymbol();
-		ctx.stmts.push_back(tc.code + " " + varName + " = " + precedenceWrap(indexeeCode, kAssignmentPrec) + ";");
-		indexeeCode.code = varName;
-		indexeeCode.isRef = true;
-		indexeeCode.precedence = kPrimaryPrec;
+	if (NativeType::from(it)) {
+		out.code = precedenceWrap(indexeeCode, kPrefixPrec) + '[' +
+			precedenceWrap(indexCode, kLowestPrec) +  ']';
+		out.precedence = kPostfixPrec;
+		out.isRef = true;
 	}
 
-	// We simply cast the tuple to an array of its member types, thus allowing
-	// indexed access. This is quite ugly to say the least.
-	out.code = "((" + tc.code + "*)&" +
-		precedenceWrap(indexeeCode, kPrefixPrec) +
-		")[" + precedenceWrap(indexCode, kLowestPrec) + "]";
-	out.precedence = kPostfixPrec;
-	out.isRef = true;
+	else if (const auto& type = TupleType::from(it)) {
+		// If the indexee is not just a reference to another statement, we have to
+		// store its value in an intermediate variable.
+		if (!indexeeCode.isRef) {
+			TypeCode tc;
+			generateType(type, tc);
+			out += tc;
+
+			std::string varName = ctx.makeTempSymbol();
+			ctx.stmts.push_back(tc.code + " " + varName + " = " + precedenceWrap(indexeeCode, kAssignmentPrec) + ";");
+			indexeeCode.code = varName;
+			indexeeCode.isRef = true;
+			indexeeCode.precedence = kPrimaryPrec;
+		}
+
+		// We simply cast the tuple to an array of its member types, thus allowing
+		// indexed access. This is quite ugly to say the least.
+		out.code = "((" + tc.code + "*)&" +
+			precedenceWrap(indexeeCode, kPrefixPrec) +
+			")[" + precedenceWrap(indexCode, kLowestPrec) + "]";
+		out.precedence = kPostfixPrec;
+		out.isRef = true;
+	}
+
+	else {
+		throw std::runtime_error("Code generation for IndexOpExpr on indexee "
+			+ node->getIndexee()->getId().str() + " (a "
+			+ node->getIndexee()->getClassName() + ") not implemented");
+	}
 }

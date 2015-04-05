@@ -207,7 +207,7 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 	// produce different types, depending on their indexee's type.
 	if (const IndexOpExpr::Ptr& expr = IndexOpExpr::from(node)) {
 		const NodePtr& indexee = expr->getIndexee();
-		const NodePtr& indexeeType = indexee->needType()->getActualType();
+		const NodePtr& indexeeType = algorithm::type::resolve(indexee->needType()->getActualType());
 
 		// Tuples produce one of their subtypes when accessed.
 		if (const TupleType::Ptr& type = TupleType::from(indexeeType)) {
@@ -223,7 +223,22 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 			typeSet->setTypes(types);
 			expr->setPossibleType(algorithm::type::simplify(typeSet)->copy());
 			expr->updateHierarchyOfChildren();
-		} else {
+		}
+
+		// Native types remove one of their pointer levels.
+		else if (const auto& type = NativeType::from(indexeeType)) {
+			auto segs = type->getSegments();
+			if (segs.size() < 2 || segs.back() != "*") {
+				throw std::runtime_error("Cannot dereference native type " + type->describe());
+			}
+			segs.pop_back();
+
+			NativeType::Ptr deref(new NativeType);
+			deref->setSegments(segs);
+			expr->setPossibleType(deref);
+			expr->updateHierarchyOfChildren();
+		}
+		else {
 			throw std::runtime_error("Index operator cannot be used on " + indexee->getId().str() + " (a " + indexee->getClassName() + ")");
 		}
 	}

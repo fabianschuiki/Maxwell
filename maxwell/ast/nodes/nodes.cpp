@@ -61,10 +61,18 @@ ast::NodePtr ast::makeNode(const std::string& name) {
 					}
 				}
 			}
-			// CastType.*
-			if (size >= 8 && name[2] == 's' && name[3] == 't' && name[4] == 'T' && name[5] == 'y' && name[6] == 'p' && name[7] == 'e') {
-				// CastType
-				if (size == 8) return NodePtr(new CastType);
+			// Cast.*
+			if (size >= 4 && name[2] == 's' && name[3] == 't') {
+				// CastExpr.*
+				if (size >= 8 && name[4] == 'E' && name[5] == 'x' && name[6] == 'p' && name[7] == 'r') {
+					// CastExpr
+					if (size == 8) return NodePtr(new CastExpr);
+				}
+				// CastType.*
+				if (size >= 8 && name[4] == 'T' && name[5] == 'y' && name[6] == 'p' && name[7] == 'e') {
+					// CastType
+					if (size == 8) return NodePtr(new CastType);
+				}
 			}
 		}
 		// DefinedType.*

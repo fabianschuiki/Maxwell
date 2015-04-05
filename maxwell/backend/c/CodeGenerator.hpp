@@ -89,6 +89,7 @@ private:
 	// Declare nodes that can be compiled as expressions.
 	DECL_EXPR(AssignmentExpr);
 	DECL_EXPR(BlockExpr);
+	DECL_EXPR(CastExpr);
 	DECL_EXPR(ForExpr);
 	DECL_EXPR(FuncExpr);
 	DECL_EXPR(IdentifierExpr);

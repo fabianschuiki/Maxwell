@@ -59,6 +59,7 @@ void CodeGenerator::generateExpr(const NodePtr& node, ExprCode& out, Context& ct
 {
 	REGISTER_EXPR(AssignmentExpr);
 	REGISTER_EXPR(BlockExpr);
+	REGISTER_EXPR(CastExpr);
 	REGISTER_EXPR(ForExpr);
 	REGISTER_EXPR(FuncExpr);
 	REGISTER_EXPR(IdentifierExpr);

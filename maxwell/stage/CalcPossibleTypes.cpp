@@ -243,6 +243,12 @@ void CalcPossibleTypes::processChildren(const NodePtr& node)
 		}
 	}
 
+	if (const auto& expr = CastExpr::from(node)) {
+		addDependency(node, "typeExpr.evaluatedType");
+		expr->setPossibleType(expr->getTypeExpr()->needTypeExpr()->getEvaluatedType()->copy());
+		expr->updateHierarchyOfChildren();
+	}
+
 
 	/*
 	 * Call-related stuff.

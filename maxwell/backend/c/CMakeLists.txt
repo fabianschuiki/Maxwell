@@ -13,6 +13,7 @@ add_library(backendc
 	codegen/AssignmentExpr.cpp
 	codegen/BlockExpr.cpp
 	codegen/CallIntf.cpp
+	codegen/CastExpr.cpp
 	codegen/DefinedType.cpp
 	codegen/ForExpr.cpp
 	codegen/FuncDef.cpp

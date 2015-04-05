@@ -9,6 +9,7 @@
 #include "maxwell/ast/nodes/CallCandidateArg.hpp"
 #include "maxwell/ast/nodes/CallExpr.hpp"
 #include "maxwell/ast/nodes/CallExprArg.hpp"
+#include "maxwell/ast/nodes/CastExpr.hpp"
 #include "maxwell/ast/nodes/CastType.hpp"
 #include "maxwell/ast/nodes/DefinedType.hpp"
 #include "maxwell/ast/nodes/ForExpr.hpp"

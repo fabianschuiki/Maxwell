@@ -1,0 +1,42 @@
+/* Copyright (c) 2015 Fabian Schuiki */
+
+native c interface "stdlib.h" {
+	func malloc (_: Int) -> (_: stdio_vp);
+	func realloc (_: stdio_vp, _: Int) -> (_: stdio_vp);
+	func free (_: stdio_vp);
+	func printf (_: String, _: Int);
+}
+
+native c {
+	type std_cp char *;
+	type std_ccp const char *;
+}
+
+func main = {
+
+	puts("Please type any message:");
+
+	size := 4;
+	index := 0;
+	msg := cast(std_cp, malloc(size+1));
+
+	for ((c := getchar()) != 10) {
+		printf("read character %x\n", c);
+		msg[index] = c;
+		index = index + 1;
+		if (index == size) {
+			size = size * 2;
+			printf("resized to %d\n", size);
+			msg = cast(std_cp, realloc(cast(stdio_vp, msg), size+1));
+		}
+		0;
+	}
+	msg[index] = 0;
+
+	for (i := 0; i < index; i = i+1) {
+		printf("found character %x\n", cast(Int, msg[i]));
+		0;
+	}
+
+	0;
+}

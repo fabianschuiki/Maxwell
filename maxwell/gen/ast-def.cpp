@@ -191,6 +191,10 @@ void buildAST(Builder &node)
 		.child("indexee", "@Type")
 		.child("index", "@Type")
 		.intf(type);
+	node("CastExpr")
+		.intf(graph).intf(type)
+		.child("typeExpr", "#typeExpr")
+		.child("expr", "any");
 
 	// Type Expressions
 	node("NamedTypeExpr")

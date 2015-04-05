@@ -99,6 +99,7 @@ symbol              {additive_op}|{multiplicative_op}|{relational_op}|{equality_
 "for"        return token::FOR;
 "incase"     return token::INCASE;
 "otherwise"  return token::OTHERWISE;
+"cast"       return token::CAST;
 
  /* Constants */
 "nil"        return token::NIL;

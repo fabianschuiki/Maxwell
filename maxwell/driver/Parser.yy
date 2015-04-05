@@ -171,6 +171,7 @@ typedef std::vector<NodePtr> Nodes;
 %token NIL
 %token INCASE
 %token OTHERWISE
+%token CAST
 
 %token LPAREN
 %token RPAREN
@@ -511,9 +512,11 @@ primary_expr
   | ifcase_expr
   | block_expr
   | tuple_expr
-  | HASHTAG LPAREN typeexpr RPAREN primary_expr {
-      $$ = $5;
-      delete $3;
+  | CAST LPAREN typeexpr COMMA any_expr RPAREN {
+      CastExpr *c = new CastExpr;
+      c->setExpr(NodePtr($5));
+      c->setTypeExpr(NodePtr($3));
+      $$ = c;
     }
   ;
 

@@ -97,6 +97,7 @@ void CodeGenerator::generateType(const NodePtr& node, TypeCode& out)
 	REGISTER_TYPE(UnionType);
 	REGISTER_TYPE(NilType);
 	REGISTER_TYPE(NativeType);
+	REGISTER_TYPE(QualifiedType);
 
 	// Throw an exception if no code could be generated.
 	throw std::runtime_error(

@@ -27,6 +27,7 @@ add_library(backendc
 	codegen/NativeTypeDef.cpp
 	codegen/NilType.cpp
 	codegen/NumberConstExpr.cpp
+	codegen/QualifiedType.cpp
 	codegen/StringConstExpr.cpp
 	codegen/TupleExpr.cpp
 	codegen/TupleType.cpp

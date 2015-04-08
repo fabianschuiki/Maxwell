@@ -1,0 +1,68 @@
+/* Copyright (c) 2015 Fabian Schuiki */
+/* A preliminary string library. */
+
+// Things that should be supported:
+// - size, length
+// - resize
+// - capacity
+// - reserve
+// - clear
+// - empty
+// - at, [] operator
+// - append
+// - instert
+// - erase
+// - find
+// - substring
+// - compare
+
+native c {
+	type char_pointer char *;
+	type const_char_pointer const char *;
+
+	interface "stdlib.h" {
+		func printf (_: String, _: Int);
+	}
+}
+
+type MutableString value {
+	data char_ptr;
+	length Int;
+	capacity Int;
+}
+
+func makeMutableString (i: String) -> (o: MutableString) {
+
+	// Calculate the length of the input string.
+	i2 := cast(const_char_ptr, i);
+	l := 0;
+	for (0; cast(Int, i2[l]) != 0; l = l+1) {0;}
+
+	// Create a new mutable string and allocate enough memory to hold the data.
+	buffer := cast(char_ptr, malloc(l));
+	for (n := 0; n < l; n = n+1) {
+		buffer[n] = cast(char_ptr, i2)[n];
+	}
+
+	o.data = buffer;
+	o.length = l;
+	o.capacity = l;
+}
+
+func destroy (this: MutableString) {
+	free(cast(void_ptr, this.data));
+	0;
+}
+
+func print (this: MutableString) {
+	puts(cast(String, this.data));
+	0;
+}
+
+func main = {
+	s := makeMutableString("Hello, World");
+	s.print;
+	printf("The string was %d bytes long\n", s.length);
+	s.destroy;
+	0;
+}

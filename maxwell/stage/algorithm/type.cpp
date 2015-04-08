@@ -201,6 +201,14 @@ bool equal(const TupleType::Ptr& a, const TupleType::Ptr& b)
 	return true;
 }
 
+/**
+ * Returns true if both native types %a and %b are equivalent, i.e. their
+ * segments are identical.
+ */
+bool equal(const NativeType::Ptr& a, const NativeType::Ptr& b) {
+	return a->getSegments() == b->getSegments();
+}
+
 
 /**
  * Returns the intersection between the TypeSet and the other node. The other
@@ -301,6 +309,12 @@ bool equal(const NodePtr& a, const NodePtr& b)
 	TupleType::Ptr tupleTypeA = TupleType::from(a), tupleTypeB = TupleType::from(b);
 	if (tupleTypeA && tupleTypeB)
 		return equal(tupleTypeA, tupleTypeB);
+
+	// Treat native types.
+	auto nativeTypeA = NativeType::from(a);
+	auto nativeTypeB = NativeType::from(b);
+	if (nativeTypeA && nativeTypeB)
+		return equal(nativeTypeA, nativeTypeB);
 
 	return false;
 }

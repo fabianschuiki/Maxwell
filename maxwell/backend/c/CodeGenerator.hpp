@@ -110,6 +110,7 @@ private:
 	DECL_TYPE(UnionType);
 	DECL_TYPE(NilType);
 	DECL_TYPE(NativeType);
+	DECL_TYPE(QualifiedType);
 
 	// Declare types that can be resolved.
 	void generateUnionMappedType(const ast::UnionMappedType::Ptr& node, ExprCode& out, Context& ctx);

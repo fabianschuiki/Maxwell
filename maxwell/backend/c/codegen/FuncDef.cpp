@@ -29,11 +29,6 @@ DEF_ROOT(FuncDef)
 	}
 
 
-	// Generate the code for the function body.
-	ExprCode ec;
-	generateExpr(node->getBody(), ec, ctx);
-
-
 	// Generate the return type of the function.
 	const FuncType::Ptr& nodeType = FuncType::needFrom(node->getType());
 	const NodePtr& outType = nodeType->getOut();
@@ -47,6 +42,26 @@ DEF_ROOT(FuncDef)
 		argsDeps.insert(tc.deps.begin(), tc.deps.end());
 		returnType = tc.code;
 	}
+
+	for (const auto& rawArg : node->getOut()) {
+		const auto& arg = FuncArg::needFrom(rawArg);
+
+		// Generate a C-friendly name for this argument.
+		std::string name = ctx.makeSymbol(arg->getName());
+		ctx.vars[arg->getId()] = name;
+
+		// Generate the code for this argument.
+		TypeCode tc;
+		generateType(arg->getActualType(), tc);
+		argsDeps.insert(tc.deps.begin(), tc.deps.end());
+
+		ctx.stmts.push_back(tc.code + " " + name + ";");
+	}
+
+
+	// Generate the code for the function body.
+	ExprCode ec;
+	generateExpr(node->getBody(), ec, ctx);
 
 
 	// Pick a name.
@@ -71,8 +86,14 @@ DEF_ROOT(FuncDef)
 	}
 	if (node->getImplOut())
 		def.code += "    return " + ec.code + ";\n";
-	else if (!ec.isRef)
-		def.code += "    " + ec.code + ";\n";
+	else {
+		if (!ec.isRef)
+			def.code += "    " + ec.code + ";\n";
+		for (const auto& rawArg : node->getOut()) {
+			const auto& arg = FuncArg::needFrom(rawArg);
+			def.code += "    return " + ctx.vars[arg->getId()] + ";\n";
+		}
+	}
 
 	def.code += "}";
 

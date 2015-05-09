@@ -146,10 +146,18 @@ ast::NodePtr ast::makeNode(const std::string& name) {
 					if (size == 6) return NodePtr(new IfExpr);
 				}
 			}
-			// ImplAccessor.*
-			if (size >= 12 && name[1] == 'm' && name[2] == 'p' && name[3] == 'l' && name[4] == 'A' && name[5] == 'c' && name[6] == 'c' && name[7] == 'e' && name[8] == 's' && name[9] == 's' && name[10] == 'o' && name[11] == 'r') {
-				// ImplAccessor
-				if (size == 12) return NodePtr(new ImplAccessor);
+			// Im.*
+			if (size >= 2 && name[1] == 'm') {
+				// ImmutableCastType.*
+				if (size >= 17 && name[2] == 'm' && name[3] == 'u' && name[4] == 't' && name[5] == 'a' && name[6] == 'b' && name[7] == 'l' && name[8] == 'e' && name[9] == 'C' && name[10] == 'a' && name[11] == 's' && name[12] == 't' && name[13] == 'T' && name[14] == 'y' && name[15] == 'p' && name[16] == 'e') {
+					// ImmutableCastType
+					if (size == 17) return NodePtr(new ImmutableCastType);
+				}
+				// ImplAccessor.*
+				if (size >= 12 && name[2] == 'p' && name[3] == 'l' && name[4] == 'A' && name[5] == 'c' && name[6] == 'c' && name[7] == 'e' && name[8] == 's' && name[9] == 's' && name[10] == 'o' && name[11] == 'r') {
+					// ImplAccessor
+					if (size == 12) return NodePtr(new ImplAccessor);
+				}
 			}
 			// In.*
 			if (size >= 2 && name[1] == 'n') {
@@ -186,6 +194,24 @@ ast::NodePtr ast::makeNode(const std::string& name) {
 			if (size >= 16 && name[1] == 'e' && name[2] == 'm' && name[3] == 'b' && name[4] == 'e' && name[5] == 'r' && name[6] == 'A' && name[7] == 'c' && name[8] == 'c' && name[9] == 'e' && name[10] == 's' && name[11] == 's' && name[12] == 'E' && name[13] == 'x' && name[14] == 'p' && name[15] == 'r') {
 				// MemberAccessExpr
 				if (size == 16) return NodePtr(new MemberAccessExpr);
+			}
+			// Mutable.*
+			if (size >= 7 && name[1] == 'u' && name[2] == 't' && name[3] == 'a' && name[4] == 'b' && name[5] == 'l' && name[6] == 'e') {
+				// MutableCastType.*
+				if (size >= 15 && name[7] == 'C' && name[8] == 'a' && name[9] == 's' && name[10] == 't' && name[11] == 'T' && name[12] == 'y' && name[13] == 'p' && name[14] == 'e') {
+					// MutableCastType
+					if (size == 15) return NodePtr(new MutableCastType);
+				}
+				// MutableType.*
+				if (size >= 11 && name[7] == 'T' && name[8] == 'y' && name[9] == 'p' && name[10] == 'e') {
+					// MutableType
+					if (size == 11) return NodePtr(new MutableType);
+					// MutableTypeExpr.*
+					if (size >= 15 && name[11] == 'E' && name[12] == 'x' && name[13] == 'p' && name[14] == 'r') {
+						// MutableTypeExpr
+						if (size == 15) return NodePtr(new MutableTypeExpr);
+					}
+				}
 			}
 		}
 		// N.*

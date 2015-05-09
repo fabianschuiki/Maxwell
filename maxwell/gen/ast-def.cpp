@@ -8,8 +8,8 @@
 void buildAST(Builder &node)
 {
 	// Groups
-	node.groups["type"] = "GenericType|InvalidType|NilType|DefinedType|UnionType|TupleType|FuncType|TypeSet|QualifiedType|SpecializedType|UnionMappedType|OneTupleMappedType|CastType|NativeType";
-	node.groups["typeExpr"] = "NamedTypeExpr|NilTypeExpr|UnionTypeExpr|TupleTypeExpr|QualifiedTypeExpr|SpecializedTypeExpr|FuncTypeExpr|NativeTypeExpr";
+	node.groups["type"] = "GenericType|InvalidType|NilType|DefinedType|UnionType|TupleType|FuncType|TypeSet|QualifiedType|SpecializedType|UnionMappedType|OneTupleMappedType|CastType|NativeType|MutableType|MutableCastType|ImmutableCastType";
+	node.groups["typeExpr"] = "NamedTypeExpr|NilTypeExpr|UnionTypeExpr|TupleTypeExpr|QualifiedTypeExpr|SpecializedTypeExpr|FuncTypeExpr|NativeTypeExpr|MutableTypeExpr";
 	node.groups["qualifier"] = "StructureQualifier|InterfaceQualifier|NativeQualifier|RangeQualifier";
 
 	// Interfaces
@@ -227,6 +227,9 @@ void buildAST(Builder &node)
 	node("NativeTypeExpr")
 		.intf(graph).intf(typeExpr)
 		.attr("segments", "[string]");
+	node("MutableTypeExpr")
+		.intf(graph).intf(typeExpr)
+		.child("expr", "#typeExpr");
 
 	// Type Qualifiers
 	node("StructureQualifier")
@@ -330,16 +333,25 @@ void buildAST(Builder &node)
 	node("UnionMappedType")
 		.child("in", "#type")
 		.child("out", "#type")
-		.describe("str << out->describe(depth-1) << '(' << in->describe(depth-1) << ')';");
+		.describe("str << out->describe(depth) << '(' << in->describe(depth) << ')';");
 	node("OneTupleMappedType")
 		.child("tuple", "#type")
-		.describe("str << tuple->describe(depth-1) << \".0\";");
+		.describe("str << tuple->describe(depth) << \".0\";");
 	node("CastType")
 		.child("func", "&@Callable")
 		.child("in", "#type")
 		.child("out", "#type")
-		.describe("str << out->describe(depth-1) << '(' << func.id << '<' << in->describe(depth-1) << ')';");
+		.describe("str << out->describe(depth) << '(' << func.id << '<' << in->describe(depth) << ')';");
 	node("NativeType")
 		.attr("segments", "[string]")
 		.describe("str << describeVector(segments);");
+	node("MutableType")
+		.child("type", "#type")
+		.describe("str << '&' << type->describe(depth);");
+	node("MutableCastType")
+		.child("in", "#type")
+		.describe("str << \"&(\" << in->describe(depth) << ')';");
+	node("ImmutableCastType")
+		.child("in", "#type")
+		.describe("str << \"*(\" << in->describe(depth) << ')';");
 }

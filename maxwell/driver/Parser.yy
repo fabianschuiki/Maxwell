@@ -83,6 +83,7 @@ typedef std::vector<NodePtr> Nodes;
   macro_expr
   map_expr_pair
   multiplicative_expr
+  mutable_typeexpr
   native_func_def
   native_type_def
   native_type_def_expr
@@ -188,6 +189,7 @@ typedef std::vector<NodePtr> Nodes;
 %token ASSIGN
 %token DEFASSIGN
 %token HASHTAG
+%token AMPERSAND
 
 %destructor { delete $$; }
   IDENTIFIER
@@ -1027,8 +1029,17 @@ union_typeexprs
     }
   ;
 
+mutable_typeexpr
+  : union_typeexpr
+  | AMPERSAND union_typeexpr {
+      auto t = new MutableTypeExpr;
+      t->setExpr(NodePtr($2));
+      $$ = t;
+    }
+  ;
+
 /* Function Type Expr */
-post_func_typeexpr : union_typeexpr;
+post_func_typeexpr : mutable_typeexpr;
 func_typeexpr
   : post_func_typeexpr
   | post_func_typeexpr RIGHTARROW post_func_typeexpr {

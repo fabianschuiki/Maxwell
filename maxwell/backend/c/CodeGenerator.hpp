@@ -106,11 +106,12 @@ private:
 	// Declare nodes that can be compiled as types.
 	DECL_TYPE(DefinedType);
 	DECL_TYPE(FuncType);
+	DECL_TYPE(MutableType);
+	DECL_TYPE(NativeType);
+	DECL_TYPE(NilType);
+	DECL_TYPE(QualifiedType);
 	DECL_TYPE(TupleType);
 	DECL_TYPE(UnionType);
-	DECL_TYPE(NilType);
-	DECL_TYPE(NativeType);
-	DECL_TYPE(QualifiedType);
 
 	// Declare types that can be resolved.
 	void generateUnionMappedType(const ast::UnionMappedType::Ptr& node, ExprCode& out, Context& ctx);

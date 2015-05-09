@@ -83,6 +83,22 @@ NodePtr CalcActualTypes::match(const NodePtr& possible, const NodePtr& required,
 		}
 	}
 
+	// See whether a change in mutability is required.
+	if (actual->isKindOf(kInvalidType)) {
+		if (auto possibleMut = MutableType::from(possible)) {
+			// std::cerr << possible->describe() << " needs to be made immutable\n";
+			ImmutableCastType::Ptr type(new ImmutableCastType);
+			type->setIn(possible);
+			actual = type;
+		}
+		else if (auto requiredMut = MutableType::from(required)) {
+			// std::cerr << possible->describe() << " needs to be made mutable\n";
+			MutableCastType::Ptr type(new MutableCastType);
+			type->setIn(possible);
+			actual = type;
+		}
+	}
+
 	// Otherwise simply try to go with a regular cast.
 	if (actual->isKindOf(kInvalidType)) {
 		println(1, "Trying to cast from " + possible->describe() + " to " + required->describe(), node);

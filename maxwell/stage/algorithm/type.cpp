@@ -262,8 +262,8 @@ NodePtr simplify(const NodePtr& input)
 /**
  * @brief Returns whether the two types are equal.
  */
-bool equal(const NodePtr& a, const NodePtr& b)
-{
+bool equal(const NodePtr& a, const NodePtr& b) {
+
 	// Treat combinations of defined types.
 	DefinedType::Ptr defTypeA = DefinedType::from(a), defTypeB = DefinedType::from(b);
 	if (defTypeA && defTypeB)
@@ -347,17 +347,23 @@ NodePtr intersect(const NodePtr& a, const NodePtr& b)
  *
  * If r is a null pointer or not a named type, returns r.
  */
-NodePtr resolve(const NodePtr& r)
-{
-	if (!r || !r->isKindOf(kDefinedType))
-		return r;
+NodePtr resolve(const NodePtr& r) {
 
-	const auto& def = DefinedType::needFrom(r)->getDefinition();
-	if (const auto& ntd = NativeTypeDef::from(def))
-		return resolve(ntd->getType()->needTypeExpr()->getEvaluatedType());
+	if (const auto& rt = MutableType::from(r)) {
+		return resolve(rt->getType());
+	}
 
-	const auto& td = TypeDef::needFrom(def);
-	return resolve(td->getType()->needTypeExpr()->getEvaluatedType());
+	if (const auto& rt = DefinedType::from(r)) {
+		const auto& def = rt->getDefinition();
+
+		if (const auto& ntd = NativeTypeDef::from(def))
+			return resolve(ntd->getType()->needTypeExpr()->getEvaluatedType());
+
+		if (const auto& td = TypeDef::from(def))
+			return resolve(td->getType()->needTypeExpr()->getEvaluatedType());
+	}
+
+	return r;
 }
 
 NodePtr ignoreMapped(const NodePtr& in)

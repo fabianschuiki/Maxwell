@@ -146,6 +146,13 @@ void EvalTypeExprs::process(const NodePtr& node)
 			node->updateHierarchyOfChildren();
 		}
 
+		if (const auto& expr = MutableTypeExpr::from(node)) {
+			MutableType::Ptr type(new MutableType);
+			type->setType(expr->getExpr()->needTypeExpr()->getEvaluatedType()->copy());
+			intf->setEvaluatedType(type);
+			node->updateHierarchyOfChildren();
+		}
+
 		// Throw an error if we were unable to assign an evaluated type.
 		if (!intf->getEvaluatedType(false)) {
 			throw std::runtime_error("Could not evaluate type expression " + node->getId().str() + ".");

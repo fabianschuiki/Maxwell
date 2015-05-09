@@ -54,12 +54,6 @@ std::string Context::makeTempSymbol()
 }
 
 
-ExprCode::ExprCode()
-{
-	isRef = false;
-	precedence = 0;
-}
-
 /** Returns a copy of the input string with each non-empty line indented. */
 std::string backendc::indent(const std::string& in)
 {

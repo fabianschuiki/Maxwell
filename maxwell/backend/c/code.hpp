@@ -46,9 +46,9 @@ struct ExprCode
 	std::string code;
 	std::set<std::string> deps;
 	std::set<std::string> incs;
-	bool isRef;
-	int precedence;
-	ExprCode();
+	bool isRef = false;
+	bool isPointer = false;
+	int precedence = 0;
 };
 
 /** A code fragment representing a type. */

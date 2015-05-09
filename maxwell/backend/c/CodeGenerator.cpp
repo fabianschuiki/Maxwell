@@ -93,11 +93,12 @@ void CodeGenerator::generateType(const NodePtr& node, TypeCode& out)
 	// Register the types.
 	REGISTER_TYPE(DefinedType);
 	REGISTER_TYPE(FuncType);
+	REGISTER_TYPE(MutableType);
+	REGISTER_TYPE(NativeType);
+	REGISTER_TYPE(NilType);
+	REGISTER_TYPE(QualifiedType);
 	REGISTER_TYPE(TupleType);
 	REGISTER_TYPE(UnionType);
-	REGISTER_TYPE(NilType);
-	REGISTER_TYPE(NativeType);
-	REGISTER_TYPE(QualifiedType);
 
 	// Throw an exception if no code could be generated.
 	throw std::runtime_error(

@@ -1,10 +1,5 @@
 /* Copyright (c) 2015 Fabian Schuiki */
 
-native c interface "stdlib.h" {
-	func malloc (_: Int) -> (_: stdio_vp);
-	func free (_: stdio_vp);
-}
-
 func main = {
 
 	f := fopen("input.txt", "r");

@@ -1,9 +1,6 @@
 /* Copyright (c) 2015 Fabian Schuiki */
 
 native c interface "stdlib.h" {
-	func malloc (_: Int) -> (_: stdio_vp);
-	func realloc (_: stdio_vp, _: Int) -> (_: stdio_vp);
-	func free (_: stdio_vp);
 	func printf (_: String, _: Int);
 }
 
@@ -27,7 +24,7 @@ func main = {
 		if (index == size) {
 			size = size * 2;
 			printf("resized to %d\n", size);
-			msg = cast(std_cp, realloc(cast(stdio_vp, msg), size+1));
+			msg = cast(std_cp, realloc(cast(void_ptr, msg), size+1));
 		}
 		0;
 	}

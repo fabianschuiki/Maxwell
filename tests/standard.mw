@@ -13,10 +13,8 @@ native c {
 	type const_void_ptr const void *;
 
 	interface "stdio.h" {
-		type stdio_file  FILE *;
-		type stdio_off_t off_t *;
-		type stdio_vp    void *;
-		type stdio_cvp   const void *;
+		type stdio_file     FILE *;
+		type stdio_off_t    off_t *;
 
 		// void     clearerr(FILE *);
 		// char    *ctermid(char *);
@@ -44,7 +42,7 @@ native c {
 		// int      fputs(const char *, FILE *);
 		func fputs (_: String, _: stdio_file) -> (_: Int);
 		// size_t   fread(void *, size_t, size_t, FILE *);
-		func fread (_: stdio_vp, _: Int, _: Int, _: stdio_file) -> (_: Int);
+		func fread (_: void_ptr, _: Int, _: Int, _: stdio_file) -> (_: Int);
 		// FILE    *freopen(const char *, const char *, FILE *);
 		// int      fscanf(FILE *, const char *, ...);
 		// int      fseek(FILE *, long int, int);
@@ -59,8 +57,8 @@ native c {
 		// int      ftrylockfile(FILE *);
 		// void     funlockfile(FILE *);
 		// size_t   fwrite(const void *, size_t, size_t, FILE *);
-		func fwrite (_: stdio_cvp, _: Int, _: Int, _: stdio_file) -> (_: Int);
-		func fwrite (_: stdio_vp, _: Int, _: Int, _: stdio_file) -> (_: Int);
+		func fwrite (_: const_void_ptr, _: Int, _: Int, _: stdio_file) -> (_: Int);
+		func fwrite (_: void_ptr, _: Int, _: Int, _: stdio_file) -> (_: Int);
 		// int      getc(FILE *);
 		// int      getchar(void);
 		func getchar () -> (_: Int);

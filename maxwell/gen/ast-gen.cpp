@@ -440,7 +440,7 @@ int main(int argc, char *argv[])
 	// Create the output directory if required.
 	if (!boost::filesystem::exists(output)) {
 		cout << "Creating output directory " << output << '\n';
-		boost::filesystem::create_directory(output);
+		boost::filesystem::create_directories(output);
 	}
 
 	// Build the AST.

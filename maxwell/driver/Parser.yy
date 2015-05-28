@@ -10,15 +10,13 @@
 
 using namespace ast;
 using boost::shared_ptr;
-using maxwell::SourceRange;
-using maxwell::SourceLocation;
 typedef std::vector<NodePtr> Nodes;
 
 #define YYLLOC_DEFAULT(cur, rhs, N) \
   if (N) { \
-    (cur) = SourceRange((rhs)[1].getBegin(), (rhs)[N].getEnd()); \
+    (cur) = maxwell::SourceRange((rhs)[1].getBegin(), (rhs)[N].getEnd()); \
   } else { \
-    (cur) = SourceRange((rhs)[0].getEnd(), (rhs)[0].getEnd()); \
+    (cur) = maxwell::SourceRange((rhs)[0].getEnd(), (rhs)[0].getEnd()); \
   }
 
 %}
@@ -42,16 +40,16 @@ typedef std::vector<NodePtr> Nodes;
 
 /* Keep track of the current position within the input. */
 %locations
-%define "location_type" "SourceRange"
+%define "location_type" "maxwell::SourceRange"
 %initial-action {
   // initialize the location object
   // @$.begin.filename = @$.end.filename = &driver.streamname;
-  @$ = SourceRange(startLocation, startLocation);
+  @$ = maxwell::SourceRange(startLocation, startLocation);
 };
 
 /* Pass the driver by reference into the parser and the lexer. */
 %parse-param { class Driver& driver }
-%parse-param { SourceLocation startLocation }
+%parse-param { maxwell::SourceLocation startLocation }
 
 /* Produce some verbose error messages. */
 %error-verbose
@@ -228,7 +226,7 @@ typedef std::vector<NodePtr> Nodes;
 #define yylex driver.lexer->lex
 
 #undef location
-#define location SourceRange
+#define location maxwell::SourceRange
 
 using std::cout;
 using std::endl;

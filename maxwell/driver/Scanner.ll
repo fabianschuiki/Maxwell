@@ -43,7 +43,7 @@ typedef driver::Parser::token_type token_type;
 /* Advance the location tracker during lexing. */
 %{
 // #define YY_USER_ACTION yylloc->columns(yyleng); streamOffset += yyleng;
-#define YY_USER_ACTION *yylloc = SourceRange( \
+#define YY_USER_ACTION *yylloc = maxwell::SourceRange( \
     yylloc->getSourceId(), \
     yylloc->getOffset(), \
     yylloc->getLength() + yyleng);
@@ -65,20 +65,20 @@ symbol              {additive_op}|{multiplicative_op}|{relational_op}|{equality_
 %{
     // reset location
     // yylloc->step();
-    *yylloc = SourceRange(yylloc->getEnd(), yylloc->getEnd());
+    *yylloc = maxwell::SourceRange(yylloc->getEnd(), yylloc->getEnd());
 %}
 
  /* Ignore whitespaces. */
 [ \t\r]+ {
     // yylloc->step();
-    *yylloc = SourceRange(yylloc->getEnd(), yylloc->getEnd());
+    *yylloc = maxwell::SourceRange(yylloc->getEnd(), yylloc->getEnd());
 }
 
  /* Ignore newlines. */
 <INITIAL,IN_COMMENT>\n {
     // yylloc->lines(yyleng);
     // yylloc->step();
-    *yylloc = SourceRange(yylloc->getEnd(), yylloc->getEnd());
+    *yylloc = maxwell::SourceRange(yylloc->getEnd(), yylloc->getEnd());
 }
 
  /* Eat comments. */

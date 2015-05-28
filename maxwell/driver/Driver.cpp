@@ -1,4 +1,4 @@
-/* Copyright (c) 2013 Fabian Schuiki */
+/* Copyright (c) 2013-2015 Fabian Schuiki */
 #include "maxwell/ast/nodes/ast.hpp"
 #include "maxwell/driver/Driver.hpp"
 #include <vector>
@@ -17,24 +17,31 @@ Driver::Driver(int dl)
 	debugLevel = dl;
 }
 
-bool Driver::parseStream(std::istream& in, const std::string& name)
-{
+bool
+Driver::parseStream(
+	std::istream& in,
+	const std::string& name,
+	const maxwell::SourceLocation& start) {
+
 	streamname = name; // for error messages;
 	Scanner scanner(&in);
 	this->lexer = &scanner;
-	Parser parser(*this);
+	Parser parser(*this, start);
 	parser.set_debug_level(debugLevel);
 	return (parser.parse() == 0);
 }
 
-bool Driver::parseFile(const std::string& filename)
-{
+bool
+Driver::parseFile(
+	const std::string& filename,
+	const maxwell::SourceLocation& start) {
+
 	std::ifstream in(filename.c_str());
 	if (!in.good()) return false;
-	return parseStream(in, filename);
+	return parseStream(in, filename, start);
 }
 
-void Driver::error(const class location& l, const std::string& m)
+void Driver::error(const maxwell::SourceRange& l, const std::string& m)
 {
 	std::stringstream s;
 	s << l << ": " << m;

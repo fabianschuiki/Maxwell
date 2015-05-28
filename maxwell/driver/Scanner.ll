@@ -22,6 +22,9 @@ typedef driver::Parser::token_type token_type;
 
 /* Disable unistd.h which is not available under Windows. */
 #define YY_NO_UNISTD_H
+
+/* Flex uses the "register" keyword all over the place, which is deprecated. */
+#define register
 %}
 
 /* Enable the C++ magic. */
@@ -38,7 +41,11 @@ typedef driver::Parser::token_type token_type;
 
 /* Advance the location tracker during lexing. */
 %{
-#define YY_USER_ACTION yylloc->columns(yyleng);
+// #define YY_USER_ACTION yylloc->columns(yyleng); streamOffset += yyleng;
+#define YY_USER_ACTION *yylloc = SourceRange( \
+    yylloc->getSourceId(), \
+    yylloc->getOffset(), \
+    yylloc->getLength() + yyleng);
 %}
 
 %x IN_COMMENT
@@ -56,18 +63,21 @@ symbol              {additive_op}|{multiplicative_op}|{relational_op}|{equality_
  /* Whenever yylex() is invoked, we step the location tracker forward. */
 %{
     // reset location
-    yylloc->step();
+    // yylloc->step();
+    *yylloc = SourceRange(yylloc->getEnd(), yylloc->getEnd());
 %}
 
  /* Ignore whitespaces. */
 [ \t\r]+ {
-    yylloc->step();
+    // yylloc->step();
+    *yylloc = SourceRange(yylloc->getEnd(), yylloc->getEnd());
 }
 
  /* Ignore newlines. */
 <INITIAL,IN_COMMENT>\n {
-    yylloc->lines(yyleng);
-    yylloc->step();
+    // yylloc->lines(yyleng);
+    // yylloc->step();
+    *yylloc = SourceRange(yylloc->getEnd(), yylloc->getEnd());
 }
 
  /* Eat comments. */
@@ -100,11 +110,11 @@ symbol              {additive_op}|{multiplicative_op}|{relational_op}|{equality_
 "incase"     return token::INCASE;
 "otherwise"  return token::OTHERWISE;
 "cast"       return token::CAST;
+"nil"        return token::NIL;
 
  /* Constants */
-"nil"        return token::NIL;
 [a-zA-Z_][a-zA-Z0-9_!?=]*  storeToken; return token::IDENTIFIER;
-"-"?[0-9]+("."[0-9]*)?         storeToken; return token::NUMBER;
+"-"?[0-9]+("."[0-9]*)?     storeToken; return token::NUMBER;
 
  /* Punctuation */
 "("  return token::LPAREN;

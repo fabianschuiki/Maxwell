@@ -1,4 +1,5 @@
-/* Copyright (c) 2013 Fabian Schuiki */
+/* Copyright (c) 2013-2015 Fabian Schuiki */
+#include "maxwell/location.hpp"
 #include <boost/smart_ptr.hpp>
 #include <iostream>
 #include <string>
@@ -29,19 +30,24 @@ public:
 	/**
 	 * Routes the given input stream through the scanner and parser.
 	 */
-	bool parseStream(std::istream& in, const std::string& name = "stream");
+	bool parseStream(
+		std::istream& in,
+		const std::string& name,
+		const maxwell::SourceLocation& start);
 
 	/**
 	 * Opens the file at path %filename and routes it through the scanner and
 	 * parser.
 	 */
-	bool parseFile(const std::string& filename);
+	bool parseFile(
+		const std::string& filename,
+		const maxwell::SourceLocation& start);
 
 	/**
 	 * Error handling with associated location. Called by the parser and lexer
 	 * if they encounter an error.
 	 */
-	void error(const class location& l, const std::string& m);
+	void error(const maxwell::SourceRange& l, const std::string& m);
 
 	/** General error handling. */
 	void error(const std::string& m);

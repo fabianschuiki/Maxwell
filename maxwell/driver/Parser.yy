@@ -5,11 +5,22 @@
 #include <string>
 #include <vector>
 #include "maxwell/ast/nodes/ast.hpp"
+#include "maxwell/location.hpp"
 #include <boost/smart_ptr.hpp>
 
 using namespace ast;
 using boost::shared_ptr;
+using maxwell::SourceRange;
+using maxwell::SourceLocation;
 typedef std::vector<NodePtr> Nodes;
+
+#define YYLLOC_DEFAULT(cur, rhs, N) \
+  if (N) { \
+    (cur) = SourceRange((rhs)[1].getBegin(), (rhs)[N].getEnd()); \
+  } else { \
+    (cur) = SourceRange((rhs)[0].getEnd(), (rhs)[0].getEnd()); \
+  }
+
 %}
 
 /* Require Bison 2.3 */
@@ -31,13 +42,16 @@ typedef std::vector<NodePtr> Nodes;
 
 /* Keep track of the current position within the input. */
 %locations
+%define "location_type" "SourceRange"
 %initial-action {
-	// initialize the location object
-	@$.begin.filename = @$.end.filename = &driver.streamname;
+  // initialize the location object
+  // @$.begin.filename = @$.end.filename = &driver.streamname;
+  @$ = SourceRange(startLocation, startLocation);
 };
 
 /* Pass the driver by reference into the parser and the lexer. */
 %parse-param { class Driver& driver }
+%parse-param { SourceLocation startLocation }
 
 /* Produce some verbose error messages. */
 %error-verbose
@@ -212,6 +226,9 @@ typedef std::vector<NodePtr> Nodes;
 /* This connects the Bison parser to the Flex scanner. */
 #undef yylex
 #define yylex driver.lexer->lex
+
+#undef location
+#define location SourceRange
 
 using std::cout;
 using std::endl;
@@ -413,9 +430,6 @@ native_def
         deps.insert(deps.end(), $2->begin(), $2->end());
         ni->setDependencies(deps);
         // d->addDependencies($2->begin(), $2->end());
-      }
-      for (auto s : *$2) {
-        std::cout << "dep " << s << '\n';
       }
       delete $2;
       $$ = $3;

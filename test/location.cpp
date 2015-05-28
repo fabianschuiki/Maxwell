@@ -8,11 +8,9 @@ BOOST_AUTO_TEST_CASE(location_sid) {
 	SourceId sida;
 	SourceId sidb(1);
 
-	BOOST_CHECK_EQUAL(sida.isInvalid(), true);
 	BOOST_CHECK_EQUAL(sida.isValid(), false);
 	BOOST_CHECK_EQUAL((bool)sida, false);
 
-	BOOST_CHECK_EQUAL(sidb.isInvalid(), false);
 	BOOST_CHECK_EQUAL(sidb.isValid(), true);
 	BOOST_CHECK_EQUAL((bool)sidb, true);
 
@@ -33,11 +31,9 @@ BOOST_AUTO_TEST_CASE(location_loc) {
 	SourceLocation locb(sid);
 	SourceLocation locc(sid, 10);
 
-	BOOST_CHECK_EQUAL(loca.isInvalid(), true);
 	BOOST_CHECK_EQUAL(loca.isValid(), false);
 	BOOST_CHECK_EQUAL((bool)loca, false);
 
-	BOOST_CHECK_EQUAL(locb.isInvalid(), false);
 	BOOST_CHECK_EQUAL(locb.isValid(), true);
 	BOOST_CHECK_EQUAL((bool)locb, true);
 
@@ -62,11 +58,9 @@ BOOST_AUTO_TEST_CASE(location_range) {
 	SourceRange rngb(sid, 5, 10);
 	SourceRange rngc(loca, locb);
 
-	BOOST_CHECK_EQUAL(rnga.isInvalid(), true);
 	BOOST_CHECK_EQUAL(rnga.isValid(), false);
 	BOOST_CHECK_EQUAL((bool)rnga, false);
 
-	BOOST_CHECK_EQUAL(rngb.isInvalid(), false);
 	BOOST_CHECK_EQUAL(rngb.isValid(), true);
 	BOOST_CHECK_EQUAL((bool)rngb, true);
 

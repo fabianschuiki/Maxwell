@@ -7,7 +7,7 @@ void parse(const std::string& input)
 {
 	std::stringstream s(input);
 	drv.nodes.clear();
-	if (!drv.parseStream(s))
+	if (!drv.parseStream(s, "stream", maxwell::SourceLocation()))
 		throw std::runtime_error("failed to parse");
 }
 

@@ -15,6 +15,7 @@ using std::cout;
 using std::cerr;
 using driver::Driver;
 using ast::Repository;
+using namespace maxwell;
 
 int main(int argc, char *argv[])
 {
@@ -26,7 +27,7 @@ int main(int argc, char *argv[])
 		for (int i = 1; i < argc; i++) {
 			string arg(argv[i]);
 			cout << "Parsing " << arg << "... ";
-			if (driver.parseFile(arg)) {
+			if (driver.parseFile(arg, SourceLocation())) {
 				cout << "\033[32mdone\033[0m (" << driver.nodes.size() << " nodes)\n";
 				repo.unregisterSource(arg);
 				int source = repo.registerSource(arg);

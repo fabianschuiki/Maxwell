@@ -1,7 +1,8 @@
-/* Copyright (c) 2014 Fabian Schuiki */
+/* Copyright (c) 2014-2015 Fabian Schuiki */
 #pragma once
 #include "maxwell/types.hpp"
 #include <cassert>
+#include <ostream>
 
 /// \file
 /// This file establishes facilities that deal with uniquely identifying source
@@ -15,8 +16,8 @@ class SourceId;
 class SourceLocation;
 class SourceRange;
 
-/// A unique source ID. Each processed source file should be assigned a SourceId
-/// to keep track of locations inside the file.
+/// A unique identifier for a source file. Each processed source file shall be
+/// assigned a SourceId to keep track of locations within the file.
 class SourceId {
 	/// 0 indicates "invalid", everything else refers to a source file.
 	uint32_t id;
@@ -29,10 +30,8 @@ public:
 
 	/// Returns true if this is a valid source id.
 	bool isValid() const { return id != 0; }
-	/// Returns true if this is an invalid source id.
-	bool isInvalid() const { return id == 0; }
 	/// Returns true if this is a valid source id.
-	operator bool() const { return id != 0; }
+	explicit operator bool() const { return isValid(); }
 
 	bool operator==(SourceId l) const { return id == l.id; }
 	bool operator!=(SourceId l) const { return id != l.id; }
@@ -67,10 +66,8 @@ public:
 
 	/// Returns true if this is a valid source location.
 	bool isValid() const { return sid.isValid(); }
-	/// Returns true if this is an invalid source location.
-	bool isInvalid() const { return sid.isInvalid(); }
 	/// Returns true if this is a valid source location.
-	operator bool() const { return sid.isValid(); }
+	explicit operator bool() const { return isValid(); }
 
 	/// Returns a new location shifted i positions away from the beginning.
 	SourceLocation operator+(int i) const { return SourceLocation(sid, pos+i); }
@@ -81,18 +78,22 @@ public:
 	/// Shifts the location i positions towards the beginning.
 	SourceLocation& operator-=(int i) { pos -= i; return *this; }
 
-	bool operator==(SourceLocation l) { return sid == l.sid && pos == l.pos; }
-	bool operator!=(SourceLocation l) { return sid != l.sid || pos != l.pos; }
-	bool operator<=(SourceLocation l) {
+	bool operator==(SourceLocation l) const {
+		return sid == l.sid && pos == l.pos;
+	}
+	bool operator!=(SourceLocation l) const {
+		return sid != l.sid || pos != l.pos;
+	}
+	bool operator<=(SourceLocation l) const {
 		return sid < l.sid || (sid == l.sid && pos <= l.pos);
 	}
-	bool operator>=(SourceLocation l) {
+	bool operator>=(SourceLocation l) const {
 		return sid > l.sid || (sid == l.sid && pos >= l.pos);
 	}
-	bool operator<(SourceLocation l) {
+	bool operator<(SourceLocation l) const {
 		return sid < l.sid || (sid == l.sid && pos < l.pos);
 	}
-	bool operator>(SourceLocation l) {
+	bool operator>(SourceLocation l) const {
 		return sid > l.sid || (sid == l.sid && pos > l.pos);
 	}
 
@@ -130,15 +131,13 @@ public:
 		pos(a.pos),
 		len(b.pos-a.pos) {
 		assert(a.sid == b.sid);
-		assert(a.pos < b.pos);
+		assert(a.pos <= b.pos);
 	}
 
 	/// Returns true if this is a valid source range.
 	bool isValid() const { return sid.isValid(); }
-	/// Returns true if this is an invalid source range.
-	bool isInvalid() const { return sid.isInvalid(); }
 	/// Returns true if this is a valid source range.
-	operator bool() const { return sid.isValid(); }
+	explicit operator bool() const { return isValid(); }
 
 	bool operator==(SourceRange r) const {
 		return sid == r.sid && pos == r.pos && len == r.len;
@@ -181,5 +180,24 @@ public:
 		return sid == r.sid && pos <= r.pos+r.len && pos+len >= r.pos;
 	}
 };
+
+
+inline std::ostream& operator<< (std::ostream& o, SourceId id) {
+	o << id.getId();
+	return o;
+}
+
+inline std::ostream& operator<< (std::ostream& o, SourceLocation l) {
+	o << l.getSourceId() << ':' << l.getOffset();
+	return o;
+}
+
+inline std::ostream& operator<< (std::ostream& o, SourceRange r) {
+	auto off = r.getOffset();
+	auto len = r.getLength();
+	o << r.getSourceId() << ':' << off << '-' << (off+len);
+	return o;
+}
+
 
 } // namespace maxwell

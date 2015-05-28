@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(repository_source) {
 		sidb = repo.getSourceId("funcs.mw");
 		BOOST_CHECK(sida.isValid());
 		BOOST_CHECK(sidb.isValid());
-		BOOST_CHECK(repo.getSourceId("inexistent.mw").isInvalid());
+		BOOST_CHECK(!repo.getSourceId("inexistent.mw").isValid());
 		BOOST_CHECK_EQUAL(repo.getPath(sida), Path("main.mw"));
 		BOOST_CHECK_EQUAL(repo.getPath(sidb), Path("funcs.mw"));
 		BOOST_CHECK_EQUAL(repo.getPath(SourceId()), Path());

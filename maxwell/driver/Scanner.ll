@@ -1,10 +1,11 @@
 /* Copyright (c) 2013-2014 Fabian Schuiki */
 
 %{
+#include "maxwell/ast/nodes/ast.hpp"
+#include "maxwell/location.hpp"
 #include <sstream>
 #include <string>
 #include <vector>
-#include "maxwell/ast/nodes/ast.hpp"
 
 using namespace ast;
 typedef std::vector<NodePtr> Nodes;

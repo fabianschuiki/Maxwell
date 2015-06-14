@@ -40,6 +40,7 @@ Maxwell uses [Semantic Versioning](http://semver.org).
 - `nullptr` instead of `0` or `NULL` for pointers
 - tests live in the `/test` directory (not interleaved with the source code)
 - no `std::endl`, use the UNIX line feed `\n`
+- write [good](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html) [commit](http://www.slideshare.net/TarinGamberini/commit-messages-goodpractices) [messages](https://robots.thoughtbot.com/5-useful-tips-for-a-better-commit-message)
 
 
 ## How To Dive In

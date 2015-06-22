@@ -12,11 +12,15 @@ using namespace ast;
 using boost::shared_ptr;
 typedef std::vector<NodePtr> Nodes;
 
+#ifdef __APPLE__
+  #define YYRHSLOC(rhs,K) ((rhs)[K])
+#endif
+
 #define YYLLOC_DEFAULT(cur, rhs, N) \
   if (N) { \
-    (cur) = maxwell::SourceRange((rhs)[1].getBegin(), (rhs)[N].getEnd()); \
+    (cur) = maxwell::SourceRange(YYRHSLOC(rhs, 1).getBegin(), YYRHSLOC(rhs, N).getEnd()); \
   } else { \
-    (cur) = maxwell::SourceRange((rhs)[0].getEnd(), (rhs)[0].getEnd()); \
+    (cur) = maxwell::SourceRange(YYRHSLOC(rhs, 0).getEnd(), YYRHSLOC(rhs, 0).getEnd()); \
   }
 
 %}
@@ -225,8 +229,10 @@ typedef std::vector<NodePtr> Nodes;
 #undef yylex
 #define yylex driver.lexer->lex
 
+#ifdef __APPLE__
 #undef location
 #define location maxwell::SourceRange
+#endif
 
 using std::cout;
 using std::endl;

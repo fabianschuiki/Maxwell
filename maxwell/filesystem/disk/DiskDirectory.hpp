@@ -21,6 +21,7 @@ public:
 	const Path& getPath() const { return path; }
 	bool exists() const;
 	void unlink() const;
+	bool make() const;
 
 	File& getFile(const std::string& name) const;
 	Directory& getDirectory(const std::string& name) const;

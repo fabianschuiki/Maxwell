@@ -23,6 +23,10 @@ public:
 	/// not exist. This allows directories to be created.
 	virtual Directory& getDirectory(const std::string& name) const = 0;
 
+	/// Creates the directory. Returns true if the directory had to be created,
+	/// or false if it already existed.
+	virtual bool make() const = 0;
+
 	/// Calls \a f for each file in the directory.
 	virtual void eachFile(std::function<void(File&)> f) const = 0;
 	/// Calls \a f for each subdirectory.

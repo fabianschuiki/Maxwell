@@ -1,7 +1,7 @@
 # Copyright (c) 2013-2015 Fabian Schuiki
 add_custom_command(
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Parser.yy
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Parser.cpp ${CMAKE_CURRENT_BINARY_DIR}/Parser.hpp ${CMAKE_CURRENT_BINARY_DIR}/stack.hh ${CMAKE_CURRENT_BINARY_DIR}/position.hh ${CMAKE_CURRENT_BINARY_DIR}/location.hh ${CMAKE_CURRENT_BINARY_DIR}/Parser.output
+	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Parser.cpp
 	COMMAND bison --report=all -d -o ${CMAKE_CURRENT_BINARY_DIR}/Parser.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Parser.yy
 	COMMENT "Generating Bison parser")
 

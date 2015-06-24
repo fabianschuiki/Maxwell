@@ -4,6 +4,9 @@
 
 #include "maxwell/ast/Repository.hpp"
 #include "maxwell/driver/Driver.hpp"
+#include "maxwell/filesystem/disk/DiskDirectory.hpp"
+#include "maxwell/filesystem/disk/DiskFile.hpp"
+#include "maxwell/repository/file/FileSourceRepository.hpp"
 #include <iostream>
 #include <set>
 #include <stdexcept>
@@ -16,18 +19,26 @@ using std::cerr;
 using driver::Driver;
 using ast::Repository;
 using namespace maxwell;
+using namespace maxwell::filesystem;
 
 int main(int argc, char *argv[])
 {
 	try {
 		Driver driver;
 		Repository repo("mwcrepo");
+		boost::filesystem::create_directory("mwcrepo/mwc");
+		filesystem::DiskDirectory repoDir("mwcrepo/mwc/sources");
+		repository::FileSourceRepository sourceRepo(repoDir);
 
 		set<string> ids;
 		for (int i = 1; i < argc; i++) {
 			string arg(argv[i]);
 			cout << "Parsing " << arg << "... ";
-			if (driver.parseFile(arg, SourceLocation())) {
+
+			sourceRepo.add("../"+arg, DiskFile(arg));
+			SourceId sid = sourceRepo.getSourceId("../"+arg);
+
+			if (driver.parseFile(arg, SourceLocation(sid))) {
 				cout << "\033[32mdone\033[0m (" << driver.nodes.size() << " nodes)\n";
 				repo.unregisterSource(arg);
 				int source = repo.registerSource(arg);

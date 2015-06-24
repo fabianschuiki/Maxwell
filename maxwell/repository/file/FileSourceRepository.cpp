@@ -98,6 +98,9 @@ FileSourceRepository::FileSourceRepository(const Directory& dir):
 	needsFlush(false),
 	needsPurge(false) {
 
+	// Make sure the directory exists.
+	dir.make();
+
 	// Load the index file if it exists.
 	File& index = dir.getFile("index");
 	if (index.exists()) {

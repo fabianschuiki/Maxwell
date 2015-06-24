@@ -9,8 +9,9 @@
 #include <iostream>
 using maxwell::filesystem::DiskDirectory;
 using maxwell::filesystem::DiskFile;
-using maxwell::filesystem::normalizePath;
 using maxwell::filesystem::Path;
+using maxwell::filesystem::absolutePath;
+using maxwell::filesystem::normalizePath;
 using maxwell::filesystem::relativePath;
 using maxwell::repository::FileSourceRepository;
 using maxwell::repository::Source;
@@ -32,7 +33,7 @@ bool SourceTool::run() {
 	if (argc > 0 && stroneof(*argv, "-r", "--repo")) {
 		--argc; ++argv;
 		if (argc > 0) {
-			repo = *argv;
+			repo = absolutePath(*argv, currentPath);
 			--argc; ++argv;
 		} else {
 			err << "expected repository path after -r/--repo\n";
@@ -93,7 +94,7 @@ bool SourceTool::run() {
 
 			// Process the arguments.
 			for (; argc > 0; argc--, argv++) {
-				Path path = normalizePath(currentPath/(*argv));
+				Path path = normalizePath(absolutePath(*argv, currentPath));
 
 				// Add entire directories.
 				if (boost::filesystem::is_directory(path)) {
@@ -143,7 +144,7 @@ bool SourceTool::run() {
 				sourceRepo.removeAll();
 			} else {
 				for (; argc > 0; argc--, argv++) {
-					Path path = normalizePath(currentPath/(*argv));
+					Path path = normalizePath(absolutePath(*argv, currentPath));
 					Path relative = relativePath(path, repoDir);
 					if (!sourceRepo.remove(relative))
 						err << "skipped " << *argv << " (not in repository)\n";

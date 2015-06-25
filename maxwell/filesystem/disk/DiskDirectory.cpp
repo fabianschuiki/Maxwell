@@ -11,6 +11,10 @@ void DiskDirectory::unlink() const {
 	boost::filesystem::remove_all(path);
 }
 
+bool DiskDirectory::make() const {
+	return boost::filesystem::create_directory(path);
+}
+
 
 File& DiskDirectory::getFile(const std::string& name) const {
 	auto it = fileCache.find(name);

@@ -1,8 +1,9 @@
-/* Copyright (c) 2014 Fabian Schuiki */
+/* Copyright (c) 2014-2015 Fabian Schuiki */
 #include "maxwell/filesystem/Path.hpp"
 
 namespace maxwell {
 namespace filesystem {
+
 
 /// Returns the given \a path relative to \a base. Both paths must be absolute.
 Path relativePath(const Path& path, const Path& base) {
@@ -25,6 +26,7 @@ Path relativePath(const Path& path, const Path& base) {
 	}
 	return result;
 }
+
 
 /// Returns a normalized version of the given \a path. Normalization entails the
 /// following modifications:
@@ -52,6 +54,14 @@ Path normalizePath(const Path& path) {
 	}
 	return result;
 }
+
+
+/// Prepends \a base to \a path if the latter is relative. Does nothing if
+/// \a path is already absolute.
+Path absolutePath(const Path& path, const Path& base) {
+	return path.is_absolute() ? path : base/path;
+}
+
 
 } // namespace filesystem
 } // namespace maxwell

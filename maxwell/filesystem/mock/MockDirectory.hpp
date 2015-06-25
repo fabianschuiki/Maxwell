@@ -42,6 +42,8 @@ public:
 		return it->second;
 	}
 
+	bool make() const { return false; }
+
 	void eachFile(std::function<void(File&)> f) const {
 		for (auto& v : files) {
 			if (v.second.exists())

@@ -23,4 +23,4 @@ add_library(ast
 )
 
 add_dependencies(ast ast-gen)
-target_link_libraries(ast base64 ${Boost_LIBRARIES})
+target_link_libraries(ast obj-common ${Boost_LIBRARIES})

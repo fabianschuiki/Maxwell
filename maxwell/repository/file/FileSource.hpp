@@ -12,6 +12,7 @@ class FileSourceRepository;
 class FileSource : public Source {
 	friend class FileSourceRepository;
 
+	FileSourceRepository& repo;
 	SourceId id;
 	Path path;
 	sha1hash hash;
@@ -19,6 +20,8 @@ class FileSource : public Source {
 	time_t modificationTime;
 
 public:
+	FileSource(FileSourceRepository& repo): repo(repo) {}
+
 	SourceId getId() const { return id; }
 	const Path& getPath() const { return path; }
 	const sha1hash& getHash() const { return hash; }

@@ -33,13 +33,13 @@ int main(int argc, char *argv[])
 		set<string> ids;
 		for (int i = 1; i < argc; i++) {
 			string arg(argv[i]);
-			cout << "Parsing " << arg << "... ";
+			cerr << "Parsing " << arg << "... ";
 
 			sourceRepo.add("../"+arg, DiskFile(arg));
 			SourceId sid = sourceRepo.getSourceId("../"+arg);
 
 			if (driver.parseFile(arg, SourceLocation(sid))) {
-				cout << "\033[32mdone\033[0m (" << driver.nodes.size() << " nodes)\n";
+				cerr << "\033[32mdone\033[0m (" << driver.nodes.size() << " nodes)\n";
 				repo.unregisterSource(arg);
 				int source = repo.registerSource(arg);
 				for (ast::NodeVector::iterator it = driver.nodes.begin(); it != driver.nodes.end(); it++) {
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 				}
 				driver.nodes.clear();
 			} else {
-				cout << "\033[31;1mfailed\033[0m\n";
+				cerr << "\033[31;1mfailed\033[0m\n";
 			}
 		}
 		for (set<string>::iterator it = ids.begin(); it != ids.end(); it++) {

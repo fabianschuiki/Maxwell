@@ -113,7 +113,7 @@ FileSourceRepository::FileSourceRepository(const Directory& dir):
 			dec(version);
 
 			while (dec.remaining()) {
-				std::unique_ptr<FileSource> src(new FileSource);
+				auto src = make_unique<FileSource>(*this);
 				decode(dec, src->id);
 				decode(dec, src->path);
 				decode(dec, src->hash);
@@ -172,7 +172,7 @@ bool FileSourceRepository::add(const Path& path, const File& file) {
 			sourcesById.rbegin()->first.getId() + 1);
 
 		// Create a new file entry.
-		std::unique_ptr<FileSource> src(new FileSource);
+		auto src = make_unique<FileSource>(*this);
 		src->id = sid;
 		src->path = path;
 		src->pathHash = pathHash;

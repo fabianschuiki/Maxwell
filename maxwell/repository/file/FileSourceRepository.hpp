@@ -4,8 +4,8 @@
 #include "maxwell/repository/Source.hpp"
 #include "maxwell/repository/SourceRepository.hpp"
 #include "maxwell/sha1.hpp"
+#include "maxwell/memory.hpp"
 #include <map>
-#include <memory>
 
 namespace maxwell {
 namespace repository {

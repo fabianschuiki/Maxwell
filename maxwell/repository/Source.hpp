@@ -2,6 +2,7 @@
 #pragma once
 #include "maxwell/filesystem/Path.hpp"
 #include "maxwell/location.hpp"
+#include "maxwell/range.hpp"
 #include "maxwell/sha1.hpp"
 
 namespace maxwell {
@@ -30,6 +31,9 @@ public:
 	/// Returns the modification time of the file when it was added to the
 	/// repository.
 	virtual time_t getModificationTime() const = 0;
+
+	/// Returns a range over the contents of the file.
+	virtual range<Byte*> getContent() const = 0;
 };
 
 } // namespace repository

@@ -40,6 +40,8 @@ public:
 	void purge() const;
 
 private:
+	friend class FileSource;
+
 	/// Directory maintained by this repository.
 	const Directory& dir;
 

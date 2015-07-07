@@ -19,6 +19,9 @@ class FileSource : public Source {
 	sha1hash pathHash;
 	time_t modificationTime;
 
+	mutable std::vector<Byte> content;
+	mutable bool contentLoaded = false;
+
 public:
 	FileSource(FileSourceRepository& repo): repo(repo) {}
 
@@ -26,6 +29,7 @@ public:
 	const Path& getPath() const { return path; }
 	const sha1hash& getHash() const { return hash; }
 	time_t getModificationTime() const { return modificationTime; }
+	range<Byte*> getContent() const;
 };
 
 } // namespace repository

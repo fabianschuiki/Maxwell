@@ -18,6 +18,7 @@ add_library(obj-common
 	filesystem/disk/DiskDirectory.cpp
 	filesystem/disk/DiskFile.cpp
 	filesystem/Path.cpp
+	repository/file/FileSource.cpp
 	repository/file/FileSourceRepository.cpp
 	base64.cpp
 	sha1.cpp

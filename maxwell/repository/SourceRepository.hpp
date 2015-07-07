@@ -7,6 +7,8 @@
 namespace maxwell {
 namespace repository {
 
+class Source;
+
 /// An object that maintains a set of source files and detects changes in them.
 /// For each source file added, the repository must track
 ///

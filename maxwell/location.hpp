@@ -182,6 +182,21 @@ public:
 };
 
 
+/// \needsdoc
+template<typename... Args>
+SourceRange union_range(SourceRange a, SourceRange b, Args... rest) {
+	auto c = union_range(b, rest...);
+	auto first = std::min(a.getBegin(), c.getBegin());
+	auto last  = std::max(a.getEnd(), c.getEnd());
+	return SourceRange(first,last);
+}
+
+/// \needsdoc
+inline SourceRange union_range(SourceRange a) {
+	return a;
+}
+
+
 inline std::ostream& operator<< (std::ostream& o, SourceId id) {
 	o << id.getId();
 	return o;

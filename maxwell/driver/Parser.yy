@@ -236,6 +236,7 @@ typedef std::vector<NodePtr> Nodes;
 
 using std::cout;
 using std::endl;
+using namespace maxwell;
 %}
 
 
@@ -249,9 +250,11 @@ root_stmts : root_stmts root_stmt
            ;
 
 root_stmt : func_def {
+              $1->setRange(@1);
               driver.add(NodePtr($1));
             }
           | type_def {
+              $1->setRange(@1);
               driver.add(NodePtr($1));
             }
           | native_stmt
@@ -290,16 +293,19 @@ func_def_signature
 func_def_name
   : FUNC IDENTIFIER {
       FuncDef* d = new FuncDef;
+      d->setReferenceRange(@2);
       d->setName(*$2); delete $2;
       $$ = d;
     }
   | FUNC any_operator {
       FuncDef* d = new FuncDef;
+      d->setReferenceRange(@2);
       d->setName(*$2); delete $2;
       $$ = d;
     }
   | FUNC UNARY any_operator {
       FuncDef* d = new FuncDef;
+      d->setReferenceRange(@3);
       d->setName("_" + *$3); delete $3;
       $$ = d;
     }
@@ -325,12 +331,16 @@ func_args
 func_arg
   : IDENTIFIER {
       FuncArg *a = new FuncArg;
+      a->setRange(@$);
+      a->setReferenceRange(@1);
       a->setName(*$1);
       $$ = a;
       delete $1;
     }
   | IDENTIFIER COLON post_func_typeexpr {
       FuncArg *a = new FuncArg;
+      a->setRange(@$);
+      a->setReferenceRange(@1);
       a->setName(*$1);
       a->setTypeExpr(NodePtr($3));
       $$ = a;
@@ -351,6 +361,7 @@ type_def_name
   | TYPE IDENTIFIER {*/
   : TYPE IDENTIFIER {
       TypeDef *t = new TypeDef;
+      t->setReferenceRange(@2);
       t->setName(*$2);
       $$ = t;
       delete $2;
@@ -362,6 +373,8 @@ type_def_name
 native_func_def
   : FUNC IDENTIFIER func_args_tuple {
       NativeFuncDef* d = new NativeFuncDef;
+      d->setReferenceRange(@2);
+      d->setRange(@$);
       d->setName(*$2);
       d->setIn(*$3);
       delete $2;
@@ -370,6 +383,8 @@ native_func_def
     }
   | FUNC IDENTIFIER func_args_tuple RIGHTARROW func_args_tuple {
       NativeFuncDef* d = new NativeFuncDef;
+      d->setReferenceRange(@2);
+      d->setRange(@$);
       d->setName(*$2);
       d->setIn(*$3);
       d->setOut(*$5);
@@ -409,6 +424,8 @@ native_type_def_expr
 native_type_def
   : TYPE IDENTIFIER native_type_def_expr {
       NativeTypeDef* d = new NativeTypeDef;
+      d->setReferenceRange(@2);
+      d->setRange(@$);
       d->setName(*$2);
       d->setType(NodePtr($3));
       delete $2;
@@ -494,37 +511,43 @@ native_stmt
 primary_expr
   : IDENTIFIER {
       IdentifierExpr *i = new IdentifierExpr;
+      i->setRange(@$);
       i->setName(*$1);
       $$ = i;
       delete $1;
     }
   | LPAREN any_expr RPAREN { $$ = $2; }
   | NUMBER {
-     NumberConstExpr *n = new NumberConstExpr;
-     n->setValue(*$1);
-     $$ = n;
-     delete $1;
+      NumberConstExpr *n = new NumberConstExpr;
+      n->setRange(@$);
+      n->setValue(*$1);
+      $$ = n;
+      delete $1;
     }
   | STRING_LITERAL {
       StringConstExpr *s = new StringConstExpr;
+      s->setRange(@$);
       s->setValue(*$1);
       $$ = s;
       delete $1;
     }
   | LBRACK expr_list RBRACK { /* array literals */
       ArrayConstExpr *a = new ArrayConstExpr;
+      a->setRange(@$);
       a->setExprs(*$2);
       $$ = a;
       delete $2;
     }
   | LBRACE expr_list RBRACE { /* set literals */
       SetConstExpr *s = new SetConstExpr;
+      s->setRange(@$);
       s->setExprs(*$2);
       $$ = s;
       delete $2;
     }
   | LBRACE map_expr_pairs RBRACE { /* map literals */
       MapConstExpr *m = new MapConstExpr;
+      m->setRange(@$);
       m->setPairs(*$2);
       $$ = m;
       delete $2;
@@ -534,6 +557,8 @@ primary_expr
   | tuple_expr
   | CAST LPAREN typeexpr COMMA any_expr RPAREN {
       CastExpr *c = new CastExpr;
+      c->setRange(@$);
+      c->setReferenceRange(union_range(@2,@4));
       c->setExpr(NodePtr($5));
       c->setTypeExpr(NodePtr($3));
       $$ = c;
@@ -544,6 +569,7 @@ primary_expr
 tuple_expr
   : LPAREN tuple_expr_args RPAREN {
       TupleExpr *t = new TupleExpr;
+      t->setRange(@$);
       t->setArgs(*$2);
       delete $2;
       $$ = t;
@@ -566,6 +592,8 @@ tuple_expr_args
 tuple_expr_arg_named
   : IDENTIFIER COLON primary_expr {
       TupleExprArg *a = new TupleExprArg;
+      a->setRange(@$);
+      a->setReferenceRange(@1);
       a->setName(*$1);
       a->setExpr(NodePtr($3));
       delete $1;
@@ -575,6 +603,7 @@ tuple_expr_arg_named
 tuple_expr_arg_anonymous
   : primary_expr {
       TupleExprArg *a = new TupleExprArg;
+      a->setRange(@$);
       a->setExpr(NodePtr($1));
       $$ = a;
     }
@@ -593,6 +622,8 @@ map_expr_pairs
 map_expr_pair
   : primary_expr COLON expr {
       MapConstExprPair *p = new MapConstExprPair;
+      p->setRange(@$);
+      p->setReferenceRange(@1);
       p->setKey(NodePtr($1));
       p->setValue(NodePtr($3));
       $$ = p;
@@ -602,12 +633,14 @@ map_expr_pair
 ifcase_expr
   : LBRACE ifcase_expr_conds RBRACE {
       IfCaseExpr *i = new IfCaseExpr;
+      i->setRange(@$);
       i->setConds(*$2);
       $$ = i;
       delete $2;
     }
   | LBRACE ifcase_expr_conds COMMA expr OTHERWISE RBRACE {
       IfCaseExpr *i = new IfCaseExpr;
+      i->setRange(@$);
       i->setConds(*$2);
       i->setOtherwise(NodePtr($4));
       $$ = i;
@@ -626,6 +659,8 @@ ifcase_expr_conds
 ifcase_expr_cond
   : expr IF expr {
       IfCaseExprCond *c = new IfCaseExprCond;
+      c->setRange(@$);
+      c->setReferenceRange(@2);
       c->setExpr(NodePtr($1));
       c->setCond(NodePtr($3));
       $$ = c;
@@ -635,12 +670,16 @@ ifcase_expr_cond
 if_expr
   : IF LPAREN expr RPAREN body_expr {
       IfExpr *s = new IfExpr;
+      s->setRange(@$);
+      s->setReferenceRange(union_range(@1,@4));
       s->setCond(NodePtr($3));
       s->setBody(NodePtr($5));
       $$ = s;
     }
   | IF LPAREN expr RPAREN body_expr ELSE body_expr {
       IfExpr *s = new IfExpr;
+      s->setRange(@$);
+      s->setReferenceRange(union_range(@1,@4));
       s->setCond(NodePtr($3));
       s->setBody(NodePtr($5));
       s->setElseExpr(NodePtr($7));
@@ -651,12 +690,16 @@ if_expr
 for_expr
   : FOR LPAREN expr RPAREN body_expr {
       ForExpr *s = new ForExpr;
+      s->setRange(@$);
+      s->setReferenceRange(union_range(@1,@4));
       s->setCond(NodePtr($3));
       s->setBody(NodePtr($5));
       $$ = s;
     }
   | FOR LPAREN expr SEMICOLON expr SEMICOLON expr RPAREN body_expr {
       ForExpr *s = new ForExpr;
+      s->setRange(@$);
+      s->setReferenceRange(union_range(@1,@8));
       s->setInit(NodePtr($3));
       s->setCond(NodePtr($5));
       s->setStep(NodePtr($7));
@@ -674,6 +717,7 @@ body_expr
 block_expr
   : LBRACE RBRACE {
       BlockExpr *b = new BlockExpr;
+      b->setRange(@$);
       $$ = b;
     }
   | nonempty_block_expr
@@ -681,6 +725,7 @@ block_expr
 nonempty_block_expr
   : LBRACE block_expr_exprs RBRACE {
       BlockExpr *b = new BlockExpr;
+      b->setRange(@$);
       b->setExprs(*$2);
       $$ = b;
       delete $2;
@@ -704,6 +749,8 @@ postfix_expr
   : primary_expr
   | postfix_expr OPERATOR {
       UnaryOpExpr *u = new UnaryOpExpr;
+      u->setRange(@$);
+      u->setReferenceRange(@2);
       u->setPostfix(true);
       u->setOperatorName(*$2);
       u->setExpr(NodePtr($1));
@@ -712,6 +759,8 @@ postfix_expr
     }
   | postfix_expr DOT IDENTIFIER LPAREN RPAREN {
       CallExpr *c = new CallExpr;
+      c->setRange(@$);
+      c->setReferenceRange(@3);
       c->setName(*$3);
       c->setContext(NodePtr($1));
       $$ = c;
@@ -719,6 +768,8 @@ postfix_expr
     }
   | postfix_expr DOT IDENTIFIER LPAREN call_args RPAREN {
       CallExpr *c = new CallExpr;
+      c->setRange(@$);
+      c->setReferenceRange(@3);
       c->setName(*$3);
       c->setArgs(*$5);
       c->setContext(NodePtr($1));
@@ -728,6 +779,8 @@ postfix_expr
     }
   | postfix_expr DOT IDENTIFIER {
       CallExpr *c = new CallExpr;
+      c->setRange(@$);
+      c->setReferenceRange(@3);
       c->setName(*$3);
       c->setContext(NodePtr($1));
       $$ = c;
@@ -735,12 +788,16 @@ postfix_expr
     }
   | IDENTIFIER LPAREN RPAREN {
       CallExpr *c = new CallExpr;
+      c->setRange(@$);
+      c->setReferenceRange(@1);
       c->setName(*$1);
       $$ = c;
       delete $1;
     }
   | IDENTIFIER LPAREN call_args RPAREN {
       CallExpr *c = new CallExpr;
+      c->setRange(@$);
+      c->setReferenceRange(@1);
       c->setName(*$1);
       c->setArgs(*$3);
       $$ = c;
@@ -749,6 +806,8 @@ postfix_expr
     }
   | postfix_expr LBRACK expr RBRACK {
       IndexOpExpr *i = new IndexOpExpr;
+      i->setRange(@$);
+      i->setReferenceRange(union_range(@2,@4));
       i->setIndexee(NodePtr($1));
       i->setIndex(NodePtr($3));
       $$ = i;
@@ -768,6 +827,8 @@ call_args
 call_arg
   : IDENTIFIER COLON expr {
       CallExprArg *a = new CallExprArg;
+      a->setRange(@$);
+      a->setReferenceRange(@1);
       a->setName(*$1);
       a->setExpr(NodePtr($3));
       $$ = a;
@@ -775,6 +836,7 @@ call_arg
     }
   | expr {
       CallExprArg *a = new CallExprArg;
+      a->setRange(@$);
       a->setExpr(NodePtr($1));
       $$ = a;
     }
@@ -784,6 +846,8 @@ prefix_expr
   : postfix_expr
   | any_operator prefix_expr {
       UnaryOpExpr *u = new UnaryOpExpr;
+      u->setRange(@$);
+      u->setReferenceRange(@1);
       u->setPostfix(false);
       u->setOperatorName(*$1);
       u->setExpr(NodePtr($2));
@@ -797,6 +861,8 @@ multiplicative_expr
   : prefix_expr
   | multiplicative_expr MULTIPLICATIVE_OPERATOR prefix_expr {
       BinaryOpExpr *e = new BinaryOpExpr;
+      e->setRange(@$);
+      e->setReferenceRange(@2);
       e->setOperatorName(*$2);
       e->setLhs(NodePtr($1));
       e->setRhs(NodePtr($3));
@@ -809,6 +875,8 @@ additive_expr
   : multiplicative_expr
   | additive_expr ADDITIVE_OPERATOR multiplicative_expr {
       BinaryOpExpr *e = new BinaryOpExpr;
+      e->setRange(@$);
+      e->setReferenceRange(@2);
       e->setOperatorName(*$2);
       e->setLhs(NodePtr($1));
       e->setRhs(NodePtr($3));
@@ -821,6 +889,8 @@ relational_expr
   : additive_expr
   | relational_expr RELATIONAL_OPERATOR additive_expr {
       BinaryOpExpr *e = new BinaryOpExpr;
+      e->setRange(@$);
+      e->setReferenceRange(@2);
       e->setOperatorName(*$2);
       e->setLhs(NodePtr($1));
       e->setRhs(NodePtr($3));
@@ -833,6 +903,8 @@ equality_expr
   : relational_expr
   | equality_expr EQUALITY_OPERATOR relational_expr {
       BinaryOpExpr *e = new BinaryOpExpr;
+      e->setRange(@$);
+      e->setReferenceRange(@2);
       e->setOperatorName(*$2);
       e->setLhs(NodePtr($1));
       e->setRhs(NodePtr($3));
@@ -845,6 +917,8 @@ and_expr
   : equality_expr
   | and_expr AND_OPERATOR equality_expr {
       BinaryOpExpr *e = new BinaryOpExpr;
+      e->setRange(@$);
+      e->setReferenceRange(@2);
       e->setOperatorName(*$2);
       e->setLhs(NodePtr($1));
       e->setRhs(NodePtr($3));
@@ -857,6 +931,8 @@ or_expr
   : and_expr
   | or_expr OR_OPERATOR and_expr {
       BinaryOpExpr *e = new BinaryOpExpr;
+      e->setRange(@$);
+      e->setReferenceRange(@2);
       e->setOperatorName(*$2);
       e->setLhs(NodePtr($1));
       e->setRhs(NodePtr($3));
@@ -869,11 +945,15 @@ func_expr
   : or_expr
   | FUNC RIGHTARROW or_expr {
       FuncExpr *e = new FuncExpr;
+      e->setRange(@$);
+      e->setReferenceRange(union_range(@1,@2));
       e->setExpr(NodePtr($3));
       $$ = e;
     }
   | FUNC func_args_tuple RIGHTARROW or_expr {
       FuncExpr *e = new FuncExpr;
+      e->setRange(@$);
+      e->setReferenceRange(union_range(@1,@3));
       e->setArgs(*$2);
       e->setExpr(NodePtr($4));
       delete $2;
@@ -885,6 +965,8 @@ assignment_expr
   : func_expr
   | assignment_expr ASSIGN func_expr {
       AssignmentExpr *e = new AssignmentExpr;
+      e->setRange(@$);
+      e->setReferenceRange(@2);
       e->setLhs(NodePtr($1));
       e->setRhs(NodePtr($3));
       $$ = e;
@@ -894,6 +976,8 @@ assignment_expr
 var_expr
   : VAR IDENTIFIER typeexpr {
       VarDefExpr *v = new VarDefExpr;
+      v->setRange(@$);
+      v->setReferenceRange(@2);
       v->setName(*$2);
       v->setTypeExpr(NodePtr($3));
       $$ = v;
@@ -901,6 +985,8 @@ var_expr
     }
   | VAR IDENTIFIER {
       VarDefExpr *v = new VarDefExpr;
+      v->setRange(@$);
+      v->setReferenceRange(@2);
       v->setName(*$2);
       $$ = v;
       delete $2;
@@ -915,6 +1001,8 @@ expr
     }
   | IDENTIFIER DEFASSIGN assignment_expr {
       TypelessVarDefExpr *v = new TypelessVarDefExpr;
+      v->setRange(@$);
+      v->setReferenceRange(@1);
       v->setName(*$1);
       v->setInitialExpr(NodePtr($3));
       $$ = v;

@@ -3,6 +3,7 @@
 #include "maxwell/ast/NodeId.hpp"
 #include "maxwell/ast/nodes/BaseNode.hpp" // for ast::BaseNode
 #include "maxwell/ast/nodes/types.hpp" // for ast::Kind
+#include "maxwell/location.hpp"
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/smart_ptr.hpp>
 #include <iostream>
@@ -13,6 +14,7 @@ namespace ast {
 
 using std::string;
 using std::vector;
+using maxwell::SourceRange;
 using boost::shared_ptr;
 
 class Encoder;
@@ -27,8 +29,7 @@ typedef vector<NodePtr> NodeVector;
 /**
  * @brief Base class for all nodes in the abstract syntax tree.
  */
-class Node : public boost::enable_shared_from_this<Node>, public BaseNode
-{
+class Node : public boost::enable_shared_from_this<Node>, public BaseNode {
 public:
 	Node();
 
@@ -76,11 +77,31 @@ public:
 	/// Overridden by subclasses to propagate hierarchy changes to child nodes.
 	virtual void updateHierarchyOfChildren() {}
 
+	/// Sets the range this node covers in the source file.
+	void setRange(SourceRange r) { range = r; }
+	/// Sets the range that shall be used when referring to this node from a
+	/// diagnostic message.
+	void setReferenceRange(SourceRange r) { referenceRange = r; }
+
+	/// Returns the range this node covers in the source file.
+	SourceRange getRange() const {
+		return range;
+	}
+
+	/// Returns the range that should be used to refer to this node. If no
+	/// reference range has been set by a previous call to setReferenceRange(),
+	/// returns the result of calling getRange() instead.
+	SourceRange getReferenceRange() const {
+		return referenceRange ? referenceRange : range;
+	}
+
 protected:
 	bool modified;
 	NodeId id;
 	Node* parent;
 	Repository* repository;
+	SourceRange range;
+	SourceRange referenceRange;
 
 	void modify(const string& attribute);
 	string indent(const string& in);

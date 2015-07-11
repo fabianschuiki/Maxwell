@@ -14,6 +14,8 @@ using ast::NodeId;
 using ast::NodeVector;
 using ast::Encoder;
 using ast::Decoder;
+using maxwell::SourceId;
+using maxwell::SourceRange;
 using std::string;
 using std::stringstream;
 using std::ostream;
@@ -95,6 +97,10 @@ public:
 			}
 			out << "] ";
 		}
+	}
+
+	virtual void encode(const SourceRange& rng) {
+		out << rng.getSourceId().getId() << ' ' << rng.getOffset() << ' ' << rng.getLength() << ' ';
 	}
 };
 
@@ -206,6 +212,14 @@ public:
 				throw std::runtime_error("Vector of nodes expected to terminate with a closing bracket ], got '" + rd + "' instead.");
 			}
 		}
+	}
+
+	virtual void decode(SourceRange& rng) {
+		uint32_t id;
+		uint32_t offset;
+		uint32_t length;
+		in >> id >> offset >> length;
+		rng = SourceRange(SourceId(id), offset, length);
 	}
 };
 

@@ -680,12 +680,16 @@ int main(int argc, char *argv[])
 		h << '\n';
 
 		s << "void " << name << "::encode(Encoder& e) {\n";
+		s << "\te.encode(this->range);\n";
+		s << "\te.encode(this->referenceRange);\n";
 		for (Node::Fields::iterator f = node.attributes.begin(); f != node.attributes.end(); f++) {
 			s << "\te.encode(this->" << (*f).name << ");\n";
 		}
 		s << "}\n\n";
 
 		s << "void " << name << "::decode(Decoder& d) {\n";
+		s << "\td.decode(this->range);\n";
+		s << "\td.decode(this->referenceRange);\n";
 		for (Node::Fields::iterator f = node.attributes.begin(); f != node.attributes.end(); f++) {
 			s << "\td.decode(this->" << (*f).name << ");\n";
 		}

@@ -1,6 +1,7 @@
 /* Copyright (c) 2013 Fabian Schuiki */
 #pragma once
 #include "maxwell/ast/Node.hpp"
+#include "maxwell/location.hpp"
 #include <string>
 #include <boost/smart_ptr.hpp>
 
@@ -22,6 +23,7 @@ public:
 	virtual void encode(const bool& b) = 0;
 	virtual void encode(const int& i) = 0;
 	virtual void encode(const NodeVector& nodes) = 0;
+	virtual void encode(const SourceRange& rng) = 0;
 };
 
 /// Decoder interface.
@@ -35,6 +37,7 @@ public:
 	virtual void decode(bool& b) = 0;
 	virtual void decode(int& i) = 0;
 	virtual void decode(NodeVector& nodes) = 0;
+	virtual void decode(SourceRange& rng) = 0;
 };
 
 } // namespace ast

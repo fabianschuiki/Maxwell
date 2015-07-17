@@ -13,14 +13,15 @@ add_subdirectory(stage)
 add_subdirectory(test)
 add_subdirectory(backend)
 
-# libmwc-common
+# obj-common
 add_library(obj-common
+	base64.cpp
+	console.cpp
+	filesystem/Path.cpp
 	filesystem/disk/DiskDirectory.cpp
 	filesystem/disk/DiskFile.cpp
-	filesystem/Path.cpp
 	repository/file/FileSource.cpp
 	repository/file/FileSourceRepository.cpp
-	base64.cpp
 	sha1.cpp
 )
 

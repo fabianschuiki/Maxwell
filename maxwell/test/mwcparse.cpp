@@ -1,16 +1,22 @@
-/* Copyright (c) 2013-2014 Fabian Schuiki */
-/** @file This program parses a set of source files and loads them into the
- * testing repository. */
-
+/* Copyright (c) 2013-2015 Fabian Schuiki */
 #include "maxwell/ast/Repository.hpp"
+#include "maxwell/console.hpp"
+#include "maxwell/diagnostic/ConsoleDiagnosticPrinter.hpp"
+#include "maxwell/diagnostic/diagnostic.hpp"
 #include "maxwell/driver/Driver.hpp"
 #include "maxwell/filesystem/disk/DiskDirectory.hpp"
 #include "maxwell/filesystem/disk/DiskFile.hpp"
+#include "maxwell/iterator.hpp"
+#include "maxwell/range.hpp"
 #include "maxwell/repository/file/FileSourceRepository.hpp"
 #include <iostream>
 #include <set>
 #include <stdexcept>
 #include <string>
+
+/// \file
+/// This program parses a set of source files and loads them into the testing
+/// repository.
 
 using std::string;
 using std::set;
@@ -21,14 +27,20 @@ using ast::Repository;
 using namespace maxwell;
 using namespace maxwell::filesystem;
 
-int main(int argc, char *argv[])
-{
+
+int main(int argc, char *argv[]) {
+	using std::placeholders::_1;
+
+	console::init();
+
 	try {
 		Driver driver;
 		Repository repo("mwcrepo");
 		boost::filesystem::create_directory("mwcrepo/mwc");
 		filesystem::DiskDirectory repoDir("mwcrepo/mwc/sources");
 		repository::FileSourceRepository sourceRepo(repoDir);
+		DiagnosticContext diagCtx;
+		driver.setDiagnosticContext(&diagCtx);
 
 		set<string> ids;
 		for (int i = 1; i < argc; i++) {
@@ -57,9 +69,18 @@ int main(int argc, char *argv[])
 			cout << *it;
 		}
 		cout << '\n';
+
+		ConsoleDiagnosticPrinter fmt(sourceRepo);
+		for (auto const& d : diagCtx.getDiagnostics()) {
+			fmt.consume(d);
+		}
+
+		if (diagCtx.isError())
+			return 1;
 	} catch (std::exception &e) {
 		cerr << "*** \033[31;1mexception:\033[0m " << e.what() << "\n";
 		return 1;
 	}
+
 	return 0;
 }

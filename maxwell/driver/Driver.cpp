@@ -1,6 +1,8 @@
 /* Copyright (c) 2013-2015 Fabian Schuiki */
 #include "maxwell/ast/nodes/ast.hpp"
 #include "maxwell/driver/Driver.hpp"
+#include "maxwell/diagnostic/diagnostic.hpp"
+#include "maxwell/memory.hpp"
 #include <vector>
 
 using namespace ast;
@@ -11,9 +13,9 @@ typedef std::vector<NodePtr> Nodes;
 #include <sstream>
 
 using driver::Driver;
+using namespace maxwell;
 
-Driver::Driver(int dl)
-{
+Driver::Driver(int dl) {
 	debugLevel = dl;
 }
 
@@ -41,19 +43,31 @@ Driver::parseFile(
 	return parseStream(in, filename, start);
 }
 
-void Driver::error(const maxwell::SourceRange& l, const std::string& m)
-{
-	std::stringstream s;
-	s << l << ": " << m;
-	throw std::runtime_error(s.str());
+void
+Driver::error(const maxwell::SourceRange& l, const std::string& m) {
+	if (dc) {
+		auto d = make_unique<Diagnostic>();
+		auto msg = make_unique<DiagnosticMessage>(kError, m);
+		msg->setMainRange(l);
+		d->add(std::move(msg));
+		dc->add(std::move(d));
+	}
 }
 
-void Driver::error(const std::string& m)
-{
+void
+Driver::error(const std::string& m) {
 	throw std::runtime_error(m);
 }
 
-void Driver::add(const NodePtr& node)
-{
+void
+Driver::add(const NodePtr& node) {
 	nodes.push_back(node);
 }
+
+void
+Driver::add(std::unique_ptr<Diagnostic>&& d) {
+	if (dc) {
+		dc->add(std::move(d));
+	}
+}
+

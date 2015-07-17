@@ -6,17 +6,25 @@
 #include <vector>
 // #include "maxwell/ast/nodes/ast.hpp"
 
+
+namespace maxwell {
+	class DiagnosticContext;
+	class Diagnostic;
+}
+
+
 namespace ast { class Node; }
 
 namespace driver {
 
 using boost::shared_ptr;
 
-class Driver
-{
+class Driver {
 public:
 	typedef boost::shared_ptr<ast::Node> NodePtr;
 	typedef std::vector<NodePtr> NodeVector;
+	typedef maxwell::DiagnosticContext DiagnosticContext;
+	typedef maxwell::Diagnostic Diagnostic;
 
 	Driver(int dl = 0);
 
@@ -61,6 +69,14 @@ public:
 	NodeVector nodes;
 
 	void add(const NodePtr& node);
+
+	void setDiagnosticContext(DiagnosticContext* dc) { this->dc = dc; }
+	DiagnosticContext* getDiagnosticContext() const { return dc; }
+
+	void add(std::unique_ptr<Diagnostic>&& d);
+
+private:
+	DiagnosticContext* dc;
 };
 
 } // namespace driver

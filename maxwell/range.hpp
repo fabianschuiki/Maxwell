@@ -44,11 +44,4 @@ auto make_range(Container& c) -> range<decltype(std::begin(c))> {
 }
 
 
-/// Calls function \a fn for each element in range \a rng.
-template<class Iterator, class Function>
-Function for_each(range<Iterator> rng, Function fn) {
-	return std::for_each(rng.begin(), rng.end(), fn);
-}
-
-
 } // namespace maxwell

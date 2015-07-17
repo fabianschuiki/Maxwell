@@ -1,0 +1,35 @@
+/**
+\defgroup diagnostic Diagnostic
+
+Facilities for emitting diagnostic messages.
+
+\code
+error: No overload of type (Int, String)->String of function getName found.
+  src/accounts.mw, 62:
+    var s = getName(192, "hello");
+            ^^^^^^^
+  note: Candidates were:
+        1) Int->String
+        2) (Real, String)->String
+        3) nil->(String)
+    (1) src/person.mw, 62:
+      getName: (i: Int) -> (s: String) {
+      ~~~~~~~
+    (2) src/person.mw, 169:
+      getName: (f: Real, s: String) -> (q: String) {
+      ~~~~~~~
+    (3) src/person.mwc, 263:
+      getName: () -> (s: String) {
+      ~~~~~~~
+\endcode
+
+\code
+error: No entity matix found. Did you mean matrix (1)?
+  src/math.mw, 63:
+    gaussianElimination(matix)
+                        ^^^^^
+  (1) src/math.mw, 57:
+    var matrix = Matrix (2,2);
+        ~~~~~~
+\endcode
+*/

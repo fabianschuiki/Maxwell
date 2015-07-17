@@ -17,6 +17,9 @@ add_subdirectory(backend)
 add_library(obj-common
 	base64.cpp
 	console.cpp
+	diagnostic/diagnostic.cpp
+	diagnostic/ConsoleDiagnosticPrinter.cpp
+	diagnostic/SourceLayout.cpp
 	filesystem/Path.cpp
 	filesystem/disk/DiskDirectory.cpp
 	filesystem/disk/DiskFile.cpp

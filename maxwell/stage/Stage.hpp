@@ -3,8 +3,14 @@
 #include "maxwell/ast/Node.hpp"
 #include "maxwell/ast/Repository.hpp"
 #include "maxwell/ast/nodes/ast.hpp"
+#include "maxwell/memory.hpp"
 #include <string>
 #include <set>
+
+namespace maxwell {
+	class DiagnosticContext;
+	class Diagnostic;
+}
 
 namespace stage {
 
@@ -15,6 +21,7 @@ using ast::NodePtr;
 using ast::NodeId;
 using ast::Repository;
 
+
 /**
  * @brief Base class for all AST processing stages.
  *
@@ -22,9 +29,11 @@ using ast::Repository;
  * processing steps. The StageManager object maintains a list of all stages and
  * the order in which they're supposed to be executed.
  */
-class Stage
-{
+class Stage {
 public:
+	typedef maxwell::DiagnosticContext DiagnosticContext;
+	typedef maxwell::Diagnostic Diagnostic;
+
 	Repository& repository;
 	int verbosity;
 	Stage(Repository& r) : repository(r), verbosity(0) {}
@@ -39,9 +48,15 @@ public:
 
 	typedef set<NodeId> Dependencies;
 
+	void setDiagnosticContext(DiagnosticContext* dc) { this->dc = dc; }
+	DiagnosticContext* getDiagnosticContext() const { return dc; }
+
+	void add(std::unique_ptr<Diagnostic>&& d);
+
 protected:
 	NodePtr currentNode;
 	Dependencies dependencies; // dependencies of the tuple (stage,currentNode)
+	DiagnosticContext* dc;
 
 	/// Overridden by subclasses to implement stage behaviour.
 	virtual void process(const NodePtr& node) = 0;
@@ -55,4 +70,4 @@ protected:
 	template <typename T> void println(int verbosity, const string& msg, const T& ided) { println(verbosity, msg, ided->getId().str()); }
 };
 
-}
+} // namespace stage

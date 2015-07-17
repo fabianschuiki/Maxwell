@@ -15,6 +15,8 @@ namespace maxwell {
 class SourceId;
 class SourceLocation;
 class SourceRange;
+class PerceivedLocation;
+class PerceivedRange;
 
 /// A unique identifier for a source file. Each processed source file shall be
 /// assigned a SourceId to keep track of locations within the file.
@@ -183,6 +185,111 @@ public:
 
 
 /// \needsdoc
+class PerceivedLocation {
+	friend class PerceivedRange;
+
+	SourceId sid;
+	uint32_t line   = 0;
+	uint32_t column = 0;
+
+public:
+	PerceivedLocation() {}
+	PerceivedLocation(SourceId sid, uint32_t line, uint32_t column):
+		sid(sid),
+		line(line),
+		column(column) {}
+
+	SourceId getSourceId() const { return sid; }
+	uint32_t getLine() const { return line; }
+	uint32_t getColumn() const { return column; }
+
+	bool isValid() const { return sid.isValid(); }
+	explicit operator bool() const { return isValid(); }
+
+	bool operator==(PerceivedLocation l) const {
+		return line == l.line && column == l.column;
+	}
+	bool operator!=(PerceivedLocation l) const {
+		return line != l.line || column != l.column;
+	}
+	bool operator<=(PerceivedLocation l) const {
+		return line < l.line || (line == l.line && column <= l.column);
+	}
+	bool operator>=(PerceivedLocation l) const {
+		return line > l.line || (line == l.line && column >= l.column);
+	}
+	bool operator<(PerceivedLocation l) const {
+		return line < l.line || (line == l.line && column < l.column);
+	}
+	bool operator>(PerceivedLocation l) const {
+		return line > l.line || (line == l.line && column > l.column);
+	}
+};
+
+
+/// \needsdoc
+class PerceivedRange {
+	SourceId sid;
+	uint32_t first_line   = 0;
+	uint32_t first_column = 0;
+	uint32_t last_line    = 0;
+	uint32_t last_column  = 0;
+
+public:
+	PerceivedRange() {}
+
+	PerceivedRange(
+		SourceId sid,
+		uint32_t first_line,
+		uint32_t first_column,
+		uint32_t last_line,
+		uint32_t last_column):
+		sid(sid),
+		first_line(first_line),
+		first_column(first_column),
+		last_line(last_line),
+		last_column(last_column) {}
+
+	PerceivedRange(PerceivedLocation a, PerceivedLocation b):
+		sid(a.sid),
+		first_line(a.line),
+		first_column(a.column),
+		last_line(b.line),
+		last_column(b.column) {
+		assert(a.sid == b.sid);
+		assert(a <= b);
+	}
+
+	SourceId getSourceId() const { return sid; }
+	uint32_t getFirstLine() const { return first_line; }
+	uint32_t getFirstColumn() const { return first_column; }
+	uint32_t getLastLine() const { return last_line; }
+	uint32_t getLastColumn() const { return last_column; }
+
+	PerceivedLocation getBegin() const {
+		return PerceivedLocation(sid, first_line, first_column);
+	}
+	PerceivedLocation getEnd() const {
+		return PerceivedLocation(sid, last_line, last_column);
+	}
+
+	bool isValid() const { return sid.isValid(); }
+	explicit operator bool() const { return isValid(); }
+
+	bool operator==(PerceivedRange r) const {
+		return sid == r.sid &&
+			first_line == r.first_line && first_column == r.first_column &&
+			last_line  == r.last_line  && last_column  == r.last_column;
+	}
+	bool operator!=(PerceivedRange r) const {
+		return sid != r.sid ||
+			first_line != r.first_line || first_column != r.first_column ||
+			last_line  != r.last_line  || last_column  != r.last_column;
+	}
+};
+
+
+/// \needsdoc
 template<typename... Args>
 SourceRange union_range(SourceRange a, SourceRange b, Args... rest) {
 	auto c = union_range(b, rest...);
@@ -211,6 +318,19 @@ inline std::ostream& operator<< (std::ostream& o, SourceRange r) {
 	auto off = r.getOffset();
 	auto len = r.getLength();
 	o << r.getSourceId() << ':' << off << '-' << (off+len);
+	return o;
+}
+
+
+inline std::ostream& operator<< (std::ostream& o, PerceivedLocation l) {
+	o << l.getLine() << ':' << l.getColumn();
+	return o;
+}
+
+inline std::ostream& operator<< (std::ostream& o, PerceivedRange r) {
+	o << r.getSourceId()  << ':' <<
+	     r.getFirstLine() << '.' << r.getFirstColumn() << '-' <<
+	     r.getLastLine()  << '.' << r.getLastColumn();
 	return o;
 }
 

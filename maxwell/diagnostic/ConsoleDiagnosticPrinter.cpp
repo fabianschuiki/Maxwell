@@ -239,7 +239,8 @@ ConsoleDiagnosticPrinter::lookupSourceLayout(Source* source) {
 	auto it = sourceLayoutCache.find(source);
 	if (it == sourceLayoutCache.end()) {
 		SourceLayout sl = SourceLayout::analyze(source);
-		it = sourceLayoutCache.emplace(source, std::move(sl)).first;
+		it = sourceLayoutCache.insert(
+			std::make_pair(source, std::move(sl))).first;
 	}
 	return it->second;
 }
